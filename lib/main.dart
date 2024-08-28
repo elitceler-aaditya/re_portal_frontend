@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -10,13 +13,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Reportal Tech',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ProviderScope(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Reportal Tech',
+        theme: ThemeData(
+          fontFamily: 'Poppins',
+          colorScheme: ColorScheme.fromSeed(seedColor: CustomColors.primary),
+          useMaterial3: true,
+        ),
+        home: const GetStarted(),
       ),
-      home: const HomeScreen(),
     );
   }
 }
