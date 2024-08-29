@@ -1,86 +1,59 @@
 import './colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
-  final String title;
   final String? hint;
-  final String? icon;
+  final Widget? icon;
   final int? maxLines;
   final String? errorText;
   final bool isEnabled;
   final TextInputType keyboardType;
+  final bool? obscureText;
+  final Widget? suffixIcon;
+  final int? maxLength;
   const CustomTextField({
     super.key,
     this.controller,
-    required this.title,
     this.hint,
     this.icon,
     this.maxLines,
     this.errorText,
     this.keyboardType = TextInputType.text,
     this.isEnabled = true,
+    this.maxLength,
+    this.obscureText,
+    this.suffixIcon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      child: TextFormField(
-        enabled: isEnabled,
-        keyboardType: keyboardType,
-        textAlign: TextAlign.start,
-        maxLines: maxLines,
-        controller: controller,
-        style: TextStyle(
-          color: isEnabled ? CustomColors.black : CustomColors.black50,
-          fontSize: 16,
-          fontWeight: FontWeight.normal,
+    return TextFormField(
+      controller: controller,
+      maxLength: maxLength,
+      // obscureText: obscureText ?? false,
+      decoration: InputDecoration(
+        counterText: '',
+        errorText: errorText,
+        hintText: hint,
+        hintStyle: TextStyle(color: CustomColors.white.withOpacity(0.5)),
+        filled: true,
+        fillColor: CustomColors.white.withOpacity(0.1),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: CustomColors.red),
         ),
-        decoration: InputDecoration(
-          errorText: errorText,
-          alignLabelWithHint: true,
-          prefixIcon: icon == null
-              ? null
-              : SvgPicture.asset(
-                  icon!,
-                  fit: BoxFit.scaleDown,
-                  color: CustomColors.white,
-                  height: 14,
-                  width: 14,
-                ),
-          hintText: hint,
-          hintStyle: const TextStyle(color: CustomColors.black25),
-          labelStyle: const TextStyle(
-            color: CustomColors.black,
-            fontWeight: FontWeight.w500,
-          ),
-          focusColor: CustomColors.black,
-          label: Text(
-            title,
-            style: const TextStyle(
-              color: CustomColors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          contentPadding: const EdgeInsets.all(15),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: CustomColors.black.withOpacity(0.2)),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: CustomColors.black.withOpacity(0.2)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: CustomColors.black),
-          ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
         ),
+        prefixIcon: icon,
+        suffixIcon: suffixIcon,
       ),
+      style: const TextStyle(color: CustomColors.white),
+      enabled: isEnabled,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
     );
   }
 }

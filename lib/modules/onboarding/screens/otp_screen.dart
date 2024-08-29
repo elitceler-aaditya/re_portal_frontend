@@ -1,23 +1,78 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pinput/pinput.dart';
 import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
-import 'package:re_portal_frontend/modules/onboarding/screens/signup_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OTPScreen extends StatefulWidget {
   final String otpSentTo;
-
-  const OTPScreen({super.key, required this.otpSentTo});
+  final String orderId;
+  const OTPScreen({super.key, required this.otpSentTo, required this.orderId});
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
 }
 
 class _OTPScreenState extends State<OTPScreen> {
+  bool _isLoading = false;
+  final TextEditingController _otpController = TextEditingController();
+
+  _verifyOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String url = "${dotenv.env['BASE_URL']}/user/verify-otp";
+    Map<String, String> body = {
+      "phoneNumber": "+91${widget.otpSentTo}",
+      "otp": _otpController.text,
+      "orderId": widget.orderId,
+    };
+    debugPrint("----------printing to: $url");
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+      debugPrint("----------${response.body}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map responseData = jsonDecode(response.body);
+        SharedPreferences sharedPref = await SharedPreferences.getInstance();
+        sharedPref.setString("uid", responseData['userID']);
+        sharedPref.setBool("isLoggedIn", true);
+        sharedPref.setString("phoneNumber", responseData['phoneNumber']);
+        sharedPref.setString("token", responseData['token']);
+        debugPrint("----------shared Pref set");
+
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false);
+      } else {
+        throw Exception('Failed to verify OTP');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      errorSnackBar(context, e.toString());
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
@@ -118,7 +173,8 @@ class _OTPScreenState extends State<OTPScreen> {
                                   child: Column(
                                     children: [
                                       Pinput(
-                                        length: 4,
+                                        controller: _otpController,
+                                        length: 6,
                                         keyboardType: TextInputType.number,
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
@@ -166,32 +222,33 @@ class _OTPScreenState extends State<OTPScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 24),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const HomeScreen()));
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: CustomColors.primary,
-                                          minimumSize:
-                                              const Size(double.infinity, 50),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(108),
+                                      if (_isLoading)
+                                        const Center(
+                                            child: CircularProgressIndicator()),
+                                      if (!_isLoading)
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            _verifyOTP();
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                CustomColors.primary,
+                                            minimumSize:
+                                                const Size(double.infinity, 50),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(108),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'Verify',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500,
+                                              color: CustomColors.white,
+                                            ),
                                           ),
                                         ),
-                                        child: const Text(
-                                          'Verify',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w500,
-                                            color: CustomColors.white,
-                                          ),
-                                        ),
-                                      ),
                                       const SizedBox(height: 24),
                                       Row(
                                         mainAxisAlignment:
