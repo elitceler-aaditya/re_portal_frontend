@@ -118,17 +118,22 @@ class _PropertState extends State<PropertyList> {
                           child: Stack(
                             children: [
                               Container(
-                                height: isListview ? 150 : 150,
-                                decoration: const BoxDecoration(
+                                height: 150,
+                                decoration: BoxDecoration(
                                   color: CustomColors.black25,
-                                  borderRadius: BorderRadius.only(
+                                  borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(10),
                                     topRight: Radius.circular(10),
+                                  ),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                        widget.apartments[index].image),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
                               Container(
-                                height: isListview ? 150 : 150,
+                                height: 150,
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
@@ -144,6 +149,20 @@ class _PropertState extends State<PropertyList> {
                                   ),
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: Text(
+                                    widget.apartments[index].apartmentName,
+                                    style: const TextStyle(
+                                      color: CustomColors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
                             ],
                           ),
                         ),

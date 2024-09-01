@@ -38,7 +38,8 @@ mixin _$AppartmentModel {
   int get openSpace => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
   String get updatedAt => throw _privateConstructorUsedError;
-  String get appartmentName => throw _privateConstructorUsedError;
+  String get apartmentName => throw _privateConstructorUsedError;
+  String get image => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -71,7 +72,8 @@ abstract class $AppartmentModelCopyWith<$Res> {
       int openSpace,
       String createdAt,
       String updatedAt,
-      String appartmentName});
+      String apartmentName,
+      String image});
 }
 
 /// @nodoc
@@ -105,7 +107,8 @@ class _$AppartmentModelCopyWithImpl<$Res, $Val extends AppartmentModel>
     Object? openSpace = null,
     Object? createdAt = null,
     Object? updatedAt = null,
-    Object? appartmentName = null,
+    Object? apartmentName = null,
+    Object? image = null,
   }) {
     return _then(_value.copyWith(
       apartmentID: null == apartmentID
@@ -180,9 +183,13 @@ class _$AppartmentModelCopyWithImpl<$Res, $Val extends AppartmentModel>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      appartmentName: null == appartmentName
-          ? _value.appartmentName
-          : appartmentName // ignore: cast_nullable_to_non_nullable
+      apartmentName: null == apartmentName
+          ? _value.apartmentName
+          : apartmentName // ignore: cast_nullable_to_non_nullable
+              as String,
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -215,7 +222,8 @@ abstract class _$$AppartmentModelImplCopyWith<$Res>
       int openSpace,
       String createdAt,
       String updatedAt,
-      String appartmentName});
+      String apartmentName,
+      String image});
 }
 
 /// @nodoc
@@ -247,7 +255,8 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
     Object? openSpace = null,
     Object? createdAt = null,
     Object? updatedAt = null,
-    Object? appartmentName = null,
+    Object? apartmentName = null,
+    Object? image = null,
   }) {
     return _then(_$AppartmentModelImpl(
       apartmentID: null == apartmentID
@@ -322,9 +331,13 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      appartmentName: null == appartmentName
-          ? _value.appartmentName
-          : appartmentName // ignore: cast_nullable_to_non_nullable
+      apartmentName: null == apartmentName
+          ? _value.apartmentName
+          : apartmentName // ignore: cast_nullable_to_non_nullable
+              as String,
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -352,7 +365,8 @@ class _$AppartmentModelImpl implements _AppartmentModel {
       this.openSpace = 0,
       this.createdAt = "",
       this.updatedAt = "",
-      this.appartmentName = ""});
+      this.apartmentName = "",
+      this.image = ""});
 
   factory _$AppartmentModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$AppartmentModelImplFromJson(json);
@@ -413,11 +427,14 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   final String updatedAt;
   @override
   @JsonKey()
-  final String appartmentName;
+  final String apartmentName;
+  @override
+  @JsonKey()
+  final String image;
 
   @override
   String toString() {
-    return 'AppartmentModel(apartmentID: $apartmentID, projectId: $projectId, locality: $locality, apartmentType: $apartmentType, amenities: $amenities, configuration: $configuration, budget: $budget, flatSize: $flatSize, companyName: $companyName, companyPhone: $companyPhone, noOfFloor: $noOfFloor, noOfFlats: $noOfFlats, noOfBlocks: $noOfBlocks, possessionDate: $possessionDate, clubhouseSize: $clubhouseSize, openSpace: $openSpace, createdAt: $createdAt, updatedAt: $updatedAt, appartmentName: $appartmentName)';
+    return 'AppartmentModel(apartmentID: $apartmentID, projectId: $projectId, locality: $locality, apartmentType: $apartmentType, amenities: $amenities, configuration: $configuration, budget: $budget, flatSize: $flatSize, companyName: $companyName, companyPhone: $companyPhone, noOfFloor: $noOfFloor, noOfFlats: $noOfFlats, noOfBlocks: $noOfBlocks, possessionDate: $possessionDate, clubhouseSize: $clubhouseSize, openSpace: $openSpace, createdAt: $createdAt, updatedAt: $updatedAt, apartmentName: $apartmentName, image: $image)';
   }
 
   @override
@@ -460,8 +477,9 @@ class _$AppartmentModelImpl implements _AppartmentModel {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.appartmentName, appartmentName) ||
-                other.appartmentName == appartmentName));
+            (identical(other.apartmentName, apartmentName) ||
+                other.apartmentName == apartmentName) &&
+            (identical(other.image, image) || other.image == image));
   }
 
   @JsonKey(ignore: true)
@@ -486,7 +504,8 @@ class _$AppartmentModelImpl implements _AppartmentModel {
         openSpace,
         createdAt,
         updatedAt,
-        appartmentName
+        apartmentName,
+        image
       ]);
 
   @JsonKey(ignore: true)
@@ -524,7 +543,8 @@ abstract class _AppartmentModel implements AppartmentModel {
       final int openSpace,
       final String createdAt,
       final String updatedAt,
-      final String appartmentName}) = _$AppartmentModelImpl;
+      final String apartmentName,
+      final String image}) = _$AppartmentModelImpl;
 
   factory _AppartmentModel.fromJson(Map<String, dynamic> json) =
       _$AppartmentModelImpl.fromJson;
@@ -566,7 +586,9 @@ abstract class _AppartmentModel implements AppartmentModel {
   @override
   String get updatedAt;
   @override
-  String get appartmentName;
+  String get apartmentName;
+  @override
+  String get image;
   @override
   @JsonKey(ignore: true)
   _$$AppartmentModelImplCopyWith<_$AppartmentModelImpl> get copyWith =>

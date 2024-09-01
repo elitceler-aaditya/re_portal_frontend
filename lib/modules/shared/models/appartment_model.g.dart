@@ -27,7 +27,8 @@ _$AppartmentModelImpl _$$AppartmentModelImplFromJson(
       openSpace: (json['openSpace'] as num?)?.toInt() ?? 0,
       createdAt: json['createdAt'] as String? ?? "",
       updatedAt: json['updatedAt'] as String? ?? "",
-      appartmentName: json['appartmentName'] as String? ?? "",
+      apartmentName: json['apartmentName'] as String? ?? "",
+      image: json['image'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$AppartmentModelImplToJson(
@@ -51,5 +52,6 @@ Map<String, dynamic> _$$AppartmentModelImplToJson(
       'openSpace': instance.openSpace,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
-      'appartmentName': instance.appartmentName,
+      'apartmentName': instance.apartmentName,
+      'image': instance.image,
     };
