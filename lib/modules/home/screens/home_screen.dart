@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
-import 'package:re_portal_frontend/modules/home/widgets/filter_button.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/property_type.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -220,44 +219,126 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  FlutterCarousel(
-                    items: [
-                      Container(
-                        height: 180,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: CustomColors.black25,
-                          borderRadius: BorderRadius.circular(10),
+                  FlutterCarousel.builder(
+                    itemCount: 3,
+                    itemBuilder: (context, index, realIndex) => GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            opaque: false,
+                            barrierDismissible: true,
+                            pageBuilder: (BuildContext context, _, __) {
+                              return Hero(
+                                tag: "best_deal_$index",
+                                child: Scaffold(
+                                  backgroundColor: Colors.black54,
+                                  body: Center(
+                                    child: GestureDetector(
+                                      onTap: () => Navigator.of(context).pop(),
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              spreadRadius: 5,
+                                              blurRadius: 7,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            SizedBox(
+                                              height: 180,
+                                              child: ClipRRect(
+                                                borderRadius: const BorderRadius
+                                                    .vertical(
+                                                    top: Radius.circular(10)),
+                                                child: Image.asset(
+                                                  "assets/images/best_deal.png",
+                                                  fit: BoxFit.cover,
+                                                  height: 200,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(16.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text(
+                                                    "Balaji Heights",
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    "This beautiful property lies in the heart of Hyderabad with xx acres of free space",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Hero(
+                        tag: "best_deal_$index",
+                        child: Container(
+                          height: 180,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: CustomColors.black25,
+                            borderRadius: BorderRadius.circular(10),
+                            image: const DecorationImage(
+                              image: AssetImage("assets/images/best_deal.png"),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
-                      Container(
-                        height: 180,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: CustomColors.black25,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      Container(
-                        height: 180,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: CustomColors.black25,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ],
+                    ),
                     options: CarouselOptions(
                       height: 180,
                       viewportFraction: 0.9,
                       enlargeCenterPage: true,
-                      autoPlayCurve: Curves.easeInOut,
+                      autoPlay: true,
+                      autoPlayInterval: const Duration(seconds: 5),
                       autoPlayAnimationDuration:
                           const Duration(milliseconds: 1000),
-                      autoPlay: true,
+                      autoPlayCurve: Curves.fastOutSlowIn,
                       enableInfiniteScroll: true,
+                      initialPage: 0,
+                      reverse: false,
+                      scrollDirection: Axis.horizontal,
                     ),
-                  ),
+                  )
                 ],
               ),
             ),

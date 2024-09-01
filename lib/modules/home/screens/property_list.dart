@@ -12,7 +12,7 @@ class PropertyList extends StatefulWidget {
 }
 
 class _PropertState extends State<PropertyList> {
-  bool isListview = false;
+  bool isListview = true;
 
   formatBudget(double budget) {
     if (budget < 10000000) {
