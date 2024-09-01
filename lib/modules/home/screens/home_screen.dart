@@ -1,111 +1,267 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/home/widgets/properties_tiles.dart';
-import 'package:re_portal_frontend/modules/shared/models/user.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
+import 'package:re_portal_frontend/modules/home/widgets/filter_button.dart';
+import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
+import 'package:re_portal_frontend/modules/shared/models/property_type.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+  });
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late SharedPreferences sharedPref;
-  String uid = "";
-  String name = "";
-  String email = "";
-  String phoneNumber = "";
+  final TextEditingController _searchController = TextEditingController();
   String token = "";
-  bool isLoggedIn = false;
+  List<AppartmentModel> _apartments = [];
 
-  getPref() async {
-    sharedPref = await SharedPreferences.getInstance();
-    setState(() {
-      isLoggedIn = sharedPref.getBool("isLoggedIn") ?? false;
-      uid = sharedPref.getString("uid") ?? "";
-      name = sharedPref.getString("name") ?? "";
-      email = sharedPref.getString("email") ?? "";
-      phoneNumber = sharedPref.getString("phoneNumber") ?? "";
-      token = sharedPref.getString("token") ?? "";
+  checkValidSession() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    token = sharedPreferences.getString('token') ?? '';
+  }
+
+  getProperties() async {
+    String token = ref.watch(userProvider).token;
+    debugPrint("--------------token: $token");
+    if (ref.watch(homeDataProvider).propertyType == PropertyTypes.appartments) {
+      await getApartments(token: token);
+    } else if (ref.watch(homeDataProvider).propertyType ==
+        PropertyTypes.villas) {
+      return "Villas";
+    } else if (ref.watch(homeDataProvider).propertyType ==
+        PropertyTypes.commercial) {
+      return "Commercial";
+    }
+  }
+
+  Future<void> getApartments({
+    String token = "",
+    Map<String, dynamic> params = const {},
+  }) async {
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/project/filterApartments";
+    debugPrint("--------------url: $url");
+    Uri uri = Uri.parse(url).replace(queryParameters: params);
+
+    http.get(
+      uri,
+      headers: {
+        "Authorization": "Bearer $token",
+      },
+    ).then((response) async {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        List responseBody = jsonDecode(response.body)['apartments'];
+        debugPrint("--------------responseBody: $responseBody");
+        setState(() {
+          _apartments = responseBody
+              .map<AppartmentModel>((e) => AppartmentModel.fromJson(e))
+              .toList();
+        });
+      }
     });
-    ref.read(userProvider.notifier).setUser(
-          User(
-            uid: uid,
-            name: name,
-            email: email,
-            phoneNumber: phoneNumber,
-            token: token,
-          ),
-        );
+  }
+
+  filterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+      isScrollControlled: true,
+      backgroundColor: CustomColors.white,
+      scrollControlDisabledMaxHeightRatio: 1,
+      builder: (context) {
+        return const AppartmentFilter();
+      },
+    );
   }
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getPref();
+      checkValidSession();
+      getProperties();
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(token);
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: RichText(
-          textAlign: TextAlign.start,
-          text: const TextSpan(
-            children: [
-              TextSpan(
-                text: 'Re',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: CustomColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              TextSpan(
-                text: 'Portal',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: CustomColors.secondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ],
+        backgroundColor: CustomColors.primary,
+        titleSpacing: 0,
+        iconTheme: const IconThemeData(
+          color: CustomColors.white,
+        ),
+        title: Text(
+          ref.watch(homeDataProvider).propertyType,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: CustomColors.white,
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+      body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PropertiesTiles(
-              title: 'Commercial',
-              description: 'Discover top commercial properties nearby',
-              image: 'assets/images/tile_bg1.png',
+            //top search bar
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    CustomColors.primary,
+                    Color(0xFFCE4F32),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  //search bar
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: CustomColors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() {});
+                            },
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                              hintText:
+                                  'Search for ${ref.watch(homeDataProvider).propertyType.toLowerCase()}',
+                              hintStyle: const TextStyle(
+                                color: CustomColors.black50,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (_searchController.text.trim().isEmpty)
+                          IconButton(
+                            onPressed: () {},
+                            icon: SvgPicture.asset("assets/icons/location.svg"),
+                          ),
+                        if (_searchController.text.trim().isEmpty)
+                          TextButton.icon(
+                            style: TextButton.styleFrom(
+                              backgroundColor: CustomColors.secondary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              filterBottomSheet();
+                            },
+                            icon: SvgPicture.asset("assets/icons/filter.svg"),
+                            label: const Text(
+                              "Filters",
+                              style: TextStyle(
+                                color: CustomColors.white,
+                              ),
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            PropertiesTiles(
-              title: 'Villas',
-              description: 'Luxurious villas and upscale properties',
-              image: 'assets/images/tile_bg2.png',
+            const SizedBox(height: 10),
+
+            //Best deals
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Best Deals",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  FlutterCarousel(
+                    items: [
+                      Container(
+                        height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: CustomColors.black25,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      Container(
+                        height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: CustomColors.black25,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      Container(
+                        height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: CustomColors.black25,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ],
+                    options: CarouselOptions(
+                      height: 180,
+                      viewportFraction: 0.9,
+                      enlargeCenterPage: true,
+                      autoPlayCurve: Curves.easeInOut,
+                      autoPlayAnimationDuration:
+                          const Duration(milliseconds: 1000),
+                      autoPlay: true,
+                      enableInfiniteScroll: true,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            PropertiesTiles(
-              title: 'Apartments',
-              description: 'Luxury living in stunning apartments.',
-              image: 'assets/images/tile_bg3.png',
-            ),
-            PropertiesTiles(
-              title: 'Plots',
-              description: 'Your dream sanctuary on prime plots.',
-              image: 'assets/images/tile_bg4.png',
-            ),
+            PropertyList(apartments: _apartments),
           ],
         ),
       ),

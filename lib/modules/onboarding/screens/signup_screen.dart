@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
@@ -113,7 +113,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(
+                  builder: (context) => const PropertyTypesScreen()),
               (route) => false);
         } else {
           debugPrint("--------------${response.body}");
@@ -146,14 +147,14 @@ class _SignupScreenState extends State<SignupScreen> {
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const PropertyTypesScreen()),
                 (route) => false,
               );
             },
             child: const Text(
               "Skip",
               style: TextStyle(
-                fontFamily: 'Poppins',
                 color: CustomColors.white,
               ),
             ),
@@ -166,7 +167,6 @@ class _SignupScreenState extends State<SignupScreen> {
               TextSpan(
                 text: 'Re',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
                   color: CustomColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -175,7 +175,6 @@ class _SignupScreenState extends State<SignupScreen> {
               TextSpan(
                 text: 'Portal',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
                   color: CustomColors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
@@ -377,7 +376,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _buildSocialButton(Icon(Icons.email), () {
+                                  _buildSocialButton(const Icon(Icons.email),
+                                      () {
                                     // Handle email signup
                                   }),
                                   const SizedBox(width: 20),

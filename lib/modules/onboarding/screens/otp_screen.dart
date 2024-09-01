@@ -1,15 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pinput/pinput.dart';
-import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OTPScreen extends StatefulWidget {
   final String otpSentTo;
@@ -49,16 +50,15 @@ class _OTPScreenState extends State<OTPScreen> {
       debugPrint("----------${response.body}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map responseData = jsonDecode(response.body);
-        SharedPreferences sharedPref = await SharedPreferences.getInstance();
-        sharedPref.setString("uid", responseData['userID']);
-        sharedPref.setBool("isLoggedIn", true);
-        sharedPref.setString("phoneNumber", responseData['phoneNumber']);
-        sharedPref.setString("token", responseData['token']);
-        debugPrint("----------shared Pref set");
+        final tempDir = await getTemporaryDirectory();
+        final file = File('${tempDir.path}/token.json');
+        file.writeAsString(responseData['token']);
+        debugPrint("Token saved to ${file.path}");
 
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(
+                builder: (context) => const PropertyTypesScreen()),
             (route) => false);
       } else {
         throw Exception('Failed to verify OTP');
@@ -91,7 +91,6 @@ class _OTPScreenState extends State<OTPScreen> {
                     TextSpan(
                       text: 'Re',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color: CustomColors.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -100,7 +99,6 @@ class _OTPScreenState extends State<OTPScreen> {
                     TextSpan(
                       text: 'Portal',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color: CustomColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,

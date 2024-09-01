@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
+import 'package:jwt_io/jwt_io.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,9 +29,11 @@ class _MyAppState extends State<MyApp> {
   bool isLoggedIn = false;
 
   checkIfLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/token.json');
+    final token = await file.readAsString();
     setState(() {
-      isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      isLoggedIn = !JwtToken.isExpired(token);
     });
   }
 
@@ -44,11 +50,13 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'Reportal Tech',
         theme: ThemeData(
-          fontFamily: 'Poppins',
-          colorScheme: ColorScheme.fromSeed(seedColor: CustomColors.primary),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: CustomColors.primary,
+            background: CustomColors.white,
+          ),
           useMaterial3: true,
         ),
-        home: isLoggedIn ? const HomeScreen() : const GetStarted(),
+        home: isLoggedIn ? const PropertyTypesScreen() : const GetStarted(),
       ),
     );
   }

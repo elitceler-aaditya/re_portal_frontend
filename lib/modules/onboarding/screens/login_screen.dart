@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -121,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextSpan(
                       text: 'Re',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color: CustomColors.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -130,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextSpan(
                       text: 'Portal',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color: CustomColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
