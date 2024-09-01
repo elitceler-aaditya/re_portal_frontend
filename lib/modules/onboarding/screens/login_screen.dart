@@ -1,14 +1,18 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/otp_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/signup_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/textfields.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +22,71 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _phoneController = TextEditingController();
+
+  bool _isLoading = false;
+  String? phoneError;
+  String? passwordError;
+
+  bool _validateFields() {
+    if (_phoneController.text.trim().isEmpty) {
+      setState(() {
+        phoneError = 'Phone number is required';
+      });
+    }
+
+    return phoneError == null && passwordError == null;
+  }
+
+  _sendOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String url = "${dotenv.env['BASE_URL']}/user/otpless-signin";
+    Map<String, String> body = {
+      "phoneNumber": "+91${_phoneController.text.trim()}",
+    };
+
+    try {
+      await http
+          .post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      )
+          .then((response) {
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OTPScreen(
+                otpSentTo: _phoneController.text.trim(),
+                orderId: responseData['data']['orderId'],
+              ),
+            ),
+          );
+          setState(() {
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          errorSnackBar(context, jsonDecode(response.body)['message']);
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      debugPrint(e.toString());
+    }
+  }
+
   Widget _buildSocialButton(Widget icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -51,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextSpan(
                       text: 'Re',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color: CustomColors.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -60,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextSpan(
                       text: 'Portal',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
                         color: CustomColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -132,44 +199,28 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   child: Column(
                                     children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: CustomColors.white
-                                              .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: TextField(
-                                          keyboardType: TextInputType.phone,
-                                          style: const TextStyle(
-                                              color: CustomColors.white),
-                                          decoration: InputDecoration(
-                                            hintText: 'Phone Number',
-                                            hintStyle: TextStyle(
-                                              color: CustomColors.white
-                                                  .withOpacity(0.5),
-                                            ),
-                                            prefixIcon: const Icon(Icons.phone,
-                                                color: CustomColors.white),
-                                            border: InputBorder.none,
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 12,
-                                            ),
-                                          ),
+                                      CustomTextField(
+                                        controller: _phoneController,
+                                        hint: 'Phone Number',
+                                        keyboardType: TextInputType.phone,
+                                        maxLength: 10,
+                                        errorText: phoneError,
+                                        icon: const Icon(
+                                          Icons.phone,
+                                          color: CustomColors.white,
                                         ),
                                       ),
                                       const SizedBox(height: 24),
-                                      CustomPrimaryButton(
-                                        title: 'Send OTP',
-                                        onTap: () {
-                                          upSlideTransition(
-                                              context,
-                                              const OTPScreen(
-                                                  otpSentTo: '1234567890'));
-                                        },
-                                      ),
+                                      if (_isLoading)
+                                        const Center(
+                                            child: CircularProgressIndicator()),
+                                      if (!_isLoading)
+                                        CustomPrimaryButton(
+                                          title: 'Send OTP',
+                                          onTap: () {
+                                            _sendOTP();
+                                          },
+                                        ),
                                       const SizedBox(height: 24),
                                       Row(
                                         children: [
