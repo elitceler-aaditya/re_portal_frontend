@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/onboarding/screens/otp_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
@@ -73,10 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return phoneError == null && emailError == null && passwordError == null;
   }
 
-  setUser(Map<String, dynamic> responseData) async {
-    // {message: User created successfully, user: {id: ef451786-87a2-4484-b1c1-193969ad0326, name: dev,
-    //email: dev@dev.com, password: $2b$10$VlN8iN3pyBNTAC0ZqTrhoO2F5rR6gF6vHYrrnO47jWIoG.MeE3tce,
-    //phoneNumber: +911234567890}}
+  Future<void> setUser(Map<String, dynamic> responseData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool("isLoggedIn", true);
     prefs.setString("email", responseData['user']['email']);
@@ -85,7 +83,53 @@ class _SignupScreenState extends State<SignupScreen> {
     prefs.setString("phoneNumber", responseData['user']['phoneNumber']);
   }
 
-  void _signupUser() async {
+  Future<void> _sendOTP() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String url = "${dotenv.env['BASE_URL']}/user/otpless-signin";
+    Map<String, String> body = {
+      "phoneNumber": "+91${_phoneController.text.trim()}",
+    };
+
+    try {
+      await http
+          .post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(body),
+      )
+          .then((response) {
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+
+          rightSlideTransition(
+              context,
+              OTPScreen(
+                otpSentTo: _phoneController.text.trim(),
+                orderId: responseData['data']['orderId'],
+              ));
+          setState(() {
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          errorSnackBar(context, jsonDecode(response.body)['message']);
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> _signupUser() async {
     //signup user
     String url = "${dotenv.get('BASE_URL')}/user/register-user";
     Map<String, String> body = {
@@ -108,14 +152,9 @@ class _SignupScreenState extends State<SignupScreen> {
         if (response.statusCode == 200 || response.statusCode == 201) {
           final responseData = jsonDecode(response.body);
           debugPrint("--------------$responseData");
-
-          await setUser(responseData);
-
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const PropertyTypesScreen()),
-              (route) => false);
+          await setUser(responseData).then((value) async {
+            await _sendOTP();
+          });
         } else {
           debugPrint("--------------${response.body}");
           errorSnackBar(

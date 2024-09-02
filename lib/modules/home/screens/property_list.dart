@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PropertyList extends StatefulWidget {
   final List<AppartmentModel> apartments;
@@ -275,7 +276,14 @@ class _PropertState extends State<PropertyList> {
                                                   BorderRadius.circular(8),
                                             ),
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            final Uri phoneUri = Uri(
+                                                scheme: 'tel',
+                                                path: widget.apartments[index]
+                                                    .companyPhone);
+
+                                            launchUrl(phoneUri);
+                                          },
                                           icon: SvgPicture.asset(
                                               "assets/icons/call.svg",
                                               height: 20,
