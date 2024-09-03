@@ -21,7 +21,7 @@ class CustomRadioButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
-          color: isSelected ? CustomColors.primary20 : CustomColors.black10,
+          color: CustomColors.black10,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -44,6 +44,7 @@ class CustomRadioButton extends StatelessWidget {
               text,
               style: const TextStyle(
                 color: Colors.black,
+                fontSize: 12,
                 fontWeight: FontWeight.normal,
               ),
             ),

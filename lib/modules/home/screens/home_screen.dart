@@ -3,6 +3,7 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/property_type.dart';
@@ -100,25 +101,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     debugPrint(token);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: CustomColors.primary,
-        titleSpacing: 0,
-        iconTheme: const IconThemeData(
-          color: CustomColors.white,
-        ),
-        title: Text(
-          ref.watch(homeDataProvider).propertyType,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: CustomColors.white,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //appbar
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(top: 40, bottom: 4),
+              decoration: const BoxDecoration(
+                color: CustomColors.primary,
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: CustomColors.white,
+                      )),
+                  Text(
+                    ref.watch(homeDataProvider).propertyType,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: CustomColors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             //top search bar
             Container(
               width: double.infinity,
@@ -219,126 +234,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  FlutterCarousel.builder(
-                    itemCount: 3,
-                    itemBuilder: (context, index, realIndex) => GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          PageRouteBuilder(
-                            opaque: false,
-                            barrierDismissible: true,
-                            pageBuilder: (BuildContext context, _, __) {
-                              return Hero(
-                                tag: "best_deal_$index",
-                                child: Scaffold(
-                                  backgroundColor: Colors.black54,
-                                  body: Center(
-                                    child: GestureDetector(
-                                      onTap: () => Navigator.of(context).pop(),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.9,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              spreadRadius: 5,
-                                              blurRadius: 7,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: [
-                                            SizedBox(
-                                              height: 180,
-                                              child: ClipRRect(
-                                                borderRadius: const BorderRadius
-                                                    .vertical(
-                                                    top: Radius.circular(10)),
-                                                child: Image.asset(
-                                                  "assets/images/best_deal.png",
-                                                  fit: BoxFit.cover,
-                                                  height: 200,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(16.0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    "Balaji Heights",
-                                                    style: TextStyle(
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text(
-                                                    "This beautiful property lies in the heart of Hyderabad with xx acres of free space",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.grey[600],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Hero(
-                        tag: "best_deal_$index",
-                        child: Container(
-                          height: 180,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: CustomColors.black25,
-                            borderRadius: BorderRadius.circular(10),
-                            image: const DecorationImage(
-                              image: AssetImage("assets/images/best_deal.png"),
-                              fit: BoxFit.cover,
+                  if (_apartments.isNotEmpty)
+                    FlutterCarousel.builder(
+                      itemCount: _apartments.length,
+                      itemBuilder: (context, index, realIndex) =>
+                          GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PropertyDetails(
+                                appartment: _apartments[index],
+                                bestDeals: true,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Hero(
+                          tag: "best-${_apartments[index].apartmentID}",
+                          child: Container(
+                            height: 180,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: CustomColors.black25,
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: NetworkImage(_apartments[index].image),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    options: CarouselOptions(
-                      height: 180,
-                      viewportFraction: 0.9,
-                      enlargeCenterPage: true,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 5),
-                      autoPlayAnimationDuration:
-                          const Duration(milliseconds: 1000),
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enableInfiniteScroll: true,
-                      initialPage: 0,
-                      reverse: false,
-                      scrollDirection: Axis.horizontal,
-                    ),
-                  )
+                      options: CarouselOptions(
+                        height: 180,
+                        viewportFraction: 0.9,
+                        enlargeCenterPage: true,
+                        autoPlay: true,
+                        autoPlayInterval: const Duration(seconds: 5),
+                        autoPlayAnimationDuration:
+                            const Duration(milliseconds: 1000),
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enableInfiniteScroll: true,
+                        initialPage: 0,
+                        reverse: false,
+                        scrollDirection: Axis.horizontal,
+                      ),
+                    )
                 ],
               ),
             ),

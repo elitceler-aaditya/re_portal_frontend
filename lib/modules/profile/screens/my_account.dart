@@ -48,7 +48,16 @@ class _MyAccountState extends State<MyAccount> {
                   left: 0,
                   right: 0,
                   top: 64,
-                  child: CircleAvatar(radius: 64),
+                  child: CircleAvatar(
+                    radius: 64,
+                    child: Center(
+                      child: Icon(
+                        Icons.person_outline,
+                        size: 40,
+                        color: CustomColors.black,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

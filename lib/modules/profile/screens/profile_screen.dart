@@ -28,16 +28,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: CustomColors.black.withOpacity(0.1),
+        backgroundColor: CustomColors.black10,
         child: Icon(icon, color: Colors.black),
       ),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(color: CustomColors.black50, fontSize: 12),
+        style: const TextStyle(color: CustomColors.black50, fontSize: 10),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
     );
@@ -82,6 +82,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   top: 50,
                   child: CircleAvatar(
                     radius: 50,
+                    child: Center(
+                      child: Icon(
+                        Icons.person_outline,
+                        size: 40,
+                        color: CustomColors.black,
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(

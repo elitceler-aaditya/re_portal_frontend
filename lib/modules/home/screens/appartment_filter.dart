@@ -13,6 +13,10 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
   int appartmentType = 0;
   int configurationType = 0;
   double _minBudget = 10.0;
+  double _maxBudget = 300.0;
+
+  double _minFlatSize = 50;
+  double _maxFlatSize = 5000;
 
   String formatBudget(double budget) {
     //return budget in k format or lakh format
@@ -76,7 +80,7 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                       "Localities",
                       style: TextStyle(
                         color: CustomColors.secondary,
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -92,32 +96,38 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                 ),
                 //search box
                 const SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search for localities',
-                    hintStyle: const TextStyle(
-                        color: CustomColors.black25,
-                        fontWeight: FontWeight.w600),
-                    prefixIcon:
-                        const Icon(Icons.search, color: CustomColors.black50),
-                    filled: true,
-                    fillColor: CustomColors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: CustomColors.black25),
+                SizedBox(
+                  height: 44,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search for localities',
+                      hintStyle: const TextStyle(
+                          color: CustomColors.black25,
+                          fontWeight: FontWeight.w600),
+                      prefixIcon:
+                          const Icon(Icons.search, color: CustomColors.black50),
+                      filled: true,
+                      fillColor: CustomColors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: CustomColors.black25),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: CustomColors.black25),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: CustomColors.primary),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: CustomColors.black25),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: CustomColors.black,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: CustomColors.primary),
-                    ),
-                  ),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: CustomColors.black,
                   ),
                 ),
                 const Divider(
@@ -129,11 +139,11 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                   "Apartment Types",
                   style: TextStyle(
                     color: CustomColors.secondary,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
 
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -179,38 +189,44 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                   "Amenities",
                   style: TextStyle(
                     color: CustomColors.secondary,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 //search box
-                const SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search Amenities',
-                    hintStyle: const TextStyle(
-                        color: CustomColors.black25,
-                        fontWeight: FontWeight.w600),
-                    prefixIcon:
-                        const Icon(Icons.search, color: CustomColors.black50),
-                    filled: true,
-                    fillColor: CustomColors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: CustomColors.black25),
+                const SizedBox(height: 6),
+                SizedBox(
+                  height: 44,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search Amenities',
+                      hintStyle: const TextStyle(
+                          color: CustomColors.black25,
+                          fontWeight: FontWeight.w600),
+                      prefixIcon:
+                          const Icon(Icons.search, color: CustomColors.black50),
+                      filled: true,
+                      fillColor: CustomColors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: CustomColors.black25),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: CustomColors.black25),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: CustomColors.primary),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: CustomColors.black25),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: CustomColors.black,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: CustomColors.primary),
-                    ),
-                  ),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: CustomColors.black,
                   ),
                 ),
 
@@ -222,11 +238,11 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                   "Configuration",
                   style: TextStyle(
                     color: CustomColors.secondary,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
 
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -288,7 +304,7 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                   "Budget",
                   style: TextStyle(
                     color: CustomColors.secondary,
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -313,15 +329,70 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                       fontSize: 14,
                     ),
                   ),
-                  child: Slider(
+                  child: RangeSlider(
                     min: 10.0,
                     max: 300.0,
                     divisions: 20,
-                    label: '₹${formatBudget(_minBudget)}',
-                    value: _minBudget,
-                    onChanged: (value) {
+                    labels: RangeLabels(
+                      '₹${formatBudget(_minBudget)}',
+                      '₹${formatBudget(_maxBudget)}',
+                    ),
+                    values: RangeValues(_minBudget, _maxBudget),
+                    onChanged: (RangeValues values) {
                       setState(() {
-                        _minBudget = value;
+                        _minBudget = values.start;
+                        _maxBudget = values.end;
+                      });
+                    },
+                  ),
+                ),
+
+                const Divider(
+                  color: CustomColors.secondary,
+                  height: 30,
+                ),
+                const Text(
+                  "Flat Size",
+                  style: TextStyle(
+                    color: CustomColors.secondary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("${_minFlatSize.toStringAsFixed(1)} sq.ft"),
+                    Text("${_maxFlatSize.toInt()}+ sq.ft"),
+                  ],
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    activeTrackColor: CustomColors.primary,
+                    inactiveTrackColor: CustomColors.black10,
+                    thumbColor: CustomColors.primary,
+                    overlayColor: CustomColors.primary.withOpacity(0.2),
+                    valueIndicatorColor: CustomColors.primary,
+                    valueIndicatorTextStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                  child: RangeSlider(
+                    min: 50,
+                    max: 5000,
+                    divisions: 100,
+                    labels: RangeLabels(
+                      '${_minFlatSize.toInt()}',
+                      '${_maxFlatSize.toInt()}',
+                    ),
+                    values: RangeValues(_minFlatSize, _maxFlatSize),
+                    onChanged: (RangeValues values) {
+                      setState(() {
+                        _minFlatSize = values.start;
+                        _maxFlatSize = values.end;
                       });
                     },
                   ),

@@ -89,7 +89,21 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
+  fonts:
+    - family: "eudoxus"
+      fonts:
+        - asset: fonts/EudoxusSans-ExtraLight.ttf
+          weight: 200
+        - asset: fonts/EudoxusSans-Light.ttf
+          weight: 300
+        - asset: fonts/EudoxusSans-Regular.ttf
+          weight: 400
+        - asset: fonts/EudoxusSans-Medium.ttf
+          weight: 500
+        - asset: fonts/EudoxusSans-Bold.ttf
+          weight: 800
+        - asset: fonts/EudoxusSans-ExtraBold.ttf
+          weight: 900
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
