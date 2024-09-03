@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PropertyList extends StatefulWidget {
+class PropertyList extends ConsumerStatefulWidget {
   final List<AppartmentModel> apartments;
   const PropertyList({super.key, required this.apartments});
 
   @override
-  State<PropertyList> createState() => _PropertState();
+  ConsumerState<PropertyList> createState() => _PropertState();
 }
 
-class _PropertState extends State<PropertyList> {
+class _PropertState extends ConsumerState<PropertyList> {
   bool isListview = true;
 
   formatBudget(double budget) {
@@ -320,38 +322,108 @@ class _PropertState extends State<PropertyList> {
                                                   ),
                                                 ],
                                               ),
+                                              const SizedBox(height: 10),
                                               Align(
                                                 alignment:
                                                     Alignment.bottomRight,
-                                                child: SizedBox(
-                                                  height: 40,
-                                                  width: 40,
-                                                  child: IconButton.filled(
-                                                    style: IconButton.styleFrom(
-                                                      backgroundColor:
-                                                          CustomColors
-                                                              .secondary,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    if (!ref
+                                                        .watch(
+                                                            comparePropertyProvider)
+                                                        .contains(widget
+                                                            .apartments[index]))
+                                                      SizedBox(
+                                                        height: isListview
+                                                            ? 40
+                                                            : 36,
+                                                        width: isListview
+                                                            ? 40
+                                                            : 36,
+                                                        child:
+                                                            IconButton.filled(
+                                                          style: IconButton
+                                                              .styleFrom(
+                                                            backgroundColor:
+                                                                CustomColors
+                                                                    .primary20,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8),
+                                                            ),
+                                                          ),
+                                                          onPressed: () {
+                                                            if (ref
+                                                                    .read(
+                                                                        comparePropertyProvider)
+                                                                    .length >=
+                                                                4) {
+                                                              errorSnackBar(
+                                                                  context,
+                                                                  "You can compare up to 4 properties");
+                                                            } else {
+                                                              ref
+                                                                  .read(comparePropertyProvider
+                                                                      .notifier)
+                                                                  .addApartment(
+                                                                      widget.apartments[
+                                                                          index]);
+                                                              successSnackBar(
+                                                                  context,
+                                                                  "Added to compare");
+                                                            }
+                                                          },
+                                                          icon: SvgPicture.asset(
+                                                              "assets/icons/compare.svg",
+                                                              color:
+                                                                  CustomColors
+                                                                      .primary,
+                                                              height: 20,
+                                                              width: 20),
+                                                        ),
+                                                      ),
+                                                    const SizedBox(width: 4),
+                                                    SizedBox(
+                                                      height:
+                                                          isListview ? 40 : 36,
+                                                      width:
+                                                          isListview ? 40 : 36,
+                                                      child: IconButton.filled(
+                                                        style: IconButton
+                                                            .styleFrom(
+                                                          backgroundColor:
+                                                              CustomColors
+                                                                  .secondary,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8),
+                                                          ),
+                                                        ),
+                                                        onPressed: () {
+                                                          final Uri phoneUri = Uri(
+                                                              scheme: 'tel',
+                                                              path: widget
+                                                                  .apartments[
+                                                                      index]
+                                                                  .companyPhone);
+
+                                                          launchUrl(phoneUri);
+                                                        },
+                                                        icon: SvgPicture.asset(
+                                                            "assets/icons/call.svg",
+                                                            height: 20,
+                                                            width: 20),
                                                       ),
                                                     ),
-                                                    onPressed: () {
-                                                      final Uri phoneUri = Uri(
-                                                          scheme: 'tel',
-                                                          path: widget
-                                                              .apartments[index]
-                                                              .companyPhone);
-
-                                                      launchUrl(phoneUri);
-                                                    },
-                                                    icon: SvgPicture.asset(
-                                                        "assets/icons/call.svg",
-                                                        height: 20,
-                                                        width: 20),
-                                                  ),
+                                                  ],
                                                 ),
                                               ),
                                             ],

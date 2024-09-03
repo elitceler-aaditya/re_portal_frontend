@@ -279,7 +279,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         reverse: false,
                         scrollDirection: Axis.horizontal,
                       ),
-                    )
+                    ),
                 ],
               ),
             ),

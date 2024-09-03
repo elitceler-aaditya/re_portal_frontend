@@ -35,7 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String? phoneError;
   String? emailError;
   String? passwordError;
-
+  String? usernameError;
   Widget _buildSocialButton(Widget icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -57,6 +57,10 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         phoneError = 'Enter a valid phone number';
       });
+    } else {
+      setState(() {
+        phoneError = null;
+      });
     }
     if (_emailController.text.trim().isEmpty ||
         !(_emailController.text.trim().contains("@") &&
@@ -64,14 +68,35 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         emailError = 'Enter a valid email address';
       });
+    } else {
+      setState(() {
+        emailError = null;
+      });
     }
     if (_passwordController.text.trim().isEmpty) {
       setState(() {
         passwordError = 'Password is required';
       });
+    } else {
+      setState(() {
+        passwordError = null;
+      });
     }
-
-    return phoneError == null && emailError == null && passwordError == null;
+    if (_usernameController.text.trim().isEmpty ||
+        _usernameController.text.trim().length <= 3) {
+      setState(() {
+        usernameError = 'Username should be atleast 3 characters';
+      });
+    } else {
+      setState(() {
+        usernameError = null;
+      });
+    }
+    return _phoneController.text.trim().length == 10 &&
+        (_emailController.text.trim().contains("@") &&
+            _emailController.text.trim().contains(".")) &&
+        _passwordController.text.trim().isNotEmpty &&
+        _usernameController.text.trim().length > 3;
   }
 
   Future<void> setUser(Map<String, dynamic> responseData) async {
@@ -156,14 +181,15 @@ class _SignupScreenState extends State<SignupScreen> {
             await _sendOTP();
           });
         } else {
-          debugPrint("--------------${response.body}");
-          errorSnackBar(
-              context, jsonDecode(response.body)['message'].toString());
+          setState(() {
+            _isLoading = false;
+          });
+          throw Exception(jsonDecode(response.body)['message'].toString());
         }
       });
     } catch (e) {
+      errorSnackBar(context, e.toString());
       debugPrint("--------------$e");
-    } finally {
       setState(() {
         _isLoading = false;
       });
@@ -287,6 +313,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 20),
                             CustomTextField(
                               controller: _usernameController,
+                              errorText: usernameError,
                               hint: "Username",
                               icon: const Icon(
                                 Icons.person,
