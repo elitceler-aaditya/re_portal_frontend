@@ -7,6 +7,7 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
+import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PropertyGridView extends ConsumerWidget {
@@ -131,11 +132,30 @@ class PropertyGridView extends ConsumerWidget {
                           top: 0,
                           right: 0,
                           child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.bookmark_outline,
-                              color: CustomColors.white,
-                            ),
+                            onPressed: () {
+                              if (!ref
+                                  .watch(savedPropertiesProvider)
+                                  .contains(sortedApartments[index])) {
+                                ref
+                                    .read(savedPropertiesProvider.notifier)
+                                    .addApartment(sortedApartments[index]);
+                              } else {
+                                ref
+                                    .read(savedPropertiesProvider.notifier)
+                                    .removeApartment(sortedApartments[index]);
+                              }
+                            },
+                            icon: ref
+                                    .watch(savedPropertiesProvider)
+                                    .contains(sortedApartments[index])
+                                ? const Icon(
+                                    Icons.bookmark,
+                                    color: CustomColors.white,
+                                  )
+                                : const Icon(
+                                    Icons.bookmark_outline,
+                                    color: CustomColors.white,
+                                  ),
                           )),
                       Padding(
                         padding: const EdgeInsets.all(10),
@@ -147,7 +167,7 @@ class PropertyGridView extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: CustomColors.white,
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

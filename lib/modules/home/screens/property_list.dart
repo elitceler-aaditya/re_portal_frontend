@@ -8,8 +8,12 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 class PropertyList extends ConsumerStatefulWidget {
   final List<AppartmentModel> apartments;
   final bool compare;
+  final bool displayAds;
   const PropertyList(
-      {super.key, required this.apartments, this.compare = false});
+      {super.key,
+      required this.apartments,
+      this.compare = false,
+      this.displayAds = false});
 
   @override
   ConsumerState<PropertyList> createState() => _PropertState();
@@ -151,6 +155,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                   ? PropertyListView(
                       sortedApartments: sortedApartments,
                       compare: widget.compare,
+                      displayAds: widget.displayAds,
                     )
                   : PropertyGridView(
                       sortedApartments: sortedApartments,

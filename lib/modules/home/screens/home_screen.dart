@@ -319,7 +319,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   );
                 },
               ),
-            if (_apartments.isNotEmpty) PropertyList(apartments: _apartments),
+            if (_apartments.isNotEmpty) PropertyList(apartments: _apartments, displayAds: true,),
           ],
         ),
       ),

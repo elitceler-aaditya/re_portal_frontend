@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/home/screens/compare_properties.dart';
+import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
+import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
@@ -17,7 +18,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     CompareProperties(),
-    SizedBox(),
+    SavedProperties(),
     ProfileScreen(),
   ];
   @override
