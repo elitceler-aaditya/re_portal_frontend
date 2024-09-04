@@ -38,31 +38,36 @@ class _OTPScreenState extends State<OTPScreen> {
     };
     debugPrint("----------printing to: $url");
     try {
-      final response = await http.post(
+      await http
+          .post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(body),
-      );
+      )
+          .then((response) async {
+        setState(() {
+          _isLoading = false;
+        });
+        debugPrint("----------${response.body}");
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          Map responseData = jsonDecode(response.body);
+          await getTemporaryDirectory().then((tempDir) {
+            final file = File('${tempDir.path}/token.json');
+            file.delete();
+            file.writeAsString(responseData['token']);
+            debugPrint("Token saved to ${file.path}");
 
-      setState(() {
-        _isLoading = false;
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PropertyTypesScreen()),
+              (route) => false,
+            );
+          });
+        } else {
+          throw Exception('Failed to verify OTP');
+        }
       });
-      debugPrint("----------${response.body}");
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map responseData = jsonDecode(response.body);
-        final tempDir = await getTemporaryDirectory();
-        final file = File('${tempDir.path}/token.json');
-        file.writeAsString(responseData['token']);
-        debugPrint("Token saved to ${file.path}");
-
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const PropertyTypesScreen()),
-            (route) => false);
-      } else {
-        throw Exception('Failed to verify OTP');
-      }
     } catch (e) {
       debugPrint(e.toString());
       errorSnackBar(context, e.toString());

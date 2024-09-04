@@ -4,7 +4,7 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 class HomeDataNotifier extends StateNotifier<HomeData> {
   HomeDataNotifier() : super(HomeData());
 
-  void setApartments(List<AppartmentModel> apartments) {
+  void setApartments(List<ApartmentModel> apartments) {
     state = state.copyWith(apartments: apartments);
   }
 
@@ -14,7 +14,7 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
 }
 
 class HomeData {
-  final List<AppartmentModel> apartments;
+  final List<ApartmentModel> apartments;
   final String propertyType;
 
   HomeData({
@@ -23,7 +23,7 @@ class HomeData {
   });
 
   HomeData copyWith({
-    List<AppartmentModel>? apartments,
+    List<ApartmentModel>? apartments,
     String? propertyType,
   }) {
     return HomeData(
@@ -33,6 +33,7 @@ class HomeData {
   }
 }
 
-final homeDataProvider = StateNotifierProvider<HomeDataNotifier, HomeData>((ref) {
+final homeDataProvider =
+    StateNotifierProvider<HomeDataNotifier, HomeData>((ref) {
   return HomeDataNotifier();
 });

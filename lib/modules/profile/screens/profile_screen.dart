@@ -5,6 +5,7 @@ import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
+import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -15,10 +16,6 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  String name = "";
-  String email = "";
-  String phoneNumber = "";
-
   _listTile({
     String title = "",
     String subtitle = "",
@@ -28,39 +25,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: CustomColors.black.withOpacity(0.1),
+        backgroundColor: CustomColors.black10,
         child: Icon(icon, color: Colors.black),
       ),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(color: CustomColors.black50, fontSize: 12),
+        style: const TextStyle(color: CustomColors.black50, fontSize: 10),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
     );
   }
 
-  getPref() async {
-    final sharedPref = await SharedPreferences.getInstance();
-    setState(() {
-      name = sharedPref.getString("name") ?? "";
-      email = sharedPref.getString("email") ?? "";
-      phoneNumber = sharedPref.getString("phoneNumber") ?? "";
-    });
-  }
-
   Future<void> clearPref() async {
     final sharedPref = await SharedPreferences.getInstance();
     sharedPref.clear();
-  }
-
-  @override
-  void initState() {
-    getPref();
-    super.initState();
   }
 
   @override
@@ -82,16 +64,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   top: 50,
                   child: CircleAvatar(
                     radius: 50,
+                    child: Center(
+                      child: Icon(
+                        Icons.person_outline,
+                        size: 40,
+                        color: CustomColors.black,
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
                   left: 120,
-                  top: 70,
+                  top: 64,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        "${ref.watch(userProvider).name[0].toUpperCase()}${ref.watch(userProvider).name.substring(1).toLowerCase()}",
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -99,7 +88,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        phoneNumber,
+                        ref.watch(userProvider).phoneNumber,
                         style: const TextStyle(
                           fontSize: 14,
                           color: CustomColors.black,
@@ -149,9 +138,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               rightSlideTransition(
                 context,
                 MyAccount(
-                  name: name,
-                  phone: phoneNumber,
-                  email: email,
+                  name: ref.watch(userProvider).name,
+                  phone: ref.watch(userProvider).phoneNumber,
+                  email: ref.watch(userProvider).email,
                 ),
               );
             },

@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jwt_io/jwt_io.dart';
+import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
+import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
+import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
+import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -15,10 +22,28 @@ class MainScreen extends ConsumerStatefulWidget {
 class _MainScreenState extends ConsumerState<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
-    SizedBox(),
-    SizedBox(),
+    CompareProperties(),
+    SavedProperties(),
     ProfileScreen(),
   ];
+
+  checkValidSession() {
+    bool isExpired = JwtToken.isExpired(ref.read(userProvider).token);
+    if (isExpired) {
+      ref.read(userProvider.notifier).clearUser();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false);
+    }
+  }
+
+  @override
+  void initState() {
+  checkValidSession();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

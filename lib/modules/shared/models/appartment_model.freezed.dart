@@ -14,12 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-AppartmentModel _$AppartmentModelFromJson(Map<String, dynamic> json) {
+ApartmentModel _$AppartmentModelFromJson(Map<String, dynamic> json) {
   return _AppartmentModel.fromJson(json);
 }
 
 /// @nodoc
-mixin _$AppartmentModel {
+mixin _$ApartmentModel {
   String get apartmentID => throw _privateConstructorUsedError;
   String get projectId => throw _privateConstructorUsedError;
   String get locality => throw _privateConstructorUsedError;
@@ -43,15 +43,15 @@ mixin _$AppartmentModel {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $AppartmentModelCopyWith<AppartmentModel> get copyWith =>
+  $AppartmentModelCopyWith<ApartmentModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $AppartmentModelCopyWith<$Res> {
   factory $AppartmentModelCopyWith(
-          AppartmentModel value, $Res Function(AppartmentModel) then) =
-      _$AppartmentModelCopyWithImpl<$Res, AppartmentModel>;
+          ApartmentModel value, $Res Function(ApartmentModel) then) =
+      _$AppartmentModelCopyWithImpl<$Res, ApartmentModel>;
   @useResult
   $Res call(
       {String apartmentID,
@@ -77,7 +77,7 @@ abstract class $AppartmentModelCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$AppartmentModelCopyWithImpl<$Res, $Val extends AppartmentModel>
+class _$AppartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
     implements $AppartmentModelCopyWith<$Res> {
   _$AppartmentModelCopyWithImpl(this._value, this._then);
 
@@ -523,7 +523,7 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   }
 }
 
-abstract class _AppartmentModel implements AppartmentModel {
+abstract class _AppartmentModel implements ApartmentModel {
   const factory _AppartmentModel(
       {final String apartmentID,
       final String projectId,
