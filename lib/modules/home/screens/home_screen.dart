@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({
@@ -54,7 +55,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }) async {
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/project/filterApartments";
-    debugPrint("--------------url: $url");
     Uri uri = Uri.parse(url).replace(queryParameters: params);
 
     http.get(
@@ -65,7 +65,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         List responseBody = jsonDecode(response.body)['apartments'];
-        debugPrint("--------------responseBody: $responseBody");
         setState(() {
           _apartments = responseBody
               .map<AppartmentModel>((e) => AppartmentModel.fromJson(e))
@@ -235,55 +234,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(height: 6),
                   if (_apartments.isNotEmpty)
-                    FlutterCarousel.builder(
-                      itemCount: _apartments.length,
-                      itemBuilder: (context, index, realIndex) =>
-                          GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => PropertyDetails(
-                                appartment: _apartments[index],
-                                bestDeals: true,
+                    Column(
+                      children: [
+                        FlutterCarousel.builder(
+                          itemCount: _apartments.length,
+                          itemBuilder: (context, index, realIndex) =>
+                              GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PropertyDetails(
+                                    appartment: _apartments[index],
+                                    bestDeals: true,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Hero(
+                              tag: "best-${_apartments[index].apartmentID}",
+                              child: Container(
+                                height: 180,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black25,
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image:
+                                        NetworkImage(_apartments[index].image),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                             ),
-                          );
-                        },
-                        child: Hero(
-                          tag: "best-${_apartments[index].apartmentID}",
-                          child: Container(
+                          ),
+                          options: CarouselOptions(
                             height: 180,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: CustomColors.black25,
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: NetworkImage(_apartments[index].image),
-                                fit: BoxFit.cover,
+                            viewportFraction: 0.9,
+                            enlargeCenterPage: true,
+                            autoPlay: true,
+                            autoPlayInterval: const Duration(seconds: 5),
+                            autoPlayAnimationDuration:
+                                const Duration(milliseconds: 1000),
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            enableInfiniteScroll: true,
+                            initialPage: 0,
+                            reverse: false,
+                            scrollDirection: Axis.horizontal,
+                            showIndicator: true,
+                            floatingIndicator: false,
+                            slideIndicator: const CircularSlideIndicator(
+                              slideIndicatorOptions: SlideIndicatorOptions(
+                                indicatorRadius: 4,
+                                currentIndicatorColor: CustomColors.black50,
+                                indicatorBackgroundColor: CustomColors.black10,
+                                itemSpacing: 16,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      options: CarouselOptions(
-                        height: 180,
-                        viewportFraction: 0.9,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                        autoPlayInterval: const Duration(seconds: 5),
-                        autoPlayAnimationDuration:
-                            const Duration(milliseconds: 1000),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        initialPage: 0,
-                        reverse: false,
-                        scrollDirection: Axis.horizontal,
-                      ),
+                      ],
                     ),
                 ],
               ),
             ),
-            PropertyList(apartments: _apartments),
+            if (_apartments.isEmpty)
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 6,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Shimmer.fromColors(
+                      baseColor: CustomColors.black10,
+                      highlightColor: CustomColors.black25,
+                      child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: CustomColors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            if (_apartments.isNotEmpty) PropertyList(apartments: _apartments),
           ],
         ),
       ),

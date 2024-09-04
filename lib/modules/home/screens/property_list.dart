@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_grid_view.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
-import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PropertyList extends ConsumerStatefulWidget {
   final List<AppartmentModel> apartments;
-  const PropertyList({super.key, required this.apartments});
+  final bool compare;
+  const PropertyList(
+      {super.key, required this.apartments, this.compare = false});
 
   @override
   ConsumerState<PropertyList> createState() => _PropertState();
@@ -19,21 +17,82 @@ class PropertyList extends ConsumerStatefulWidget {
 
 class _PropertState extends ConsumerState<PropertyList> {
   bool isListview = true;
+  List<AppartmentModel> sortedApartments = [];
 
-  formatBudget(double budget) {
-    if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(2)} L";
-    } else {
-      return "${(budget / 10000000).toStringAsFixed(2)} Cr";
-    }
+  void _showSortBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: CustomColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ListTile(
+                title: Text(
+                  'SORT BY',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: CustomColors.black,
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                title: const Text('Popularity'),
+                onTap: () {
+                  setState(() {
+                    sortedApartments = widget.apartments;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Price - low to high'),
+                onTap: () {
+                  setState(() {
+                    sortedApartments = List.from(widget.apartments)
+                      ..sort((a, b) => a.budget.compareTo(b.budget));
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Price - high to low'),
+                onTap: () {
+                  setState(() {
+                    sortedApartments = List.from(widget.apartments)
+                      ..sort((b, a) => a.budget.compareTo(b.budget));
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    sortedApartments.addAll(widget.apartments);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //Main body
-        const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
@@ -55,7 +114,9 @@ class _PropertState extends ConsumerState<PropertyList> {
                           color: CustomColors.primary,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        _showSortBottomSheet(context);
+                      },
                       icon: const Icon(
                         Icons.sort,
                         size: 20,
@@ -86,358 +147,14 @@ class _PropertState extends ConsumerState<PropertyList> {
                   )
                 ],
               ),
-              widget.apartments.isEmpty
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 6,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Shimmer.fromColors(
-                            baseColor: CustomColors.black10,
-                            highlightColor: CustomColors.black25,
-                            child: Container(
-                              height: 150,
-                              decoration: BoxDecoration(
-                                color: CustomColors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+              isListview
+                  ? PropertyListView(
+                      sortedApartments: sortedApartments,
+                      compare: widget.compare,
                     )
-                  : GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: isListview ? 1 : 2,
-                        childAspectRatio: isListview ? 1.25 : 0.65,
-                        crossAxisSpacing: isListview ? 5 : 10,
-                        mainAxisSpacing: isListview ? 16 : 10,
-                      ),
-                      itemCount: widget.apartments.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PropertyDetails(
-                                  appartment: widget.apartments[index],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Hero(
-                            tag: widget.apartments[index].apartmentID,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: CustomColors.black10,
-                                    offset: Offset(0, 0),
-                                    blurRadius: 4,
-                                  ),
-                                ],
-                                color: CustomColors.white,
-                                border: Border.all(
-                                  color: CustomColors.black25,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 150,
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          height: 150,
-                                          decoration: BoxDecoration(
-                                            color: CustomColors.black25,
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(10),
-                                              topRight: Radius.circular(10),
-                                            ),
-                                            image: DecorationImage(
-                                              image: NetworkImage(widget
-                                                  .apartments[index].image),
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 150,
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                CustomColors.secondary
-                                                    .withOpacity(0),
-                                                CustomColors.secondary,
-                                              ],
-                                              begin: Alignment.topCenter,
-                                              end: Alignment.bottomCenter,
-                                            ),
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(10),
-                                              topRight: Radius.circular(10),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Text(
-                                              widget.apartments[index]
-                                                  .apartmentName,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                color: CustomColors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (isListview)
-                                            const Text(
-                                              "This beautiful property lies in the heart of Hyderabad with xx acres of free space. It is a perfect place for a peaceful life.",
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: CustomColors.black50,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          Flex(
-                                            direction: isListview
-                                                ? Axis.horizontal
-                                                : Axis.vertical,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors
-                                                            .black, // Default text color
-                                                      ),
-                                                      children: [
-                                                        const TextSpan(
-                                                          text: "Area: ",
-                                                          style: TextStyle(
-                                                            color: CustomColors
-                                                                .black75,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                          ),
-                                                        ),
-                                                        TextSpan(
-                                                          text: widget
-                                                              .apartments[index]
-                                                              .flatSize
-                                                              .toStringAsFixed(
-                                                                  0),
-                                                          style:
-                                                              const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                        const TextSpan(
-                                                          text: " sq.ft",
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors
-                                                            .black, // Default text color
-                                                      ),
-                                                      children: [
-                                                        const TextSpan(
-                                                          text: "Cost: ",
-                                                          style: TextStyle(
-                                                            color: CustomColors
-                                                                .black75,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                        TextSpan(
-                                                          text: formatBudget(
-                                                              widget
-                                                                  .apartments[
-                                                                      index]
-                                                                  .budget),
-                                                          style:
-                                                              const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 14,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Align(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    if (!ref
-                                                        .watch(
-                                                            comparePropertyProvider)
-                                                        .contains(widget
-                                                            .apartments[index]))
-                                                      SizedBox(
-                                                        height: isListview
-                                                            ? 40
-                                                            : 36,
-                                                        width: isListview
-                                                            ? 40
-                                                            : 36,
-                                                        child:
-                                                            IconButton.filled(
-                                                          style: IconButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                                CustomColors
-                                                                    .primary20,
-                                                            shape:
-                                                                RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          8),
-                                                            ),
-                                                          ),
-                                                          onPressed: () {
-                                                            if (ref
-                                                                    .read(
-                                                                        comparePropertyProvider)
-                                                                    .length >=
-                                                                4) {
-                                                              errorSnackBar(
-                                                                  context,
-                                                                  "You can compare up to 4 properties");
-                                                            } else {
-                                                              ref
-                                                                  .read(comparePropertyProvider
-                                                                      .notifier)
-                                                                  .addApartment(
-                                                                      widget.apartments[
-                                                                          index]);
-                                                              successSnackBar(
-                                                                  context,
-                                                                  "Added to compare");
-                                                            }
-                                                          },
-                                                          icon: SvgPicture.asset(
-                                                              "assets/icons/compare.svg",
-                                                              color:
-                                                                  CustomColors
-                                                                      .primary,
-                                                              height: 20,
-                                                              width: 20),
-                                                        ),
-                                                      ),
-                                                    const SizedBox(width: 4),
-                                                    SizedBox(
-                                                      height:
-                                                          isListview ? 40 : 36,
-                                                      width:
-                                                          isListview ? 40 : 36,
-                                                      child: IconButton.filled(
-                                                        style: IconButton
-                                                            .styleFrom(
-                                                          backgroundColor:
-                                                              CustomColors
-                                                                  .secondary,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8),
-                                                          ),
-                                                        ),
-                                                        onPressed: () {
-                                                          final Uri phoneUri = Uri(
-                                                              scheme: 'tel',
-                                                              path: widget
-                                                                  .apartments[
-                                                                      index]
-                                                                  .companyPhone);
-
-                                                          launchUrl(phoneUri);
-                                                        },
-                                                        icon: SvgPicture.asset(
-                                                            "assets/icons/call.svg",
-                                                            height: 20,
-                                                            width: 20),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
+                  : PropertyGridView(
+                      sortedApartments: sortedApartments,
+                      compare: widget.compare,
                     )
             ],
           ),

@@ -9,7 +9,8 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 class PropertyDetails extends StatefulWidget {
   final AppartmentModel appartment;
   final bool bestDeals;
-  const PropertyDetails({super.key, required this.appartment, this.bestDeals = false});
+  const PropertyDetails(
+      {super.key, required this.appartment, this.bestDeals = false});
 
   @override
   State<PropertyDetails> createState() => _PropertyDetailsState();
@@ -65,15 +66,31 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: CustomColors.primary,
-        iconTheme: const IconThemeData(color: CustomColors.white),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Container(
+              height: 80,
+              width: double.infinity,
+              padding: const EdgeInsets.only(top: 30),
+              decoration: const BoxDecoration(
+                color: CustomColors.primary,
+              ),
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: CustomColors.white,
+                ),
+              ),
+            ),
             Hero(
-              tag: widget.bestDeals ? "best-${widget.appartment.apartmentID}" : widget.appartment.apartmentID,
+              tag: widget.bestDeals
+                  ? "best-${widget.appartment.apartmentID}"
+                  : widget.appartment.apartmentID,
               child: Stack(
                 children: [
                   Container(
