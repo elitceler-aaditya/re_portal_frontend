@@ -6,7 +6,7 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class PropertyList extends ConsumerStatefulWidget {
-  final List<AppartmentModel> apartments;
+  final List<ApartmentModel> apartments;
   final bool compare;
   final bool displayAds;
   const PropertyList(
@@ -21,7 +21,7 @@ class PropertyList extends ConsumerStatefulWidget {
 
 class _PropertState extends ConsumerState<PropertyList> {
   bool isListview = true;
-  List<AppartmentModel> sortedApartments = [];
+  List<ApartmentModel> sortedApartments = [];
 
   void _showSortBottomSheet(BuildContext context) {
     showModalBottomSheet(

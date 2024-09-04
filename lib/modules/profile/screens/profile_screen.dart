@@ -5,6 +5,7 @@ import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
+import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -15,10 +16,6 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  String name = "";
-  String email = "";
-  String phoneNumber = "";
-
   _listTile({
     String title = "",
     String subtitle = "",
@@ -43,24 +40,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  getPref() async {
-    final sharedPref = await SharedPreferences.getInstance();
-    setState(() {
-      name = sharedPref.getString("name") ?? "";
-      email = sharedPref.getString("email") ?? "";
-      phoneNumber = sharedPref.getString("phoneNumber") ?? "";
-    });
-  }
-
   Future<void> clearPref() async {
     final sharedPref = await SharedPreferences.getInstance();
     sharedPref.clear();
-  }
-
-  @override
-  void initState() {
-    getPref();
-    super.initState();
   }
 
   @override
@@ -93,12 +75,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 Positioned(
                   left: 120,
-                  top: 70,
+                  top: 64,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        "${ref.watch(userProvider).name[0].toUpperCase()}${ref.watch(userProvider).name.substring(1).toLowerCase()}",
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -106,7 +88,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        phoneNumber,
+                        ref.watch(userProvider).phoneNumber,
                         style: const TextStyle(
                           fontSize: 14,
                           color: CustomColors.black,
@@ -156,9 +138,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               rightSlideTransition(
                 context,
                 MyAccount(
-                  name: name,
-                  phone: phoneNumber,
-                  email: email,
+                  name: ref.watch(userProvider).name,
+                  phone: ref.watch(userProvider).phoneNumber,
+                  email: ref.watch(userProvider).email,
                 ),
               );
             },

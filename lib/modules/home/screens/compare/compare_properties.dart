@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
@@ -25,7 +24,7 @@ class CompareProperties extends ConsumerStatefulWidget {
 
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   bool isCompare = false;
-  List<AppartmentModel> _apartments = [];
+  List<ApartmentModel> _apartments = [];
 
   Future<void> getApartments({
     Map<String, dynamic> params = const {},
@@ -45,7 +44,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
         List responseBody = jsonDecode(response.body)['apartments'];
         setState(() {
           _apartments = responseBody
-              .map<AppartmentModel>((e) => AppartmentModel.fromJson(e))
+              .map<ApartmentModel>((e) => ApartmentModel.fromJson(e))
               .toList();
         });
       }
@@ -80,7 +79,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
 
   @override
   Widget build(BuildContext context) {
-    List<AppartmentModel> comparedProperties =
+    List<ApartmentModel> comparedProperties =
         ref.watch(comparePropertyProvider);
     return PopScope(
       canPop: true,

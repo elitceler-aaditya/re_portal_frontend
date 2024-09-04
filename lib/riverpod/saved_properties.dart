@@ -1,14 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 
-class SavedPropertiesNotifier extends StateNotifier<List<AppartmentModel>> {
+class SavedPropertiesNotifier extends StateNotifier<List<ApartmentModel>> {
   SavedPropertiesNotifier() : super([]);
 
-  void addApartment(AppartmentModel apartment) {
+  void addApartment(ApartmentModel apartment) {
     state = [...state, apartment];
   }
 
-  void removeApartment(AppartmentModel apartment) {
+  void removeApartment(ApartmentModel apartment) {
     state = state
         .where((item) => item.apartmentID != apartment.apartmentID)
         .toList();
@@ -20,7 +20,6 @@ class SavedPropertiesNotifier extends StateNotifier<List<AppartmentModel>> {
 }
 
 final savedPropertiesProvider =
-    StateNotifierProvider<SavedPropertiesNotifier, List<AppartmentModel>>(
-        (ref) {
+    StateNotifierProvider<SavedPropertiesNotifier, List<ApartmentModel>>((ref) {
   return SavedPropertiesNotifier();
 });

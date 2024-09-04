@@ -11,7 +11,7 @@ import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PropertyGridView extends ConsumerWidget {
-  final List<AppartmentModel> sortedApartments;
+  final List<ApartmentModel> sortedApartments;
   final bool compare;
   const PropertyGridView({
     super.key,

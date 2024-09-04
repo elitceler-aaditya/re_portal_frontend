@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jwt_io/jwt_io.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
+import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/property_type.dart';
+import 'package:re_portal_frontend/modules/shared/models/user.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
@@ -27,32 +33,24 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-  String token = "";
-  List<AppartmentModel> _apartments = [];
+  List<ApartmentModel> _apartments = [];
 
-  checkValidSession() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    token = sharedPreferences.getString('token') ?? '';
-  }
-
-  getProperties() async {
-    String token = ref.watch(userProvider).token;
-    debugPrint("--------------token: $token");
-    if (ref.watch(homeDataProvider).propertyType == PropertyTypes.appartments) {
-      await getApartments(token: token);
-    } else if (ref.watch(homeDataProvider).propertyType ==
-        PropertyTypes.villas) {
-      return "Villas";
-    } else if (ref.watch(homeDataProvider).propertyType ==
-        PropertyTypes.commercial) {
-      return "Commercial";
-    }
-  }
+  // getProperties() async {
+  //   if (ref.watch(homeDataProvider).propertyType == PropertyTypes.appartments) {
+  //     await getApartments();
+  //   } else if (ref.watch(homeDataProvider).propertyType ==
+  //       PropertyTypes.villas) {
+  //     return "Villas";
+  //   } else if (ref.watch(homeDataProvider).propertyType ==
+  //       PropertyTypes.commercial) {
+  //     return "Commercial";
+  //   }
+  // }
 
   Future<void> getApartments({
-    String token = "",
     Map<String, dynamic> params = const {},
   }) async {
+    
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/project/filterApartments";
     Uri uri = Uri.parse(url).replace(queryParameters: params);
@@ -60,14 +58,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     http.get(
       uri,
       headers: {
-        "Authorization": "Bearer $token",
+        "Authorization": "Bearer ${ref.watch(userProvider).token}",
       },
     ).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         List responseBody = jsonDecode(response.body)['apartments'];
         setState(() {
           _apartments = responseBody
-              .map<AppartmentModel>((e) => AppartmentModel.fromJson(e))
+              .map<ApartmentModel>((e) => ApartmentModel.fromJson(e))
               .toList();
         });
       }
@@ -90,15 +88,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkValidSession();
-      getProperties();
+      getApartments();
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(token);
+    debugPrint("----------${_apartments}");
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -319,7 +316,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   );
                 },
               ),
-            if (_apartments.isNotEmpty) PropertyList(apartments: _apartments, displayAds: true,),
+            if (_apartments.isNotEmpty)
+              PropertyList(
+                apartments: _apartments,
+                displayAds: true,
+              ),
           ],
         ),
       ),

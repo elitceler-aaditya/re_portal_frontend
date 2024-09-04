@@ -2,18 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jwt_io/jwt_io.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:re_portal_frontend/modules/home/screens/main_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/properties_tiles.dart';
-import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/property_type.dart';
 import 'package:re_portal_frontend/modules/shared/models/user.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_io/jwt_io.dart';
 
 class PropertyTypesScreen extends ConsumerStatefulWidget {
   const PropertyTypesScreen({super.key});
@@ -23,69 +21,21 @@ class PropertyTypesScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
-  late SharedPreferences sharedPref;
-  String uid = "";
-  String name = "";
-  String email = "";
-  String phoneNumber = "";
-  String token = "";
-  bool isLoggedIn = false;
-
-  getPref() async {
-    sharedPref = await SharedPreferences.getInstance();
-    setState(() {
-      name = sharedPref.getString("name") ?? "";
-      email = sharedPref.getString("email") ?? "";
-      phoneNumber = sharedPref.getString("phoneNumber") ?? "";
-    });
-  }
-
   getTempStorage() async {
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/token.json');
-    token = await file.readAsString();
-    bool hasExpired = JwtToken.isExpired(token);
-
-    if (hasExpired) {
-      debugPrint("Token has expired");
-      debugPrint("-------------data: ${JwtToken.payload(token)}");
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
-    } else {
-      debugPrint("Token is valid");
-      Map data = JwtToken.payload(token);
-      debugPrint("-------------$data");
-      uid = data['userId'];
-      getPref();
-      ref.read(userProvider.notifier).setUser(
-            User(
-              uid: uid,
-              name: name,
-              email: email,
-              phoneNumber: phoneNumber,
-              token: token,
-            ),
-          );
-    }
-  }
-
-  setTempStorage() async {
-    final tempDir = await getTemporaryDirectory();
-    debugPrint("Temporary Directory: ${tempDir.path}");
-
-    //save token in json
-    final file = File('${tempDir.path}/token.json');
-    file.writeAsString(token);
-    debugPrint("Token saved to ${file.path}");
+    //get token.json file
+    await getTemporaryDirectory().then((tempDir) async {
+      final file = File('${tempDir.path}/token.json');
+      String token = await file.readAsString();
+      Map<String, dynamic> data = JwtToken.payload(token);
+      ref
+          .read(userProvider.notifier)
+          .setUser(User.fromJson({...data, 'token': token}));
+    });
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // getPref();
-      // setTempStorage();
-      getTempStorage();
-    });
+    getTempStorage();
     super.initState();
   }
 

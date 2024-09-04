@@ -4,11 +4,11 @@ part 'appartment_model.freezed.dart';
 part 'appartment_model.g.dart';
 
 @freezed
-class AppartmentModel with _$AppartmentModel {
-  const factory AppartmentModel({
-
+class ApartmentModel with _$ApartmentModel {
+  const factory ApartmentModel({
     @Default("") String apartmentID,
     @Default("") String projectId,
+    @Default("") String apartmentName,
     @Default("") String locality,
     @Default("") String apartmentType,
     @Default("") String amenities,
@@ -25,10 +25,9 @@ class AppartmentModel with _$AppartmentModel {
     @Default(0) int openSpace,
     @Default("") String createdAt,
     @Default("") String updatedAt,
-    @Default("") String apartmentName,
     @Default("") String image,
   }) = _AppartmentModel;
 
-  factory AppartmentModel.fromJson(Map<String, dynamic> json) =>
+  factory ApartmentModel.fromJson(Map<String, dynamic> json) =>
       _$AppartmentModelFromJson(json);
 }
