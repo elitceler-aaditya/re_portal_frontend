@@ -1,5 +1,6 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,6 +37,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
 
+  List<Map<String, dynamic>> _highlights = [];
+
   _keyHighlights(String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -71,14 +74,29 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   }
 
   highlightsOption(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(title, style: const TextStyle(fontSize: 10)),
-        Text(value,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              color: CustomColors.white,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: CustomColors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -255,7 +273,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 child: Row(
                   children: [
                     SizedBox(
-                      height: 28,
+                      height: 40,
                       width: 28,
                       child: SvgPicture.asset(
                           "assets/icons/home_location_pin.svg"),
@@ -270,82 +288,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ),
                     ),
                     const Spacer(),
-                    IconButton.filled(
-                      key: contactButtonKey,
-                      style: IconButton.styleFrom(
-                        backgroundColor: CustomColors.primary,
-                      ),
-                      onPressed: () => _toggleOverlay(context),
-                      icon: SvgPicture.asset(
-                        "assets/icons/phone.svg",
-                        color: CustomColors.white,
-                      ),
-                    ),
                   ],
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 16),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: CustomColors.black.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Project Highlights",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Divider(
-                      height: 20,
-                      color: CustomColors.black50,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        highlightsOption("Project Size",
-                            "${widget.appartment.configuration.split(',').map((config) => config.replaceAll('BHK', '')).join(',')} BHK"),
-                        highlightsOption(
-                            "No. of Floors", widget.appartment.noOfFloor),
-                        highlightsOption(
-                            "No. of Flats", widget.appartment.noOfFlats),
-                        highlightsOption(
-                            "No. of Blocks", widget.appartment.noOfBlocks),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          highlightsOption(
-                            "Possession Date",
-                            DateFormat("MMM yyyy").format(
-                              DateTime.parse(
-                                widget.appartment.possessionDate,
-                              ),
-                            ),
-                          ),
-                          highlightsOption(
-                              "Club House Size",
-                              int.tryParse(widget.appartment.clubhouseSize) !=
-                                      null
-                                  ? '${widget.appartment.clubhouseSize} Sq.ft'
-                                  : widget.appartment.clubhouseSize),
-                          highlightsOption("Open Space",
-                              "${widget.appartment.openSpace} Sq.ft"),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 16),
               const Text(
                 "Map",
                 style: TextStyle(
@@ -650,19 +596,20 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           ),
         ),
         Container(
-          height: 300,
+          height: h + 30,
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                CustomColors.black,
+                CustomColors.black.withOpacity(0.8),
                 CustomColors.black.withOpacity(0),
               ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
             ),
           ),
         ),
+        //apartment name
         Positioned(
           top: 36,
           left: 16,
@@ -717,28 +664,23 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-        Positioned(
-          bottom: 26,
-          left: 10,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomChip(
-                text: formatBudget(widget.appartment.budget),
-              ),
-              CustomChip(
-                text:
-                    "${widget.appartment.configuration.split(",").first}${widget.appartment.configuration.split(",").length > 1 ? ' + ${widget.appartment.configuration.split(",").length - 1} others' : ''}",
-              ),
-              CustomChip(
-                text: sqftArea(
-                  area: widget.appartment.flatSize == 0
-                      ? 1
-                      : widget.appartment.flatSize,
-                  budget: widget.appartment.budget,
+              const SizedBox(height: 30),
+              ...List.generate(
+                _highlights.length,
+                (index) => Animate(
+                  effects: [
+                    SlideEffect(
+                      begin: const Offset(-3, 0),
+                      end: const Offset(0, 0),
+                      curve: Curves.easeIn,
+                      duration: const Duration(milliseconds: 1000),
+                      delay: Duration(milliseconds: 100 * index),
+                    )
+                  ],
+                  child: highlightsOption(
+                    _highlights[index]["title"],
+                    _highlights[index]["value"],
+                  ),
                 ),
               ),
             ],
@@ -846,7 +788,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       ),
     );
 
-    Overlay.of(context)!.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
     setState(() {
       _isOverlayVisible = true;
     });
@@ -886,6 +828,29 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     _nameController.text = ref.read(userProvider).name;
     _mobileController.text = ref.read(userProvider).phoneNumber;
     _emailController.text = ref.read(userProvider).email;
+
+    _highlights = [
+      {
+        "title": "Project Size",
+        "value":
+            "${widget.appartment.configuration.split(',').map((config) => config.replaceAll('BHK', '')).join(',')} BHK"
+      },
+      {"title": "No. of Floors", "value": widget.appartment.noOfFloor},
+      {"title": "No. of Flats", "value": widget.appartment.noOfFlats},
+      {"title": "No. of Blocks", "value": widget.appartment.noOfBlocks},
+      {
+        "title": "Possession Date",
+        "value": DateFormat("MMM yyyy")
+            .format(DateTime.parse(widget.appartment.possessionDate))
+      },
+      {
+        "title": "Club House Size",
+        "value": int.tryParse(widget.appartment.clubhouseSize) != null
+            ? '${widget.appartment.clubhouseSize} Sq.ft'
+            : widget.appartment.clubhouseSize
+      },
+      {"title": "Open Space", "value": "${widget.appartment.openSpace} Sq.ft"},
+    ];
     super.initState();
   }
 
@@ -900,6 +865,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: CustomColors.primary,
+        shape: const CircleBorder(),
+        onPressed: () {},
+        child: SvgPicture.asset(
+          "assets/icons/phone.svg",
+          color: Colors.white,
+        ),
+      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -907,7 +881,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               expandedHeight: h - 120,
               floating: false,
               automaticallyImplyLeading: false,
-              pinned: false, // Set to false to hide after collapse
+              pinned: false,
               flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h - 120)),
             ),
           ];
