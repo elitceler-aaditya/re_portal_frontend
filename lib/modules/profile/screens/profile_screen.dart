@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
 import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -7,6 +11,8 @@ import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -25,7 +31,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: CustomColors.black10,
+        backgroundColor: CustomColors.white.withOpacity(0.5),
         child: Icon(icon, color: Colors.black),
       ),
       title: Text(
@@ -48,6 +54,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.primary10,
       body: Column(
         children: [
           SizedBox(
@@ -80,7 +87,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${ref.watch(userProvider).name[0].toUpperCase()}${ref.watch(userProvider).name.substring(1).toLowerCase()}",
+                        ref.watch(userProvider).name.isEmpty
+                            ? "User"
+                            : "${ref.watch(userProvider).name[0].toUpperCase()}${ref.watch(userProvider).name.substring(1).toLowerCase()}",
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -104,22 +113,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             title: 'Saved properties',
             subtitle: 'Review your previous properties',
             icon: Icons.bookmark_outline,
+            onTap: () => rightSlideTransition(
+              context,
+              const SavedProperties(),
+            ),
           ),
           _listTile(
-            title: 'Contact us',
-            subtitle: 'Get in touch with our company',
-            icon: Icons.phone_outlined,
-          ),
+              title: 'Contact us',
+              subtitle: 'Get in touch with our company',
+              icon: Icons.phone_outlined,
+              onTap: () {
+                launchUrlString("tel:+91 70752 02565");
+              }),
           _listTile(
             title: 'FAQ’s',
             subtitle: 'Ask any queries related to our company',
             icon: Icons.question_answer_outlined,
           ),
           _listTile(
-            title: 'About Company',
-            subtitle: 'Get to know about our company',
-            icon: Icons.info_outline,
-          ),
+              title: 'About Company',
+              subtitle: 'Get to know about our company',
+              icon: Icons.info_outline,
+              onTap: () => launchUrlString("https://elitceler.com/")),
           _listTile(
             title: 'Report an issue',
             subtitle: 'Raise an issue encountered by you and get solution',
@@ -150,6 +165,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             subtitle: 'Logout from the app',
             icon: Icons.logout,
             onTap: () async {
+              await getTemporaryDirectory().then((tempDir) {
+                final file = File('${tempDir.path}/token.json');
+                file.delete();
+              });
               ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
               await clearPref().then(
                 (value) => Navigator.pushAndRemoveUntil(

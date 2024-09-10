@@ -1,19 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
-import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
-import 'package:shimmer/shimmer.dart';
+
 import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
 
 class CompareProperties extends ConsumerStatefulWidget {
   const CompareProperties({super.key});
@@ -23,34 +16,6 @@ class CompareProperties extends ConsumerStatefulWidget {
 }
 
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
-  bool isCompare = false;
-  List<ApartmentModel> _apartments = [];
-
-  Future<void> getApartments({
-    Map<String, dynamic> params = const {},
-  }) async {
-    String token = ref.watch(userProvider).token;
-    String baseUrl = dotenv.get('BASE_URL');
-    String url = "$baseUrl/project/filterApartments";
-    Uri uri = Uri.parse(url).replace(queryParameters: params);
-
-    http.get(
-      uri,
-      headers: {
-        "Authorization": "Bearer $token",
-      },
-    ).then((response) async {
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        List responseBody = jsonDecode(response.body)['apartments'];
-        setState(() {
-          _apartments = responseBody
-              .map<ApartmentModel>((e) => ApartmentModel.fromJson(e))
-              .toList();
-        });
-      }
-    });
-  }
-
   formatPrice(double price) {
     if (price > 1000000) {
       return '${(price / 1000000).toStringAsFixed(0)} Lac';
@@ -70,14 +35,6 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   }
 
   @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getApartments();
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     List<ApartmentModel> comparedProperties =
         ref.watch(comparePropertyProvider);
@@ -87,100 +44,30 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
         ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
       child: Scaffold(
-        floatingActionButton: Visibility(
-          visible: comparedProperties.length >= 2,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 36,
-              width: 120,
-              margin: const EdgeInsets.only(left: 20),
-              child: FloatingActionButton(
-                backgroundColor: CustomColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                onPressed: () {
-                  setState(() {
-                    isCompare = !isCompare;
-                  });
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (!isCompare)
-                      SvgPicture.asset(
-                        "assets/icons/compare.svg",
-                        color: CustomColors.white,
-                      ),
-                    Text(
-                      isCompare ? 'Back' : 'Compare',
-                      style: const TextStyle(
-                        color: CustomColors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        body: !isCompare
-            ? SafeArea(
+        backgroundColor: CustomColors.primary10,
+        body: comparedProperties.length < 2
+            ? const SafeArea(
                 child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Compare with similar Apartments",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Compare with similar Apartments",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
-                        const Text(
-                          "Please select atleast 2 properties to compare",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: CustomColors.black50,
-                          ),
+                      ),
+                      Text(
+                        "Please select atleast 2 properties to compare",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: CustomColors.black50,
                         ),
-                        if (_apartments.isEmpty)
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 6,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Shimmer.fromColors(
-                                  baseColor: CustomColors.black10,
-                                  highlightColor: CustomColors.black25,
-                                  child: Container(
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                      color: CustomColors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        if (_apartments.isNotEmpty)
-                          PropertyList(
-                            apartments: _apartments,
-                            compare: true,
-                          ),
-                        const SizedBox(height: 60),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -238,6 +125,14 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                               ),
                             ],
                             rows: [
+                              DataRow(cells: [
+                                const DataCell(Text('Type')),
+                                ...List.generate(
+                                  comparedProperties.length,
+                                  (index) => DataCell(Text(
+                                      comparedProperties[index].apartmentType)),
+                                ),
+                              ]),
                               DataRow(cells: [
                                 const DataCell(Text('Flat size')),
                                 ...List.generate(
@@ -353,7 +248,9 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                                 ),
                               ]),
                               DataRow(cells: [
-                                const DataCell(Text('Contact')),
+                                const DataCell(Text(
+                                  'Contact',
+                                )),
                                 ...List.generate(
                                   comparedProperties.length,
                                   (index) => DataCell(
@@ -382,6 +279,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                                         child: const Text(
                                           'Contact',
                                           style: TextStyle(
+                                              color: CustomColors.primary,
                                               fontWeight: FontWeight.w600,
                                               fontSize: 12),
                                         ),
@@ -408,11 +306,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                                           if (ref
                                                   .read(comparePropertyProvider)
                                                   .length <
-                                              2) {
-                                            setState(() {
-                                              isCompare = false;
-                                            });
-                                          }
+                                              2) {}
                                         },
                                         icon: const Icon(
                                           Icons.close,

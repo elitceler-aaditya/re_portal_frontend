@@ -1,22 +1,17 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jwt_io/jwt_io.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
-import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
-import 'package:re_portal_frontend/modules/shared/models/property_type.dart';
-import 'package:re_portal_frontend/modules/shared/models/user.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -35,26 +30,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<ApartmentModel> _apartments = [];
 
-  // getProperties() async {
-  //   if (ref.watch(homeDataProvider).propertyType == PropertyTypes.appartments) {
-  //     await getApartments();
-  //   } else if (ref.watch(homeDataProvider).propertyType ==
-  //       PropertyTypes.villas) {
-  //     return "Villas";
-  //   } else if (ref.watch(homeDataProvider).propertyType ==
-  //       PropertyTypes.commercial) {
-  //     return "Commercial";
-  //   }
-  // }
+  String formatBudget(double budget) {
+    //return budget in k format or lakh and cr format
+    if (budget < 100000) {
+      return "${(budget / 1000).toStringAsFixed(00)}K";
+    } else if (budget < 10000000) {
+      return "${(budget / 100000).toStringAsFixed(1)}L";
+    } else {
+      return "${(budget / 10000000).toStringAsFixed(2)}Cr";
+    }
+  }
 
   Future<void> getApartments({
     Map<String, dynamic> params = const {},
   }) async {
-    
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/project/filterApartments";
     Uri uri = Uri.parse(url).replace(queryParameters: params);
-
+    debugPrint("------------token${ref.watch(userProvider).token}");
     http.get(
       uri,
       headers: {
@@ -77,10 +70,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       isScrollControlled: true,
-      backgroundColor: CustomColors.white,
+      backgroundColor: CustomColors.primary10,
       scrollControlDisabledMaxHeightRatio: 1,
       builder: (context) {
-        return const AppartmentFilter();
+        return AppartmentFilter(apartmentList: _apartments);
       },
     );
   }
@@ -95,8 +88,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("----------${_apartments}");
+    debugPrint("----------$_apartments");
     return Scaffold(
+      backgroundColor: CustomColors.primary10,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -222,19 +216,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Best Deals",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
                   if (_apartments.isNotEmpty)
                     Column(
                       children: [
                         FlutterCarousel.builder(
-                          itemCount: _apartments.length,
+                          itemCount: min(5, _apartments.length),
                           itemBuilder: (context, index, realIndex) =>
                               GestureDetector(
                             onTap: () {
@@ -247,21 +233,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               );
                             },
-                            child: Hero(
-                              tag: "best-${_apartments[index].apartmentID}",
-                              child: Container(
-                                height: 180,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: CustomColors.black25,
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    image:
-                                        NetworkImage(_apartments[index].image),
-                                    fit: BoxFit.cover,
+                            child: Stack(
+                              children: [
+                                Hero(
+                                  tag: "best-${_apartments[index].apartmentID}",
+                                  child: Container(
+                                    height: 180,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: CustomColors.black25,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: _apartments[index].image.isNotEmpty
+                                          ? DecorationImage(
+                                              image: NetworkImage(
+                                                  _apartments[index].image),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                    ),
                                   ),
                                 ),
-                              ),
+                                Container(
+                                  height: 180,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        CustomColors.black.withOpacity(0),
+                                        CustomColors.black.withOpacity(0.8),
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _apartments[index].apartmentName,
+                                          style: const TextStyle(
+                                            color: CustomColors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "${_apartments[index].flatSize} sq ft • ${formatBudget(_apartments[index].budget)} • ${_apartments[index].locality}",
+                                          style: const TextStyle(
+                                            color: CustomColors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           options: CarouselOptions(
@@ -282,8 +318,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             slideIndicator: const CircularSlideIndicator(
                               slideIndicatorOptions: SlideIndicatorOptions(
                                 indicatorRadius: 4,
-                                currentIndicatorColor: CustomColors.black50,
-                                indicatorBackgroundColor: CustomColors.black10,
+                                currentIndicatorColor: CustomColors.black,
+                                indicatorBackgroundColor: CustomColors.black50,
                                 itemSpacing: 16,
                               ),
                             ),
@@ -294,6 +330,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+
             if (_apartments.isEmpty)
               ListView.builder(
                 shrinkWrap: true,
@@ -320,6 +358,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               PropertyList(
                 apartments: _apartments,
                 displayAds: true,
+                compare: true,
               ),
           ],
         ),

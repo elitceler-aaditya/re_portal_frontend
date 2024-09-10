@@ -17,7 +17,7 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
     return Container(
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: CustomColors.white,
         boxShadow: [
           BoxShadow(
             color: CustomColors.black.withOpacity(0.1),

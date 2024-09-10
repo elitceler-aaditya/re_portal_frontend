@@ -33,6 +33,7 @@ class _MyAccountState extends State<MyAccount> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.primary10,
       body: Column(
         children: [
           SizedBox(

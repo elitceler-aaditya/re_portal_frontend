@@ -9,7 +9,6 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PropertyListView extends ConsumerWidget {
   final List<ApartmentModel> sortedApartments;
@@ -36,37 +35,34 @@ class PropertyListView extends ConsumerWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount:
-          displayAds ? sortedApartments.length + 1 : sortedApartments.length,
+      itemCount: displayAds
+          ? sortedApartments.length + (sortedApartments.length ~/ 4)
+          : sortedApartments.length,
       itemBuilder: (context, index) {
-        if (displayAds && index == sortedApartments.length ~/ 2) {
+        if (displayAds && index % 4 == 0 && index != 0) {
           return const AdsSection();
         } else {
-          int listIndex = displayAds
-              ? (index < sortedApartments.length ~/ 2)
-                  ? index
-                  : index - 1
-              : index;
+          int listIndex = index - (index ~/ 4);
           return GestureDetector(
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => PropertyDetails(
-                    appartment: sortedApartments[index],
+                    appartment: sortedApartments[listIndex],
                   ),
                 ),
               );
             },
             child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
+              margin: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: CustomColors.white,
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
-                    color: CustomColors.black10,
-                    offset: Offset(0, 3),
-                    blurRadius: 2,
+                    color: CustomColors.black.withOpacity(0.3),
+                    offset: const Offset(0, 3),
+                    blurRadius: 5,
                   ),
                 ],
               ),
@@ -86,11 +82,15 @@ class PropertyListView extends ConsumerWidget {
                                 topLeft: Radius.circular(10),
                                 topRight: Radius.circular(10),
                               ),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                    sortedApartments[listIndex].image),
-                                fit: BoxFit.cover,
-                              ),
+                              image: sortedApartments[listIndex]
+                                      .image
+                                      .isNotEmpty
+                                  ? DecorationImage(
+                                      image: NetworkImage(
+                                          sortedApartments[listIndex].image),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                             ),
                           ),
                         ),
@@ -327,6 +327,8 @@ class PropertyListView extends ConsumerWidget {
                                     ),
                                   const SizedBox(width: 8),
                                   SizedBox(
+                                    key: Key(
+                                        "phone-${sortedApartments[listIndex].apartmentID}"),
                                     height: 40,
                                     width: 40,
                                     child: IconButton.filled(
@@ -337,19 +339,13 @@ class PropertyListView extends ConsumerWidget {
                                               BorderRadius.circular(8),
                                         ),
                                       ),
-                                      onPressed: () {
-                                        final Uri phoneUri = Uri(
-                                            scheme: 'tel',
-                                            path: sortedApartments[listIndex]
-                                                .companyPhone);
-
-                                        launchUrl(phoneUri);
-                                      },
+                                      onPressed: () {},
                                       icon: SvgPicture.asset(
-                                          "assets/icons/phone.svg",
-                                          color: CustomColors.white,
-                                          height: 20,
-                                          width: 20),
+                                        "assets/icons/phone.svg",
+                                        color: CustomColors.white,
+                                        height: 20,
+                                        width: 20,
+                                      ),
                                     ),
                                   ),
                                 ],

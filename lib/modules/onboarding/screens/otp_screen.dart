@@ -11,6 +11,7 @@ import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OTPScreen extends StatefulWidget {
   final String otpSentTo;
@@ -45,17 +46,24 @@ class _OTPScreenState extends State<OTPScreen> {
         body: jsonEncode(body),
       )
           .then((response) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
         setState(() {
           _isLoading = false;
         });
-        debugPrint("----------${response.body}");
         if (response.statusCode == 200 || response.statusCode == 201) {
           Map responseData = jsonDecode(response.body);
+
+          debugPrint("----------responseData${responseData}");
           await getTemporaryDirectory().then((tempDir) {
             final file = File('${tempDir.path}/token.json');
             file.delete();
             file.writeAsString(responseData['token']);
-            debugPrint("Token saved to ${file.path}");
+            prefs.setString('token', responseData['token']);
+
+            if (responseData['refreshToken'] != null) {
+              prefs.setString('refreshToken', responseData['refreshToken']);
+            }
 
             Navigator.pushAndRemoveUntil(
               context,

@@ -13,9 +13,9 @@ class RibbonPainter extends CustomPainter {
 
     final path = Path()
       ..moveTo(0, 0)
-      ..lineTo(size.width + 18, 0)
-      ..lineTo(size.width + 18 - 20, size.height / 2)
-      ..lineTo(size.width + 18, size.height)
+      ..lineTo(size.width + 15, 0)
+      ..lineTo(size.width + 15 - 10, size.height / 2)
+      ..lineTo(size.width + 15, size.height)
       ..lineTo(0, size.height)
       ..close();
 

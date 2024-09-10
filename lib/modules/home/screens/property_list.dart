@@ -93,14 +93,23 @@ class _PropertState extends ConsumerState<PropertyList> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      // mainAxisAlignment: MainAxisAlignment.start,
+      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //Main body
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
+              // ListView.builder(
+              //   itemCount: widget.apartments.length,
+              //   itemBuilder: (context, index) {
+              //     return ListTile(
+              //       title: Text(widget.apartments[index].apartmentName),
+              //       subtitle: Text(widget.apartments[index].locality),
+              //     );
+              //   },
+              // )
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -110,7 +119,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                     child: TextButton.icon(
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
-                        backgroundColor: CustomColors.white,
+                        backgroundColor: CustomColors.primary10,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
                         ),
@@ -124,6 +133,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                       icon: const Icon(
                         Icons.sort,
                         size: 20,
+                        color: CustomColors.primary,
                       ),
                       label: const Text(
                         "Sort",
@@ -151,6 +161,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                   )
                 ],
               ),
+
               isListview
                   ? PropertyListView(
                       sortedApartments: sortedApartments,

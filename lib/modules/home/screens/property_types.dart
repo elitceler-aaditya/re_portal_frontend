@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PropertyTypesScreen extends ConsumerStatefulWidget {
   const PropertyTypesScreen({super.key});
@@ -25,11 +27,12 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
     //get token.json file
     await getTemporaryDirectory().then((tempDir) async {
       final file = File('${tempDir.path}/token.json');
-      String token = await file.readAsString();
-      Map<String, dynamic> data = JwtToken.payload(token);
+      Map<String, dynamic> data = jsonDecode(await file.readAsString());
+      Map<String, dynamic> userData = JwtToken.payload(data['token']);
+      debugPrint("----------sssssssssssss$data");
       ref
           .read(userProvider.notifier)
-          .setUser(User.fromJson({...data, 'token': token}));
+          .setUser(User.fromJson({...userData, 'token': data['token']}));
     });
   }
 
@@ -42,29 +45,40 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.primary10,
       appBar: AppBar(
+        backgroundColor: CustomColors.primary10,
         centerTitle: true,
-        title: RichText(
-          textAlign: TextAlign.start,
-          text: const TextSpan(
-            children: [
-              TextSpan(
-                text: 'Re',
-                style: TextStyle(
-                  color: CustomColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+        title: GestureDetector(
+          onTap: () async {
+            //get refresh token
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            // await prefs.setString('refreshToken', "what tf?");
+            String refreshToken = prefs.getString('refreshToken') ?? '';
+            debugPrint('----------------$refreshToken');
+          },
+          child: RichText(
+            textAlign: TextAlign.start,
+            text: const TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Re',
+                  style: TextStyle(
+                    color: CustomColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
-              ),
-              TextSpan(
-                text: 'Portal',
-                style: TextStyle(
-                  color: CustomColors.secondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                TextSpan(
+                  text: 'Portal',
+                  style: TextStyle(
+                    color: CustomColors.secondary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

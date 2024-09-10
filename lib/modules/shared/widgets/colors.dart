@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract final class CustomColors {
+  static const primary10 = Color(0XFFF9EAE6);
   static const primary20 = Color(0XFFF3D4CD);
   static const primary50 = Color(0XFFE09280);
   static const primary = Color(0XFFC22703);
