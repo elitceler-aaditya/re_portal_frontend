@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -9,10 +12,12 @@ import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dar
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
+import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class PropertyDetails extends ConsumerStatefulWidget {
   final ApartmentModel appartment;
@@ -33,6 +38,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _doubtController = TextEditingController();
+  final _highlightsScrollController = ScrollController();
+  ProjectDetails? _projectDetails;
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
@@ -42,33 +49,36 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   _keyHighlights(String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          SvgPicture.asset("assets/icons/home_location_pin.svg"),
-          const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 20),
-          const Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: DottedLine(
-                    lineLength: double.infinity,
-                    lineThickness: 1.5,
-                    dashLength: 8,
-                    dashGapLength: 8,
-                    dashColor: CustomColors.black75,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9,
+        child: Row(
+          children: [
+            SvgPicture.asset("assets/icons/home_location_pin.svg"),
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(fontSize: 12)),
+            const SizedBox(width: 20),
+            const Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: DottedLine(
+                      lineLength: double.infinity,
+                      lineThickness: 1.5,
+                      dashLength: 8,
+                      dashGapLength: 8,
+                      dashColor: CustomColors.black75,
+                    ),
                   ),
-                ),
-                Icon(Icons.arrow_forward_ios,
-                    size: 16, color: CustomColors.black75),
-              ],
+                  Icon(Icons.arrow_forward_ios,
+                      size: 16, color: CustomColors.black75),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 20),
-          Text(value, style: const TextStyle(fontSize: 12)),
-        ],
+            const SizedBox(width: 20),
+            Text(value, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
       ),
     );
   }
@@ -240,90 +250,111 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
         color: Colors.transparent,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                "Project Description",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Text(
-                "The regent by Balaji constructors is the ultimate realm where the lush green , blue skies and shades of luxury exist together The regent by Balaji constructors is the ultimate realm where the lush green , blue skies and shades of luxury exist ",
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.normal,
-                  color: CustomColors.black50,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: CustomColors.primary20,
-                ),
-                padding: const EdgeInsets.fromLTRB(8, 4, 5, 4),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      width: 28,
-                      child: SvgPicture.asset(
-                          "assets/icons/home_location_pin.svg"),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Project Description",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      "${widget.appartment.locality}, Hyderabad",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: CustomColors.primary,
-                      ),
+                  ),
+                  Text(
+                    _projectDetails?.projectHighlightsDescription ?? "",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      color: CustomColors.black50,
                     ),
-                    const Spacer(),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              const Text(
-                "Map",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: CustomColors.primary20,
               ),
-              const Divider(
-                height: 20,
-                color: CustomColors.black50,
+              padding: const EdgeInsets.fromLTRB(8, 4, 5, 4),
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: 40,
+                    width: 28,
+                    child:
+                        SvgPicture.asset("assets/icons/home_location_pin.svg"),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "${widget.appartment.locality}, Hyderabad",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: CustomColors.primary,
+                    ),
+                  ),
+                  const Spacer(),
+                ],
               ),
-              Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: CustomColors.black10,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Map",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(
+                    height: 20,
+                    color: CustomColors.black50,
+                  ),
+                  Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: CustomColors.black10,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              const Text(
+            ),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
                 "Configurations",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Divider(
-                height: 20,
-                color: CustomColors.black50,
-              ),
-              SizedBox(
+            ),
+            const Divider(
+              height: 20,
+              color: CustomColors.black50,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(
                 height: 40,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -340,133 +371,204 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   },
                 ),
               ),
-              const SizedBox(height: 10),
-              FlutterCarousel(
-                items: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: CustomColors.black10,
-                      borderRadius: BorderRadius.circular(10),
+            ),
+            const SizedBox(height: 10),
+            if (_projectDetails != null &&
+                _projectDetails!.configImages.isNotEmpty)
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 10),
+                    ...List.generate(
+                      _projectDetails!.configImages.split(",").length,
+                      (index) => Container(
+                        height: 200,
+                        width: 300,
+                        margin: const EdgeInsets.only(right: 24),
+                        decoration: BoxDecoration(
+                          color: CustomColors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              _projectDetails!.configImages
+                                  .split(",")[index]
+                                  .trim(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Key Highlights",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(
+                    height: 20,
+                    color: CustomColors.black50,
+                  ),
+                  if (_projectDetails != null)
+                    SizedBox(
+                      height: 50,
+                      child: ListView.builder(
+                          controller: _highlightsScrollController,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _projectDetails!.educationalInstitutions
+                                  .split(",")
+                                  .length +
+                              _projectDetails!.hospitals.split(",").length +
+                              _projectDetails!.offices.split(",").length +
+                              _projectDetails!.connectivity.length,
+                          itemBuilder: (context, index) {
+                            if (index % 3 == 0) {
+                              return _keyHighlights(
+                                _projectDetails!.educationalInstitutions,
+                                _projectDetails!.educationalInstitutions,
+                              );
+                            }
+                          }),
+                    ),
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      controller: _highlightsScrollController,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _highlights.length,
+                      itemBuilder: (context, index) => _keyHighlights(
+                        _highlights[index]["title"],
+                        _highlights[index]["value"],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      controller: _highlightsScrollController,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _highlights.length,
+                      itemBuilder: (context, index) => _keyHighlights(
+                        _highlights[index]["title"],
+                        _highlights[index]["value"],
+                      ),
                     ),
                   ),
                 ],
-                options: CarouselOptions(
-                  height: 200,
-                  aspectRatio: 16 / 9,
-                  viewportFraction: 0.8,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  showIndicator: true,
-                ),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                "Key Highlights",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Divider(
-                height: 20,
-                color: CustomColors.black50,
-              ),
-              _keyHighlights("Main railway station", "1.5 km"),
-              _keyHighlights("Airport", "3 km"),
-              _keyHighlights("Oakridge Raiwalay Station", "1.5 km"),
-              const SizedBox(height: 16),
-              const Text(
+            ),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
                 "Amenities",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Divider(
-                height: 20,
-                color: CustomColors.black50,
-              ),
-              Wrap(
-                children: List.generate(
-                  _amenities.length,
-                  (index) => CustomChip(
-                    text: _amenities[index],
-                  ),
+            ),
+            const Divider(
+              height: 20,
+              color: CustomColors.black50,
+            ),
+            Wrap(
+              children: List.generate(
+                _amenities.length,
+                (index) => CustomChip(
+                  text: _amenities[index],
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+            ),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
                 "Project gallery",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Divider(
-                height: 20,
-                color: CustomColors.black50,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    CustomChip(
-                      text: "Master Plan",
-                      isSelected: _selectedPlan == 0,
-                      onTap: () {
-                        setState(() {
-                          _selectedPlan = 0;
-                        });
-                      },
-                    ),
-                    CustomChip(
-                      text: "Tower plan",
-                      isSelected: _selectedPlan == 1,
-                      onTap: () {
-                        setState(() {
-                          _selectedPlan = 1;
-                        });
-                      },
-                    ),
-                    CustomChip(
-                      text: "Floor Plan",
-                      isSelected: _selectedPlan == 2,
-                      onTap: () {
-                        setState(() {
-                          _selectedPlan = 2;
-                        });
-                      },
-                    ),
-                    CustomChip(
-                      text: "Unit Plan",
-                      isSelected: _selectedPlan == 3,
-                      onTap: () {
-                        setState(() {
-                          _selectedPlan = 3;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              FlutterCarousel(
-                items: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: CustomColors.black10,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            ),
+            const Divider(
+              height: 20,
+              color: CustomColors.black50,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  CustomChip(
+                    text: "Master Plan",
+                    isSelected: _selectedPlan == 0,
+                    onTap: () {
+                      setState(() {
+                        _selectedPlan = 0;
+                      });
+                    },
+                  ),
+                  CustomChip(
+                    text: "Tower plan",
+                    isSelected: _selectedPlan == 1,
+                    onTap: () {
+                      setState(() {
+                        _selectedPlan = 1;
+                      });
+                    },
+                  ),
+                  CustomChip(
+                    text: "Floor Plan",
+                    isSelected: _selectedPlan == 2,
+                    onTap: () {
+                      setState(() {
+                        _selectedPlan = 2;
+                      });
+                    },
+                  ),
+                  CustomChip(
+                    text: "Unit Plan",
+                    isSelected: _selectedPlan == 3,
+                    onTap: () {
+                      setState(() {
+                        _selectedPlan = 3;
+                      });
+                    },
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (_projectDetails != null && _projectDetails!.gallery.isNotEmpty)
+              FlutterCarousel.builder(
+                itemBuilder: (context, index, realIndex) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  height: 250,
+                  decoration: BoxDecoration(
+                    color: CustomColors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        _projectDetails!.gallery.split(",")[index].trim(),
+                      ),
+                      fit: BoxFit.fitHeight,
+                    ),
+                  ),
+                ),
+                itemCount: _projectDetails?.gallery.split(",").length ?? 0,
                 options: CarouselOptions(
-                  height: 150,
+                  height: 250,
                   aspectRatio: 16 / 9,
                   viewportFraction: 1,
                   initialPage: 0,
@@ -476,8 +578,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   showIndicator: true,
                 ),
               ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
@@ -564,11 +668,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              const AdsSection(),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: AdsSection(),
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
@@ -639,7 +746,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
               GestureDetector(
                 onTap: () {
-                  rightSlideTransition(context, const BuilderPortfolio());
+                  rightSlideTransition(
+                    context,
+                    BuilderPortfolio(
+                      projectId: widget.appartment.projectId,
+                    ),
+                  );
                 },
                 child: RichText(
                   text: TextSpan(
@@ -797,9 +909,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {
-      _isOverlayVisible = false;
-    });
+    _isOverlayVisible = false;
   }
 
   Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
@@ -821,8 +931,27 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     );
   }
 
+  getPropertyDetails() {
+    Uri url = Uri.parse(
+        "${dotenv.env['BASE_URL']}/user/getProjectHighlights/${widget.appartment.apartmentID}");
+    http.get(url, headers: {
+      "Authorization": "Bearer ${ref.read(userProvider).token}",
+    }).then((response) {
+      debugPrint("----------proj details res: ${response.body}");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() {
+          _projectDetails = ProjectDetails.fromJson(
+              jsonDecode(response.body)["apartmentHighlightsData"][0]);
+        });
+      }
+    }).onError((error, stackTrace) {
+      debugPrint(error.toString());
+    });
+  }
+
   @override
   void initState() {
+    getPropertyDetails();
     _configurations = widget.appartment.configuration.split(',');
     _amenities = widget.appartment.amenities.split(',');
     _nameController.text = ref.read(userProvider).name;
