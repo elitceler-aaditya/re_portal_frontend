@@ -9,8 +9,9 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class PropertyListView extends ConsumerWidget {
+class PropertyListView extends ConsumerStatefulWidget {
   final List<ApartmentModel> sortedApartments;
   final bool compare;
   final bool displayAds;
@@ -22,6 +23,148 @@ class PropertyListView extends ConsumerWidget {
     this.displayAds = false,
   });
 
+  @override
+  ConsumerState<PropertyListView> createState() => _PropertyListViewState();
+}
+
+class _PropertyListViewState extends ConsumerState<PropertyListView> {
+  OverlayEntry? _overlayEntry;
+  bool _isOverlayVisible = false;
+  List<GlobalKey> _globalKeys = [];
+
+  void _toggleOverlay(
+      BuildContext context, ApartmentModel apartment, GlobalKey globalKey) {
+    if (_isOverlayVisible) {
+      _removeOverlay();
+    } else {
+      _showOverlay(context, apartment, globalKey);
+    }
+  }
+
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
+    return InkWell(
+      onTap: () {
+        _removeOverlay();
+        onTap();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Row(
+          children: [
+            icon,
+            const SizedBox(width: 12),
+            Text(text),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showOverlay(
+      BuildContext context, ApartmentModel apartment, GlobalKey globalKey) {
+    GlobalKey contactButtonKey = globalKey;
+    final RenderBox renderBox =
+        contactButtonKey.currentContext!.findRenderObject() as RenderBox;
+    final Size size = renderBox.size;
+    final Offset position = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _removeOverlay,
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+          ),
+          Positioned(
+            left: position.dx - 200,
+            top: position.dy + size.height,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildOption(
+                      SvgPicture.asset("assets/icons/phone.svg"),
+                      'Call now',
+                      () {
+                        launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
+                            .then(
+                          (value) => _removeOverlay(),
+                        );
+                      },
+                    ),
+                    _buildOption(
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: SvgPicture.asset(
+                              "assets/icons/whatsapp.svg",
+                            )),
+                        'Chat on Whatsapp', () {
+                      launchUrl(Uri.parse(
+                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                          .then(
+                        (value) => _removeOverlay(),
+                      );
+                    }),
+                    _buildOption(
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: SvgPicture.asset(
+                              "assets/icons/phone_incoming.svg",
+                            )),
+                        'Request call back',
+                        () => _removeOverlay()),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() {
+      _isOverlayVisible = true;
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    setState(() {
+      _isOverlayVisible = false;
+    });
+  }
+
   formatBudget(double budget) {
     if (budget < 10000000) {
       return "${(budget / 100000).toStringAsFixed(2)} L";
@@ -30,16 +173,31 @@ class PropertyListView extends ConsumerWidget {
     }
   }
 
+  setGlobalKeys() {
+    _globalKeys = List.generate(
+      widget.sortedApartments.length,
+      (index) =>
+          GlobalKey(debugLabel: widget.sortedApartments[index].apartmentID),
+    );
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    setGlobalKeys();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: displayAds
-          ? sortedApartments.length + (sortedApartments.length ~/ 4)
-          : sortedApartments.length,
+      itemCount: widget.displayAds
+          ? widget.sortedApartments.length +
+              (widget.sortedApartments.length ~/ 4)
+          : widget.sortedApartments.length,
       itemBuilder: (context, index) {
-        if (displayAds && index % 4 == 0 && index != 0) {
+        if (widget.displayAds && index % 4 == 0 && index != 0) {
           return const AdsSection();
         } else {
           int listIndex = index - (index ~/ 4);
@@ -48,7 +206,7 @@ class PropertyListView extends ConsumerWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => PropertyDetails(
-                    appartment: sortedApartments[listIndex],
+                    appartment: widget.sortedApartments[listIndex],
                   ),
                 ),
               );
@@ -73,7 +231,7 @@ class PropertyListView extends ConsumerWidget {
                     child: Stack(
                       children: [
                         Hero(
-                          tag: sortedApartments[listIndex].apartmentID,
+                          tag: widget.sortedApartments[listIndex].apartmentID,
                           child: Container(
                             height: 180,
                             decoration: BoxDecoration(
@@ -82,12 +240,11 @@ class PropertyListView extends ConsumerWidget {
                                 topLeft: Radius.circular(10),
                                 topRight: Radius.circular(10),
                               ),
-                              image: sortedApartments[listIndex]
-                                      .image
+                              image: widget.sortedApartments[listIndex].image
                                       .isNotEmpty
                                   ? DecorationImage(
-                                      image: NetworkImage(
-                                          sortedApartments[listIndex].image),
+                                      image: NetworkImage(widget
+                                          .sortedApartments[listIndex].image),
                                       fit: BoxFit.cover,
                                     )
                                   : null,
@@ -140,21 +297,21 @@ class PropertyListView extends ConsumerWidget {
                               onPressed: () {
                                 if (!ref
                                     .watch(savedPropertiesProvider)
-                                    .contains(sortedApartments[listIndex])) {
+                                    .contains(
+                                        widget.sortedApartments[listIndex])) {
                                   ref
                                       .read(savedPropertiesProvider.notifier)
                                       .addApartment(
-                                          sortedApartments[listIndex]);
+                                          widget.sortedApartments[listIndex]);
                                 } else {
                                   ref
                                       .read(savedPropertiesProvider.notifier)
                                       .removeApartment(
-                                          sortedApartments[listIndex]);
+                                          widget.sortedApartments[listIndex]);
                                 }
                               },
-                              icon: ref
-                                      .watch(savedPropertiesProvider)
-                                      .contains(sortedApartments[listIndex])
+                              icon: ref.watch(savedPropertiesProvider).contains(
+                                      widget.sortedApartments[listIndex])
                                   ? const Icon(
                                       Icons.bookmark,
                                       color: CustomColors.white,
@@ -169,7 +326,7 @@ class PropertyListView extends ConsumerWidget {
                           child: Align(
                             alignment: Alignment.bottomLeft,
                             child: Text(
-                              sortedApartments[listIndex].apartmentName,
+                              widget.sortedApartments[listIndex].apartmentName,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -220,7 +377,7 @@ class PropertyListView extends ConsumerWidget {
                                   ),
                                   TextSpan(
                                     text:
-                                        "${sortedApartments[listIndex].flatSize.toStringAsFixed(0)} sq.ft",
+                                        "${widget.sortedApartments[listIndex].flatSize.toStringAsFixed(0)} sq.ft",
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
@@ -246,8 +403,8 @@ class PropertyListView extends ConsumerWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: formatBudget(
-                                        sortedApartments[listIndex].budget),
+                                    text: formatBudget(widget
+                                        .sortedApartments[listIndex].budget),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
@@ -262,7 +419,7 @@ class PropertyListView extends ConsumerWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  if (compare)
+                                  if (widget.compare)
                                     SizedBox(
                                       height: 40,
                                       width: 40,
@@ -271,8 +428,9 @@ class PropertyListView extends ConsumerWidget {
                                           backgroundColor: ref
                                                   .watch(
                                                       comparePropertyProvider)
-                                                  .contains(sortedApartments[
-                                                      listIndex])
+                                                  .contains(
+                                                      widget.sortedApartments[
+                                                          listIndex])
                                               ? CustomColors.green10
                                               : CustomColors.primary20,
                                           shape: RoundedRectangleBorder(
@@ -284,7 +442,7 @@ class PropertyListView extends ConsumerWidget {
                                         onPressed: () {
                                           if (!ref
                                               .watch(comparePropertyProvider)
-                                              .contains(sortedApartments[
+                                              .contains(widget.sortedApartments[
                                                   listIndex])) {
                                             if (ref
                                                     .read(
@@ -298,7 +456,7 @@ class PropertyListView extends ConsumerWidget {
                                                   .read(comparePropertyProvider
                                                       .notifier)
                                                   .addApartment(
-                                                      sortedApartments[
+                                                      widget.sortedApartments[
                                                           listIndex]);
                                             }
                                           } else {
@@ -306,14 +464,15 @@ class PropertyListView extends ConsumerWidget {
                                                 .read(comparePropertyProvider
                                                     .notifier)
                                                 .removeApartment(
-                                                    sortedApartments[
+                                                    widget.sortedApartments[
                                                         listIndex]);
                                           }
                                         },
                                         icon: !ref
                                                 .watch(comparePropertyProvider)
                                                 .contains(
-                                                    sortedApartments[listIndex])
+                                                    widget.sortedApartments[
+                                                        listIndex])
                                             ? SvgPicture.asset(
                                                 "assets/icons/compare.svg",
                                                 color: CustomColors.primary,
@@ -327,8 +486,7 @@ class PropertyListView extends ConsumerWidget {
                                     ),
                                   const SizedBox(width: 8),
                                   SizedBox(
-                                    key: Key(
-                                        "phone-${sortedApartments[listIndex].apartmentID}"),
+                                    key: _globalKeys[listIndex],
                                     height: 40,
                                     width: 40,
                                     child: IconButton.filled(
@@ -339,7 +497,13 @@ class PropertyListView extends ConsumerWidget {
                                               BorderRadius.circular(8),
                                         ),
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        _toggleOverlay(
+                                          context,
+                                          widget.sortedApartments[listIndex],
+                                          _globalKeys[listIndex],
+                                        );
+                                      },
                                       icon: SvgPicture.asset(
                                         "assets/icons/phone.svg",
                                         color: CustomColors.white,

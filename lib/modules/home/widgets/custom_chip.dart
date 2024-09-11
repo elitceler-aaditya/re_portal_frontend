@@ -59,7 +59,7 @@ class CustomListChip extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? CustomColors.primary20 : CustomColors.white,
+          color: isSelected ? CustomColors.primary : CustomColors.white,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
               color: isSelected ? CustomColors.primary : CustomColors.black25),
@@ -67,7 +67,7 @@ class CustomListChip extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            color: isSelected ? CustomColors.primary : CustomColors.black25,
+            color: isSelected ? CustomColors.white : CustomColors.black25,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),

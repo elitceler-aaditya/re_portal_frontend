@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
-import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
@@ -178,9 +177,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         if (_searchController.text.trim().isEmpty)
-                          IconButton(
-                            onPressed: () {},
-                            icon: SvgPicture.asset("assets/icons/location.svg"),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 6),
+                            child: Icon(Icons.location_pin),
                           ),
                         if (_searchController.text.trim().isEmpty)
                           TextButton.icon(
@@ -238,7 +237,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 Hero(
                                   tag: "best-${_apartments[index].apartmentID}",
                                   child: Container(
-                                    height: 180,
+                                    height: 220,
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: CustomColors.black25,
@@ -254,7 +253,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
                                 Container(
-                                  height: 180,
+                                  height: 220,
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
@@ -301,7 +300,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           options: CarouselOptions(
-                            height: 180,
+                            height: 220,
                             viewportFraction: 0.9,
                             enlargeCenterPage: true,
                             autoPlay: true,

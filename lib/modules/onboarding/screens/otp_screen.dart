@@ -53,12 +53,10 @@ class _OTPScreenState extends State<OTPScreen> {
         });
         if (response.statusCode == 200 || response.statusCode == 201) {
           Map responseData = jsonDecode(response.body);
-
-          debugPrint("----------responseData${responseData}");
           await getTemporaryDirectory().then((tempDir) {
             final file = File('${tempDir.path}/token.json');
             file.delete();
-            file.writeAsString(responseData['token']);
+            file.writeAsString(jsonEncode(responseData));
             prefs.setString('token', responseData['token']);
 
             if (responseData['refreshToken'] != null) {

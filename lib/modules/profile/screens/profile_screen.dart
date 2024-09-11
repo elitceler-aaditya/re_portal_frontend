@@ -149,7 +149,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             title: 'My Account',
             subtitle: 'Logout from the app',
             icon: Icons.person_outline,
-            onTap: () {
+            onTap: () async {
+              await getTemporaryDirectory().then((tempDir) async {
+                File file = File('${tempDir.path}/token.json');
+                file.delete();
+              });
+
               rightSlideTransition(
                 context,
                 MyAccount(

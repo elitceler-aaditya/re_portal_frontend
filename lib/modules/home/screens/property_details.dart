@@ -400,7 +400,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
               const SizedBox(height: 20),
               const Text(
-                "Types of project plans",
+                "Project gallery",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -721,8 +721,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
           ),
           Positioned(
-            left: position.dx - 200,
-            top: position.dy + size.height,
+            left: position.dx - (4 * size.width),
+            bottom: 16,
             child: Material(
               color: Colors.transparent,
               child: Container(
@@ -732,7 +732,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10),
                     bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
+                    topRight: Radius.circular(10),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -865,10 +865,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: CustomColors.primary10,
       floatingActionButton: FloatingActionButton(
+        key: contactButtonKey,
         backgroundColor: CustomColors.primary,
         shape: const CircleBorder(),
-        onPressed: () {},
+        onPressed: () {
+          _toggleOverlay(context);
+        },
         child: SvgPicture.asset(
           "assets/icons/phone.svg",
           color: Colors.white,
