@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
 import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
@@ -144,9 +142,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             subtitle: 'Logout from the app',
             icon: Icons.person_outline,
             onTap: () async {
-              await getTemporaryDirectory().then((tempDir) async {
-                File file = File('${tempDir.path}/token.json');
-                file.delete();
+              SharedPreferences.getInstance().then((sharedPref) {
+                sharedPref.clear();
               });
 
               rightSlideTransition(

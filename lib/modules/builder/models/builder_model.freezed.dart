@@ -31,10 +31,10 @@ mixin _$BuilderModel {
   int get pricePerSquareFeetRate => throw _privateConstructorUsedError;
   String get amenities => throw _privateConstructorUsedError;
   String get projectHighlights => throw _privateConstructorUsedError;
-  List<String>? get elevationImages => throw _privateConstructorUsedError;
-  List<String>? get unitSizes => throw _privateConstructorUsedError;
-  List<String>? get unitPlanFiles => throw _privateConstructorUsedError;
-  List<String>? get specifications => throw _privateConstructorUsedError;
+  List<String> get elevationImages => throw _privateConstructorUsedError;
+  List<String> get unitSizes => throw _privateConstructorUsedError;
+  List<String> get unitPlanFiles => throw _privateConstructorUsedError;
+  List<String> get specifications => throw _privateConstructorUsedError;
 
   /// Serializes this BuilderModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -64,10 +64,10 @@ abstract class $BuilderModelCopyWith<$Res> {
       int pricePerSquareFeetRate,
       String amenities,
       String projectHighlights,
-      List<String>? elevationImages,
-      List<String>? unitSizes,
-      List<String>? unitPlanFiles,
-      List<String>? specifications});
+      List<String> elevationImages,
+      List<String> unitSizes,
+      List<String> unitPlanFiles,
+      List<String> specifications});
 }
 
 /// @nodoc
@@ -96,10 +96,10 @@ class _$BuilderModelCopyWithImpl<$Res, $Val extends BuilderModel>
     Object? pricePerSquareFeetRate = null,
     Object? amenities = null,
     Object? projectHighlights = null,
-    Object? elevationImages = freezed,
-    Object? unitSizes = freezed,
-    Object? unitPlanFiles = freezed,
-    Object? specifications = freezed,
+    Object? elevationImages = null,
+    Object? unitSizes = null,
+    Object? unitPlanFiles = null,
+    Object? specifications = null,
   }) {
     return _then(_value.copyWith(
       projectId: null == projectId
@@ -146,22 +146,22 @@ class _$BuilderModelCopyWithImpl<$Res, $Val extends BuilderModel>
           ? _value.projectHighlights
           : projectHighlights // ignore: cast_nullable_to_non_nullable
               as String,
-      elevationImages: freezed == elevationImages
+      elevationImages: null == elevationImages
           ? _value.elevationImages
           : elevationImages // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      unitSizes: freezed == unitSizes
+              as List<String>,
+      unitSizes: null == unitSizes
           ? _value.unitSizes
           : unitSizes // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      unitPlanFiles: freezed == unitPlanFiles
+              as List<String>,
+      unitPlanFiles: null == unitPlanFiles
           ? _value.unitPlanFiles
           : unitPlanFiles // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      specifications: freezed == specifications
+              as List<String>,
+      specifications: null == specifications
           ? _value.specifications
           : specifications // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
+              as List<String>,
     ) as $Val);
   }
 }
@@ -186,10 +186,10 @@ abstract class _$$BuilderModelImplCopyWith<$Res>
       int pricePerSquareFeetRate,
       String amenities,
       String projectHighlights,
-      List<String>? elevationImages,
-      List<String>? unitSizes,
-      List<String>? unitPlanFiles,
-      List<String>? specifications});
+      List<String> elevationImages,
+      List<String> unitSizes,
+      List<String> unitPlanFiles,
+      List<String> specifications});
 }
 
 /// @nodoc
@@ -216,10 +216,10 @@ class __$$BuilderModelImplCopyWithImpl<$Res>
     Object? pricePerSquareFeetRate = null,
     Object? amenities = null,
     Object? projectHighlights = null,
-    Object? elevationImages = freezed,
-    Object? unitSizes = freezed,
-    Object? unitPlanFiles = freezed,
-    Object? specifications = freezed,
+    Object? elevationImages = null,
+    Object? unitSizes = null,
+    Object? unitPlanFiles = null,
+    Object? specifications = null,
   }) {
     return _then(_$BuilderModelImpl(
       projectId: null == projectId
@@ -266,22 +266,22 @@ class __$$BuilderModelImplCopyWithImpl<$Res>
           ? _value.projectHighlights
           : projectHighlights // ignore: cast_nullable_to_non_nullable
               as String,
-      elevationImages: freezed == elevationImages
+      elevationImages: null == elevationImages
           ? _value._elevationImages
           : elevationImages // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      unitSizes: freezed == unitSizes
+              as List<String>,
+      unitSizes: null == unitSizes
           ? _value._unitSizes
           : unitSizes // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      unitPlanFiles: freezed == unitPlanFiles
+              as List<String>,
+      unitPlanFiles: null == unitPlanFiles
           ? _value._unitPlanFiles
           : unitPlanFiles // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      specifications: freezed == specifications
+              as List<String>,
+      specifications: null == specifications
           ? _value._specifications
           : specifications // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
+              as List<String>,
     ));
   }
 }
@@ -301,10 +301,10 @@ class _$BuilderModelImpl implements _BuilderModel {
       this.pricePerSquareFeetRate = 0,
       this.amenities = "",
       this.projectHighlights = "",
-      final List<String>? elevationImages = const [],
-      final List<String>? unitSizes = const [],
-      final List<String>? unitPlanFiles = const [],
-      final List<String>? specifications = const []})
+      final List<String> elevationImages = const [],
+      final List<String> unitSizes = const [],
+      final List<String> unitPlanFiles = const [],
+      final List<String> specifications = const []})
       : _elevationImages = elevationImages,
         _unitSizes = unitSizes,
         _unitPlanFiles = unitPlanFiles,
@@ -346,48 +346,40 @@ class _$BuilderModelImpl implements _BuilderModel {
   @override
   @JsonKey()
   final String projectHighlights;
-  final List<String>? _elevationImages;
+  final List<String> _elevationImages;
   @override
   @JsonKey()
-  List<String>? get elevationImages {
-    final value = _elevationImages;
-    if (value == null) return null;
+  List<String> get elevationImages {
     if (_elevationImages is EqualUnmodifiableListView) return _elevationImages;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_elevationImages);
   }
 
-  final List<String>? _unitSizes;
+  final List<String> _unitSizes;
   @override
   @JsonKey()
-  List<String>? get unitSizes {
-    final value = _unitSizes;
-    if (value == null) return null;
+  List<String> get unitSizes {
     if (_unitSizes is EqualUnmodifiableListView) return _unitSizes;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_unitSizes);
   }
 
-  final List<String>? _unitPlanFiles;
+  final List<String> _unitPlanFiles;
   @override
   @JsonKey()
-  List<String>? get unitPlanFiles {
-    final value = _unitPlanFiles;
-    if (value == null) return null;
+  List<String> get unitPlanFiles {
     if (_unitPlanFiles is EqualUnmodifiableListView) return _unitPlanFiles;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_unitPlanFiles);
   }
 
-  final List<String>? _specifications;
+  final List<String> _specifications;
   @override
   @JsonKey()
-  List<String>? get specifications {
-    final value = _specifications;
-    if (value == null) return null;
+  List<String> get specifications {
     if (_specifications is EqualUnmodifiableListView) return _specifications;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_specifications);
   }
 
   @override
@@ -479,10 +471,10 @@ abstract class _BuilderModel implements BuilderModel {
       final int pricePerSquareFeetRate,
       final String amenities,
       final String projectHighlights,
-      final List<String>? elevationImages,
-      final List<String>? unitSizes,
-      final List<String>? unitPlanFiles,
-      final List<String>? specifications}) = _$BuilderModelImpl;
+      final List<String> elevationImages,
+      final List<String> unitSizes,
+      final List<String> unitPlanFiles,
+      final List<String> specifications}) = _$BuilderModelImpl;
 
   factory _BuilderModel.fromJson(Map<String, dynamic> json) =
       _$BuilderModelImpl.fromJson;
@@ -510,13 +502,13 @@ abstract class _BuilderModel implements BuilderModel {
   @override
   String get projectHighlights;
   @override
-  List<String>? get elevationImages;
+  List<String> get elevationImages;
   @override
-  List<String>? get unitSizes;
+  List<String> get unitSizes;
   @override
-  List<String>? get unitPlanFiles;
+  List<String> get unitPlanFiles;
   @override
-  List<String>? get specifications;
+  List<String> get specifications;
 
   /// Create a copy of BuilderModel
   /// with the given fields replaced by the non-null parameter values.

@@ -19,6 +19,7 @@ class BuilderPortfolio extends ConsumerStatefulWidget {
 
 class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
   BuilderModel builder = const BuilderModel();
+  List projects = [];
   bool isLoading = true;
 
   void getBuilderDetails() {
@@ -33,6 +34,7 @@ class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
         builder = BuilderModel.fromJson(
           jsonDecode(response.body)['builderDetails'],
         );
+        projects = jsonDecode(response.body)['projectDetails'];
       }
       setState(() {
         isLoading = false;
@@ -148,6 +150,31 @@ class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
                             fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: projects.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          projects[index]['name'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: CustomColors.black,
+                          ),
+                        ),
+                        subtitle: Text(
+                          projects[index]['description'],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                            color: CustomColors.black,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 )
               ],

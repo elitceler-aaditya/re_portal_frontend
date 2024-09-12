@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,13 +24,14 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
   getTempStorage() async {
     //get token.json file
     await getTemporaryDirectory().then((tempDir) async {
-      final file = File('${tempDir.path}/token.json');
-      Map<String, dynamic> data = jsonDecode(await file.readAsString());
-      Map<String, dynamic> userData = JwtToken.payload(data['token']);
-      debugPrint("----------sssssssssssss$data");
-      ref
-          .read(userProvider.notifier)
-          .setUser(User.fromJson({...userData, 'token': data['token']}));
+      SharedPreferences.getInstance().then((sharedref) {
+        String token = sharedref.getString('token') ?? '';
+        final userData = JwtToken.payload(token);
+
+        ref
+            .read(userProvider.notifier)
+            .setUser(User.fromJson({...userData, 'token': token}));
+      });
     });
   }
 

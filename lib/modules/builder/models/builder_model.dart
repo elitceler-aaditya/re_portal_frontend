@@ -17,10 +17,10 @@ class BuilderModel with _$BuilderModel {
     @Default(0) int pricePerSquareFeetRate,
     @Default("") String amenities,
     @Default("") String projectHighlights,
-    @Default([]) List<String>? elevationImages,
-    @Default([]) List<String>? unitSizes,
-    @Default([]) List<String>? unitPlanFiles,
-    @Default([]) List<String>? specifications,
+    @Default([]) List<String> elevationImages,
+    @Default([]) List<String> unitSizes,
+    @Default([]) List<String> unitPlanFiles,
+    @Default([]) List<String> specifications,
   }) = _BuilderModel;
 
   factory BuilderModel.fromJson(Map<String, dynamic> json) =>
