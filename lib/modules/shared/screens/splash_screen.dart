@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,20 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> checkIfLoggedIn() async {
     String token = "";
-    Map<String, dynamic> fileData = {};
-    try {
-      final tempDir = await getTemporaryDirectory();
-      final file = File('${tempDir.path}/token.json');
-      if (await file.exists()) {
-        isExpired = false;
-        fileData = jsonDecode(await file.readAsString());
-        refreshToken(fileData['refreshToken'], fileData);
-      } else {
-        isExpired = true;
-      }
+    String refreshToken = "";
 
-      if (mounted) {
-        if (isExpired) {
+    try {
+      SharedPreferences.getInstance().then((sharedPref) {
+        token = sharedPref.getString('token') ?? "";
+        refreshToken = sharedPref.getString('refreshToken') ?? "";
+
+        if (token.isEmpty) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const GetStarted()));
         } else {
@@ -43,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
               MaterialPageRoute(
                   builder: (context) => const PropertyTypesScreen()));
         }
-      }
+      });
     } catch (e) {
       // Handle any errors (e.g., file read errors)
       print('Error checking login status: $e');

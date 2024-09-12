@@ -3,11 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class FixedColumnDataTable extends ConsumerStatefulWidget {
   final List<ApartmentModel> comparedProperties;

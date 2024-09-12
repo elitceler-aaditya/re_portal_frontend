@@ -39,7 +39,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _emailController = TextEditingController();
   final _doubtController = TextEditingController();
   final _highlightsScrollController = ScrollController();
-  ProjectDetails? _projectDetails;
+  ProjectDetails _projectDetails = const ProjectDetails();
+  List _projectGallery = [];
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
@@ -47,38 +48,41 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   List<Map<String, dynamic>> _highlights = [];
 
   _keyHighlights(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Row(
-          children: [
-            SvgPicture.asset("assets/icons/home_location_pin.svg"),
-            const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontSize: 12)),
-            const SizedBox(width: 20),
-            const Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: DottedLine(
-                      lineLength: double.infinity,
-                      lineThickness: 1.5,
-                      dashLength: 8,
-                      dashGapLength: 8,
-                      dashColor: CustomColors.black75,
-                    ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        color: CustomColors.primary20,
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        children: [
+          SvgPicture.asset("assets/icons/home_location_pin.svg"),
+          const SizedBox(width: 8),
+          Text(title, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 20),
+          const SizedBox(
+            width: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: DottedLine(
+                    lineLength: double.infinity,
+                    lineThickness: 1.5,
+                    dashLength: 8,
+                    dashGapLength: 8,
+                    dashColor: CustomColors.black75,
                   ),
-                  Icon(Icons.arrow_forward_ios,
-                      size: 16, color: CustomColors.black75),
-                ],
-              ),
+                ),
+                Icon(Icons.arrow_forward_ios,
+                    size: 10, color: CustomColors.black75),
+              ],
             ),
-            const SizedBox(width: 20),
-            Text(value, style: const TextStyle(fontSize: 12)),
-          ],
-        ),
+          ),
+          const SizedBox(width: 20),
+          Text(value, style: const TextStyle(fontSize: 12)),
+        ],
       ),
     );
   }
@@ -270,7 +274,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     ),
                   ),
                   Text(
-                    _projectDetails?.projectHighlightsDescription ?? "",
+                    _projectDetails.projectHighlightsDescription.join(" "),
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.normal,
@@ -330,7 +334,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     height: 150,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: CustomColors.black10,
+                      color: CustomColors.white,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -373,15 +377,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             const SizedBox(height: 10),
-            if (_projectDetails != null &&
-                _projectDetails!.configImages.isNotEmpty)
+            if (_projectDetails.configImages.split(",").isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
                     ...List.generate(
-                      _projectDetails!.configImages.split(",").length,
+                      _projectDetails.configImages.split(",").length,
                       (index) => Container(
                         height: 200,
                         width: 300,
@@ -391,7 +394,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           borderRadius: BorderRadius.circular(10),
                           image: DecorationImage(
                             image: NetworkImage(
-                              _projectDetails!.configImages
+                              _projectDetails.configImages
                                   .split(",")[index]
                                   .trim(),
                             ),
@@ -420,49 +423,51 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     height: 20,
                     color: CustomColors.black50,
                   ),
-                  if (_projectDetails != null)
-                    SizedBox(
-                      height: 50,
-                      child: ListView.builder(
-                          controller: _highlightsScrollController,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _projectDetails!.educationalInstitutions
-                                  .split(",")
-                                  .length +
-                              _projectDetails!.hospitals.split(",").length +
-                              _projectDetails!.offices.split(",").length +
-                              _projectDetails!.connectivity.length,
-                          itemBuilder: (context, index) {
-                            if (index % 3 == 0) {
-                              return _keyHighlights(
-                                _projectDetails!.educationalInstitutions,
-                                _projectDetails!.educationalInstitutions,
-                              );
-                            }
-                          }),
-                    ),
                   SizedBox(
-                    height: 50,
+                    height: 40,
                     child: ListView.builder(
                       controller: _highlightsScrollController,
                       scrollDirection: Axis.horizontal,
-                      itemCount: _highlights.length,
-                      itemBuilder: (context, index) => _keyHighlights(
-                        _highlights[index]["title"],
-                        _highlights[index]["value"],
-                      ),
+                      itemCount: _projectDetails.educationalInstitutions.length,
+                      itemBuilder: (context, index) {
+                        return _keyHighlights(
+                          _projectDetails.educationalInstitutions[index]
+                              ['name'],
+                          _projectDetails.educationalInstitutions[index]['dist']
+                              .toString(),
+                        );
+                      },
                     ),
                   ),
+                  const SizedBox(height: 8),
                   SizedBox(
-                    height: 50,
+                    height: 40,
                     child: ListView.builder(
                       controller: _highlightsScrollController,
                       scrollDirection: Axis.horizontal,
-                      itemCount: _highlights.length,
-                      itemBuilder: (context, index) => _keyHighlights(
-                        _highlights[index]["title"],
-                        _highlights[index]["value"],
-                      ),
+                      itemCount: _projectDetails.hospitals.length,
+                      itemBuilder: (context, index) {
+                        return _keyHighlights(
+                          _projectDetails.hospitals[index]['name'],
+                          _projectDetails.hospitals[index]['dist'].toString(),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 40,
+                    child: ListView.builder(
+                      controller: _highlightsScrollController,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _projectDetails.connectivity.length,
+                      itemBuilder: (context, index) {
+                        return _keyHighlights(
+                          _projectDetails.connectivity[index]['name'],
+                          _projectDetails.connectivity[index]['dist']
+                              .toString(),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -550,7 +555,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             const SizedBox(height: 10),
-            if (_projectDetails != null && _projectDetails!.gallery.isNotEmpty)
+            if (_projectGallery.isNotEmpty)
               FlutterCarousel.builder(
                 itemBuilder: (context, index, realIndex) => Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -558,15 +563,25 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   decoration: BoxDecoration(
                     color: CustomColors.white,
                     borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        _projectDetails!.gallery.split(",")[index].trim(),
-                      ),
-                      fit: BoxFit.fitHeight,
+                  ),
+                  child: Image.network(
+                    _projectGallery[index].trim(),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Center(
+                      child: Text(error.toString()),
                     ),
+                    // loadingBuilder: (context, child, loadingProgress) => Center(
+                    //   child: CircularProgressIndicator(
+                    //     color: CustomColors.black,
+                    //     value: loadingProgress != null
+                    //         ? loadingProgress.cumulativeBytesLoaded /
+                    //             loadingProgress.expectedTotalBytes!
+                    //         : null,
+                    //   ),
+                    // ),
                   ),
                 ),
-                itemCount: _projectDetails?.gallery.split(",").length ?? 0,
+                itemCount: _projectGallery.length,
                 options: CarouselOptions(
                   height: 250,
                   aspectRatio: 16 / 9,
@@ -937,15 +952,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     http.get(url, headers: {
       "Authorization": "Bearer ${ref.read(userProvider).token}",
     }).then((response) {
-      debugPrint("----------proj details res: ${response.body}");
       if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint("----------proj details res: ${response.body}");
         setState(() {
           _projectDetails = ProjectDetails.fromJson(
-              jsonDecode(response.body)["apartmentHighlightsData"][0]);
+              jsonDecode(response.body)['formattedHighlightsApartment'][0]);
+          _projectGallery = _projectDetails.gallery
+              .split(",")
+              .where((image) => image.trim().isNotEmpty)
+              .toList();
         });
       }
-    }).onError((error, stackTrace) {
-      debugPrint(error.toString());
     });
   }
 

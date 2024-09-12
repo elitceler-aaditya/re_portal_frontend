@@ -8,13 +8,14 @@ class ProjectDetails with _$ProjectDetails {
   const factory ProjectDetails({
     @Default("") String projectHighlightsID,
     @Default("") String apartmentID,
-    @Default("") String projectHighlightsDescription,
-    @Default("") String educationalInstitutions,
-    @Default("") String hospitals,
-    @Default("") String offices,
-    @Default("") String connectivity,
+    @Default([]) List projectHighlightsDescription,
+    @Default([]) List educationalInstitutions,
+    @Default([]) List hospitals,
+    @Default([]) List offices,
+    @Default([]) List connectivity,
     @Default("") String configImages,
     @Default("") String gallery,
+    @Default("") String flatSizes,
   }) = _ProjectHighlights;
 
   factory ProjectDetails.fromJson(Map<String, dynamic> json) =>

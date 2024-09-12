@@ -12,13 +12,15 @@ _$ProjectHighlightsImpl _$$ProjectHighlightsImplFromJson(
       projectHighlightsID: json['projectHighlightsID'] as String? ?? "",
       apartmentID: json['apartmentID'] as String? ?? "",
       projectHighlightsDescription:
-          json['projectHighlightsDescription'] as String? ?? "",
-      educationalInstitutions: json['educationalInstitutions'] as String? ?? "",
-      hospitals: json['hospitals'] as String? ?? "",
-      offices: json['offices'] as String? ?? "",
-      connectivity: json['connectivity'] as String? ?? "",
+          json['projectHighlightsDescription'] as List<dynamic>? ?? const [],
+      educationalInstitutions:
+          json['educationalInstitutions'] as List<dynamic>? ?? const [],
+      hospitals: json['hospitals'] as List<dynamic>? ?? const [],
+      offices: json['offices'] as List<dynamic>? ?? const [],
+      connectivity: json['connectivity'] as List<dynamic>? ?? const [],
       configImages: json['configImages'] as String? ?? "",
       gallery: json['gallery'] as String? ?? "",
+      flatSizes: json['flatSizes'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$ProjectHighlightsImplToJson(
@@ -33,4 +35,5 @@ Map<String, dynamic> _$$ProjectHighlightsImplToJson(
       'connectivity': instance.connectivity,
       'configImages': instance.configImages,
       'gallery': instance.gallery,
+      'flatSizes': instance.flatSizes,
     };

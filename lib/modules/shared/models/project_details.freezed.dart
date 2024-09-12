@@ -22,13 +22,16 @@ ProjectDetails _$ProjectDetailsFromJson(Map<String, dynamic> json) {
 mixin _$ProjectDetails {
   String get projectHighlightsID => throw _privateConstructorUsedError;
   String get apartmentID => throw _privateConstructorUsedError;
-  String get projectHighlightsDescription => throw _privateConstructorUsedError;
-  String get educationalInstitutions => throw _privateConstructorUsedError;
-  String get hospitals => throw _privateConstructorUsedError;
-  String get offices => throw _privateConstructorUsedError;
-  String get connectivity => throw _privateConstructorUsedError;
+  List<dynamic> get projectHighlightsDescription =>
+      throw _privateConstructorUsedError;
+  List<dynamic> get educationalInstitutions =>
+      throw _privateConstructorUsedError;
+  List<dynamic> get hospitals => throw _privateConstructorUsedError;
+  List<dynamic> get offices => throw _privateConstructorUsedError;
+  List<dynamic> get connectivity => throw _privateConstructorUsedError;
   String get configImages => throw _privateConstructorUsedError;
   String get gallery => throw _privateConstructorUsedError;
+  String get flatSizes => throw _privateConstructorUsedError;
 
   /// Serializes this ProjectDetails to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,13 +52,14 @@ abstract class $ProjectDetailsCopyWith<$Res> {
   $Res call(
       {String projectHighlightsID,
       String apartmentID,
-      String projectHighlightsDescription,
-      String educationalInstitutions,
-      String hospitals,
-      String offices,
-      String connectivity,
+      List<dynamic> projectHighlightsDescription,
+      List<dynamic> educationalInstitutions,
+      List<dynamic> hospitals,
+      List<dynamic> offices,
+      List<dynamic> connectivity,
       String configImages,
-      String gallery});
+      String gallery,
+      String flatSizes});
 }
 
 /// @nodoc
@@ -82,6 +86,7 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? connectivity = null,
     Object? configImages = null,
     Object? gallery = null,
+    Object? flatSizes = null,
   }) {
     return _then(_value.copyWith(
       projectHighlightsID: null == projectHighlightsID
@@ -95,23 +100,23 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
       projectHighlightsDescription: null == projectHighlightsDescription
           ? _value.projectHighlightsDescription
           : projectHighlightsDescription // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       educationalInstitutions: null == educationalInstitutions
           ? _value.educationalInstitutions
           : educationalInstitutions // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       hospitals: null == hospitals
           ? _value.hospitals
           : hospitals // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       offices: null == offices
           ? _value.offices
           : offices // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       connectivity: null == connectivity
           ? _value.connectivity
           : connectivity // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       configImages: null == configImages
           ? _value.configImages
           : configImages // ignore: cast_nullable_to_non_nullable
@@ -119,6 +124,10 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
       gallery: null == gallery
           ? _value.gallery
           : gallery // ignore: cast_nullable_to_non_nullable
+              as String,
+      flatSizes: null == flatSizes
+          ? _value.flatSizes
+          : flatSizes // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -135,13 +144,14 @@ abstract class _$$ProjectHighlightsImplCopyWith<$Res>
   $Res call(
       {String projectHighlightsID,
       String apartmentID,
-      String projectHighlightsDescription,
-      String educationalInstitutions,
-      String hospitals,
-      String offices,
-      String connectivity,
+      List<dynamic> projectHighlightsDescription,
+      List<dynamic> educationalInstitutions,
+      List<dynamic> hospitals,
+      List<dynamic> offices,
+      List<dynamic> connectivity,
       String configImages,
-      String gallery});
+      String gallery,
+      String flatSizes});
 }
 
 /// @nodoc
@@ -166,6 +176,7 @@ class __$$ProjectHighlightsImplCopyWithImpl<$Res>
     Object? connectivity = null,
     Object? configImages = null,
     Object? gallery = null,
+    Object? flatSizes = null,
   }) {
     return _then(_$ProjectHighlightsImpl(
       projectHighlightsID: null == projectHighlightsID
@@ -177,25 +188,25 @@ class __$$ProjectHighlightsImplCopyWithImpl<$Res>
           : apartmentID // ignore: cast_nullable_to_non_nullable
               as String,
       projectHighlightsDescription: null == projectHighlightsDescription
-          ? _value.projectHighlightsDescription
+          ? _value._projectHighlightsDescription
           : projectHighlightsDescription // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       educationalInstitutions: null == educationalInstitutions
-          ? _value.educationalInstitutions
+          ? _value._educationalInstitutions
           : educationalInstitutions // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       hospitals: null == hospitals
-          ? _value.hospitals
+          ? _value._hospitals
           : hospitals // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       offices: null == offices
-          ? _value.offices
+          ? _value._offices
           : offices // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       connectivity: null == connectivity
-          ? _value.connectivity
+          ? _value._connectivity
           : connectivity // ignore: cast_nullable_to_non_nullable
-              as String,
+              as List<dynamic>,
       configImages: null == configImages
           ? _value.configImages
           : configImages // ignore: cast_nullable_to_non_nullable
@@ -203,6 +214,10 @@ class __$$ProjectHighlightsImplCopyWithImpl<$Res>
       gallery: null == gallery
           ? _value.gallery
           : gallery // ignore: cast_nullable_to_non_nullable
+              as String,
+      flatSizes: null == flatSizes
+          ? _value.flatSizes
+          : flatSizes // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -214,13 +229,19 @@ class _$ProjectHighlightsImpl implements _ProjectHighlights {
   const _$ProjectHighlightsImpl(
       {this.projectHighlightsID = "",
       this.apartmentID = "",
-      this.projectHighlightsDescription = "",
-      this.educationalInstitutions = "",
-      this.hospitals = "",
-      this.offices = "",
-      this.connectivity = "",
+      final List<dynamic> projectHighlightsDescription = const [],
+      final List<dynamic> educationalInstitutions = const [],
+      final List<dynamic> hospitals = const [],
+      final List<dynamic> offices = const [],
+      final List<dynamic> connectivity = const [],
       this.configImages = "",
-      this.gallery = ""});
+      this.gallery = "",
+      this.flatSizes = ""})
+      : _projectHighlightsDescription = projectHighlightsDescription,
+        _educationalInstitutions = educationalInstitutions,
+        _hospitals = hospitals,
+        _offices = offices,
+        _connectivity = connectivity;
 
   factory _$ProjectHighlightsImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProjectHighlightsImplFromJson(json);
@@ -231,31 +252,66 @@ class _$ProjectHighlightsImpl implements _ProjectHighlights {
   @override
   @JsonKey()
   final String apartmentID;
+  final List<dynamic> _projectHighlightsDescription;
   @override
   @JsonKey()
-  final String projectHighlightsDescription;
+  List<dynamic> get projectHighlightsDescription {
+    if (_projectHighlightsDescription is EqualUnmodifiableListView)
+      return _projectHighlightsDescription;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_projectHighlightsDescription);
+  }
+
+  final List<dynamic> _educationalInstitutions;
   @override
   @JsonKey()
-  final String educationalInstitutions;
+  List<dynamic> get educationalInstitutions {
+    if (_educationalInstitutions is EqualUnmodifiableListView)
+      return _educationalInstitutions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_educationalInstitutions);
+  }
+
+  final List<dynamic> _hospitals;
   @override
   @JsonKey()
-  final String hospitals;
+  List<dynamic> get hospitals {
+    if (_hospitals is EqualUnmodifiableListView) return _hospitals;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_hospitals);
+  }
+
+  final List<dynamic> _offices;
   @override
   @JsonKey()
-  final String offices;
+  List<dynamic> get offices {
+    if (_offices is EqualUnmodifiableListView) return _offices;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_offices);
+  }
+
+  final List<dynamic> _connectivity;
   @override
   @JsonKey()
-  final String connectivity;
+  List<dynamic> get connectivity {
+    if (_connectivity is EqualUnmodifiableListView) return _connectivity;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_connectivity);
+  }
+
   @override
   @JsonKey()
   final String configImages;
   @override
   @JsonKey()
   final String gallery;
+  @override
+  @JsonKey()
+  final String flatSizes;
 
   @override
   String toString() {
-    return 'ProjectDetails(projectHighlightsID: $projectHighlightsID, apartmentID: $apartmentID, projectHighlightsDescription: $projectHighlightsDescription, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, configImages: $configImages, gallery: $gallery)';
+    return 'ProjectDetails(projectHighlightsID: $projectHighlightsID, apartmentID: $apartmentID, projectHighlightsDescription: $projectHighlightsDescription, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, configImages: $configImages, gallery: $gallery, flatSizes: $flatSizes)';
   }
 
   @override
@@ -267,21 +323,21 @@ class _$ProjectHighlightsImpl implements _ProjectHighlights {
                 other.projectHighlightsID == projectHighlightsID) &&
             (identical(other.apartmentID, apartmentID) ||
                 other.apartmentID == apartmentID) &&
-            (identical(other.projectHighlightsDescription,
-                    projectHighlightsDescription) ||
-                other.projectHighlightsDescription ==
-                    projectHighlightsDescription) &&
-            (identical(
-                    other.educationalInstitutions, educationalInstitutions) ||
-                other.educationalInstitutions == educationalInstitutions) &&
-            (identical(other.hospitals, hospitals) ||
-                other.hospitals == hospitals) &&
-            (identical(other.offices, offices) || other.offices == offices) &&
-            (identical(other.connectivity, connectivity) ||
-                other.connectivity == connectivity) &&
+            const DeepCollectionEquality().equals(
+                other._projectHighlightsDescription,
+                _projectHighlightsDescription) &&
+            const DeepCollectionEquality().equals(
+                other._educationalInstitutions, _educationalInstitutions) &&
+            const DeepCollectionEquality()
+                .equals(other._hospitals, _hospitals) &&
+            const DeepCollectionEquality().equals(other._offices, _offices) &&
+            const DeepCollectionEquality()
+                .equals(other._connectivity, _connectivity) &&
             (identical(other.configImages, configImages) ||
                 other.configImages == configImages) &&
-            (identical(other.gallery, gallery) || other.gallery == gallery));
+            (identical(other.gallery, gallery) || other.gallery == gallery) &&
+            (identical(other.flatSizes, flatSizes) ||
+                other.flatSizes == flatSizes));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -290,13 +346,14 @@ class _$ProjectHighlightsImpl implements _ProjectHighlights {
       runtimeType,
       projectHighlightsID,
       apartmentID,
-      projectHighlightsDescription,
-      educationalInstitutions,
-      hospitals,
-      offices,
-      connectivity,
+      const DeepCollectionEquality().hash(_projectHighlightsDescription),
+      const DeepCollectionEquality().hash(_educationalInstitutions),
+      const DeepCollectionEquality().hash(_hospitals),
+      const DeepCollectionEquality().hash(_offices),
+      const DeepCollectionEquality().hash(_connectivity),
       configImages,
-      gallery);
+      gallery,
+      flatSizes);
 
   /// Create a copy of ProjectDetails
   /// with the given fields replaced by the non-null parameter values.
@@ -319,13 +376,14 @@ abstract class _ProjectHighlights implements ProjectDetails {
   const factory _ProjectHighlights(
       {final String projectHighlightsID,
       final String apartmentID,
-      final String projectHighlightsDescription,
-      final String educationalInstitutions,
-      final String hospitals,
-      final String offices,
-      final String connectivity,
+      final List<dynamic> projectHighlightsDescription,
+      final List<dynamic> educationalInstitutions,
+      final List<dynamic> hospitals,
+      final List<dynamic> offices,
+      final List<dynamic> connectivity,
       final String configImages,
-      final String gallery}) = _$ProjectHighlightsImpl;
+      final String gallery,
+      final String flatSizes}) = _$ProjectHighlightsImpl;
 
   factory _ProjectHighlights.fromJson(Map<String, dynamic> json) =
       _$ProjectHighlightsImpl.fromJson;
@@ -335,19 +393,21 @@ abstract class _ProjectHighlights implements ProjectDetails {
   @override
   String get apartmentID;
   @override
-  String get projectHighlightsDescription;
+  List<dynamic> get projectHighlightsDescription;
   @override
-  String get educationalInstitutions;
+  List<dynamic> get educationalInstitutions;
   @override
-  String get hospitals;
+  List<dynamic> get hospitals;
   @override
-  String get offices;
+  List<dynamic> get offices;
   @override
-  String get connectivity;
+  List<dynamic> get connectivity;
   @override
   String get configImages;
   @override
   String get gallery;
+  @override
+  String get flatSizes;
 
   /// Create a copy of ProjectDetails
   /// with the given fields replaced by the non-null parameter values.

@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pinput/pinput.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -46,22 +44,15 @@ class _OTPScreenState extends State<OTPScreen> {
         body: jsonEncode(body),
       )
           .then((response) async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
         setState(() {
           _isLoading = false;
         });
         if (response.statusCode == 200 || response.statusCode == 201) {
           Map responseData = jsonDecode(response.body);
-          await getTemporaryDirectory().then((tempDir) {
-            final file = File('${tempDir.path}/token.json');
-            file.delete();
-            file.writeAsString(jsonEncode(responseData));
-            prefs.setString('token', responseData['token']);
 
-            if (responseData['refreshToken'] != null) {
-              prefs.setString('refreshToken', responseData['refreshToken']);
-            }
+          await SharedPreferences.getInstance().then((sharedPref) {
+            sharedPref.setString('token', responseData['token']);
+            sharedPref.setString('refreshToken', responseData['refreshToken']);
 
             Navigator.pushAndRemoveUntil(
               context,

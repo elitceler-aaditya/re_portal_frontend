@@ -45,11 +45,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Future<void> clearPref() async {
-    final sharedPref = await SharedPreferences.getInstance();
-    sharedPref.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,18 +164,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             subtitle: 'Logout from the app',
             icon: Icons.logout,
             onTap: () async {
-              await getTemporaryDirectory().then((tempDir) {
-                final file = File('${tempDir.path}/token.json');
-                file.delete();
-              });
               ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
-              await clearPref().then(
-                (value) => Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const GetStarted()),
-                  (route) => false,
-                ),
-              );
+              SharedPreferences.getInstance().then((sharedPref) {
+                sharedPref.clear();
+                if (mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const GetStarted()),
+                    (route) => false,
+                  );
+                }
+              });
             },
           ),
         ],
