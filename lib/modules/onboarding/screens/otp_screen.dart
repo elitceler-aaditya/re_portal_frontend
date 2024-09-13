@@ -35,7 +35,6 @@ class _OTPScreenState extends State<OTPScreen> {
       "otp": _otpController.text,
       "orderId": widget.orderId,
     };
-    debugPrint("----------printing to: $url");
     try {
       await http
           .post(

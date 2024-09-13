@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -22,8 +23,13 @@ import 'package:http/http.dart' as http;
 class PropertyDetails extends ConsumerStatefulWidget {
   final ApartmentModel appartment;
   final bool bestDeals;
-  const PropertyDetails(
-      {super.key, required this.appartment, this.bestDeals = false});
+  final ApartmentModel? nextApartment;
+  const PropertyDetails({
+    super.key,
+    required this.appartment,
+    this.bestDeals = false,
+    this.nextApartment,
+  });
 
   @override
   ConsumerState<PropertyDetails> createState() => _PropertyDetailsState();
@@ -41,11 +47,115 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _highlightsScrollController = ScrollController();
   ProjectDetails _projectDetails = const ProjectDetails();
   List _projectGallery = [];
+  List configImages = [];
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
 
   List<Map<String, dynamic>> _highlights = [];
+
+  enquirySuccessBottomSheet() {
+    //bottomsheet
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 150,
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  SizedBox(
+                    height: 150,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(20)),
+                      child: Image.network(
+                        widget.appartment.image,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: CustomColors.white,
+                        )),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              color: CustomColors.green,
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: CustomColors.white,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    "Your details have been shared",
+                    style: TextStyle(
+                      color: CustomColors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.phone,
+                    color: CustomColors.black,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "For more details ${widget.appartment.companyPhone}",
+                    style: const TextStyle(
+                      color: CustomColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (widget.nextApartment != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: PropertyCard(
+                  apartment: widget.nextApartment!,
+                  isCompare: false,
+                  onCallPress: (context) {},
+                  globalKey: GlobalKey(),
+                ),
+              ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: AdsSection(),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   _keyHighlights(String title, String value) {
     return Container(
@@ -214,7 +324,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    enquirySuccessBottomSheet();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,
@@ -356,35 +466,32 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               height: 20,
               color: CustomColors.black50,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: SizedBox(
-                height: 40,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _configurations.length,
-                  itemBuilder: (context, index) {
-                    return CustomChip(
-                        text: _configurations[index],
-                        isSelected: _selectedConfig == 0,
-                        onTap: () {
-                          setState(() {
-                            _selectedConfig = 0;
-                          });
+            SizedBox(
+              height: 40,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _configurations.length,
+                itemBuilder: (context, index) {
+                  return CustomChip(
+                      text: _configurations[index],
+                      isSelected: _selectedConfig == 0,
+                      onTap: () {
+                        setState(() {
+                          _selectedConfig = 0;
                         });
-                  },
-                ),
+                      });
+                },
               ),
             ),
             const SizedBox(height: 10),
-            if (_projectDetails.configImages.split(",").isNotEmpty)
+            if (configImages.isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
                     ...List.generate(
-                      _projectDetails.configImages.split(",").length,
+                      configImages.length,
                       (index) => Container(
                         height: 200,
                         width: 300,
@@ -406,74 +513,79 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ),
               ),
             const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Key Highlights",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+            if (_projectDetails.educationalInstitutions.isNotEmpty &&
+                _projectDetails.hospitals.isNotEmpty &&
+                _projectDetails.connectivity.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Key Highlights",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const Divider(
-                    height: 20,
-                    color: CustomColors.black50,
-                  ),
-                  SizedBox(
-                    height: 40,
-                    child: ListView.builder(
-                      controller: _highlightsScrollController,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _projectDetails.educationalInstitutions.length,
-                      itemBuilder: (context, index) {
-                        return _keyHighlights(
-                          _projectDetails.educationalInstitutions[index]
-                              ['name'],
-                          _projectDetails.educationalInstitutions[index]['dist']
-                              .toString(),
-                        );
-                      },
+                    const Divider(
+                      height: 20,
+                      color: CustomColors.black50,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 40,
-                    child: ListView.builder(
-                      controller: _highlightsScrollController,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _projectDetails.hospitals.length,
-                      itemBuilder: (context, index) {
-                        return _keyHighlights(
-                          _projectDetails.hospitals[index]['name'],
-                          _projectDetails.hospitals[index]['dist'].toString(),
-                        );
-                      },
+                    SizedBox(
+                      height: 40,
+                      child: ListView.builder(
+                        controller: _highlightsScrollController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount:
+                            _projectDetails.educationalInstitutions.length,
+                        itemBuilder: (context, index) {
+                          return _keyHighlights(
+                            _projectDetails.educationalInstitutions[index]
+                                ['name'],
+                            _projectDetails.educationalInstitutions[index]
+                                    ['dist']
+                                .toString(),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 40,
-                    child: ListView.builder(
-                      controller: _highlightsScrollController,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _projectDetails.connectivity.length,
-                      itemBuilder: (context, index) {
-                        return _keyHighlights(
-                          _projectDetails.connectivity[index]['name'],
-                          _projectDetails.connectivity[index]['dist']
-                              .toString(),
-                        );
-                      },
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 40,
+                      child: ListView.builder(
+                        controller: _highlightsScrollController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _projectDetails.hospitals.length,
+                        itemBuilder: (context, index) {
+                          return _keyHighlights(
+                            _projectDetails.hospitals[index]['name'],
+                            _projectDetails.hospitals[index]['dist'].toString(),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 40,
+                      child: ListView.builder(
+                        controller: _highlightsScrollController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _projectDetails.connectivity.length,
+                        itemBuilder: (context, index) {
+                          return _keyHighlights(
+                            _projectDetails.connectivity[index]['name'],
+                            _projectDetails.connectivity[index]['dist']
+                                .toString(),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -567,8 +679,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   child: Image.network(
                     _projectGallery[index].trim(),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Center(
-                      child: Text(error.toString()),
+                    errorBuilder: (context, error, stackTrace) => const Center(
+                      child: Text("Failed to load image"),
                     ),
                     // loadingBuilder: (context, child, loadingProgress) => Center(
                     //   child: CircularProgressIndicator(
@@ -953,11 +1065,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       "Authorization": "Bearer ${ref.read(userProvider).token}",
     }).then((response) {
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("----------proj details res: ${response.body}");
         setState(() {
           _projectDetails = ProjectDetails.fromJson(
               jsonDecode(response.body)['formattedHighlightsApartment'][0]);
           _projectGallery = _projectDetails.gallery
+              .split(",")
+              .where((image) => image.trim().isNotEmpty)
+              .toList();
+          configImages = _projectDetails.configImages
               .split(",")
               .where((image) => image.trim().isNotEmpty)
               .toList();

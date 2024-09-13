@@ -54,7 +54,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> refreshToken(
       String refreshToken, Map<String, dynamic> fileData) async {
     if (refreshToken.isEmpty) {
-      debugPrint('-----------------Refresh token not found');
       return;
     }
 
@@ -70,7 +69,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
-        debugPrint('----------------new refresh token: $responseData');
 
         final newToken = responseData['token'];
         fileData["token"] = newToken;

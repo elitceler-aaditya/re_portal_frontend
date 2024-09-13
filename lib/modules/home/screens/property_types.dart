@@ -54,7 +54,6 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             // await prefs.setString('refreshToken', "what tf?");
             String refreshToken = prefs.getString('refreshToken') ?? '';
-            debugPrint('----------------$refreshToken');
           },
           child: RichText(
             textAlign: TextAlign.start,

@@ -87,7 +87,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("----------$_apartments");
     return Scaffold(
       backgroundColor: CustomColors.primary10,
       body: SingleChildScrollView(
@@ -228,6 +227,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   builder: (context) => PropertyDetails(
                                     appartment: _apartments[index],
                                     bestDeals: true,
+                                    nextApartment: _apartments[
+                                        (index + 1) % _apartments.length],
                                   ),
                                 ),
                               );
