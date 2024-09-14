@@ -61,15 +61,15 @@ class CustomListChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? CustomColors.primary : CustomColors.white,
           borderRadius: BorderRadius.circular(100),
-          border: Border.all(
-              color: isSelected ? CustomColors.primary : CustomColors.black25),
+          // border: Border.all(
+          //     color: isSelected ? CustomColors.primary : CustomColors.black25),
         ),
         child: Text(
           text,
           style: TextStyle(
             color: isSelected ? CustomColors.white : CustomColors.black25,
             fontSize: 12,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

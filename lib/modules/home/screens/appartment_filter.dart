@@ -1,20 +1,29 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/filter_button.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
+import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 
-class AppartmentFilter extends StatefulWidget {
+class AppartmentFilter extends ConsumerStatefulWidget {
   final List<ApartmentModel> apartmentList;
   const AppartmentFilter({super.key, required this.apartmentList});
 
   @override
-  State<AppartmentFilter> createState() => _AppartmentFilterState();
+  ConsumerState<AppartmentFilter> createState() => _AppartmentFilterState();
 }
 
-class _AppartmentFilterState extends State<AppartmentFilter> {
+class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
+  bool _loading = false;
   int appartmentType = 0;
-  int configurationType = 0;
+  List<String> selectedConfigurations = [];
   double _minBudget = 0;
   double _maxBudget = 1;
   double _budgetSliderMin = 1;
@@ -24,7 +33,89 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
   double _flatSizeSliderMin = 1;
   double _flatSizeSliderMax = 1;
   List<String> localities = [];
-  // List<String> amenities = [];
+  List<String> amenities = [];
+  List<String> apartmentTypeList = [
+    "Standalone",
+    "Semi-gated",
+    "Fully-gated",
+  ];
+  List<String> configurationList = [
+    "1 BHK",
+    "2 BHK",
+    "3 BHK",
+    "4 BHK",
+    "4+ BHK"
+  ];
+
+  updateFilters() {
+    ref.watch(filtersProvider.notifier).setAllFilters(
+          FiltersModel(
+            selectedLocalities: localities,
+            apartmentType: apartmentTypeList[appartmentType],
+            amenities: amenities,
+            selectedConfigurations: selectedConfigurations,
+            minBudget: _budgetSliderMin,
+            maxBudget: _budgetSliderMax,
+            minFlatSize: _flatSizeSliderMin,
+            maxFlatSize: _flatSizeSliderMax,
+          ),
+        );
+
+    getFilteredApartments();
+  }
+
+  Future<void> getFilteredApartments() async {
+    setState(() {
+      _loading = true;
+    });
+    Map<String, dynamic> params = {
+      'budgetMin': _budgetSliderMin.toString(),
+      'budgetMax': _budgetSliderMax.toString(),
+      'flatSizeMin': _flatSizeSliderMin.toString(),
+      'flatSizeMax': _flatSizeSliderMax.toString(),
+    };
+
+    if (localities.isNotEmpty) {
+      params['locality'] = localities.join(',');
+    }
+    if (amenities.isNotEmpty) {
+      params['amenities'] = amenities.join(',');
+    }
+    if (appartmentType != 0) {
+      params['apartmentType'] = apartmentTypeList[appartmentType];
+    }
+    if (selectedConfigurations.isNotEmpty) {
+      params['configuration'] = selectedConfigurations;
+    }
+
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/project/filterApartments";
+    Uri uri = Uri.parse(url).replace(queryParameters: params);
+    debugPrint("------------token${ref.watch(userProvider).token}");
+    http.get(
+      uri,
+      headers: {
+        "Authorization": "Bearer ${ref.watch(userProvider).token}",
+      },
+    ).then((response) async {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        List responseBody = jsonDecode(response.body)['apartments'];
+
+        ref.watch(homePropertiesProvider.notifier).setApartments(
+              responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
+            );
+      }
+      Navigator.pop(context);
+      setState(() {
+        _loading = false;
+      });
+    }).catchError((error) {
+      debugPrint("------------error$error");
+    });
+    setState(() {
+      _loading = false;
+    });
+  }
 
   String formatBudget(double budget) {
     //return budget in km lac and cr
@@ -49,7 +140,6 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
         .map((e) => e.budget)
         .reduce((value, element) => value > element ? value : element)
         .toDouble();
-
     //min and max flat size
     _minFlatSize = widget.apartmentList
         .map((e) => e.flatSize)
@@ -60,15 +150,31 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
         .reduce((value, element) => value > element ? value : element)
         .toDouble();
 
-    _budgetSliderMin = _minBudget;
-    _budgetSliderMax = _maxBudget;
-    _flatSizeSliderMin = _minFlatSize;
-    _flatSizeSliderMax = _maxFlatSize;
+    localities = ref.watch(filtersProvider).selectedLocalities;
+    appartmentType = apartmentTypeList.indexWhere(
+        (element) => element == ref.watch(filtersProvider).apartmentType);
+    amenities = ref.watch(filtersProvider).amenities;
+    selectedConfigurations = ref.watch(filtersProvider).selectedConfigurations;
+    _budgetSliderMin = ref.watch(filtersProvider).minBudget == 0
+        ? _minBudget
+        : ref.watch(filtersProvider).minBudget;
+    _budgetSliderMax = ref.watch(filtersProvider).maxBudget == 0
+        ? _maxBudget
+        : ref.watch(filtersProvider).maxBudget;
+    _flatSizeSliderMin = ref.watch(filtersProvider).minFlatSize == 0
+        ? _minFlatSize
+        : ref.watch(filtersProvider).minFlatSize;
+    _flatSizeSliderMax = ref.watch(filtersProvider).maxFlatSize == 0
+        ? _maxFlatSize
+        : ref.watch(filtersProvider).maxFlatSize;
+    setState(() {});
   }
 
   @override
   void initState() {
-    initValues();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initValues();
+    });
     super.initState();
   }
 
@@ -177,17 +283,36 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: widget.apartmentList
-                        .map((e) => e.locality.trim())
-                        .toSet()
-                        .map(
-                          (e) => CustomListChip(
-                            text: e,
-                            isSelected: false,
-                            onTap: () {},
+                    children: [
+                      ...localities.map(
+                        (e) => CustomListChip(
+                          text: e,
+                          isSelected: true,
+                          onTap: () {
+                            localities.remove(e);
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      ...widget.apartmentList
+                          .map((e) => e.locality.trim())
+                          .where((e) => !localities.contains(e))
+                          .toSet()
+                          .map(
+                            (e) => CustomListChip(
+                              text: e,
+                              isSelected: false,
+                              onTap: () {
+                                if (localities.contains(e)) {
+                                  localities.remove(e);
+                                } else {
+                                  localities.add(e);
+                                }
+                                setState(() {});
+                              },
+                            ),
                           ),
-                        )
-                        .toList(),
+                    ],
                   ),
                 ),
 
@@ -206,38 +331,22 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                 ),
                 const SizedBox(height: 6),
 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CustomRadioButton(
-                        text: "Standalone",
-                        isSelected: appartmentType == 0,
+                SizedBox(
+                  height: 30,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: apartmentTypeList.length,
+                    itemBuilder: (context, index) {
+                      return CustomRadioButton(
+                        text: apartmentTypeList[index],
+                        isSelected: appartmentType == index,
                         onTap: () {
                           setState(() {
-                            appartmentType = 0;
+                            appartmentType = index;
                           });
                         },
-                      ),
-                      CustomRadioButton(
-                        text: "Semi-gated",
-                        isSelected: appartmentType == 1,
-                        onTap: () {
-                          setState(() {
-                            appartmentType = 1;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "Fully-gated",
-                        isSelected: appartmentType == 2,
-                        onTap: () {
-                          setState(() {
-                            appartmentType = 2;
-                          });
-                        },
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
 
@@ -294,20 +403,40 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: widget.apartmentList
-                        .map((e) => e.amenities)
-                        .join(',')
-                        .split(',')
-                        .map((amenity) => amenity.trim())
-                        .toSet()
-                        .map(
-                          (e) => CustomListChip(
-                            text: e,
-                            isSelected: false,
-                            onTap: () {},
+                    children: [
+                      ...amenities.map(
+                        (e) => CustomListChip(
+                          text: e,
+                          isSelected: true,
+                          onTap: () {
+                            amenities.remove(e);
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      ...widget.apartmentList
+                          .map((e) => e.amenities)
+                          .join(',')
+                          .split(',')
+                          .map((amenity) => amenity.trim())
+                          .where((e) => e.isNotEmpty)
+                          .where((e) => !amenities.contains(e))
+                          .toSet()
+                          .map(
+                            (e) => CustomListChip(
+                              text: e,
+                              isSelected: false,
+                              onTap: () {
+                                if (amenities.contains(e)) {
+                                  amenities.remove(e);
+                                } else {
+                                  amenities.add(e);
+                                }
+                                setState(() {});
+                              },
+                            ),
                           ),
-                        )
-                        .toList(),
+                    ],
                   ),
                 ),
 
@@ -325,58 +454,33 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                 ),
                 const SizedBox(height: 6),
 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CustomRadioButton(
-                        text: "1 BHK",
-                        isSelected: configurationType == 0,
+                SizedBox(
+                  height: 30,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return CustomRadioButton(
+                        text: configurationList[index],
+                        isSelected: selectedConfigurations
+                            .contains(configurationList[index]),
                         onTap: () {
                           setState(() {
-                            configurationType = 0;
+                            if (selectedConfigurations
+                                .contains(configurationList[index])) {
+                              selectedConfigurations
+                                  .remove(configurationList[index]);
+                            } else {
+                              selectedConfigurations
+                                  .add(configurationList[index]);
+                            }
                           });
                         },
-                      ),
-                      CustomRadioButton(
-                        text: "2 BHK",
-                        isSelected: configurationType == 1,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 1;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "3 BHK",
-                        isSelected: configurationType == 2,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 2;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "4 BHK",
-                        isSelected: configurationType == 3,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 3;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "4+ BHK",
-                        isSelected: configurationType == 4,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 4;
-                          });
-                        },
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
+
                 const Divider(
                   color: CustomColors.secondary,
                   height: 30,
@@ -394,8 +498,8 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("₹${formatBudget(_minBudget)}"),
-                    Text("₹${formatBudget(_maxBudget)}"),
+                    Text("₹${formatBudget(_budgetSliderMin)}"),
+                    Text("₹${formatBudget(_budgetSliderMax)}"),
                   ],
                 ),
                 SliderTheme(
@@ -446,8 +550,8 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("${_minFlatSize.toInt()} sq.ft"),
-                    Text("${_maxFlatSize.toInt()} sq.ft"),
+                    Text("${_flatSizeSliderMin.toInt()} sq.ft"),
+                    Text("${_flatSizeSliderMax.toInt()} sq.ft"),
                   ],
                 ),
                 SliderTheme(
@@ -522,21 +626,27 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(context);
+                      updateFilters();
                     },
                     child: Container(
                       height: 60,
                       width: double.infinity,
                       color: CustomColors.primary20,
-                      child: const Center(
-                        child: Text(
-                          "Apply",
-                          style: TextStyle(
-                            color: CustomColors.primary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
+                      child: Center(
+                        child: _loading
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: CustomColors.primary,
+                                ),
+                              )
+                            : const Text(
+                                "Apply",
+                                style: TextStyle(
+                                  color: CustomColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
                       ),
                     ),
                   ),

@@ -33,7 +33,7 @@ class HomeData {
   }
 }
 
-final homeDataProvider =
+final homePropertiesProvider =
     StateNotifierProvider<HomeDataNotifier, HomeData>((ref) {
   return HomeDataNotifier();
 });

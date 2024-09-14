@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jwt_io/jwt_io.dart';
@@ -90,7 +89,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
               image: 'assets/images/tile_bg1.png',
               onTap: () {
                 ref
-                    .read(homeDataProvider.notifier)
+                    .read(homePropertiesProvider.notifier)
                     .setPropertyType(PropertyTypes.commercial);
                 rightSlideTransition(
                   context,
@@ -104,7 +103,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
               image: 'assets/images/tile_bg2.png',
               onTap: () {
                 ref
-                    .read(homeDataProvider.notifier)
+                    .read(homePropertiesProvider.notifier)
                     .setPropertyType(PropertyTypes.villas);
                 rightSlideTransition(
                   context,
@@ -118,7 +117,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
               image: 'assets/images/tile_bg3.png',
               onTap: () {
                 ref
-                    .read(homeDataProvider.notifier)
+                    .read(homePropertiesProvider.notifier)
                     .setPropertyType(PropertyTypes.appartments);
                 rightSlideTransition(
                   context,
@@ -132,7 +131,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
               image: 'assets/images/tile_bg4.png',
               onTap: () {
                 ref
-                    .read(homeDataProvider.notifier)
+                    .read(homePropertiesProvider.notifier)
                     .setPropertyType(PropertyTypes.plots);
                 rightSlideTransition(
                   context,

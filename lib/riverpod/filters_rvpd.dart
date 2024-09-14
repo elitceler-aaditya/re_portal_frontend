@@ -1,113 +1,104 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FilterState {
-  final bool isFilterApplied;
-  final int appartmentType;
-  final int configurationType;
+// Define the data model
+class FiltersModel {
+  final List<String> selectedLocalities;
+  final String apartmentType;
+  final List<String> amenities;
+  final List<String> selectedConfigurations;
   final double minBudget;
   final double maxBudget;
-  final double budgetSliderMin;
-  final double budgetSliderMax;
   final double minFlatSize;
   final double maxFlatSize;
-  final double flatSizeSliderMin;
-  final double flatSizeSliderMax;
-  final List<String> localities;
-  final List<String> amenities;
 
-  FilterState({
-    this.isFilterApplied = false,
-    this.appartmentType = 0,
-    this.configurationType = 0,
-    this.minBudget = 0.0,
-    this.maxBudget = 0.0,
-    this.budgetSliderMin = 0.0,
-    this.budgetSliderMax = 0.0,
-    this.minFlatSize = 0.0,
-    this.maxFlatSize = 0.0,
-    this.flatSizeSliderMin = 0.0,
-    this.flatSizeSliderMax = 0.0,
-    this.localities = const [],
-    this.amenities = const [],
+  FiltersModel({
+     this.selectedLocalities = const [],
+     this.apartmentType = '',
+     this.amenities = const [],
+     this.selectedConfigurations = const [],
+     this.minBudget = 0.0,
+     this.maxBudget = 0.0,
+     this.minFlatSize = 0.0,
+     this.maxFlatSize = 0.0,
   });
 
-  FilterState copyWith({
-    bool? isFilterApplied,
-    int? appartmentType,
-    int? configurationType,
+  FiltersModel copyWith({
+    List<String>? selectedLocalities,
+    String? apartmentType,
+    List<String>? amenities,
+    List<String>? selectedConfigurations,
     double? minBudget,
     double? maxBudget,
-    double? budgetSliderMin,
-    double? budgetSliderMax,
     double? minFlatSize,
     double? maxFlatSize,
-    double? flatSizeSliderMin,
-    double? flatSizeSliderMax,
-    List<String>? localities,
-    List<String>? amenities,
   }) {
-    return FilterState(
-      isFilterApplied: isFilterApplied ?? this.isFilterApplied,
-      appartmentType: appartmentType ?? this.appartmentType,
-      configurationType: configurationType ?? this.configurationType,
+    return FiltersModel(
+      selectedLocalities: selectedLocalities ?? this.selectedLocalities,
+      apartmentType: apartmentType ?? this.apartmentType,
+      amenities: amenities ?? this.amenities,
+      selectedConfigurations:
+          selectedConfigurations ?? this.selectedConfigurations,
       minBudget: minBudget ?? this.minBudget,
       maxBudget: maxBudget ?? this.maxBudget,
-      budgetSliderMin: budgetSliderMin ?? this.budgetSliderMin,
-      budgetSliderMax: budgetSliderMax ?? this.budgetSliderMax,
       minFlatSize: minFlatSize ?? this.minFlatSize,
       maxFlatSize: maxFlatSize ?? this.maxFlatSize,
-      flatSizeSliderMin: flatSizeSliderMin ?? this.flatSizeSliderMin,
-      flatSizeSliderMax: flatSizeSliderMax ?? this.flatSizeSliderMax,
-      localities: localities ?? this.localities,
-      amenities: amenities ?? this.amenities,
     );
   }
 }
 
-class FilterStateNotifier extends StateNotifier<FilterState> {
-  FilterStateNotifier() : super(FilterState());
+// Define the state notifier
+class FiltersNotifier extends StateNotifier<FiltersModel> {
+  FiltersNotifier()
+      : super(FiltersModel(
+          selectedLocalities: [],
+          apartmentType: '',
+          amenities: [],
+          selectedConfigurations: [],
+          minBudget: 0,
+          maxBudget: 0,
+          minFlatSize: 0,
+          maxFlatSize: 0,
+        ));
 
-  void setIsFilterApplied(bool value) {
-    state = state.copyWith(isFilterApplied: value);
+  void setAllFilters(FiltersModel filters) {
+    state = filters;
   }
 
-  void setAppartmentType(int value) {
-    state = state.copyWith(appartmentType: value);
+  void updateSelectedLocalities(List<String> localities) {
+    state = state.copyWith(selectedLocalities: localities);
   }
 
-  void setConfigurationType(int value) {
-    state = state.copyWith(configurationType: value);
+  void updateApartmentType(String type) {
+    state = state.copyWith(apartmentType: type);
   }
 
-  void setBudgetRange(double min, double max) {
-    state = state.copyWith(minBudget: min, maxBudget: max);
+  void updateAmenities(List<String> amenities) {
+    state = state.copyWith(amenities: amenities);
   }
 
-  void setBudgetSliderRange(double min, double max) {
-    state = state.copyWith(budgetSliderMin: min, budgetSliderMax: max);
+  void updateSelectedConfigurations(List<String> configurations) {
+    state = state.copyWith(selectedConfigurations: configurations);
   }
 
-  void setFlatSizeRange(double min, double max) {
-    state = state.copyWith(minFlatSize: min, maxFlatSize: max);
+  void updateMinBudget(double budget) {
+    state = state.copyWith(minBudget: budget);
   }
 
-  void setFlatSizeSliderRange(double min, double max) {
-    state = state.copyWith(flatSizeSliderMin: min, flatSizeSliderMax: max);
+  void updateMaxBudget(double budget) {
+    state = state.copyWith(maxBudget: budget);
   }
 
-  void setLocalities(List<String> value) {
-    state = state.copyWith(localities: value);
+  void updateMinFlatSize(double size) {
+    state = state.copyWith(minFlatSize: size);
   }
 
-  void setAmenities(List<String> value) {
-    state = state.copyWith(amenities: value);
-  }
-
-  void clearFilters() {
-    state = FilterState();
+  void updateMaxFlatSize(double size) {
+    state = state.copyWith(maxFlatSize: size);
   }
 }
 
-final filterStateProvider = StateNotifierProvider<FilterStateNotifier, FilterState>((ref) {
-  return FilterStateNotifier();
+// Define the provider
+final filtersProvider =
+    StateNotifierProvider<FiltersNotifier, FiltersModel>((ref) {
+  return FiltersNotifier();
 });

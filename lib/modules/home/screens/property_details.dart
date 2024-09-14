@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,7 @@ import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,7 +46,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
-  final _doubtController = TextEditingController();
+  final _enquiryDetails = TextEditingController();
   final _highlightsScrollController = ScrollController();
   ProjectDetails _projectDetails = const ProjectDetails();
   List _projectGallery = [];
@@ -54,8 +57,63 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   List<Map<String, dynamic>> _highlights = [];
 
+  Future<void> sendEnquiry(BuildContext context) async {
+    final url = Uri.parse("${dotenv.env['BASE_URL']}/user/lead-generation");
+    final body = {
+      "name": _nameController.text.trim(),
+      "number": _mobileController.text.trim(),
+      "email": _emailController.text.trim(),
+      "enquiryDetails": _enquiryDetails.text.trim().isEmpty
+          ? "No details"
+          : _enquiryDetails.text.trim(),
+    };
+
+    final token = ref.read(userProvider).token;
+    if (token.isEmpty) {
+      errorSnackBar(context, 'User not authenticated');
+      return;
+    }
+
+    try {
+      final response = await http
+          .post(
+            url,
+            headers: {
+              "Authorization": "Bearer $token",
+              "Content-Type": "application/json",
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (!context.mounted) return;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Navigator.pop(context);
+        await enquirySuccessBottomSheet();
+      } else {
+        throw HttpException('Failed to send enquiry: ${response.statusCode}');
+      }
+    } on TimeoutException {
+      errorSnackBar(context, 'Request timed out. Please try again.');
+    } on SocketException {
+      errorSnackBar(context, 'No internet connection');
+    } on HttpException catch (e) {
+      errorSnackBar(context, e.message);
+      debugPrint("HTTP Exception: ${e.message}");
+    } catch (e) {
+      errorSnackBar(context, 'An unexpected error occurred');
+      debugPrint("Unexpected error: $e");
+    }
+  }
+
+  void errorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
   enquirySuccessBottomSheet() {
-    //bottomsheet
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -288,6 +346,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 decoration: const InputDecoration(
                                   label: Text("Name"),
                                   border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 16),
@@ -296,6 +359,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 decoration: const InputDecoration(
                                   label: Text('Mobile'),
                                   border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
                                 ),
                                 keyboardType: TextInputType.phone,
                               ),
@@ -305,16 +373,26 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 decoration: const InputDecoration(
                                   label: Text('Email'),
                                   border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 16),
                               TextField(
-                                controller: _doubtController,
+                                controller: _enquiryDetails,
                                 textAlign: TextAlign.start,
                                 decoration: const InputDecoration(
                                   label: Text('Enquire about your doubts'),
                                   border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
                                 ),
                                 minLines: 1,
                                 maxLines: 3,
@@ -324,7 +402,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    enquirySuccessBottomSheet();
+                                    sendEnquiry(context);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,

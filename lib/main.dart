@@ -30,8 +30,6 @@ class _MyAppState extends State<MyApp> {
           fontFamily: "eudoxus",
           colorScheme: ColorScheme.fromSeed(
             seedColor: CustomColors.primary,
-            primary: CustomColors.white,
-            background: CustomColors.primary10,
           ),
           useMaterial3: true,
         ),

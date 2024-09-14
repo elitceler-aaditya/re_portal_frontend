@@ -17,9 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({
-    super.key,
-  });
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -27,7 +25,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<ApartmentModel> _apartments = [];
+  List<ApartmentModel> allApartments = [];
+  bool loading = true;
 
   String formatBudget(double budget) {
     //return budget in k format or lakh and cr format
@@ -55,12 +54,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         List responseBody = jsonDecode(response.body)['apartments'];
+
+        ref.watch(homePropertiesProvider.notifier).setApartments(
+              responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
+            );
+        allApartments =
+            responseBody.map((e) => ApartmentModel.fromJson(e)).toList();
+
         setState(() {
-          _apartments = responseBody
-              .map<ApartmentModel>((e) => ApartmentModel.fromJson(e))
-              .toList();
+          loading = false;
         });
       }
+    }).onError((error, stackTrace) {
+      debugPrint("error: $error");
+      setState(() {
+        loading = false;
+      });
     });
   }
 
@@ -72,7 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: CustomColors.primary10,
       scrollControlDisabledMaxHeightRatio: 1,
       builder: (context) {
-        return AppartmentFilter(apartmentList: _apartments);
+        return AppartmentFilter(apartmentList: allApartments);
       },
     );
   }
@@ -112,7 +121,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         color: CustomColors.white,
                       )),
                   Text(
-                    ref.watch(homeDataProvider).propertyType,
+                    ref.watch(homePropertiesProvider).propertyType,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -164,7 +173,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.zero,
                               hintText:
-                                  'Search for ${ref.watch(homeDataProvider).propertyType.toLowerCase()}',
+                                  'Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}',
                               hintStyle: const TextStyle(
                                 color: CustomColors.black50,
                               ),
@@ -176,9 +185,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         if (_searchController.text.trim().isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.only(right: 6),
-                            child: Icon(Icons.location_pin),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: SvgPicture.string(
+                              """<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M20 12C20 16.4183 16.4183 20 12 20M20 12C20 7.58172 16.4183 4 12 4M20 12H22M12 20C7.58172 20 4 16.4183 4 12M12 20V22M4 12C4 7.58172 7.58172 4 12 4M4 12H2M12 4V2M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>""",
+                            ),
                           ),
                         if (_searchController.text.trim().isEmpty)
                           TextButton.icon(
@@ -214,21 +225,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_apartments.isNotEmpty)
+                  if (ref.watch(homePropertiesProvider).apartments.isNotEmpty)
                     Column(
                       children: [
                         FlutterCarousel.builder(
-                          itemCount: min(5, _apartments.length),
+                          itemCount: min(
+                              5,
+                              ref
+                                  .watch(homePropertiesProvider)
+                                  .apartments
+                                  .length),
                           itemBuilder: (context, index, realIndex) =>
                               GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => PropertyDetails(
-                                    appartment: _apartments[index],
+                                    appartment: ref
+                                        .watch(homePropertiesProvider)
+                                        .apartments[index],
                                     bestDeals: true,
-                                    nextApartment: _apartments[
-                                        (index + 1) % _apartments.length],
+                                    nextApartment: ref
+                                            .watch(homePropertiesProvider)
+                                            .apartments[
+                                        (index + 1) %
+                                            ref
+                                                .watch(homePropertiesProvider)
+                                                .apartments
+                                                .length],
                                   ),
                                 ),
                               );
@@ -236,17 +260,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             child: Stack(
                               children: [
                                 Hero(
-                                  tag: "best-${_apartments[index].apartmentID}",
+                                  tag:
+                                      "best-${ref.watch(homePropertiesProvider).apartments[index].apartmentID}",
                                   child: Container(
                                     height: 220,
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: CustomColors.black25,
                                       borderRadius: BorderRadius.circular(10),
-                                      image: _apartments[index].image.isNotEmpty
+                                      image: ref
+                                              .watch(homePropertiesProvider)
+                                              .apartments[index]
+                                              .image
+                                              .isNotEmpty
                                           ? DecorationImage(
-                                              image: NetworkImage(
-                                                  _apartments[index].image),
+                                              image: NetworkImage(ref
+                                                  .watch(homePropertiesProvider)
+                                                  .apartments[index]
+                                                  .image),
                                               fit: BoxFit.cover,
                                             )
                                           : null,
@@ -278,7 +309,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          _apartments[index].apartmentName,
+                                          ref
+                                              .watch(homePropertiesProvider)
+                                              .apartments[index]
+                                              .apartmentName,
                                           style: const TextStyle(
                                             color: CustomColors.white,
                                             fontSize: 20,
@@ -286,7 +320,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           ),
                                         ),
                                         Text(
-                                          "${_apartments[index].flatSize} sq ft • ${formatBudget(_apartments[index].budget)} • ${_apartments[index].locality}",
+                                          "${ref.watch(homePropertiesProvider).apartments[index].flatSize} sq ft • ${formatBudget(ref.watch(homePropertiesProvider).apartments[index].budget)} • ${ref.watch(homePropertiesProvider).apartments[index].locality}",
                                           style: const TextStyle(
                                             color: CustomColors.white,
                                             fontSize: 10,
@@ -332,34 +366,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             const SizedBox(height: 10),
 
-            if (_apartments.isEmpty)
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 6,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Shimmer.fromColors(
-                      baseColor: CustomColors.black10,
-                      highlightColor: CustomColors.black25,
-                      child: Container(
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: CustomColors.white,
-                          borderRadius: BorderRadius.circular(10),
+            loading
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 6,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Shimmer.fromColors(
+                          baseColor: CustomColors.black10,
+                          highlightColor: CustomColors.black25,
+                          child: Container(
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
                         ),
+                      );
+                    },
+                  )
+                : ref.watch(homePropertiesProvider).apartments.isEmpty
+                    ? const SizedBox(
+                        height: 500,
+                        width: double.infinity,
+                        child: Center(
+                          child: Text(
+                            "No apartments found",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : PropertyList(
+                        apartments:
+                            ref.watch(homePropertiesProvider).apartments,
+                        displayAds: true,
+                        compare: true,
                       ),
-                    ),
-                  );
-                },
-              ),
-            if (_apartments.isNotEmpty)
-              PropertyList(
-                apartments: _apartments,
-                displayAds: true,
-                compare: true,
-              ),
           ],
         ),
       ),
