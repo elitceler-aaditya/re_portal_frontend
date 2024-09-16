@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
+import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
@@ -24,7 +25,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
   List<ApartmentModel> allApartments = [];
   bool loading = true;
 
@@ -113,13 +113,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Row(
                 children: [
                   IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: CustomColors.white,
-                      )),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: CustomColors.white,
+                    ),
+                  ),
                   Text(
                     ref.watch(homePropertiesProvider).propertyType,
                     style: const TextStyle(
@@ -151,47 +152,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 children: [
                   //search bar
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: CustomColors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.search),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              setState(() {});
-                            },
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.zero,
-                              hintText:
-                                  'Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}',
-                              hintStyle: const TextStyle(
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SearchApartment(apartments: allApartments),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: CustomColors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.search),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
                                 color: CustomColors.black50,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none,
                               ),
                             ),
                           ),
-                        ),
-                        if (_searchController.text.trim().isEmpty)
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 4),
                             child: SvgPicture.string(
                               """<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M20 12C20 16.4183 16.4183 20 12 20M20 12C20 7.58172 16.4183 4 12 4M20 12H22M12 20C7.58172 20 4 16.4183 4 12M12 20V22M4 12C4 7.58172 7.58172 4 12 4M4 12H2M12 4V2M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>""",
                             ),
                           ),
-                        if (_searchController.text.trim().isEmpty)
                           TextButton.icon(
                             style: TextButton.styleFrom(
                               backgroundColor: CustomColors.secondary,
@@ -210,7 +206,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                           )
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

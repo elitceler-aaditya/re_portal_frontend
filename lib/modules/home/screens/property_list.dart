@@ -93,23 +93,13 @@ class _PropertState extends ConsumerState<PropertyList> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      // mainAxisAlignment: MainAxisAlignment.start,
-      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //Main body
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              // ListView.builder(
-              //   itemCount: widget.apartments.length,
-              //   itemBuilder: (context, index) {
-              //     return ListTile(
-              //       title: Text(widget.apartments[index].apartmentName),
-              //       subtitle: Text(widget.apartments[index].locality),
-              //     );
-              //   },
-              // )
+        
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

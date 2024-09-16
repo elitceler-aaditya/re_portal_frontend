@@ -17,7 +17,6 @@ import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
