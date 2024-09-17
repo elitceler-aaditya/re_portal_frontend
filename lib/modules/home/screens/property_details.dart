@@ -9,11 +9,14 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_map_view.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -23,12 +26,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
 class PropertyDetails extends ConsumerStatefulWidget {
-  final ApartmentModel appartment;
+  final ApartmentModel apartment;
   final bool bestDeals;
   final ApartmentModel? nextApartment;
   const PropertyDetails({
     super.key,
-    required this.appartment,
+    required this.apartment,
     this.bestDeals = false,
     this.nextApartment,
   });
@@ -132,7 +135,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       borderRadius:
                           const BorderRadius.vertical(top: Radius.circular(20)),
                       child: Image.network(
-                        widget.appartment.image,
+                        widget.apartment.image,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -185,7 +188,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    "For more details ${widget.appartment.companyPhone}",
+                    "For more details ${widget.apartment.companyPhone}",
                     style: const TextStyle(
                       color: CustomColors.black,
                       fontWeight: FontWeight.bold,
@@ -488,7 +491,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    "${widget.appartment.locality}, Hyderabad",
+                    "${widget.apartment.locality}, Hyderabad",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -523,6 +526,54 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     decoration: BoxDecoration(
                       color: CustomColors.white,
                       borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: GoogleMap(
+                            zoomControlsEnabled: false,
+                            mapToolbarEnabled: false,
+                            initialCameraPosition: CameraPosition(
+                              target: LatLng(
+                                  widget.apartment.lat, widget.apartment.long),
+                              zoom: 15,
+                            ),
+                            markers: {
+                              Marker(
+                                markerId:
+                                    MarkerId(widget.apartment.apartmentID),
+                                position: LatLng(widget.apartment.lat,
+                                    widget.apartment.long),
+                                icon: BitmapDescriptor.defaultMarkerWithHue(2),
+                                infoWindow: InfoWindow(
+                                  title: widget.apartment.apartmentName,
+                                ),
+                              ),
+                            },
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PropertyMapView(
+                                  apartment: widget.apartment,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 150,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: CustomColors.black.withOpacity(0.001),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -890,16 +941,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       children: [
         Hero(
           tag: widget.bestDeals
-              ? "best-${widget.appartment.apartmentID}"
-              : widget.appartment.apartmentID,
+              ? "best-${widget.apartment.apartmentID}"
+              : widget.apartment.apartmentID,
           child: Container(
             height: h + 30,
             width: double.infinity,
             decoration: BoxDecoration(
               color: CustomColors.black25,
-              image: widget.appartment.image.isNotEmpty
+              image: widget.apartment.image.isNotEmpty
                   ? DecorationImage(
-                      image: NetworkImage(widget.appartment.image),
+                      image: NetworkImage(widget.apartment.image),
                       fit: BoxFit.cover,
                     )
                   : null,
@@ -941,7 +992,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ),
               ),
               Text(
-                widget.appartment.apartmentName,
+                widget.apartment.apartmentName,
                 style: const TextStyle(
                   color: CustomColors.white,
                   fontWeight: FontWeight.bold,
@@ -953,7 +1004,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   rightSlideTransition(
                     context,
                     BuilderPortfolio(
-                      projectId: widget.appartment.projectId,
+                      projectId: widget.apartment.projectId,
                     ),
                   );
                 },
@@ -969,7 +1020,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         text: "By ",
                       ),
                       TextSpan(
-                        text: widget.appartment.companyName,
+                        text: widget.apartment.companyName,
                         style: const TextStyle(
                           decoration: TextDecoration.underline,
                           decorationColor: CustomColors.white,
@@ -1066,7 +1117,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       'Call now',
                       () {
                         launchUrl(Uri.parse(
-                                "tel:${widget.appartment.companyPhone}"))
+                                "tel:${widget.apartment.companyPhone}"))
                             .then(
                           (value) => _removeOverlay(),
                         );
@@ -1081,7 +1132,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             )),
                         'Chat on Whatsapp', () {
                       launchUrl(Uri.parse(
-                              'https://wa.me/+91${widget.appartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                              'https://wa.me/+91${widget.apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
                           .then(
                         (value) => _removeOverlay(),
                       );
@@ -1137,7 +1188,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   getPropertyDetails() {
     Uri url = Uri.parse(
-        "${dotenv.env['BASE_URL']}/user/getProjectHighlights/${widget.appartment.apartmentID}");
+        "${dotenv.env['BASE_URL']}/user/getProjectHighlights/${widget.apartment.apartmentID}");
     http.get(url, headers: {
       "Authorization": "Bearer ${ref.read(userProvider).token}",
     }).then((response) {
@@ -1161,33 +1212,33 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   @override
   void initState() {
     getPropertyDetails();
-    _configurations = widget.appartment.configuration.split(',');
-    _amenities = widget.appartment.amenities.split(',');
+    _configurations = widget.apartment.configuration.split(',');
+    _amenities = widget.apartment.amenities.split(',');
     _nameController.text = ref.read(userProvider).name;
     _mobileController.text = ref.read(userProvider).phoneNumber;
     _emailController.text = ref.read(userProvider).email;
 
     _highlights = [
       {
-        "title": "Project Size",
+        "title": "Configurations",
         "value":
-            "${widget.appartment.configuration.split(',').map((config) => config.replaceAll('BHK', '')).join(',')} BHK"
+            "${widget.apartment.configuration.split(',').map((config) => config.replaceAll('BHK', '')).join(',')} BHK"
       },
-      {"title": "No. of Floors", "value": widget.appartment.noOfFloor},
-      {"title": "No. of Flats", "value": widget.appartment.noOfFlats},
-      {"title": "No. of Blocks", "value": widget.appartment.noOfBlocks},
+      {"title": "No. of Floors", "value": widget.apartment.noOfFloor},
+      {"title": "No. of Flats", "value": widget.apartment.noOfFlats},
+      {"title": "No. of Blocks", "value": widget.apartment.noOfBlocks},
       {
         "title": "Possession Date",
         "value": DateFormat("MMM yyyy")
-            .format(DateTime.parse(widget.appartment.possessionDate))
+            .format(DateTime.parse(widget.apartment.possessionDate))
       },
       {
         "title": "Club House Size",
-        "value": int.tryParse(widget.appartment.clubhouseSize) != null
-            ? '${widget.appartment.clubhouseSize} Sq.ft'
-            : widget.appartment.clubhouseSize
+        "value": int.tryParse(widget.apartment.clubhouseSize) != null
+            ? '${widget.apartment.clubhouseSize} Sq.ft'
+            : widget.apartment.clubhouseSize
       },
-      {"title": "Open Space", "value": "${widget.appartment.openSpace} Sq.ft"},
+      {"title": "Open Space", "value": "${widget.apartment.openSpace} Sq.ft"},
     ];
     super.initState();
   }

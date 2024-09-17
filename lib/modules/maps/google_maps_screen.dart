@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:re_portal_frontend/modules/maps/maps_property_card.dart';
+import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class GoogleMapsScreen extends StatefulWidget {
-  const GoogleMapsScreen({super.key});
+  final List<ApartmentModel> apartments;
+  const GoogleMapsScreen({super.key, required this.apartments});
 
   @override
   State<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
@@ -12,7 +17,10 @@ class GoogleMapsScreen extends StatefulWidget {
 
 class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   LatLng? currentLocation;
-  static const googlePlex = LatLng(18.516958014646075, 73.86555773056193);
+  List<LatLng> locations = [];
+  StreamSubscription<LocationData>? _locationSubscription;
+  final Completer<GoogleMapController> _googleMapsController =
+      Completer<GoogleMapController>();
 
   fetchLocationUpdate() async {
     bool serviceEnabled;
@@ -34,7 +42,8 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
       }
     }
 
-    Location.instance.onLocationChanged.listen((LocationData currentLocation) {
+    _locationSubscription = Location.instance.onLocationChanged
+        .listen((LocationData currentLocation) {
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         setState(() {
@@ -42,11 +51,6 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
               LatLng(currentLocation.latitude!, currentLocation.longitude!);
         });
       }
-
-      setState(() {
-        this.currentLocation =
-            LatLng(currentLocation.latitude!, currentLocation.longitude!);
-      });
     });
   }
 
@@ -54,8 +58,15 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocationUpdate();
+      locations = widget.apartments.map((e) => LatLng(e.lat, e.long)).toList();
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -68,19 +79,79 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
                 strokeCap: StrokeCap.round,
               ),
             )
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: currentLocation!,
-                zoom: 14,
-              ),
-              markers: {
-                Marker(
-                  markerId: const MarkerId('currentLocation'),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(2),
-                  position: currentLocation!,
-                  infoWindow: const InfoWindow(title: 'Current Location'),
+          : Stack(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: GoogleMap(
+                    onMapCreated: (controller) =>
+                        _googleMapsController.complete(controller),
+                    initialCameraPosition: CameraPosition(
+                      target: locations.last,
+                      zoom: 14,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('currentLocation'),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(2),
+                        position: currentLocation!,
+                        infoWindow: const InfoWindow(title: 'Current Location'),
+                      ),
+                      ...locations.map(
+                        (e) => Marker(
+                          markerId: MarkerId(e.toString()),
+                          position: e,
+                          infoWindow: const InfoWindow(title: 'Location'),
+                        ),
+                      )
+                    },
+                  ),
                 ),
-              },
+                //top left close button
+                Positioned(
+                  top: 50,
+                  left: 10,
+                  child: IconButton.filled(
+                    style: IconButton.styleFrom(
+                        backgroundColor: CustomColors.primary),
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
+                  right: 0,
+                  left: 0,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        //Apaprtmet list
+                        const SizedBox(width: 10),
+                        ...widget.apartments.map(
+                          (e) => MapsPropertyCard(
+                            apartment: e,
+                            onTap: () {
+                              //camera should pan to this location
+                              _googleMapsController.future.then((controller) {
+                                controller.animateCamera(
+                                  CameraUpdate.newCameraPosition(
+                                    CameraPosition(
+                                      target: LatLng(e.lat, e.long),
+                                      zoom: 14,
+                                    ),
+                                  ),
+                                );
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }

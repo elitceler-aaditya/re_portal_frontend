@@ -44,7 +44,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PropertyDetails(
-              appartment: widget.apartment,
+              apartment: widget.apartment,
               nextApartment: widget.nextApartment,
             ),
           ),
@@ -178,7 +178,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "This beautiful property lies in ${widget.apartment.locality} with ${widget.apartment.openSpace} acres of free space. It is a perfect place for a peaceful life.",
+                    widget.apartment.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

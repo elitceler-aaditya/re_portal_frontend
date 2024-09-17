@@ -26,8 +26,11 @@ class ApartmentModel with _$ApartmentModel {
     @Default("") String createdAt,
     @Default("") String updatedAt,
     @Default("") String image,
+    @Default(0.0) double lat,
+    @Default(0.0) double long,
+    @Default("") String description,
   }) = _AppartmentModel;
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) =>
-      _$AppartmentModelFromJson(json);
+      _$ApartmentModelFromJson(json);
 }

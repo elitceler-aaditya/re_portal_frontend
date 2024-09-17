@@ -198,7 +198,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PropertyDetails(
-                  appartment: widget.sortedApartments[index],
+                  apartment: widget.sortedApartments[index],
                 ),
               ),
             );

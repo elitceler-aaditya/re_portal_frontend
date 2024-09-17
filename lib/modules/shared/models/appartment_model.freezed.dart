@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-ApartmentModel _$AppartmentModelFromJson(Map<String, dynamic> json) {
+ApartmentModel _$ApartmentModelFromJson(Map<String, dynamic> json) {
   return _AppartmentModel.fromJson(json);
 }
 
@@ -22,6 +22,7 @@ ApartmentModel _$AppartmentModelFromJson(Map<String, dynamic> json) {
 mixin _$ApartmentModel {
   String get apartmentID => throw _privateConstructorUsedError;
   String get projectId => throw _privateConstructorUsedError;
+  String get apartmentName => throw _privateConstructorUsedError;
   String get locality => throw _privateConstructorUsedError;
   String get apartmentType => throw _privateConstructorUsedError;
   String get amenities => throw _privateConstructorUsedError;
@@ -38,24 +39,31 @@ mixin _$ApartmentModel {
   int get openSpace => throw _privateConstructorUsedError;
   String get createdAt => throw _privateConstructorUsedError;
   String get updatedAt => throw _privateConstructorUsedError;
-  String get apartmentName => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
+  double get lat => throw _privateConstructorUsedError;
+  double get long => throw _privateConstructorUsedError;
+  String get description => throw _privateConstructorUsedError;
 
+  /// Serializes this ApartmentModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $AppartmentModelCopyWith<ApartmentModel> get copyWith =>
+
+  /// Create a copy of ApartmentModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ApartmentModelCopyWith<ApartmentModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $AppartmentModelCopyWith<$Res> {
-  factory $AppartmentModelCopyWith(
+abstract class $ApartmentModelCopyWith<$Res> {
+  factory $ApartmentModelCopyWith(
           ApartmentModel value, $Res Function(ApartmentModel) then) =
-      _$AppartmentModelCopyWithImpl<$Res, ApartmentModel>;
+      _$ApartmentModelCopyWithImpl<$Res, ApartmentModel>;
   @useResult
   $Res call(
       {String apartmentID,
       String projectId,
+      String apartmentName,
       String locality,
       String apartmentType,
       String amenities,
@@ -72,25 +80,30 @@ abstract class $AppartmentModelCopyWith<$Res> {
       int openSpace,
       String createdAt,
       String updatedAt,
-      String apartmentName,
-      String image});
+      String image,
+      double lat,
+      double long,
+      String description});
 }
 
 /// @nodoc
-class _$AppartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
-    implements $AppartmentModelCopyWith<$Res> {
-  _$AppartmentModelCopyWithImpl(this._value, this._then);
+class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
+    implements $ApartmentModelCopyWith<$Res> {
+  _$ApartmentModelCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ApartmentModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? apartmentID = null,
     Object? projectId = null,
+    Object? apartmentName = null,
     Object? locality = null,
     Object? apartmentType = null,
     Object? amenities = null,
@@ -107,8 +120,10 @@ class _$AppartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
     Object? openSpace = null,
     Object? createdAt = null,
     Object? updatedAt = null,
-    Object? apartmentName = null,
     Object? image = null,
+    Object? lat = null,
+    Object? long = null,
+    Object? description = null,
   }) {
     return _then(_value.copyWith(
       apartmentID: null == apartmentID
@@ -119,6 +134,10 @@ class _$AppartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
           ? _value.projectId
           : projectId // ignore: cast_nullable_to_non_nullable
               as String,
+      apartmentName: null == apartmentName
+          ? _value.apartmentName
+          : apartmentName // ignore: cast_nullable_to_non_nullable
+              as String,
       locality: null == locality
           ? _value.locality
           : locality // ignore: cast_nullable_to_non_nullable
@@ -183,13 +202,21 @@ class _$AppartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      apartmentName: null == apartmentName
-          ? _value.apartmentName
-          : apartmentName // ignore: cast_nullable_to_non_nullable
-              as String,
       image: null == image
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
+              as String,
+      lat: null == lat
+          ? _value.lat
+          : lat // ignore: cast_nullable_to_non_nullable
+              as double,
+      long: null == long
+          ? _value.long
+          : long // ignore: cast_nullable_to_non_nullable
+              as double,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -197,7 +224,7 @@ class _$AppartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
 
 /// @nodoc
 abstract class _$$AppartmentModelImplCopyWith<$Res>
-    implements $AppartmentModelCopyWith<$Res> {
+    implements $ApartmentModelCopyWith<$Res> {
   factory _$$AppartmentModelImplCopyWith(_$AppartmentModelImpl value,
           $Res Function(_$AppartmentModelImpl) then) =
       __$$AppartmentModelImplCopyWithImpl<$Res>;
@@ -206,6 +233,7 @@ abstract class _$$AppartmentModelImplCopyWith<$Res>
   $Res call(
       {String apartmentID,
       String projectId,
+      String apartmentName,
       String locality,
       String apartmentType,
       String amenities,
@@ -222,23 +250,28 @@ abstract class _$$AppartmentModelImplCopyWith<$Res>
       int openSpace,
       String createdAt,
       String updatedAt,
-      String apartmentName,
-      String image});
+      String image,
+      double lat,
+      double long,
+      String description});
 }
 
 /// @nodoc
 class __$$AppartmentModelImplCopyWithImpl<$Res>
-    extends _$AppartmentModelCopyWithImpl<$Res, _$AppartmentModelImpl>
+    extends _$ApartmentModelCopyWithImpl<$Res, _$AppartmentModelImpl>
     implements _$$AppartmentModelImplCopyWith<$Res> {
   __$$AppartmentModelImplCopyWithImpl(
       _$AppartmentModelImpl _value, $Res Function(_$AppartmentModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ApartmentModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? apartmentID = null,
     Object? projectId = null,
+    Object? apartmentName = null,
     Object? locality = null,
     Object? apartmentType = null,
     Object? amenities = null,
@@ -255,8 +288,10 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
     Object? openSpace = null,
     Object? createdAt = null,
     Object? updatedAt = null,
-    Object? apartmentName = null,
     Object? image = null,
+    Object? lat = null,
+    Object? long = null,
+    Object? description = null,
   }) {
     return _then(_$AppartmentModelImpl(
       apartmentID: null == apartmentID
@@ -266,6 +301,10 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
       projectId: null == projectId
           ? _value.projectId
           : projectId // ignore: cast_nullable_to_non_nullable
+              as String,
+      apartmentName: null == apartmentName
+          ? _value.apartmentName
+          : apartmentName // ignore: cast_nullable_to_non_nullable
               as String,
       locality: null == locality
           ? _value.locality
@@ -331,13 +370,21 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
-      apartmentName: null == apartmentName
-          ? _value.apartmentName
-          : apartmentName // ignore: cast_nullable_to_non_nullable
-              as String,
       image: null == image
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
+              as String,
+      lat: null == lat
+          ? _value.lat
+          : lat // ignore: cast_nullable_to_non_nullable
+              as double,
+      long: null == long
+          ? _value.long
+          : long // ignore: cast_nullable_to_non_nullable
+              as double,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -349,6 +396,7 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   const _$AppartmentModelImpl(
       {this.apartmentID = "",
       this.projectId = "",
+      this.apartmentName = "",
       this.locality = "",
       this.apartmentType = "",
       this.amenities = "",
@@ -365,8 +413,10 @@ class _$AppartmentModelImpl implements _AppartmentModel {
       this.openSpace = 0,
       this.createdAt = "",
       this.updatedAt = "",
-      this.apartmentName = "",
-      this.image = ""});
+      this.image = "",
+      this.lat = 0.0,
+      this.long = 0.0,
+      this.description = ""});
 
   factory _$AppartmentModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$AppartmentModelImplFromJson(json);
@@ -377,6 +427,9 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   @override
   @JsonKey()
   final String projectId;
+  @override
+  @JsonKey()
+  final String apartmentName;
   @override
   @JsonKey()
   final String locality;
@@ -427,14 +480,20 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   final String updatedAt;
   @override
   @JsonKey()
-  final String apartmentName;
+  final String image;
   @override
   @JsonKey()
-  final String image;
+  final double lat;
+  @override
+  @JsonKey()
+  final double long;
+  @override
+  @JsonKey()
+  final String description;
 
   @override
   String toString() {
-    return 'AppartmentModel(apartmentID: $apartmentID, projectId: $projectId, locality: $locality, apartmentType: $apartmentType, amenities: $amenities, configuration: $configuration, budget: $budget, flatSize: $flatSize, companyName: $companyName, companyPhone: $companyPhone, noOfFloor: $noOfFloor, noOfFlats: $noOfFlats, noOfBlocks: $noOfBlocks, possessionDate: $possessionDate, clubhouseSize: $clubhouseSize, openSpace: $openSpace, createdAt: $createdAt, updatedAt: $updatedAt, apartmentName: $apartmentName, image: $image)';
+    return 'ApartmentModel(apartmentID: $apartmentID, projectId: $projectId, apartmentName: $apartmentName, locality: $locality, apartmentType: $apartmentType, amenities: $amenities, configuration: $configuration, budget: $budget, flatSize: $flatSize, companyName: $companyName, companyPhone: $companyPhone, noOfFloor: $noOfFloor, noOfFlats: $noOfFlats, noOfBlocks: $noOfBlocks, possessionDate: $possessionDate, clubhouseSize: $clubhouseSize, openSpace: $openSpace, createdAt: $createdAt, updatedAt: $updatedAt, image: $image, lat: $lat, long: $long, description: $description)';
   }
 
   @override
@@ -446,6 +505,8 @@ class _$AppartmentModelImpl implements _AppartmentModel {
                 other.apartmentID == apartmentID) &&
             (identical(other.projectId, projectId) ||
                 other.projectId == projectId) &&
+            (identical(other.apartmentName, apartmentName) ||
+                other.apartmentName == apartmentName) &&
             (identical(other.locality, locality) ||
                 other.locality == locality) &&
             (identical(other.apartmentType, apartmentType) ||
@@ -477,17 +538,20 @@ class _$AppartmentModelImpl implements _AppartmentModel {
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
-            (identical(other.apartmentName, apartmentName) ||
-                other.apartmentName == apartmentName) &&
-            (identical(other.image, image) || other.image == image));
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.lat, lat) || other.lat == lat) &&
+            (identical(other.long, long) || other.long == long) &&
+            (identical(other.description, description) ||
+                other.description == description));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
         apartmentID,
         projectId,
+        apartmentName,
         locality,
         apartmentType,
         amenities,
@@ -504,11 +568,15 @@ class _$AppartmentModelImpl implements _AppartmentModel {
         openSpace,
         createdAt,
         updatedAt,
-        apartmentName,
-        image
+        image,
+        lat,
+        long,
+        description
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ApartmentModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$AppartmentModelImplCopyWith<_$AppartmentModelImpl> get copyWith =>
@@ -527,6 +595,7 @@ abstract class _AppartmentModel implements ApartmentModel {
   const factory _AppartmentModel(
       {final String apartmentID,
       final String projectId,
+      final String apartmentName,
       final String locality,
       final String apartmentType,
       final String amenities,
@@ -543,8 +612,10 @@ abstract class _AppartmentModel implements ApartmentModel {
       final int openSpace,
       final String createdAt,
       final String updatedAt,
-      final String apartmentName,
-      final String image}) = _$AppartmentModelImpl;
+      final String image,
+      final double lat,
+      final double long,
+      final String description}) = _$AppartmentModelImpl;
 
   factory _AppartmentModel.fromJson(Map<String, dynamic> json) =
       _$AppartmentModelImpl.fromJson;
@@ -553,6 +624,8 @@ abstract class _AppartmentModel implements ApartmentModel {
   String get apartmentID;
   @override
   String get projectId;
+  @override
+  String get apartmentName;
   @override
   String get locality;
   @override
@@ -586,11 +659,18 @@ abstract class _AppartmentModel implements ApartmentModel {
   @override
   String get updatedAt;
   @override
-  String get apartmentName;
-  @override
   String get image;
   @override
-  @JsonKey(ignore: true)
+  double get lat;
+  @override
+  double get long;
+  @override
+  String get description;
+
+  /// Create a copy of ApartmentModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AppartmentModelImplCopyWith<_$AppartmentModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
