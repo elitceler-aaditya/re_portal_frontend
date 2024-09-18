@@ -1,26 +1,29 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:re_portal_frontend/modules/maps/maps_property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/home_data.dart';
 
-class GoogleMapsScreen extends StatefulWidget {
-  final List<ApartmentModel> apartments;
-  const GoogleMapsScreen({super.key, required this.apartments});
+class GoogleMapsScreen extends ConsumerStatefulWidget {
+  final ApartmentModel apartment;
+  const GoogleMapsScreen({super.key, required this.apartment});
 
   @override
-  State<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
+  ConsumerState<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
 }
 
-class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
+class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   LatLng? currentLocation;
   List<LatLng> locations = [];
   StreamSubscription<LocationData>? _locationSubscription;
   final Completer<GoogleMapController> _googleMapsController =
       Completer<GoogleMapController>();
+  String? _selectedApartmentId;
 
   fetchLocationUpdate() async {
     bool serviceEnabled;
@@ -56,11 +59,17 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocationUpdate();
-      locations = widget.apartments.map((e) => LatLng(e.lat, e.long)).toList();
+      final apartments = ref.read(homePropertiesProvider).apartments;
+      locations = apartments.map((e) => LatLng(e.lat, e.long)).toList();
+
+      // Set the initial selected apartment
+      if (apartments.isNotEmpty) {
+        _selectedApartmentId = widget.apartment.apartmentID;
+      }
     });
-    super.initState();
   }
 
   @override
@@ -85,10 +94,19 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: GoogleMap(
-                    onMapCreated: (controller) =>
-                        _googleMapsController.complete(controller),
+                    onMapCreated: (GoogleMapController controller) {
+                      _googleMapsController.complete(controller);
+                      // Show info window for the initial selected apartment
+                      if (_selectedApartmentId != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          controller.showMarkerInfoWindow(
+                              MarkerId(_selectedApartmentId!));
+                        });
+                      }
+                    },
                     initialCameraPosition: CameraPosition(
-                      target: locations.last,
+                      target:
+                          LatLng(widget.apartment.lat, widget.apartment.long),
                       zoom: 14,
                     ),
                     markers: {
@@ -98,13 +116,15 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
                         position: currentLocation!,
                         infoWindow: const InfoWindow(title: 'Current Location'),
                       ),
-                      ...locations.map(
-                        (e) => Marker(
-                          markerId: MarkerId(e.toString()),
-                          position: e,
-                          infoWindow: const InfoWindow(title: 'Location'),
-                        ),
-                      )
+                      ...ref.watch(homePropertiesProvider).apartments.map(
+                            (e) => Marker(
+                              markerId: MarkerId(e.apartmentID),
+                              position: LatLng(e.lat, e.long),
+                              infoWindow: InfoWindow(title: e.apartmentName),
+                              onTap: () => setState(
+                                  () => _selectedApartmentId = e.apartmentID),
+                            ),
+                          )
                     },
                   ),
                 ),
@@ -129,24 +149,31 @@ class _GoogleMapsScreenState extends State<GoogleMapsScreen> {
                       children: [
                         //Apaprtmet list
                         const SizedBox(width: 10),
-                        ...widget.apartments.map(
-                          (e) => MapsPropertyCard(
-                            apartment: e,
-                            onTap: () {
-                              //camera should pan to this location
-                              _googleMapsController.future.then((controller) {
-                                controller.animateCamera(
-                                  CameraUpdate.newCameraPosition(
-                                    CameraPosition(
-                                      target: LatLng(e.lat, e.long),
-                                      zoom: 14,
-                                    ),
-                                  ),
-                                );
-                              });
-                            },
-                          ),
-                        ),
+                        ...ref.watch(homePropertiesProvider).apartments.map(
+                              (e) => MapsPropertyCard(
+                                apartment: e,
+                                onTap: () {
+                                  _googleMapsController.future
+                                      .then((controller) {
+                                    controller
+                                        .animateCamera(
+                                      CameraUpdate.newCameraPosition(
+                                        CameraPosition(
+                                          target: LatLng(e.lat, e.long),
+                                          zoom: 14,
+                                        ),
+                                      ),
+                                    )
+                                        .then((_) {
+                                      setState(() =>
+                                          _selectedApartmentId = e.apartmentID);
+                                      controller.showMarkerInfoWindow(
+                                          MarkerId(e.apartmentID));
+                                    });
+                                  });
+                                },
+                              ),
+                            ),
                       ],
                     ),
                   ),

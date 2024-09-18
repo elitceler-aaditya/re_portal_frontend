@@ -13,10 +13,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
-import 'package:re_portal_frontend/modules/home/screens/property_map_view.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
-import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart';
+import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -558,7 +557,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PropertyMapView(
+                                builder: (context) => GoogleMapsScreen(
                                   apartment: widget.apartment,
                                 ),
                               ),

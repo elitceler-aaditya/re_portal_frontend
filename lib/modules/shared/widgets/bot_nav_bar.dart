@@ -15,7 +15,7 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 70,
       decoration: BoxDecoration(
         color: CustomColors.white,
         boxShadow: [
@@ -26,8 +26,8 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
           ),
         ],
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
       child: Row(
@@ -40,9 +40,9 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
               },
               child: Container(
-                height: 80,
+                height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 28),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: ref.watch(navBarIndexProvider) == 0
                     ? SvgPicture.asset(
                         'assets/icons/home_active.svg',
@@ -59,9 +59,9 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 ref.read(navBarIndexProvider.notifier).setNavBarIndex(1);
               },
               child: Container(
-                height: 80,
+                height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 28),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: ref.watch(navBarIndexProvider) == 1
                     ? SvgPicture.asset(
                         'assets/icons/compare_active.svg',
@@ -78,9 +78,9 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 ref.read(navBarIndexProvider.notifier).setNavBarIndex(2);
               },
               child: Container(
-                height: 80,
+                height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 28),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: ref.watch(navBarIndexProvider) == 2
                     ? SvgPicture.asset(
                         'assets/icons/like_active.svg',
@@ -97,9 +97,9 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 ref.read(navBarIndexProvider.notifier).setNavBarIndex(3);
               },
               child: Container(
-                height: 80,
+                height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 28),
+                padding: const EdgeInsets.symmetric(vertical: 24),
                 child: ref.watch(navBarIndexProvider) == 3
                     ? SvgPicture.asset(
                         'assets/icons/person_active.svg',

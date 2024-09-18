@@ -189,7 +189,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => GoogleMapsScreen(
-                                      apartments: allApartments),
+                                    apartment: ref
+                                        .watch(homePropertiesProvider)
+                                        .apartments[0],
+                                  ),
                                 ),
                               );
                             },
