@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SearchApartment extends StatefulWidget {
+class SearchApartment extends ConsumerStatefulWidget {
   final List<ApartmentModel> apartments;
 
   const SearchApartment({super.key, required this.apartments});
 
   @override
-  State<SearchApartment> createState() => _SearchApartmentState();
+  ConsumerState<SearchApartment> createState() => _SearchApartmentState();
 }
 
-class _SearchApartmentState extends State<SearchApartment> {
+class _SearchApartmentState extends ConsumerState<SearchApartment> {
   final TextEditingController _searchController = TextEditingController();
   List<ApartmentModel> filteredApartments = [];
 
@@ -248,6 +249,7 @@ class _SearchApartmentState extends State<SearchApartment> {
                     child: TextField(
                       controller: _searchController,
                       onChanged: _filterApartments,
+                      autofocus: true,
                       style: const TextStyle(
                         fontSize: 14,
                       ),
@@ -270,24 +272,13 @@ class _SearchApartmentState extends State<SearchApartment> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ListView.builder(
-                itemCount: filteredApartments.length,
-                itemBuilder: (context, index) {
-                  final apartment = filteredApartments[index];
-                  return PropertyCard(
-                    apartment: apartment,
-                    isCompare: true,
-                    onCallPress: (context) {
-                      _toggleOverlay(
-                        context,
-                        filteredApartments[index],
-                        _globalKeys[index],
-                      );
-                    },
-                    globalKey: _globalKeys[index],
-                  );
-                },
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: SingleChildScrollView(
+                child: PropertyListView(
+                  sortedApartments: filteredApartments,
+                  compare: true,
+                  displayAds: true,
+                ),
               ),
             ),
           ),

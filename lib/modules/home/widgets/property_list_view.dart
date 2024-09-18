@@ -184,25 +184,43 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
               (widget.sortedApartments.length ~/ 4)
           : widget.sortedApartments.length,
       itemBuilder: (context, index) {
-        if (widget.displayAds && index % 4 == 0 && index != 0) {
-          return const AdsSection();
-        } else {
-          int listIndex = index - (index ~/ 4);
+        if (!widget.displayAds) {
           return PropertyCard(
-            apartment: widget.sortedApartments[listIndex],
-            nextApartment: listIndex + 1 < widget.sortedApartments.length
-                ? widget.sortedApartments[listIndex + 1]
+            apartment: widget.sortedApartments[index],
+            nextApartment: index + 1 < widget.sortedApartments.length
+                ? widget.sortedApartments[index + 1]
                 : widget.sortedApartments.first,
             isCompare: widget.compare,
             onCallPress: (context) {
               _toggleOverlay(
                 context,
-                widget.sortedApartments[listIndex],
-                _globalKeys[listIndex],
+                widget.sortedApartments[index],
+                _globalKeys[index],
               );
             },
-            globalKey: _globalKeys[listIndex],
+            globalKey: _globalKeys[index],
           );
+        } else {
+          if (widget.displayAds && index % 4 == 0 && index != 0) {
+            return const AdsSection();
+          } else {
+            int listIndex = index - (index ~/ 4);
+            return PropertyCard(
+              apartment: widget.sortedApartments[listIndex],
+              nextApartment: listIndex + 1 < widget.sortedApartments.length
+                  ? widget.sortedApartments[listIndex + 1]
+                  : widget.sortedApartments.first,
+              isCompare: widget.compare,
+              onCallPress: (context) {
+                _toggleOverlay(
+                  context,
+                  widget.sortedApartments[listIndex],
+                  _globalKeys[listIndex],
+                );
+              },
+              globalKey: _globalKeys[listIndex],
+            );
+          }
         }
       },
     );

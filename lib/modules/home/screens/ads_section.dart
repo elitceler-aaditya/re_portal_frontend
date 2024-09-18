@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
+import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/home_data.dart';
 
-class AdsSection extends StatefulWidget {
+class AdsSection extends ConsumerStatefulWidget {
   const AdsSection({super.key});
 
   @override
-  State<AdsSection> createState() => _AdsSectionState();
+  ConsumerState<AdsSection> createState() => _AdsSectionState();
 }
 
-class _AdsSectionState extends State<AdsSection> {
+class _AdsSectionState extends ConsumerState<AdsSection> {
   @override
   Widget build(BuildContext context) {
     return Padding(

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
+import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
+import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -85,6 +87,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (context) {
         return AppartmentFilter(apartmentList: allApartments);
       },
+    );
+  }
+
+  apartmentBody() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        const Padding(
+          padding: EdgeInsets.only(left: 10, bottom: 8),
+          child: Text(
+            "Select Properties",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        PropertyStackCard(
+          apartments:
+              ref.watch(homePropertiesProvider).apartments.sublist(0, 2),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(10),
+          child: Text(
+            "Editor’s Choice",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        EditorsChoiceCard(
+          apartments:
+              ref.watch(homePropertiesProvider).apartments.sublist(2, 5),
+        ),
+        const SizedBox(height: 10),
+        const BuilderInFocus(),
+        NewPropertiesSection(
+          apartments:
+              ref.watch(homePropertiesProvider).apartments.sublist(5, 8),
+        ),
+      ],
     );
   }
 
@@ -232,150 +278,157 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(height: 10),
 
             //Best deals
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (ref.watch(homePropertiesProvider).apartments.isNotEmpty)
-                    Column(
-                      children: [
-                        FlutterCarousel.builder(
-                          itemCount: min(
-                              5,
-                              ref
-                                  .watch(homePropertiesProvider)
-                                  .apartments
-                                  .length),
-                          itemBuilder: (context, index, realIndex) =>
-                              GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PropertyDetails(
-                                    apartment: ref
-                                        .watch(homePropertiesProvider)
-                                        .apartments[index],
-                                    bestDeals: true,
-                                    nextApartment: ref
-                                            .watch(homePropertiesProvider)
-                                            .apartments[
-                                        (index + 1) %
-                                            ref
-                                                .watch(homePropertiesProvider)
-                                                .apartments
-                                                .length],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Stack(
-                              children: [
-                                Hero(
-                                  tag:
-                                      "best-${ref.watch(homePropertiesProvider).apartments[index].apartmentID}",
-                                  child: Container(
-                                    height: 220,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: CustomColors.black25,
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: ref
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 10, bottom: 8),
+                  child: Text(
+                    "Best Deals",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (ref.watch(homePropertiesProvider).apartments.isNotEmpty)
+                  Column(
+                    children: [
+                      FlutterCarousel.builder(
+                        itemCount: min(
+                            5,
+                            ref
+                                .watch(homePropertiesProvider)
+                                .apartments
+                                .length),
+                        itemBuilder: (context, index, realIndex) =>
+                            GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => PropertyDetails(
+                                  apartment: ref
+                                      .watch(homePropertiesProvider)
+                                      .apartments[index],
+                                  bestDeals: true,
+                                  nextApartment: ref
+                                          .watch(homePropertiesProvider)
+                                          .apartments[
+                                      (index + 1) %
+                                          ref
                                               .watch(homePropertiesProvider)
-                                              .apartments[index]
-                                              .image
-                                              .isNotEmpty
-                                          ? DecorationImage(
-                                              image: NetworkImage(ref
-                                                  .watch(homePropertiesProvider)
-                                                  .apartments[index]
-                                                  .image),
-                                              fit: BoxFit.cover,
-                                            )
-                                          : null,
-                                    ),
-                                  ),
+                                              .apartments
+                                              .length],
                                 ),
-                                Container(
+                              ),
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              Hero(
+                                tag:
+                                    "best-${ref.watch(homePropertiesProvider).apartments[index].apartmentID}",
+                                child: Container(
                                   height: 220,
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        CustomColors.black.withOpacity(0),
-                                        CustomColors.black.withOpacity(0.8),
-                                      ],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                    ),
+                                    color: CustomColors.black25,
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: ref
+                                            .watch(homePropertiesProvider)
+                                            .apartments[index]
+                                            .image
+                                            .isNotEmpty
+                                        ? DecorationImage(
+                                            image: NetworkImage(ref
+                                                .watch(homePropertiesProvider)
+                                                .apartments[index]
+                                                .image),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
                                   ),
                                 ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          ref
-                                              .watch(homePropertiesProvider)
-                                              .apartments[index]
-                                              .apartmentName,
-                                          style: const TextStyle(
-                                            color: CustomColors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          "${ref.watch(homePropertiesProvider).apartments[index].flatSize} sq ft • ${formatBudget(ref.watch(homePropertiesProvider).apartments[index].budget)} • ${ref.watch(homePropertiesProvider).apartments[index].locality}",
-                                          style: const TextStyle(
-                                            color: CustomColors.white,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          options: CarouselOptions(
-                            height: 220,
-                            viewportFraction: 0.9,
-                            enlargeCenterPage: true,
-                            autoPlay: true,
-                            autoPlayInterval: const Duration(seconds: 5),
-                            autoPlayAnimationDuration:
-                                const Duration(milliseconds: 1000),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enableInfiniteScroll: true,
-                            initialPage: 0,
-                            reverse: false,
-                            scrollDirection: Axis.horizontal,
-                            showIndicator: true,
-                            floatingIndicator: false,
-                            slideIndicator: const CircularSlideIndicator(
-                              slideIndicatorOptions: SlideIndicatorOptions(
-                                indicatorRadius: 4,
-                                currentIndicatorColor: CustomColors.black,
-                                indicatorBackgroundColor: CustomColors.black50,
-                                itemSpacing: 16,
                               ),
+                              Container(
+                                height: 220,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      CustomColors.black.withOpacity(0),
+                                      CustomColors.black.withOpacity(0.8),
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        ref
+                                            .watch(homePropertiesProvider)
+                                            .apartments[index]
+                                            .apartmentName,
+                                        style: const TextStyle(
+                                          color: CustomColors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${ref.watch(homePropertiesProvider).apartments[index].flatSize} sq ft • ${formatBudget(ref.watch(homePropertiesProvider).apartments[index].budget)} • ${ref.watch(homePropertiesProvider).apartments[index].locality}",
+                                        style: const TextStyle(
+                                          color: CustomColors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        options: CarouselOptions(
+                          height: 220,
+                          viewportFraction: 0.85,
+                          enlargeCenterPage: true,
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 5),
+                          autoPlayAnimationDuration:
+                              const Duration(milliseconds: 1000),
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enableInfiniteScroll: true,
+                          initialPage: 0,
+                          reverse: false,
+                          scrollDirection: Axis.horizontal,
+                          showIndicator: true,
+                          floatingIndicator: false,
+                          slideIndicator: const CircularSlideIndicator(
+                            slideIndicatorOptions: SlideIndicatorOptions(
+                              indicatorRadius: 4,
+                              currentIndicatorColor: CustomColors.black,
+                              indicatorBackgroundColor: CustomColors.black50,
+                              itemSpacing: 16,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                ],
-              ),
+                      ),
+                    ],
+                  ),
+              ],
             ),
             const SizedBox(height: 10),
 
@@ -412,12 +465,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                       )
-                    : PropertyList(
-                        apartments:
-                            ref.watch(homePropertiesProvider).apartments,
-                        displayAds: true,
-                        compare: true,
-                      ),
+                    : apartmentBody(),
           ],
         ),
       ),
