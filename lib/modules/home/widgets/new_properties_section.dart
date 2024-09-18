@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -35,9 +36,9 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withOpacity(0.3),
                     blurRadius: 5,
-                    offset: const Offset(0, 3),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -90,14 +91,17 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: SizedBox(
-                            height: 80,
-                            width: double.infinity,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                widget.apartments[index].image,
-                                fit: BoxFit.cover,
+                          child: Hero(
+                            tag: widget.apartments[index].apartmentID,
+                            child: SizedBox(
+                              height: 80,
+                              width: double.infinity,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  widget.apartments[index].image,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
@@ -113,7 +117,7 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                       color: Colors.grey,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,  
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
@@ -128,7 +132,7 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                   initialCameraPosition: CameraPosition(
                                     target: LatLng(widget.apartments[index].lat,
                                         widget.apartments[index].long),
-                                    zoom: 50,
+                                    zoom: 9,
                                   ),
                                   markers: {
                                     Marker(
@@ -262,7 +266,14 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                             // width: 64,
                             child: ElevatedButton(
                               onPressed: () {
-                                // Handle "View more" action
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PropertyDetails(
+                                      apartment: widget.apartments[index],
+                                    ),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: CustomColors.primary,

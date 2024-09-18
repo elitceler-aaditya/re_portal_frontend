@@ -48,7 +48,7 @@ class PropertyStackCard extends StatelessWidget {
               tag: apartments[index].apartmentID,
               child: Container(
                 width: 250,
-                margin: const EdgeInsets.only(right: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(8),

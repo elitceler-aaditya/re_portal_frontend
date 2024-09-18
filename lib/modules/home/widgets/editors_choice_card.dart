@@ -46,7 +46,7 @@ class EditorsChoiceCard extends StatelessWidget {
             },
             child: Container(
               width: 250,
-              margin: const EdgeInsets.only(right: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 10),
               clipBehavior: Clip.hardEdge, // Ensures overflow content is hidden
               decoration: BoxDecoration(
                 color: CustomColors.white,

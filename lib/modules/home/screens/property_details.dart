@@ -963,7 +963,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             gradient: LinearGradient(
               colors: [
                 CustomColors.black.withOpacity(0.8),
-                CustomColors.black.withOpacity(0),
+                CustomColors.black.withOpacity(0.1),
+                CustomColors.black.withOpacity(0.8),
               ],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -1031,22 +1032,63 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ),
               ),
               const SizedBox(height: 30),
-              ...List.generate(
-                _highlights.length,
-                (index) => Animate(
-                  effects: [
-                    SlideEffect(
-                      begin: const Offset(-3, 0),
-                      end: const Offset(0, 0),
-                      curve: Curves.easeIn,
-                      duration: const Duration(milliseconds: 1000),
-                      delay: Duration(milliseconds: 100 * index),
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 30,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...List.generate(
+                          (_highlights.length / 2).ceil(),
+                          (index) => Animate(
+                            effects: [
+                              SlideEffect(
+                                begin: const Offset(-3, 0),
+                                end: const Offset(0, 0),
+                                curve: Curves.easeIn,
+                                duration: const Duration(milliseconds: 1000),
+                                delay: Duration(milliseconds: 100 * index),
+                              )
+                            ],
+                            child: highlightsOption(
+                              _highlights[index]["title"],
+                              _highlights[index]["value"],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...List.generate(
+                          _highlights.length - (_highlights.length / 2).ceil(),
+                          (index) => Animate(
+                            effects: [
+                              SlideEffect(
+                                begin: const Offset(3, 0),
+                                end: const Offset(0, 0),
+                                curve: Curves.easeIn,
+                                duration: const Duration(milliseconds: 1000),
+                                delay: Duration(milliseconds: 100 * index),
+                              )
+                            ],
+                            child: highlightsOption(
+                              _highlights[_highlights.length - index - 1]
+                                  ["title"],
+                              _highlights[_highlights.length - index - 1]
+                                  ["value"],
+                            ),
+                          ),
+                        ),
+                      ],
                     )
                   ],
-                  child: highlightsOption(
-                    _highlights[index]["title"],
-                    _highlights[index]["value"],
-                  ),
                 ),
               ),
             ],
@@ -1270,11 +1312,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              expandedHeight: h - 120,
+              expandedHeight: h * 0.55,
               floating: false,
               automaticallyImplyLeading: false,
               pinned: false,
-              flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h - 120)),
+              flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h * 0.55)),
             ),
           ];
         },

@@ -9,8 +9,10 @@ import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
 import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -124,7 +126,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           apartments:
               ref.watch(homePropertiesProvider).apartments.sublist(2, 5),
         ),
-        const SizedBox(height: 10),
         BuilderInFocus(
           apartments:
               ref.watch(homePropertiesProvider).apartments.sublist(5, 8),
@@ -133,6 +134,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           apartments:
               ref.watch(homePropertiesProvider).apartments.sublist(8, 10),
         ),
+        LifestyleProperties(
+          lifestyleProperties:
+              ref.watch(homePropertiesProvider).apartments.sublist(10, 12),
+        ),
+        ReadyToMovein(
+          apartments:
+              ref.watch(homePropertiesProvider).apartments.sublist(12, 14),
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }
