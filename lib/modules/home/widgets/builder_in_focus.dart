@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 
-class BuilderInFocus extends ConsumerStatefulWidget {
-  const BuilderInFocus({super.key});
+class BuilderInFocus extends StatefulWidget {
+  final List<ApartmentModel> apartments;
+  const BuilderInFocus({super.key, required this.apartments});
 
   @override
-  ConsumerState<BuilderInFocus> createState() => _BuilderInFocusState();
+  State<BuilderInFocus> createState() => _BuilderInFocusState();
 }
 
-class _BuilderInFocusState extends ConsumerState<BuilderInFocus> {
+class _BuilderInFocusState extends State<BuilderInFocus> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,16 +83,17 @@ class _BuilderInFocusState extends ConsumerState<BuilderInFocus> {
             height: 250,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 3,
+              itemCount: widget
+                  .apartments.length, // Use the actual length of apartments
               itemBuilder: (context, index) {
+                final apartments = widget.apartments;
+                final nextIndex =
+                    (index + 1) % apartments.length; // Ensure circular access
                 return _builderInFocusCard(
-                    context,
-                    ref.watch(homePropertiesProvider).apartments[5 + index],
-                    5 + index > 7
-                        ? ref.watch(homePropertiesProvider).apartments[5]
-                        : ref
-                            .watch(homePropertiesProvider)
-                            .apartments[5 + index]);
+                  context,
+                  apartments[index],
+                  apartments[nextIndex],
+                );
               },
             ),
           )

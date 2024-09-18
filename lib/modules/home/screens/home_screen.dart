@@ -125,10 +125,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ref.watch(homePropertiesProvider).apartments.sublist(2, 5),
         ),
         const SizedBox(height: 10),
-        const BuilderInFocus(),
-        NewPropertiesSection(
+        BuilderInFocus(
           apartments:
               ref.watch(homePropertiesProvider).apartments.sublist(5, 8),
+        ),
+        NewPropertiesSection(
+          apartments:
+              ref.watch(homePropertiesProvider).apartments.sublist(8, 10),
         ),
       ],
     );

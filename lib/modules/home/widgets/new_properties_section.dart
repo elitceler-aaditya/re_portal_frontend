@@ -183,92 +183,104 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 10, top: 4),
-                              child: Text(
-                                'Available',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ...List.generate(
-                                    min(
-                                        2,
-                                        widget.apartments[index].configuration
-                                            .split(",")
-                                            .length),
-                                    (index) => Container(
-                                      margin: const EdgeInsets.only(top: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 0,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        border: index == 0
-                                            ? const Border(
-                                                right: BorderSide(
-                                                  color: CustomColors.black,
-                                                  width: 2,
-                                                ),
-                                              )
-                                            : null,
-                                      ),
-                                      child: Text(
-                                        widget.apartments[index].configuration
-                                            .split(",")[index],
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 8, 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (widget.apartments[index].configuration
+                              .split(",")
+                              .where((item) => item.isNotEmpty)
+                              .isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 10, top: 4),
+                                  child: Text(
+                                    'Available',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(width: 16),
-                        SizedBox(
-                          height: 36,
-                          // width: 64,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Handle "View more" action
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: CustomColors.primary,
-                              shape: const StadiumBorder(),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 0,
-                              ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Row(
+                                    children: [
+                                      ...List.generate(
+                                        widget.apartments[index].configuration
+                                            .split(",")
+                                            .where((item) => item.isNotEmpty)
+                                            .length,
+                                        (index) => Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: index !=
+                                                    widget.apartments[index]
+                                                        .configuration
+                                                        .split(",")
+                                                        .where((item) =>
+                                                            item.isNotEmpty)
+                                                        .length
+                                                ? const Border(
+                                                    right: BorderSide(
+                                                      color: CustomColors.black,
+                                                      width: 1.5,
+                                                    ),
+                                                  )
+                                                : null,
+                                          ),
+                                          child: Text(
+                                            widget
+                                                .apartments[index].configuration
+                                                .split(",")
+                                                .where(
+                                                    (item) => item.isNotEmpty)
+                                                .first,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
                             ),
-                            child: const Text(
-                              'View more',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
+                          const SizedBox(width: 16),
+                          SizedBox(
+                            height: 36,
+                            // width: 64,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Handle "View more" action
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: CustomColors.primary,
+                                shape: const StadiumBorder(),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 0,
+                                ),
+                              ),
+                              child: const Text(
+                                'View more',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   )
                 ],
