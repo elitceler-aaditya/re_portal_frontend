@@ -29,7 +29,7 @@ class PropertyCard extends ConsumerStatefulWidget {
 }
 
 class _PropertyCardState extends ConsumerState<PropertyCard> {
-  formatBudget(double budget) {
+  formatBudget(int budget) {
     if (budget < 10000000) {
       return "${(budget / 100000).toStringAsFixed(2)} L";
     } else {

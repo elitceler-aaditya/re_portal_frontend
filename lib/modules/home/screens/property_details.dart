@@ -16,10 +16,11 @@ import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
+import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
-import 'package:re_portal_frontend/modules/shared/models/project_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -42,6 +43,7 @@ class PropertyDetails extends ConsumerStatefulWidget {
 class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   int _selectedConfig = 0;
   int _selectedPlan = 0;
+  bool _showFullDescription = false;
   List<String> _configurations = [];
   List<String> _amenities = [];
   final _nameController = TextEditingController();
@@ -49,13 +51,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
   final _highlightsScrollController = ScrollController();
-  ProjectDetails _projectDetails = const ProjectDetails();
-  List _projectGallery = [];
-  List configImages = [];
+  ApartmentDetailsModel _projectDetails = const ApartmentDetailsModel();
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
-
   List<Map<String, dynamic>> _highlights = [];
 
   Future<void> sendEnquiry(BuildContext context) async {
@@ -440,88 +439,20 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        color: CustomColors.black,
       ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Project Description",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    _projectDetails.projectHighlightsDescription.join(" "),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.normal,
-                      color: CustomColors.black50,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: CustomColors.primary20,
-              ),
-              padding: const EdgeInsets.fromLTRB(8, 4, 5, 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 children: [
-                  SizedBox(
-                    height: 40,
-                    width: 28,
-                    child:
-                        SvgPicture.asset("assets/icons/home_location_pin.svg"),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    "${widget.apartment.locality}, Hyderabad",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: CustomColors.primary,
-                    ),
-                  ),
-                  const Spacer(),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Map",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Divider(
-                    height: 20,
-                    color: CustomColors.black50,
-                  ),
                   Container(
-                    height: 150,
-                    width: double.infinity,
+                    height: 100,
+                    width: 180,
                     decoration: BoxDecoration(
                       color: CustomColors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -536,7 +467,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             initialCameraPosition: CameraPosition(
                               target: LatLng(
                                   widget.apartment.lat, widget.apartment.long),
-                              zoom: 15,
+                              zoom: 10,
                             ),
                             markers: {
                               Marker(
@@ -575,6 +506,67 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ],
                     ),
                   ),
+                  const SizedBox(width: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 24,
+                        // width: 32,
+                        child: SvgPicture.asset(
+                            "assets/icons/home_location_pin.svg"),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "${widget.apartment.locality},\nHyderabad",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: CustomColors.white,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: CustomColors.black75,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Project Description",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: CustomColors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _showFullDescription = !_showFullDescription;
+                      });
+                    },
+                    child: Text(
+                      _projectDetails.projectHighlightsDescription.join(" "),
+                      maxLines: _showFullDescription ? 100 : 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal,
+                        color: CustomColors.white,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -582,59 +574,43 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Configurations",
+                "Project Gallery",
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: CustomColors.white,
                 ),
               ),
             ),
             const Divider(
-              height: 20,
+              height: 10,
               color: CustomColors.black50,
             ),
-            SizedBox(
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _configurations.length,
-                itemBuilder: (context, index) {
-                  return CustomChip(
-                      text: _configurations[index],
-                      isSelected: _selectedConfig == 0,
-                      onTap: () {
-                        setState(() {
-                          _selectedConfig = 0;
-                        });
-                      });
-                },
-              ),
-            ),
             const SizedBox(height: 10),
-            if (configImages.isNotEmpty)
+            if (_projectDetails.gallery.isNotEmpty)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     const SizedBox(width: 10),
                     ...List.generate(
-                      configImages.length,
-                      (index) => Container(
-                        height: 200,
-                        width: 300,
-                        margin: const EdgeInsets.only(right: 24),
-                        decoration: BoxDecoration(
-                          color: CustomColors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              _projectDetails.configImages
-                                  .split(",")[index]
-                                  .trim(),
+                      _projectDetails.gallery.length,
+                      (index) => _projectDetails.gallery[index].isEmpty
+                          ? const SizedBox()
+                          : Container(
+                              height: 200,
+                              width: 300,
+                              margin: const EdgeInsets.only(right: 16),
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                color: CustomColors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Image.network(
+                                _projectDetails.gallery[index].trim(),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -650,76 +626,77 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Key Highlights",
+                      "Configurations",
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: CustomColors.white,
                       ),
                     ),
                     const Divider(
-                      height: 20,
+                      height: 12,
                       color: CustomColors.black50,
                     ),
                     SizedBox(
                       height: 40,
                       child: ListView.builder(
-                        controller: _highlightsScrollController,
                         scrollDirection: Axis.horizontal,
-                        itemCount:
-                            _projectDetails.educationalInstitutions.length,
+                        itemCount: _configurations.length,
                         itemBuilder: (context, index) {
-                          return _keyHighlights(
-                            _projectDetails.educationalInstitutions[index]
-                                ['name'],
-                            _projectDetails.educationalInstitutions[index]
-                                    ['dist']
-                                .toString(),
-                          );
+                          return CustomChip(
+                              text: _configurations[index],
+                              isSelected: _selectedConfig == 0,
+                              onTap: () {
+                                setState(() {
+                                  _selectedConfig = 0;
+                                });
+                              });
                         },
                       ),
                     ),
                     const SizedBox(height: 8),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        controller: _highlightsScrollController,
+                    if (_projectDetails.gallery.isNotEmpty)
+                      SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _projectDetails.hospitals.length,
-                        itemBuilder: (context, index) {
-                          return _keyHighlights(
-                            _projectDetails.hospitals[index]['name'],
-                            _projectDetails.hospitals[index]['dist'].toString(),
-                          );
-                        },
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 10),
+                            ...List.generate(
+                              _projectDetails.configImages.length,
+                              (index) => _projectDetails
+                                      .configImages[index].isEmpty
+                                  ? const SizedBox()
+                                  : Container(
+                                      height: 200,
+                                      width: 300,
+                                      margin: const EdgeInsets.only(right: 16),
+                                      clipBehavior: Clip.hardEdge,
+                                      decoration: BoxDecoration(
+                                        color: CustomColors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Image.network(
+                                        _projectDetails.configImages[index]
+                                            .trim(),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        controller: _highlightsScrollController,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _projectDetails.connectivity.length,
-                        itemBuilder: (context, index) {
-                          return _keyHighlights(
-                            _projectDetails.connectivity[index]['name'],
-                            _projectDetails.connectivity[index]['dist']
-                                .toString(),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),
+            const SizedBox(height: 16),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "Amenities",
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: CustomColors.white,
                 ),
               ),
             ),
@@ -736,166 +713,72 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                "Project gallery",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const Divider(
-              height: 20,
-              color: CustomColors.black50,
-            ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  CustomChip(
-                    text: "Master Plan",
-                    isSelected: _selectedPlan == 0,
+                  const SizedBox(width: 10),
+                  GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _selectedPlan = 0;
-                      });
+                      enquiryFormPopup();
                     },
-                  ),
-                  CustomChip(
-                    text: "Tower plan",
-                    isSelected: _selectedPlan == 1,
-                    onTap: () {
-                      setState(() {
-                        _selectedPlan = 1;
-                      });
-                    },
-                  ),
-                  CustomChip(
-                    text: "Floor Plan",
-                    isSelected: _selectedPlan == 2,
-                    onTap: () {
-                      setState(() {
-                        _selectedPlan = 2;
-                      });
-                    },
-                  ),
-                  CustomChip(
-                    text: "Unit Plan",
-                    isSelected: _selectedPlan == 3,
-                    onTap: () {
-                      setState(() {
-                        _selectedPlan = 3;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (_projectGallery.isNotEmpty)
-              FlutterCarousel.builder(
-                itemBuilder: (context, index, realIndex) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  height: 250,
-                  decoration: BoxDecoration(
-                    color: CustomColors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Image.network(
-                    _projectGallery[index].trim(),
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Center(
-                      child: Text("Failed to load image"),
-                    ),
-                    // loadingBuilder: (context, child, loadingProgress) => Center(
-                    //   child: CircularProgressIndicator(
-                    //     color: CustomColors.black,
-                    //     value: loadingProgress != null
-                    //         ? loadingProgress.cumulativeBytesLoaded /
-                    //             loadingProgress.expectedTotalBytes!
-                    //         : null,
-                    //   ),
-                    // ),
-                  ),
-                ),
-                itemCount: _projectGallery.length,
-                options: CarouselOptions(
-                  height: 250,
-                  aspectRatio: 16 / 9,
-                  viewportFraction: 1,
-                  initialPage: 0,
-                  enableInfiniteScroll: true,
-                  reverse: false,
-                  autoPlay: true,
-                  showIndicator: true,
-                ),
-              ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        enquiryFormPopup();
-                      },
-                      child: Container(
-                        height: 120,
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: CustomColors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Stack(
-                          children: [
-                            const Positioned(
-                              top: 10,
-                              left: 10,
-                              child: Text(
-                                "Brochure",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: CustomColors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 10,
-                              right: 10,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: CustomColors.black.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                child: const Text(
-                                  "Download",
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: CustomColors.white,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Container(
+                    child: Container(
                       height: 120,
                       width: 200,
                       decoration: BoxDecoration(
-                        color: CustomColors.black.withOpacity(0.5),
+                        color: CustomColors.white.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Stack(
+                        children: [
+                          const Positioned(
+                            top: 10,
+                            left: 10,
+                            child: Text(
+                              "Brochure",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: CustomColors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 10,
+                            right: 10,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: CustomColors.black.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              child: const Text(
+                                "Download",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: CustomColors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  GestureDetector(
+                    onTap: () {
+                      enquiryFormPopup();
+                    },
+                    child: Container(
+                      height: 120,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: CustomColors.white.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Stack(
@@ -911,7 +794,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   backgroundColor:
                                       CustomColors.black.withOpacity(0.5),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  enquiryFormPopup();
+                                },
                                 icon: const Icon(Icons.play_arrow),
                               ),
                             ),
@@ -919,16 +804,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: AdsSection(),
+              child: AdsSection(darkMode: true),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 70),
           ],
         ),
       ),
@@ -943,7 +828,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ? "best-${widget.apartment.apartmentID}"
               : widget.apartment.apartmentID,
           child: Container(
-            height: h + 30,
+            height: h,
             width: double.infinity,
             decoration: BoxDecoration(
               color: CustomColors.black25,
@@ -957,17 +842,32 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           ),
         ),
         Container(
+          height: h,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                CustomColors.black.withOpacity(0.4),
+                CustomColors.black.withOpacity(0),
+                CustomColors.black.withOpacity(0.4),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+          ),
+        ),
+        Container(
           height: h + 30,
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                CustomColors.black.withOpacity(0.8),
-                CustomColors.black.withOpacity(0.1),
-                CustomColors.black.withOpacity(0.8),
+                CustomColors.black.withOpacity(0),
+                CustomColors.black.withOpacity(0.3),
+                CustomColors.black.withOpacity(1),
               ],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
         ),
@@ -991,44 +891,79 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ),
                 ),
               ),
-              Text(
-                widget.apartment.apartmentName,
-                style: const TextStyle(
-                  color: CustomColors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  rightSlideTransition(
-                    context,
-                    BuilderPortfolio(
-                      projectId: widget.apartment.projectId,
-                    ),
-                  );
-                },
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      color: CustomColors.white,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16,
-                    ),
-                    children: [
-                      const TextSpan(
-                        text: "By ",
-                      ),
-                      TextSpan(
-                        text: widget.apartment.companyName,
-                        style: const TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationColor: CustomColors.white,
-                          decorationThickness: 2,
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 30,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.apartment.apartmentName,
+                          style: const TextStyle(
+                            color: CustomColors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
                         ),
+                        GestureDetector(
+                          onTap: () {
+                            rightSlideTransition(
+                              context,
+                              BuilderPortfolio(
+                                projectId: widget.apartment.projectId,
+                              ),
+                            );
+                          },
+                          child: RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                              ),
+                              children: [
+                                const TextSpan(
+                                  text: "By ",
+                                ),
+                                TextSpan(
+                                  text: widget.apartment.companyName,
+                                  style: const TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: CustomColors.white,
+                                    decorationThickness: 2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        ref
+                                .read(savedPropertiesProvider)
+                                .contains(widget.apartment)
+                            ? ref
+                                .read(savedPropertiesProvider.notifier)
+                                .removeApartment(widget.apartment)
+                            : ref
+                                .read(savedPropertiesProvider.notifier)
+                                .addApartment(widget.apartment);
+                      },
+                      icon: Icon(
+                        ref
+                                .watch(savedPropertiesProvider)
+                                .contains(widget.apartment)
+                            ? Icons.bookmark
+                            : Icons.bookmark_outline,
+                        color: CustomColors.white,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 30),
@@ -1235,16 +1170,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     }).then((response) {
       if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
-          _projectDetails = ProjectDetails.fromJson(
+          _projectDetails = ApartmentDetailsModel.fromJson(
               jsonDecode(response.body)['formattedHighlightsApartment'][0]);
-          _projectGallery = _projectDetails.gallery
-              .split(",")
-              .where((image) => image.trim().isNotEmpty)
-              .toList();
-          configImages = _projectDetails.configImages
-              .split(",")
-              .where((image) => image.trim().isNotEmpty)
-              .toList();
         });
       }
     });
@@ -1312,11 +1239,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              expandedHeight: h * 0.55,
+              backgroundColor: CustomColors.black,
+              expandedHeight: h * 0.5,
               floating: false,
               automaticallyImplyLeading: false,
               pinned: false,
-              flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h * 0.55)),
+              flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h * 0.5)),
             ),
           ];
         },

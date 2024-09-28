@@ -7,7 +7,7 @@ class MapsPropertyCard extends StatelessWidget {
   final Function()? onTap;
   const MapsPropertyCard({super.key, required this.apartment, this.onTap});
 
-  String formatBudget(double budget) {
+  String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
     if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(00)}K";

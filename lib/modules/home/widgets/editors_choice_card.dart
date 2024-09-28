@@ -10,7 +10,7 @@ class EditorsChoiceCard extends StatelessWidget {
     super.key,
     required this.apartments,
   });
-  String formatBudget(double budget) {
+  String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
     if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(00)}K";
@@ -24,7 +24,7 @@ class EditorsChoiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: 180,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -45,9 +45,9 @@ class EditorsChoiceCard extends StatelessWidget {
               );
             },
             child: Container(
-              width: 250,
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              clipBehavior: Clip.hardEdge, // Ensures overflow content is hidden
+              width: MediaQuery.of(context).size.width * 0.8,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
                 borderRadius: BorderRadius.circular(8),
@@ -59,8 +59,8 @@ class EditorsChoiceCard extends StatelessWidget {
                     child: Hero(
                       tag: apartments[index].apartmentID,
                       child: Container(
-                        height: 150,
-                        width: 150,
+                        height: 180,
+                        width: 200,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
@@ -72,7 +72,7 @@ class EditorsChoiceCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    height: 150,
+                    height: 180,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
@@ -90,15 +90,15 @@ class EditorsChoiceCard extends StatelessWidget {
                     clipper: CustomShapeClipper(),
                     child: Container(
                       color: CustomColors.secondary,
-                      height: 150,
-                      width: 250,
+                      height: 180,
+                      width: double.infinity,
                     ),
                   ),
                   Positioned(
                     top: 0,
                     left: 0,
                     child: Container(
-                      height: 150,
+                      height: 180,
                       padding: const EdgeInsets.all(8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,8 +166,8 @@ class CustomShapeClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height);
-    path.lineTo(size.width * 0.7, size.height);
-    path.lineTo(size.width * 0.5, 0);
+    path.lineTo(size.width * 0.6, size.height);
+    path.lineTo(size.width * 0.4, 0);
     path.close();
     return path;
   }

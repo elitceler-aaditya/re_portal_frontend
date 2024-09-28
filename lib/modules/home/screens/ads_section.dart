@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
-import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class AdsSection extends ConsumerStatefulWidget {
-  const AdsSection({super.key});
+  const AdsSection({super.key, this.darkMode = false});
+  final bool darkMode;
 
   @override
   ConsumerState<AdsSection> createState() => _AdsSectionState();
@@ -21,11 +19,12 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Similar Properties",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
+              color: widget.darkMode ? CustomColors.white : CustomColors.black,
             ),
           ),
           const SizedBox(height: 10),

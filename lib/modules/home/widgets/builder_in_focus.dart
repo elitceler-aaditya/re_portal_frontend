@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class BuilderInFocus extends StatefulWidget {
   final List<ApartmentModel> apartments;

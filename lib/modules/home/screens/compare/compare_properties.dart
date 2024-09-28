@@ -6,7 +6,6 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 
-
 class CompareProperties extends ConsumerStatefulWidget {
   const CompareProperties({super.key});
 
@@ -15,6 +14,7 @@ class CompareProperties extends ConsumerStatefulWidget {
 }
 
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
+  bool _isFixedColumnVisible = true;
   final ScrollController _scrollController = ScrollController();
   formatPrice(double price) {
     if (price > 1000000) {
@@ -45,6 +45,28 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
       },
       child: Scaffold(
         backgroundColor: CustomColors.primary10,
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          backgroundColor: CustomColors.primary10,
+          actions: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _isFixedColumnVisible = !_isFixedColumnVisible;
+                });
+              },
+              icon: _isFixedColumnVisible
+                  ? const Icon(
+                      Icons.visibility,
+                      color: CustomColors.primary,
+                    )
+                  : const Icon(
+                      Icons.visibility_off,
+                      color: CustomColors.primary,
+                    ),
+            ),
+          ],
+        ),
         body: comparedProperties.length < 2
             ? const SafeArea(
                 child: Center(
@@ -79,8 +101,11 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                     const SizedBox(height: 16),
                     Expanded(
                       child: SingleChildScrollView(
-                          child: FixedColumnDataTable(
-                              comparedProperties: comparedProperties)),
+                        child: FixedColumnDataTable(
+                          comparedProperties: comparedProperties,
+                          isFixedColumnVisible: _isFixedColumnVisible,
+                        ),
+                      ),
                     )
                   ],
                 ),

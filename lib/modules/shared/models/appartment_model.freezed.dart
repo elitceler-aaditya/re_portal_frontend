@@ -27,22 +27,27 @@ mixin _$ApartmentModel {
   String get apartmentType => throw _privateConstructorUsedError;
   String get amenities => throw _privateConstructorUsedError;
   String get configuration => throw _privateConstructorUsedError;
-  double get budget => throw _privateConstructorUsedError;
-  double get flatSize => throw _privateConstructorUsedError;
+  int get budget => throw _privateConstructorUsedError;
+  int get flatSize => throw _privateConstructorUsedError;
   String get companyName => throw _privateConstructorUsedError;
   String get companyPhone => throw _privateConstructorUsedError;
   String get noOfFloor => throw _privateConstructorUsedError;
   String get noOfFlats => throw _privateConstructorUsedError;
   String get noOfBlocks => throw _privateConstructorUsedError;
+  String get noOfTower => throw _privateConstructorUsedError;
+  String get noOfUnits => throw _privateConstructorUsedError;
   String get possessionDate => throw _privateConstructorUsedError;
   String get clubhouseSize => throw _privateConstructorUsedError;
-  int get openSpace => throw _privateConstructorUsedError;
-  String get createdAt => throw _privateConstructorUsedError;
-  String get updatedAt => throw _privateConstructorUsedError;
+  int? get openSpace => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
   double get lat => throw _privateConstructorUsedError;
   double get long => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
+  List<String> get images => throw _privateConstructorUsedError;
+  List<String> get aWSKEYs => throw _privateConstructorUsedError;
+  bool get reraApproval => throw _privateConstructorUsedError;
+  String get createdAt => throw _privateConstructorUsedError;
+  String get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this ApartmentModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -68,22 +73,27 @@ abstract class $ApartmentModelCopyWith<$Res> {
       String apartmentType,
       String amenities,
       String configuration,
-      double budget,
-      double flatSize,
+      int budget,
+      int flatSize,
       String companyName,
       String companyPhone,
       String noOfFloor,
       String noOfFlats,
       String noOfBlocks,
+      String noOfTower,
+      String noOfUnits,
       String possessionDate,
       String clubhouseSize,
-      int openSpace,
-      String createdAt,
-      String updatedAt,
+      int? openSpace,
       String image,
       double lat,
       double long,
-      String description});
+      String description,
+      List<String> images,
+      List<String> aWSKEYs,
+      bool reraApproval,
+      String createdAt,
+      String updatedAt});
 }
 
 /// @nodoc
@@ -115,15 +125,20 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
     Object? noOfFloor = null,
     Object? noOfFlats = null,
     Object? noOfBlocks = null,
+    Object? noOfTower = null,
+    Object? noOfUnits = null,
     Object? possessionDate = null,
     Object? clubhouseSize = null,
-    Object? openSpace = null,
-    Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? openSpace = freezed,
     Object? image = null,
     Object? lat = null,
     Object? long = null,
     Object? description = null,
+    Object? images = null,
+    Object? aWSKEYs = null,
+    Object? reraApproval = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(_value.copyWith(
       apartmentID: null == apartmentID
@@ -157,11 +172,11 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       flatSize: null == flatSize
           ? _value.flatSize
           : flatSize // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       companyName: null == companyName
           ? _value.companyName
           : companyName // ignore: cast_nullable_to_non_nullable
@@ -182,6 +197,14 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
           ? _value.noOfBlocks
           : noOfBlocks // ignore: cast_nullable_to_non_nullable
               as String,
+      noOfTower: null == noOfTower
+          ? _value.noOfTower
+          : noOfTower // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfUnits: null == noOfUnits
+          ? _value.noOfUnits
+          : noOfUnits // ignore: cast_nullable_to_non_nullable
+              as String,
       possessionDate: null == possessionDate
           ? _value.possessionDate
           : possessionDate // ignore: cast_nullable_to_non_nullable
@@ -190,18 +213,10 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
           ? _value.clubhouseSize
           : clubhouseSize // ignore: cast_nullable_to_non_nullable
               as String,
-      openSpace: null == openSpace
+      openSpace: freezed == openSpace
           ? _value.openSpace
           : openSpace // ignore: cast_nullable_to_non_nullable
-              as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as String,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int?,
       image: null == image
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
@@ -217,6 +232,26 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      images: null == images
+          ? _value.images
+          : images // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      aWSKEYs: null == aWSKEYs
+          ? _value.aWSKEYs
+          : aWSKEYs // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      reraApproval: null == reraApproval
+          ? _value.reraApproval
+          : reraApproval // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -238,22 +273,27 @@ abstract class _$$AppartmentModelImplCopyWith<$Res>
       String apartmentType,
       String amenities,
       String configuration,
-      double budget,
-      double flatSize,
+      int budget,
+      int flatSize,
       String companyName,
       String companyPhone,
       String noOfFloor,
       String noOfFlats,
       String noOfBlocks,
+      String noOfTower,
+      String noOfUnits,
       String possessionDate,
       String clubhouseSize,
-      int openSpace,
-      String createdAt,
-      String updatedAt,
+      int? openSpace,
       String image,
       double lat,
       double long,
-      String description});
+      String description,
+      List<String> images,
+      List<String> aWSKEYs,
+      bool reraApproval,
+      String createdAt,
+      String updatedAt});
 }
 
 /// @nodoc
@@ -283,15 +323,20 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
     Object? noOfFloor = null,
     Object? noOfFlats = null,
     Object? noOfBlocks = null,
+    Object? noOfTower = null,
+    Object? noOfUnits = null,
     Object? possessionDate = null,
     Object? clubhouseSize = null,
-    Object? openSpace = null,
-    Object? createdAt = null,
-    Object? updatedAt = null,
+    Object? openSpace = freezed,
     Object? image = null,
     Object? lat = null,
     Object? long = null,
     Object? description = null,
+    Object? images = null,
+    Object? aWSKEYs = null,
+    Object? reraApproval = null,
+    Object? createdAt = null,
+    Object? updatedAt = null,
   }) {
     return _then(_$AppartmentModelImpl(
       apartmentID: null == apartmentID
@@ -325,11 +370,11 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       flatSize: null == flatSize
           ? _value.flatSize
           : flatSize // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       companyName: null == companyName
           ? _value.companyName
           : companyName // ignore: cast_nullable_to_non_nullable
@@ -350,6 +395,14 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
           ? _value.noOfBlocks
           : noOfBlocks // ignore: cast_nullable_to_non_nullable
               as String,
+      noOfTower: null == noOfTower
+          ? _value.noOfTower
+          : noOfTower // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfUnits: null == noOfUnits
+          ? _value.noOfUnits
+          : noOfUnits // ignore: cast_nullable_to_non_nullable
+              as String,
       possessionDate: null == possessionDate
           ? _value.possessionDate
           : possessionDate // ignore: cast_nullable_to_non_nullable
@@ -358,18 +411,10 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
           ? _value.clubhouseSize
           : clubhouseSize // ignore: cast_nullable_to_non_nullable
               as String,
-      openSpace: null == openSpace
+      openSpace: freezed == openSpace
           ? _value.openSpace
           : openSpace // ignore: cast_nullable_to_non_nullable
-              as int,
-      createdAt: null == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
-              as String,
-      updatedAt: null == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int?,
       image: null == image
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
@@ -386,6 +431,26 @@ class __$$AppartmentModelImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
+      images: null == images
+          ? _value._images
+          : images // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      aWSKEYs: null == aWSKEYs
+          ? _value._aWSKEYs
+          : aWSKEYs // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      reraApproval: null == reraApproval
+          ? _value.reraApproval
+          : reraApproval // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String,
+      updatedAt: null == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -401,22 +466,29 @@ class _$AppartmentModelImpl implements _AppartmentModel {
       this.apartmentType = "",
       this.amenities = "",
       this.configuration = "",
-      this.budget = 0.0,
-      this.flatSize = 0.0,
+      this.budget = 0,
+      this.flatSize = 0,
       this.companyName = "",
       this.companyPhone = "",
       this.noOfFloor = "",
       this.noOfFlats = "",
       this.noOfBlocks = "",
+      this.noOfTower = "",
+      this.noOfUnits = "",
       this.possessionDate = "",
       this.clubhouseSize = "",
-      this.openSpace = 0,
-      this.createdAt = "",
-      this.updatedAt = "",
+      this.openSpace = null,
       this.image = "",
       this.lat = 0.0,
       this.long = 0.0,
-      this.description = ""});
+      this.description = "",
+      final List<String> images = const [],
+      final List<String> aWSKEYs = const [],
+      this.reraApproval = false,
+      this.createdAt = "",
+      this.updatedAt = ""})
+      : _images = images,
+        _aWSKEYs = aWSKEYs;
 
   factory _$AppartmentModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$AppartmentModelImplFromJson(json);
@@ -444,10 +516,10 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   final String configuration;
   @override
   @JsonKey()
-  final double budget;
+  final int budget;
   @override
   @JsonKey()
-  final double flatSize;
+  final int flatSize;
   @override
   @JsonKey()
   final String companyName;
@@ -465,19 +537,19 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   final String noOfBlocks;
   @override
   @JsonKey()
+  final String noOfTower;
+  @override
+  @JsonKey()
+  final String noOfUnits;
+  @override
+  @JsonKey()
   final String possessionDate;
   @override
   @JsonKey()
   final String clubhouseSize;
   @override
   @JsonKey()
-  final int openSpace;
-  @override
-  @JsonKey()
-  final String createdAt;
-  @override
-  @JsonKey()
-  final String updatedAt;
+  final int? openSpace;
   @override
   @JsonKey()
   final String image;
@@ -490,10 +562,37 @@ class _$AppartmentModelImpl implements _AppartmentModel {
   @override
   @JsonKey()
   final String description;
+  final List<String> _images;
+  @override
+  @JsonKey()
+  List<String> get images {
+    if (_images is EqualUnmodifiableListView) return _images;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_images);
+  }
+
+  final List<String> _aWSKEYs;
+  @override
+  @JsonKey()
+  List<String> get aWSKEYs {
+    if (_aWSKEYs is EqualUnmodifiableListView) return _aWSKEYs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_aWSKEYs);
+  }
+
+  @override
+  @JsonKey()
+  final bool reraApproval;
+  @override
+  @JsonKey()
+  final String createdAt;
+  @override
+  @JsonKey()
+  final String updatedAt;
 
   @override
   String toString() {
-    return 'ApartmentModel(apartmentID: $apartmentID, projectId: $projectId, apartmentName: $apartmentName, locality: $locality, apartmentType: $apartmentType, amenities: $amenities, configuration: $configuration, budget: $budget, flatSize: $flatSize, companyName: $companyName, companyPhone: $companyPhone, noOfFloor: $noOfFloor, noOfFlats: $noOfFlats, noOfBlocks: $noOfBlocks, possessionDate: $possessionDate, clubhouseSize: $clubhouseSize, openSpace: $openSpace, createdAt: $createdAt, updatedAt: $updatedAt, image: $image, lat: $lat, long: $long, description: $description)';
+    return 'ApartmentModel(apartmentID: $apartmentID, projectId: $projectId, apartmentName: $apartmentName, locality: $locality, apartmentType: $apartmentType, amenities: $amenities, configuration: $configuration, budget: $budget, flatSize: $flatSize, companyName: $companyName, companyPhone: $companyPhone, noOfFloor: $noOfFloor, noOfFlats: $noOfFlats, noOfBlocks: $noOfBlocks, noOfTower: $noOfTower, noOfUnits: $noOfUnits, possessionDate: $possessionDate, clubhouseSize: $clubhouseSize, openSpace: $openSpace, image: $image, lat: $lat, long: $long, description: $description, images: $images, aWSKEYs: $aWSKEYs, reraApproval: $reraApproval, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -528,21 +627,29 @@ class _$AppartmentModelImpl implements _AppartmentModel {
                 other.noOfFlats == noOfFlats) &&
             (identical(other.noOfBlocks, noOfBlocks) ||
                 other.noOfBlocks == noOfBlocks) &&
+            (identical(other.noOfTower, noOfTower) ||
+                other.noOfTower == noOfTower) &&
+            (identical(other.noOfUnits, noOfUnits) ||
+                other.noOfUnits == noOfUnits) &&
             (identical(other.possessionDate, possessionDate) ||
                 other.possessionDate == possessionDate) &&
             (identical(other.clubhouseSize, clubhouseSize) ||
                 other.clubhouseSize == clubhouseSize) &&
             (identical(other.openSpace, openSpace) ||
                 other.openSpace == openSpace) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt) &&
             (identical(other.image, image) || other.image == image) &&
             (identical(other.lat, lat) || other.lat == lat) &&
             (identical(other.long, long) || other.long == long) &&
             (identical(other.description, description) ||
-                other.description == description));
+                other.description == description) &&
+            const DeepCollectionEquality().equals(other._images, _images) &&
+            const DeepCollectionEquality().equals(other._aWSKEYs, _aWSKEYs) &&
+            (identical(other.reraApproval, reraApproval) ||
+                other.reraApproval == reraApproval) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -563,15 +670,20 @@ class _$AppartmentModelImpl implements _AppartmentModel {
         noOfFloor,
         noOfFlats,
         noOfBlocks,
+        noOfTower,
+        noOfUnits,
         possessionDate,
         clubhouseSize,
         openSpace,
-        createdAt,
-        updatedAt,
         image,
         lat,
         long,
-        description
+        description,
+        const DeepCollectionEquality().hash(_images),
+        const DeepCollectionEquality().hash(_aWSKEYs),
+        reraApproval,
+        createdAt,
+        updatedAt
       ]);
 
   /// Create a copy of ApartmentModel
@@ -600,22 +712,27 @@ abstract class _AppartmentModel implements ApartmentModel {
       final String apartmentType,
       final String amenities,
       final String configuration,
-      final double budget,
-      final double flatSize,
+      final int budget,
+      final int flatSize,
       final String companyName,
       final String companyPhone,
       final String noOfFloor,
       final String noOfFlats,
       final String noOfBlocks,
+      final String noOfTower,
+      final String noOfUnits,
       final String possessionDate,
       final String clubhouseSize,
-      final int openSpace,
-      final String createdAt,
-      final String updatedAt,
+      final int? openSpace,
       final String image,
       final double lat,
       final double long,
-      final String description}) = _$AppartmentModelImpl;
+      final String description,
+      final List<String> images,
+      final List<String> aWSKEYs,
+      final bool reraApproval,
+      final String createdAt,
+      final String updatedAt}) = _$AppartmentModelImpl;
 
   factory _AppartmentModel.fromJson(Map<String, dynamic> json) =
       _$AppartmentModelImpl.fromJson;
@@ -635,9 +752,9 @@ abstract class _AppartmentModel implements ApartmentModel {
   @override
   String get configuration;
   @override
-  double get budget;
+  int get budget;
   @override
-  double get flatSize;
+  int get flatSize;
   @override
   String get companyName;
   @override
@@ -649,15 +766,15 @@ abstract class _AppartmentModel implements ApartmentModel {
   @override
   String get noOfBlocks;
   @override
+  String get noOfTower;
+  @override
+  String get noOfUnits;
+  @override
   String get possessionDate;
   @override
   String get clubhouseSize;
   @override
-  int get openSpace;
-  @override
-  String get createdAt;
-  @override
-  String get updatedAt;
+  int? get openSpace;
   @override
   String get image;
   @override
@@ -666,6 +783,16 @@ abstract class _AppartmentModel implements ApartmentModel {
   double get long;
   @override
   String get description;
+  @override
+  List<String> get images;
+  @override
+  List<String> get aWSKEYs;
+  @override
+  bool get reraApproval;
+  @override
+  String get createdAt;
+  @override
+  String get updatedAt;
 
   /// Create a copy of ApartmentModel
   /// with the given fields replaced by the non-null parameter values.

@@ -343,8 +343,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 tag:
                                     "best-${ref.watch(homePropertiesProvider).apartments[index].apartmentID}",
                                 child: Container(
-                                  height: 220,
-                                  width: double.infinity,
+                                  height: MediaQuery.of(context).size.width,
+                                  width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
                                     color: CustomColors.black25,
                                     borderRadius: BorderRadius.circular(10),
@@ -365,8 +365,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                               ),
                               Container(
-                                height: 220,
-                                width: double.infinity,
+                                height: MediaQuery.of(context).size.width,
+                                width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   gradient: LinearGradient(
@@ -396,14 +396,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         style: const TextStyle(
                                           color: CustomColors.white,
                                           fontSize: 20,
+                                          height: 1,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
-                                        "${ref.watch(homePropertiesProvider).apartments[index].flatSize} sq ft • ${formatBudget(ref.watch(homePropertiesProvider).apartments[index].budget)} • ${ref.watch(homePropertiesProvider).apartments[index].locality}",
+                                        "@ ${ref.watch(homePropertiesProvider).apartments[index].locality}",
                                         style: const TextStyle(
                                           color: CustomColors.white,
-                                          fontSize: 10,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "₹${formatBudget(ref.watch(homePropertiesProvider).apartments[index].budget.toDouble())} onwards",
+                                        style: const TextStyle(
+                                          color: CustomColors.white,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
@@ -415,8 +425,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         options: CarouselOptions(
-                          height: 220,
-                          viewportFraction: 0.85,
+                          height: MediaQuery.of(context).size.width,
+                          viewportFraction: 0.95,
                           enlargeCenterPage: true,
                           autoPlay: true,
                           autoPlayInterval: const Duration(seconds: 5),

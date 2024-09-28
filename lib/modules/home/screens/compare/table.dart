@@ -7,8 +7,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 class FixedColumnDataTable extends ConsumerStatefulWidget {
   final List<ApartmentModel> comparedProperties;
+  final bool isFixedColumnVisible;
 
-  const FixedColumnDataTable({super.key, required this.comparedProperties});
+  const FixedColumnDataTable(
+      {super.key,
+      required this.comparedProperties,
+      this.isFixedColumnVisible = true});
 
   @override
   ConsumerState<FixedColumnDataTable> createState() =>
@@ -26,7 +30,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
     }
   }
 
-  formatBudget(double budget) {
+  formatBudget(int budget) {
     if (budget < 10000000) {
       return "${(budget / 100000).toStringAsFixed(2)} L";
     } else {
@@ -39,33 +43,45 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        // Fixed Column
-        SingleChildScrollView(
-          controller: _verticalController,
-          child: DataTable(
-            headingRowHeight: 115,
-            columnSpacing: 2,
-            columns: const [DataColumn(label: Text(''))],
-            rows: _buildFixedColumnRows(),
-          ),
-        ),
-        // Scrollable Columns
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            controller: _horizontalController,
-            child: SingleChildScrollView(
-              controller: _verticalController,
-              child: DataTable(
-                headingRowHeight: 115,
-                columnSpacing: 16,
-                columns: _buildScrollableColumns(),
-                rows: _buildScrollableRows(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Fixed Column
+            if (widget.isFixedColumnVisible)
+              SingleChildScrollView(
+                controller: _verticalController,
+                child: DataTable(
+                  headingRowHeight: 75,
+                  columnSpacing: 2,
+                  dataRowMinHeight: 40,
+                  dataRowMaxHeight: 40,
+                  columns: const [DataColumn(label: Text(''))],
+                  rows: _buildFixedColumnRows(),
+                ),
+              ),
+            // if (!widget.isFixedColumnVisible) const SizedBox(width: 50),
+            // Scrollable Columns
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _horizontalController,
+                child: SingleChildScrollView(
+                  controller: _verticalController,
+                  child: DataTable(
+                    headingRowHeight: 115,
+                    columnSpacing: 16,
+                    dataRowMinHeight: 40,
+                    dataRowMaxHeight: 40,
+                    columns: _buildScrollableColumns(),
+                    rows: _buildScrollableRows(),
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ],
     );
@@ -109,49 +125,51 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   List<DataRow> _buildFixedColumnRows() {
     return [
       const DataRow(
-          cells: [DataCell(Text('Type', style: TextStyle(fontSize: 12)))],
+          cells: [DataCell(Text('Name', style: TextStyle(fontSize: 12)))],
           color: WidgetStatePropertyAll(CustomColors.primary10)),
+      const DataRow(
+          cells: [DataCell(Text('Type', style: TextStyle(fontSize: 12)))],
+          color: WidgetStatePropertyAll(CustomColors.primary20)),
       const DataRow(
           cells: [DataCell(Text('Flat size', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
+          color: WidgetStatePropertyAll(CustomColors.primary10)),
       const DataRow(
           cells: [DataCell(Text('Approval', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
+          color: WidgetStatePropertyAll(CustomColors.primary20)),
       const DataRow(cells: [
         DataCell(Text('Project size', style: TextStyle(fontSize: 12)))
-      ], color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(
-          cells: [DataCell(Text('Units', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Floors', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(cells: [
-        DataCell(Text('Configuration', style: TextStyle(fontSize: 12)))
       ], color: WidgetStatePropertyAll(CustomColors.primary10)),
       const DataRow(
-          cells: [DataCell(Text('Possession', style: TextStyle(fontSize: 12)))],
+          cells: [DataCell(Text('Units', style: TextStyle(fontSize: 12)))],
           color: WidgetStatePropertyAll(CustomColors.primary20)),
+      const DataRow(
+          cells: [DataCell(Text('Floors', style: TextStyle(fontSize: 12)))],
+          color: WidgetStatePropertyAll(CustomColors.primary10)),
+      const DataRow(cells: [
+        DataCell(Text('Configuration', style: TextStyle(fontSize: 12)))
+      ], color: WidgetStatePropertyAll(CustomColors.primary20)),
+      const DataRow(
+          cells: [DataCell(Text('Possession', style: TextStyle(fontSize: 12)))],
+          color: WidgetStatePropertyAll(CustomColors.primary10)),
       const DataRow(
           cells: [DataCell(Text('Base price', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Club size', style: TextStyle(fontSize: 12)))],
           color: WidgetStatePropertyAll(CustomColors.primary20)),
       const DataRow(
-          cells: [DataCell(Text('Open area', style: TextStyle(fontSize: 12)))],
+          cells: [DataCell(Text('Club size', style: TextStyle(fontSize: 12)))],
           color: WidgetStatePropertyAll(CustomColors.primary10)),
+      const DataRow(
+          cells: [DataCell(Text('Open area', style: TextStyle(fontSize: 12)))],
+          color: WidgetStatePropertyAll(CustomColors.primary20)),
       const DataRow(cells: [
         DataCell(Text('Cost',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)))
-      ], color: WidgetStatePropertyAll(CustomColors.primary20)),
+      ], color: WidgetStatePropertyAll(CustomColors.primary10)),
       const DataRow(
           cells: [DataCell(Text('Contact'))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
+          color: WidgetStatePropertyAll(CustomColors.primary20)),
       const DataRow(
           cells: [DataCell(Text(''))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(cells: [DataCell(Text(''))]),
+          color: WidgetStatePropertyAll(CustomColors.primary10)),
     ];
   }
 
@@ -159,23 +177,32 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
     return [
       _buildDataRow((prop) => prop.apartmentType, const TextStyle(fontSize: 12),
           CustomColors.primary20),
-      _buildDataRow((prop) => "${prop.flatSize.toStringAsFixed(0)} sq.ft."),
-      _buildDataRow((_) => 'RERA Approved', null, CustomColors.primary20),
-      _buildDataRow((prop) => prop.flatSize.toString()),
-      _buildDataRow(
-          (prop) => prop.noOfFlats.toString(), null, CustomColors.primary20),
-      _buildDataRow((prop) => prop.noOfFloor.toString()),
-      _buildDataRow((prop) => prop.configuration.toString(), null,
+      _buildDataRow((prop) => "${prop.flatSize.toStringAsFixed(0)} sq.ft.",
+          const TextStyle(fontSize: 12)),
+      _buildDataRow((_) => 'RERA Approved', const TextStyle(fontSize: 12),
           CustomColors.primary20),
-      _buildDataRow((prop) =>
-          DateFormat("MMM yyyy").format(DateTime.parse(prop.possessionDate))),
+      _buildDataRow((prop) => prop.flatSize.toString()),
+      _buildDataRow((prop) => prop.noOfFlats.toString(),
+          const TextStyle(fontSize: 12), CustomColors.primary20),
+      _buildDataRow(
+          (prop) => prop.noOfFloor.toString(), const TextStyle(fontSize: 12)),
+      _buildDataRow((prop) => prop.configuration.toString(),
+          const TextStyle(fontSize: 12), CustomColors.primary20),
+      _buildDataRow(
+          (prop) => DateFormat("MMM yyyy")
+              .format(DateTime.parse(prop.possessionDate)),
+          const TextStyle(fontSize: 12)),
       _buildDataRow(
           (prop) => '₹${formatPrice(prop.budget / prop.flatSize)} per sq.ft.',
-          null,
+          const TextStyle(fontSize: 12),
           CustomColors.primary20),
-      _buildDataRow((prop) => prop.clubhouseSize.toString()),
+      _buildDataRow((prop) => prop.clubhouseSize.toString(),
+          const TextStyle(fontSize: 12)),
       _buildDataRow(
-          (prop) => prop.openSpace.toString(), null, CustomColors.primary20),
+        (prop) => prop.openSpace.toString(),
+        const TextStyle(fontSize: 12),
+        CustomColors.primary20,
+      ),
       _buildDataRow((prop) => formatBudget(prop.budget),
           const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
       DataRow(

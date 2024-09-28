@@ -52,8 +52,8 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
       );
     },
     child: Container(
-      width: 250,
-      height: 250,
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.width * 0.8,
       margin: const EdgeInsets.symmetric(horizontal: 10),
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
@@ -66,7 +66,7 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
             child: Hero(
               tag: lifestyleProperty.apartmentID,
               child: SizedBox(
-                width: 250,
+                width: MediaQuery.of(context).size.width * 0.8,
                 child: Image.network(
                   lifestyleProperty.image,
                   fit: BoxFit.cover,

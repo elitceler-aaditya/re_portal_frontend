@@ -16,22 +16,33 @@ _$AppartmentModelImpl _$$AppartmentModelImplFromJson(
       apartmentType: json['apartmentType'] as String? ?? "",
       amenities: json['amenities'] as String? ?? "",
       configuration: json['configuration'] as String? ?? "",
-      budget: (json['budget'] as num?)?.toDouble() ?? 0.0,
-      flatSize: (json['flatSize'] as num?)?.toDouble() ?? 0.0,
+      budget: (json['budget'] as num?)?.toInt() ?? 0,
+      flatSize: (json['flatSize'] as num?)?.toInt() ?? 0,
       companyName: json['companyName'] as String? ?? "",
       companyPhone: json['companyPhone'] as String? ?? "",
       noOfFloor: json['noOfFloor'] as String? ?? "",
       noOfFlats: json['noOfFlats'] as String? ?? "",
       noOfBlocks: json['noOfBlocks'] as String? ?? "",
+      noOfTower: json['noOfTower'] as String? ?? "",
+      noOfUnits: json['noOfUnits'] as String? ?? "",
       possessionDate: json['possessionDate'] as String? ?? "",
       clubhouseSize: json['clubhouseSize'] as String? ?? "",
-      openSpace: (json['openSpace'] as num?)?.toInt() ?? 0,
-      createdAt: json['createdAt'] as String? ?? "",
-      updatedAt: json['updatedAt'] as String? ?? "",
+      openSpace: (json['openSpace'] as num?)?.toInt() ?? null,
       image: json['image'] as String? ?? "",
       lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
       long: (json['long'] as num?)?.toDouble() ?? 0.0,
       description: json['description'] as String? ?? "",
+      images: (json['images'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      aWSKEYs: (json['aWSKEYs'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      reraApproval: json['reraApproval'] as bool? ?? false,
+      createdAt: json['createdAt'] as String? ?? "",
+      updatedAt: json['updatedAt'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$AppartmentModelImplToJson(
@@ -51,13 +62,18 @@ Map<String, dynamic> _$$AppartmentModelImplToJson(
       'noOfFloor': instance.noOfFloor,
       'noOfFlats': instance.noOfFlats,
       'noOfBlocks': instance.noOfBlocks,
+      'noOfTower': instance.noOfTower,
+      'noOfUnits': instance.noOfUnits,
       'possessionDate': instance.possessionDate,
       'clubhouseSize': instance.clubhouseSize,
       'openSpace': instance.openSpace,
-      'createdAt': instance.createdAt,
-      'updatedAt': instance.updatedAt,
       'image': instance.image,
       'lat': instance.lat,
       'long': instance.long,
       'description': instance.description,
+      'images': instance.images,
+      'aWSKEYs': instance.aWSKEYs,
+      'reraApproval': instance.reraApproval,
+      'createdAt': instance.createdAt,
+      'updatedAt': instance.updatedAt,
     };

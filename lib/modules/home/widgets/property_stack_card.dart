@@ -24,7 +24,7 @@ class PropertyStackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: 180,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -47,8 +47,8 @@ class PropertyStackCard extends StatelessWidget {
             child: Hero(
               tag: apartments[index].apartmentID,
               child: Container(
-                width: 250,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
+                width: MediaQuery.of(context).size.width * 0.8,
+                margin: const EdgeInsets.symmetric(horizontal: 6),
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -60,7 +60,7 @@ class PropertyStackCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Container(
-                      height: 150,
+                      height: 180,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
@@ -90,13 +90,23 @@ class PropertyStackCard extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(
-                              "${apartments[index].flatSize} sq ft • ${formatBudget(apartments[index].budget)} • ${apartments[index].locality}",
-                              style: const TextStyle(
-                                color: CustomColors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  size: 12,
+                                  color: CustomColors.white,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  apartments[index].locality,
+                                  style: const TextStyle(
+                                    color: CustomColors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
