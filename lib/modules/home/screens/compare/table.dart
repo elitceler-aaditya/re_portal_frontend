@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -101,7 +100,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
-                        prop.image,
+                        prop.coverImage,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -109,7 +108,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Text(
-                      prop.apartmentName,
+                      prop.name,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -174,41 +173,42 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   }
 
   List<DataRow> _buildScrollableRows() {
-    return [
-      _buildDataRow((prop) => prop.apartmentType, const TextStyle(fontSize: 12),
-          CustomColors.primary20),
-      _buildDataRow((prop) => "${prop.flatSize.toStringAsFixed(0)} sq.ft.",
-          const TextStyle(fontSize: 12)),
-      _buildDataRow((_) => 'RERA Approved', const TextStyle(fontSize: 12),
-          CustomColors.primary20),
-      _buildDataRow((prop) => prop.flatSize.toString()),
-      _buildDataRow((prop) => prop.noOfFlats.toString(),
-          const TextStyle(fontSize: 12), CustomColors.primary20),
-      _buildDataRow(
-          (prop) => prop.noOfFloor.toString(), const TextStyle(fontSize: 12)),
-      _buildDataRow((prop) => prop.configuration.toString(),
-          const TextStyle(fontSize: 12), CustomColors.primary20),
-      _buildDataRow(
-          (prop) => DateFormat("MMM yyyy")
-              .format(DateTime.parse(prop.possessionDate)),
-          const TextStyle(fontSize: 12)),
-      _buildDataRow(
-          (prop) => '₹${formatPrice(prop.budget / prop.flatSize)} per sq.ft.',
-          const TextStyle(fontSize: 12),
-          CustomColors.primary20),
-      _buildDataRow((prop) => prop.clubhouseSize.toString(),
-          const TextStyle(fontSize: 12)),
-      _buildDataRow(
-        (prop) => prop.openSpace.toString(),
-        const TextStyle(fontSize: 12),
-        CustomColors.primary20,
-      ),
-      _buildDataRow((prop) => formatBudget(prop.budget),
-          const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-      DataRow(
-          cells: _buildContactButtons(),
-          color: const WidgetStatePropertyAll(CustomColors.primary20)),
-    ];
+    return [];
+    // return [
+    //   _buildDataRow((prop) => prop.apartmentType, const TextStyle(fontSize: 12),
+    //       CustomColors.primary20),
+    //   _buildDataRow((prop) => "${prop.flatSize.toStringAsFixed(0)} sq.ft.",
+    //       const TextStyle(fontSize: 12)),
+    //   _buildDataRow((_) => 'RERA Approved', const TextStyle(fontSize: 12),
+    //       CustomColors.primary20),
+    //   _buildDataRow((prop) => prop.flatSize.toString()),
+    //   _buildDataRow((prop) => prop.noOfFlats.toString(),
+    //       const TextStyle(fontSize: 12), CustomColors.primary20),
+    //   _buildDataRow(
+    //       (prop) => prop.noOfFloor.toString(), const TextStyle(fontSize: 12)),
+    //   _buildDataRow((prop) => prop.configuration.toString(),
+    //       const TextStyle(fontSize: 12), CustomColors.primary20),
+    //   _buildDataRow(
+    //       (prop) => DateFormat("MMM yyyy")
+    //           .format(DateTime.parse(prop.possessionDate)),
+    //       const TextStyle(fontSize: 12)),
+    //   _buildDataRow(
+    //       (prop) => '₹${formatPrice(prop.budget / prop.flatSize)} per sq.ft.',
+    //       const TextStyle(fontSize: 12),
+    //       CustomColors.primary20),
+    //   _buildDataRow((prop) => prop.clubhouseSize.toString(),
+    //       const TextStyle(fontSize: 12)),
+    //   _buildDataRow(
+    //     (prop) => prop.openSpace.toString(),
+    //     const TextStyle(fontSize: 12),
+    //     CustomColors.primary20,
+    //   ),
+    //   _buildDataRow((prop) => formatBudget(prop.budget),
+    //       const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+    //   DataRow(
+    //       cells: _buildContactButtons(),
+    //       color: const WidgetStatePropertyAll(CustomColors.primary20)),
+    // ];
   }
 
   DataRow _buildDataRow(String Function(ApartmentModel) getValue,
@@ -235,7 +235,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
               padding: EdgeInsets.zero,
             ),
             onPressed: () {
-              final Uri phoneUri = Uri(scheme: 'tel', path: prop.companyPhone);
+              final Uri phoneUri = Uri(scheme: 'tel', path: prop.builderID);
               launchUrl(phoneUri);
             },
             child: const Text(

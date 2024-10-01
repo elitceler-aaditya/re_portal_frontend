@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/widgets/ribbon.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
@@ -46,6 +45,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
             builder: (context) => PropertyDetails(
               apartment: widget.apartment,
               nextApartment: widget.nextApartment,
+              heroTag: "property-${widget.apartment.projectId}",
             ),
           ),
         );
@@ -70,7 +70,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
               child: Stack(
                 children: [
                   Hero(
-                    tag: widget.apartment.apartmentID,
+                    tag: "property-${widget.apartment.projectId}",
                     child: Container(
                       height: 180,
                       decoration: BoxDecoration(
@@ -79,9 +79,10 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
                         ),
-                        image: widget.apartment.image.isNotEmpty
+                        image: widget.apartment.coverImage.isNotEmpty
                             ? DecorationImage(
-                                image: NetworkImage(widget.apartment.image),
+                                image:
+                                    NetworkImage(widget.apartment.coverImage),
                                 fit: BoxFit.cover,
                               )
                             : null,
@@ -102,28 +103,6 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 10,
-                    left: 0,
-                    child: CustomPaint(
-                      painter: RibbonPainter(CustomColors.primary),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: const Text(
-                          'RERA Approved',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ),
                     ),
                   ),
@@ -157,7 +136,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     child: Align(
                       alignment: Alignment.bottomLeft,
                       child: Text(
-                        widget.apartment.apartmentName,
+                        widget.apartment.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -207,8 +186,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               ),
                             ),
                             TextSpan(
-                              text:
-                                  "${widget.apartment.flatSize.toStringAsFixed(0)} sq.ft",
+                              text: "${widget.apartment.flatSize} sq.ft",
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -234,7 +212,8 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               ),
                             ),
                             TextSpan(
-                              text: formatBudget(widget.apartment.budget),
+                              text: formatBudget(
+                                  int.parse(widget.apartment.budget)),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -269,7 +248,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                         .watch(comparePropertyProvider)
                                         .contains(widget.apartment)) {
                                       debugPrint(
-                                        "Compare button pressed for ${widget.apartment.apartmentName}",
+                                        "Compare button pressed for ${widget.apartment.name}",
                                       );
                                       ref
                                           .read(

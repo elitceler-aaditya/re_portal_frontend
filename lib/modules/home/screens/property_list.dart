@@ -60,20 +60,20 @@ class _PropertState extends ConsumerState<PropertyList> {
               ListTile(
                 title: const Text('Price - low to high'),
                 onTap: () {
-                  setState(() {
-                    sortedApartments = List.from(widget.apartments)
-                      ..sort((a, b) => a.budget.compareTo(b.budget));
-                  });
+                  // setState(() {
+                  //   sortedApartments = List.from(widget.apartments)
+                  //     ..sort((a, b) => a.budget.compareTo(b.budget));
+                  // });
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: const Text('Price - high to low'),
                 onTap: () {
-                  setState(() {
-                    sortedApartments = List.from(widget.apartments)
-                      ..sort((b, a) => a.budget.compareTo(b.budget));
-                  });
+                  // setState(() {
+                  //   sortedApartments = List.from(widget.apartments)
+                  //     ..sort((b, a) => a.budget.compareTo(b.budget));
+                  // });
                   Navigator.pop(context);
                 },
               ),

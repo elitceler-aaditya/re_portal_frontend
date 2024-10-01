@@ -61,12 +61,15 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: 120,
-                            width: double.infinity,
-                            child: Image.network(
-                              widget.apartments[index].image,
-                              fit: BoxFit.cover,
+                          Hero(
+                            tag: "new-${widget.apartments[index].projectId}",
+                            child: SizedBox(
+                              height: 120,
+                              width: double.infinity,
+                              child: Image.network(
+                                widget.apartments[index].coverImage,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Padding(
@@ -88,7 +91,7 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                       children: [
                                         Text(
                                           widget
-                                              .apartments[index].apartmentName,
+                                              .apartments[index].name,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -98,7 +101,7 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                           ),
                                         ),
                                         Text(
-                                          "@ ${widget.apartments[index].locality}",
+                                          "@ ${widget.apartments[index].projectLocation}",
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -113,60 +116,60 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                 ),
                                 const SizedBox(width: 8),
                                 SizedBox(
-                                  height: 64,
-                                  width: 100,
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: GoogleMap(
-                                          zoomControlsEnabled: false,
-                                          initialCameraPosition: CameraPosition(
-                                            target: LatLng(
-                                                widget.apartments[index].lat,
-                                                widget.apartments[index].long),
-                                            zoom: 5,
+                                height: 64,
+                                width: 100,
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: GoogleMap(
+                                        zoomControlsEnabled: false,
+                                        initialCameraPosition: CameraPosition(
+                                          target: LatLng(
+                                              widget.apartments[index].latitude,
+                                              widget.apartments[index].longitude),
+                                          zoom: 5,
+                                        ),
+                                        markers: {
+                                          Marker(
+                                            markerId: const MarkerId(
+                                                'currentLocation'),
+                                            icon: BitmapDescriptor
+                                                .defaultMarkerWithHue(2),
+                                            position: LatLng(
+                                                widget.apartments[index].latitude,
+                                                widget
+                                                    .apartments[index].longitude),
+                                            infoWindow: const InfoWindow(
+                                              title: 'Current Location',
+                                            ),
                                           ),
-                                          markers: {
-                                            Marker(
-                                              markerId: const MarkerId(
-                                                  'currentLocation'),
-                                              icon: BitmapDescriptor
-                                                  .defaultMarkerWithHue(2),
-                                              position: LatLng(
-                                                  widget.apartments[index].lat,
-                                                  widget
-                                                      .apartments[index].long),
-                                              infoWindow: const InfoWindow(
-                                                title: 'Current Location',
-                                              ),
-                                            ),
-                                          },
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  GoogleMapsScreen(
-                                                apartment:
-                                                    widget.apartments[index],
-                                              ),
-                                            ),
-                                          );
                                         },
-                                        child: Container(
-                                          height: 86,
-                                          width: 86,
-                                          color: CustomColors.black10
-                                              .withOpacity(0.1),
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                GoogleMapsScreen(
+                                              apartment:
+                                                  widget.apartments[index],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 86,
+                                        width: 86,
+                                        color: CustomColors.black10
+                                            .withOpacity(0.1),
+                                      ),
+                                    )
+                                  ],
                                 ),
+                              ),
                               ],
                             ),
                           ),
@@ -185,7 +188,6 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   if (widget.apartments[index].configuration
-                                      .split(",")
                                       .where((item) => item.isNotEmpty)
                                       .isNotEmpty)
                                     Column(
@@ -212,7 +214,6 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                               ...List.generate(
                                                 widget.apartments[index]
                                                     .configuration
-                                                    .split(",")
                                                     .where((item) =>
                                                         item.isNotEmpty)
                                                     .length,
@@ -225,7 +226,6 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                                                 .apartments[
                                                                     index]
                                                                 .configuration
-                                                                .split(",")
                                                                 .where((item) =>
                                                                     item.isNotEmpty)
                                                                 .length
@@ -242,7 +242,6 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                                   child: Text(
                                                     widget.apartments[index]
                                                         .configuration
-                                                        .split(",")
                                                         .where((item) =>
                                                             item.isNotEmpty)
                                                         .first,
@@ -272,6 +271,8 @@ class _NewPropertiesSectionState extends State<NewPropertiesSection> {
                                                 PropertyDetails(
                                               apartment:
                                                   widget.apartments[index],
+                                              heroTag:
+                                                  "new-${widget.apartments[index].projectId}",
                                             ),
                                           ),
                                         );

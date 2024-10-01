@@ -22,14 +22,14 @@ class ApartmentListNotifier extends StateNotifier<List<ApartmentModel>> {
   //remove apartment
   void removeApartment(ApartmentModel apartment) {
     state = state
-        .where((element) => element.apartmentID != apartment.apartmentID)
+        .where((element) => element.projectId != apartment.projectId)
         .toList();
   }
 
   //update apartment
   void updateApartment(ApartmentModel apartment) {
     state = state
-        .map((e) => e.apartmentID == apartment.apartmentID ? apartment : e)
+        .map((e) => e.projectId == apartment.projectId ? apartment : e)
         .toList();
   }
 

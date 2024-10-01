@@ -32,9 +32,16 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> allApartments = [];
+  List<ApartmentModel> bestDeals = [];
+  List<ApartmentModel> selectedProperties = [];
+  List<ApartmentModel> editorsChoice = [];
+  List<ApartmentModel> builderInFocus = [];
+  List<ApartmentModel> newProjects = [];
+  List<ApartmentModel> readyToMoveIn = [];
+  List<ApartmentModel> lifestyleProjects = [];
   bool loading = true;
 
-  String formatBudget(double budget) {
+  String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
     if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(00)}K";
@@ -49,9 +56,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Map<String, dynamic> params = const {},
   }) async {
     String baseUrl = dotenv.get('BASE_URL');
-    String url = "$baseUrl/project/filterApartments";
+    String url = "$baseUrl/user/getUserHomepageData";
     Uri uri = Uri.parse(url).replace(queryParameters: params);
-    debugPrint("------------token${ref.watch(userProvider).token}");
     http.get(
       uri,
       headers: {
@@ -59,13 +65,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       },
     ).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
-        List responseBody = jsonDecode(response.body)['apartments'];
+        Map responseBody = jsonDecode(response.body)['properties'];
+        bestDeals = (responseBody['bestDeals'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        selectedProperties =
+            (responseBody['selectedProperties'] as List<dynamic>)
+                .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+                .toList();
+        editorsChoice =
+            (responseBody['editorsChoice']['appointments'] as List<dynamic>)
+                .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+                .toList();
+        builderInFocus =
+            (responseBody['builderInFocus']['appointments'] as List<dynamic>)
+                .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+                .toList();
+        newProjects = (responseBody['newProjects'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        readyToMoveIn = (responseBody['readyToMoveIn'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        lifestyleProjects = (responseBody['lifestyleProjects'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
 
-        ref.watch(homePropertiesProvider.notifier).setApartments(
-              responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
-            );
-        allApartments =
-            responseBody.map((e) => ApartmentModel.fromJson(e)).toList();
+        allApartments = [
+          ...bestDeals,
+          ...selectedProperties,
+          ...editorsChoice,
+          ...builderInFocus,
+          ...newProjects,
+          ...readyToMoveIn,
+          ...lifestyleProjects,
+        ];
+        ref.watch(homePropertiesProvider.notifier).setApartments(allApartments);
 
         setState(() {
           loading = false;
@@ -73,6 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
     }).onError((error, stackTrace) {
       debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
       setState(() {
         loading = false;
       });
@@ -108,10 +144,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
-        PropertyStackCard(
-          apartments:
-              ref.watch(homePropertiesProvider).apartments.sublist(0, 2),
-        ),
+        PropertyStackCard(apartments: bestDeals),
         const Padding(
           padding: EdgeInsets.all(10),
           child: Text(
@@ -122,26 +155,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
-        EditorsChoiceCard(
-          apartments:
-              ref.watch(homePropertiesProvider).apartments.sublist(2, 5),
-        ),
-        BuilderInFocus(
-          apartments:
-              ref.watch(homePropertiesProvider).apartments.sublist(5, 8),
-        ),
-        NewPropertiesSection(
-          apartments:
-              ref.watch(homePropertiesProvider).apartments.sublist(8, 10),
-        ),
-        LifestyleProperties(
-          lifestyleProperties:
-              ref.watch(homePropertiesProvider).apartments.sublist(10, 12),
-        ),
-        ReadyToMovein(
-          apartments:
-              ref.watch(homePropertiesProvider).apartments.sublist(12, 14),
-        ),
+        EditorsChoiceCard(apartments: editorsChoice),
+        BuilderInFocus(apartments: builderInFocus),
+        NewPropertiesSection(apartments: newProjects),
+        LifestyleProperties(lifestyleProperties: lifestyleProjects),
+        ReadyToMovein(apartments: readyToMoveIn),
         const SizedBox(height: 20),
       ],
     );
@@ -158,7 +176,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.primary10,
+      backgroundColor: const Color(0xFFFCE2DB),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -217,8 +235,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              SearchApartment(apartments: allApartments),
+                          builder: (context) => const SearchApartment(),
                         ),
                       );
                     },
@@ -295,19 +312,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 10, bottom: 8),
-                  child: Text(
-                    "Best Deals",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (ref.watch(homePropertiesProvider).apartments.isNotEmpty)
+                if (allApartments.isNotEmpty)
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 10, bottom: 8),
+                        child: Text(
+                          "Best Deals",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       FlutterCarousel.builder(
                         itemCount: min(
                             5,
@@ -324,7 +343,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   apartment: ref
                                       .watch(homePropertiesProvider)
                                       .apartments[index],
-                                  bestDeals: true,
+                                  heroTag:
+                                      "best-${ref.watch(homePropertiesProvider).apartments[index].projectId}",
                                   nextApartment: ref
                                           .watch(homePropertiesProvider)
                                           .apartments[
@@ -341,7 +361,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             children: [
                               Hero(
                                 tag:
-                                    "best-${ref.watch(homePropertiesProvider).apartments[index].apartmentID}",
+                                    "best-${ref.watch(homePropertiesProvider).apartments[index].projectId}",
                                 child: Container(
                                   height: MediaQuery.of(context).size.width,
                                   width: MediaQuery.of(context).size.width,
@@ -351,13 +371,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     image: ref
                                             .watch(homePropertiesProvider)
                                             .apartments[index]
-                                            .image
+                                            .coverImage
                                             .isNotEmpty
                                         ? DecorationImage(
                                             image: NetworkImage(ref
                                                 .watch(homePropertiesProvider)
                                                 .apartments[index]
-                                                .image),
+                                                .coverImage),
                                             fit: BoxFit.cover,
                                           )
                                         : null,
@@ -383,6 +403,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 bottom: 0,
                                 left: 0,
                                 child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
                                   padding: const EdgeInsets.all(8),
                                   child: Column(
                                     crossAxisAlignment:
@@ -392,7 +414,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         ref
                                             .watch(homePropertiesProvider)
                                             .apartments[index]
-                                            .apartmentName,
+                                            .name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           color: CustomColors.white,
                                           fontSize: 20,
@@ -401,7 +425,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         ),
                                       ),
                                       Text(
-                                        "@ ${ref.watch(homePropertiesProvider).apartments[index].locality}",
+                                        "@ ${ref.watch(homePropertiesProvider).apartments[index].projectLocation}",
                                         style: const TextStyle(
                                           color: CustomColors.white,
                                           fontSize: 14,
@@ -410,7 +434,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        "₹${formatBudget(ref.watch(homePropertiesProvider).apartments[index].budget.toDouble())} onwards",
+                                        "₹${formatBudget(int.parse(ref.watch(homePropertiesProvider).apartments[index].budget))} onwards",
                                         style: const TextStyle(
                                           color: CustomColors.white,
                                           fontSize: 12,
@@ -477,7 +501,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       );
                     },
                   )
-                : ref.watch(homePropertiesProvider).apartments.isEmpty
+                : allApartments.isEmpty
                     ? const SizedBox(
                         height: 500,
                         width: double.infinity,

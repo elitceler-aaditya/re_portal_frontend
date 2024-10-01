@@ -36,7 +36,7 @@ class PropertyStackCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
-                    bestDeals: false,
+                    heroTag: "property-${apartments[index].projectId}",
                     nextApartment: index + 1 < apartments.length
                         ? apartments[index + 1]
                         : apartments.first,
@@ -44,76 +44,84 @@ class PropertyStackCard extends StatelessWidget {
                 ),
               );
             },
-            child: Hero(
-              tag: apartments[index].apartmentID,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                margin: const EdgeInsets.symmetric(horizontal: 6),
-                decoration: BoxDecoration(
-                  color: CustomColors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: NetworkImage(apartments[index].image),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: "property-${apartments[index].projectId}",
+                    child: SizedBox(
                       height: 180,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        gradient: LinearGradient(
-                          colors: [
-                            CustomColors.black.withOpacity(0),
-                            CustomColors.black.withOpacity(0.8),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
+                      child: Image.network(
+                        apartments[index].coverImage,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              apartments[index].apartmentName,
-                              style: const TextStyle(
+                  ),
+                  Container(
+                    height: 180,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      gradient: LinearGradient(
+                        colors: [
+                          CustomColors.black.withOpacity(0),
+                          CustomColors.black.withOpacity(0.8),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            apartments[index].name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 12,
                                 color: CustomColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 12,
+                              const SizedBox(width: 2),
+                              Text(
+                                apartments[index].projectLocation,
+                                style: const TextStyle(
                                   color: CustomColors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
                                 ),
-                                const SizedBox(width: 2),
-                                Text(
-                                  apartments[index].locality,
-                                  style: const TextStyle(
-                                    color: CustomColors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );

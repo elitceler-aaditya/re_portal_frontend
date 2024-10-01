@@ -8,7 +8,6 @@ class MapsPropertyCard extends StatelessWidget {
   const MapsPropertyCard({super.key, required this.apartment, this.onTap});
 
   String formatBudget(int budget) {
-    //return budget in k format or lakh and cr format
     if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(00)}K";
     } else if (budget < 10000000) {
@@ -51,7 +50,7 @@ class MapsPropertyCard extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        apartment.image,
+                        apartment.coverImage,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return const Center(
@@ -68,7 +67,7 @@ class MapsPropertyCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          apartment.apartmentName,
+                          apartment.name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -91,14 +90,15 @@ class MapsPropertyCard extends StatelessWidget {
                               width: 1,
                             ),
                           ),
-                          child: Text(
-                            formatBudget(apartment.budget),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: CustomColors.primary,
-                            ),
-                          ),
+                          // child: Text(
+                          //   formatBudget(
+                          //       int.parse(apartment.pricePerSquareFeetRate)),
+                          //   style: const TextStyle(
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.bold,
+                          //     color: CustomColors.primary,
+                          //   ),
+                          // ),
                         )
                       ],
                     ),

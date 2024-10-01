@@ -24,12 +24,12 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   bool _loading = false;
   int appartmentType = 0;
   List<String> selectedConfigurations = [];
-  double _minBudget = 0;
-  double _maxBudget = 1;
+  final double _minBudget = 0;
+  final double _maxBudget = 1;
   double _budgetSliderMin = 1;
   double _budgetSliderMax = 1;
-  double _minFlatSize = 0;
-  double _maxFlatSize = 1;
+  final double _minFlatSize = 0;
+  final double _maxFlatSize = 1;
   double _flatSizeSliderMin = 1;
   double _flatSizeSliderMax = 1;
   List<String> localities = [];
@@ -132,23 +132,23 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   void initValues() {
     //min and max budget
-    _minBudget = widget.apartmentList
-        .map((e) => e.budget)
-        .reduce((value, element) => value < element ? value : element)
-        .toDouble();
-    _maxBudget = widget.apartmentList
-        .map((e) => e.budget)
-        .reduce((value, element) => value > element ? value : element)
-        .toDouble();
-    //min and max flat size
-    _minFlatSize = widget.apartmentList
-        .map((e) => e.flatSize)
-        .reduce((value, element) => value < element ? value : element)
-        .toDouble();
-    _maxFlatSize = widget.apartmentList
-        .map((e) => e.flatSize)
-        .reduce((value, element) => value > element ? value : element)
-        .toDouble();
+    // _minBudget = widget.apartmentList
+    //     .map((e) => e.budget)
+    //     .reduce((value, element) => value < element ? value : element)
+    //     .toDouble();
+    // _maxBudget = widget.apartmentList
+    //     .map((e) => e.budget)
+    //     .reduce((value, element) => value > element ? value : element)
+    //     .toDouble();
+    // //min and max flat size
+    // _minFlatSize = widget.apartmentList
+    //     .map((e) => e.flatSize)
+    //     .reduce((value, element) => value < element ? value : element)
+    //     .toDouble();
+    // _maxFlatSize = widget.apartmentList
+    //     .map((e) => e.flatSize)
+    //     .reduce((value, element) => value > element ? value : element)
+    //     .toDouble();
 
     localities = ref.watch(filtersProvider).selectedLocalities;
     appartmentType = apartmentTypeList.indexWhere(
@@ -294,24 +294,24 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                           },
                         ),
                       ),
-                      ...widget.apartmentList
-                          .map((e) => e.locality.trim())
-                          .where((e) => !localities.contains(e))
-                          .toSet()
-                          .map(
-                            (e) => CustomListChip(
-                              text: e,
-                              isSelected: false,
-                              onTap: () {
-                                if (localities.contains(e)) {
-                                  localities.remove(e);
-                                } else {
-                                  localities.add(e);
-                                }
-                                setState(() {});
-                              },
-                            ),
-                          ),
+                      // ...widget.apartmentList
+                      //     .map((e) => e.locality.trim())
+                      //     .where((e) => !localities.contains(e))
+                      //     .toSet()
+                      //     .map(
+                      //       (e) => CustomListChip(
+                      //         text: e,
+                      //         isSelected: false,
+                      //         onTap: () {
+                      //           if (localities.contains(e)) {
+                      //             localities.remove(e);
+                      //           } else {
+                      //             localities.add(e);
+                      //           }
+                      //           setState(() {});
+                      //         },
+                      //       ),
+                      //     ),
                     ],
                   ),
                 ),
@@ -414,28 +414,28 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                           },
                         ),
                       ),
-                      ...widget.apartmentList
-                          .map((e) => e.amenities)
-                          .join(',')
-                          .split(',')
-                          .map((amenity) => amenity.trim())
-                          .where((e) => e.isNotEmpty)
-                          .where((e) => !amenities.contains(e))
-                          .toSet()
-                          .map(
-                            (e) => CustomListChip(
-                              text: e,
-                              isSelected: false,
-                              onTap: () {
-                                if (amenities.contains(e)) {
-                                  amenities.remove(e);
-                                } else {
-                                  amenities.add(e);
-                                }
-                                setState(() {});
-                              },
-                            ),
-                          ),
+                      // ...widget.apartmentList
+                      //     .map((e) => e.amenities)
+                      //     .join(',')
+                      //     .split(',')
+                      //     .map((amenity) => amenity.trim())
+                      //     .where((e) => e.isNotEmpty)
+                      //     .where((e) => !amenities.contains(e))
+                      //     .toSet()
+                      //     .map(
+                      //       (e) => CustomListChip(
+                      //         text: e,
+                      //         isSelected: false,
+                      //         onTap: () {
+                      //           if (amenities.contains(e)) {
+                      //             amenities.remove(e);
+                      //           } else {
+                      //             amenities.add(e);
+                      //           }
+                      //           setState(() {});
+                      //         },
+                      //       ),
+                      //     ),
                     ],
                   ),
                 ),

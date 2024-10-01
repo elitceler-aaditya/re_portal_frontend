@@ -54,6 +54,7 @@ dependencies:
   dotted_line: ^3.2.2
   location: ^6.0.2
   google_maps_flutter: ^2.9.0
+  photo_view: ^0.15.0
 
 
 dev_dependencies:

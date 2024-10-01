@@ -10,7 +10,7 @@ class SavedPropertiesNotifier extends StateNotifier<List<ApartmentModel>> {
 
   void removeApartment(ApartmentModel apartment) {
     state = state
-        .where((item) => item.apartmentID != apartment.apartmentID)
+        .where((item) => item.projectId != apartment.projectId)
         .toList();
   }
 

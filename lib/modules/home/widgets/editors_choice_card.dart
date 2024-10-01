@@ -36,7 +36,7 @@ class EditorsChoiceCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
-                    bestDeals: false,
+                    heroTag: "editor-${apartments[index].projectId}",
                     nextApartment: index + 1 < apartments.length
                         ? apartments[index + 1]
                         : apartments.first,
@@ -57,14 +57,14 @@ class EditorsChoiceCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Hero(
-                      tag: apartments[index].apartmentID,
+                      tag: "editor-${apartments[index].projectId}",
                       child: Container(
                         height: 180,
                         width: 200,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
-                            image: NetworkImage(apartments[index].image),
+                            image: NetworkImage(apartments[index].coverImage),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -104,7 +104,7 @@ class EditorsChoiceCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            apartments[index].apartmentName,
+                            apartments[index].name,
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 20,
@@ -112,7 +112,7 @@ class EditorsChoiceCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "@${apartments[index].locality}",
+                            "@${apartments[index].projectLocation}",
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 12,
@@ -121,7 +121,7 @@ class EditorsChoiceCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            "your dream flat @ ${formatBudget(apartments[index].budget)}",
+                            "your dream flat @ ${int.parse(apartments[index].pricePerSquareFeetRate.toString())}/sqft",
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 12,

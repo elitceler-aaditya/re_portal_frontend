@@ -39,6 +39,7 @@ class ReadyToMovein extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => PropertyDetails(
                         apartment: apartments[index],
+                        heroTag: "ready-${apartments[index].projectId}",
                       ),
                     ),
                   );
@@ -65,12 +66,12 @@ class ReadyToMovein extends StatelessWidget {
                         child: Stack(
                           children: [
                             Hero(
-                              tag: apartments[index].apartmentID,
+                              tag: "ready-${apartments[index].projectId}",
                               child: SizedBox(
                                 height: double.infinity,
                                 width: double.infinity,
                                 child: Image.network(
-                                  apartments[index].image,
+                                  apartments[index].coverImage,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -101,64 +102,75 @@ class ReadyToMovein extends StatelessWidget {
                         ),
                       ),
                       Container(
+                        width: double.infinity,
                         color: CustomColors.primary,
                         padding: const EdgeInsets.symmetric(
                             vertical: 12, horizontal: 16),
                         child: Row(
                           children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  apartments[index].apartmentName,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: CustomColors.white,
-                                  ),
-                                ),
-                                Text(
-                                  "@${apartments[index].locality}",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: CustomColors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            SizedBox( 
-                              height: 30,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PropertyDetails(
-                                        apartment: apartments[index],
-                                      ),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    apartments[index].name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: CustomColors.white,
                                     ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: CustomColors.primary,
-                                  side: const BorderSide(
-                                    color: CustomColors.white,
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                  Text(
+                                    "@${apartments[index].projectLocation}",
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: CustomColors.white,
+                                    ),
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: SizedBox(
+                                height: 30,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PropertyDetails(
+                                          apartment: apartments[index],
+                                          heroTag:
+                                              "ready-${apartments[index].projectId}",
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: CustomColors.primary,
+                                    side: const BorderSide(
+                                      color: CustomColors.white,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
                                   ),
-                                ),
-                                child: const Text(
-                                  'View more',
-                                  style: TextStyle(
-                                    color: CustomColors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                  child: const Text(
+                                    'View more',
+                                    style: TextStyle(
+                                      color: CustomColors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),

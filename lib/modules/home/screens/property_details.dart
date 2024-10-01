@@ -5,12 +5,13 @@ import 'dart:io';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
@@ -27,12 +28,12 @@ import 'package:http/http.dart' as http;
 
 class PropertyDetails extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
-  final bool bestDeals;
   final ApartmentModel? nextApartment;
+  final String heroTag;
   const PropertyDetails({
     super.key,
     required this.apartment,
-    this.bestDeals = false,
+    required this.heroTag,
     this.nextApartment,
   });
 
@@ -42,19 +43,19 @@ class PropertyDetails extends ConsumerStatefulWidget {
 
 class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   int _selectedConfig = 0;
-  int _selectedPlan = 0;
   bool _showFullDescription = false;
+  bool _showKeyHighlights = true;
   List<String> _configurations = [];
-  List<String> _amenities = [];
   final _nameController = TextEditingController();
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
-  final _highlightsScrollController = ScrollController();
-  ApartmentDetailsModel _projectDetails = const ApartmentDetailsModel();
+  ApartmentDetailsResponse _projectDetails = const ApartmentDetailsResponse();
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
+  final GlobalKey nextPropertyButtonKey =
+      GlobalKey(debugLabel: 'next-property-button');
   List<Map<String, dynamic>> _highlights = [];
 
   Future<void> sendEnquiry(BuildContext context) async {
@@ -133,7 +134,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       borderRadius:
                           const BorderRadius.vertical(top: Radius.circular(20)),
                       child: Image.network(
-                        widget.apartment.image,
+                        widget.apartment.coverImage,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -201,8 +202,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 child: PropertyCard(
                   apartment: widget.nextApartment!,
                   isCompare: false,
-                  onCallPress: (context) {},
-                  globalKey: GlobalKey(),
+                  onCallPress: (context) {
+                    _showOverlay(
+                      context,
+                      nextPropertyButtonKey.currentContext!.findRenderObject()
+                          as RenderBox,
+                    );
+                  },
+                  globalKey: nextPropertyButtonKey,
                 ),
               ),
             const Padding(
@@ -218,38 +225,48 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   _keyHighlights(String title, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      margin: const EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: CustomColors.primary20,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Row(
         children: [
-          SvgPicture.asset("assets/icons/home_location_pin.svg"),
+          SvgPicture.asset(
+            "assets/icons/home_location_pin.svg",
+            color: CustomColors.primary,
+          ),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 20),
-          const SizedBox(
-            width: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: DottedLine(
-                    lineLength: double.infinity,
-                    lineThickness: 1.5,
-                    dashLength: 8,
-                    dashGapLength: 8,
-                    dashColor: CustomColors.black75,
-                  ),
-                ),
-                Icon(Icons.arrow_forward_ios,
-                    size: 10, color: CustomColors.black75),
-              ],
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+                color: CustomColors.white,
+              ),
             ),
           ),
-          const SizedBox(width: 20),
-          Text(value, style: const TextStyle(fontSize: 12)),
+          const SizedBox(
+            width: 24,
+            child: DottedLine(
+              lineLength: double.infinity,
+              lineThickness: 1.5,
+              dashLength: 8,
+              dashGapLength: 8,
+              dashColor: CustomColors.white,
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios,
+              size: 10, color: CustomColors.white),
+          const SizedBox(width: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 12,
+              color: CustomColors.white,
+            ),
+          ),
         ],
       ),
     );
@@ -257,7 +274,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   highlightsOption(String title, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -435,6 +452,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     );
   }
 
+  // dataSheet() {
+  //   return Container();
+  // }
+
   dataSheet() {
     return Container(
       width: double.infinity,
@@ -447,12 +468,35 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Column(
                 children: [
+                  if (widget.apartment.projectLocation.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 24,
+                          // width: 32,
+                          child: SvgPicture.asset(
+                              "assets/icons/home_location_pin.svg"),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "${widget.apartment.projectLocation}, Hyderabad",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: CustomColors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 10),
                   Container(
                     height: 100,
-                    width: 180,
+                    width: double.infinity,
                     decoration: BoxDecoration(
                       color: CustomColors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -465,19 +509,18 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             zoomControlsEnabled: false,
                             mapToolbarEnabled: false,
                             initialCameraPosition: CameraPosition(
-                              target: LatLng(
-                                  widget.apartment.lat, widget.apartment.long),
+                              target: LatLng(widget.apartment.latitude,
+                                  widget.apartment.longitude),
                               zoom: 10,
                             ),
                             markers: {
                               Marker(
-                                markerId:
-                                    MarkerId(widget.apartment.apartmentID),
-                                position: LatLng(widget.apartment.lat,
-                                    widget.apartment.long),
+                                markerId: MarkerId(widget.apartment.projectId),
+                                position: LatLng(widget.apartment.latitude,
+                                    widget.apartment.longitude),
                                 icon: BitmapDescriptor.defaultMarkerWithHue(2),
                                 infoWindow: InfoWindow(
-                                  title: widget.apartment.apartmentName,
+                                  title: widget.apartment.name,
                                 ),
                               ),
                             },
@@ -506,125 +549,155 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 24,
-                        // width: 32,
-                        child: SvgPicture.asset(
-                            "assets/icons/home_location_pin.svg"),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "${widget.apartment.locality},\nHyderabad",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: CustomColors.white,
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: CustomColors.black75,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Project Description",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: CustomColors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _showFullDescription = !_showFullDescription;
-                      });
-                    },
-                    child: Text(
-                      _projectDetails.projectHighlightsDescription.join(" "),
-                      maxLines: _showFullDescription ? 100 : 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
+            if (widget.apartment.description.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.black75,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Project Description",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                         color: CustomColors.white,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                "Project Gallery",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: CustomColors.white,
-                ),
-              ),
-            ),
-            const Divider(
-              height: 10,
-              color: CustomColors.black50,
-            ),
-            const SizedBox(height: 10),
-            if (_projectDetails.gallery.isNotEmpty)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 10),
-                    ...List.generate(
-                      _projectDetails.gallery.length,
-                      (index) => _projectDetails.gallery[index].isEmpty
-                          ? const SizedBox()
-                          : Container(
-                              height: 200,
-                              width: 300,
-                              margin: const EdgeInsets.only(right: 16),
-                              clipBehavior: Clip.hardEdge,
-                              decoration: BoxDecoration(
-                                color: CustomColors.white,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Image.network(
-                                _projectDetails.gallery[index].trim(),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showFullDescription = !_showFullDescription;
+                        });
+                      },
+                      child: Text(
+                        widget.apartment.description,
+                        maxLines: _showFullDescription ? 100 : 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal,
+                          color: CustomColors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 16),
-            if (_projectDetails.educationalInstitutions.isNotEmpty &&
-                _projectDetails.hospitals.isNotEmpty &&
-                _projectDetails.connectivity.isNotEmpty)
+            // if (_projectDetails.projectImages.projectHighlights.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Project Gallery",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.white,
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    height: 10,
+                    color: CustomColors.black50,
+                  ),
+                  const SizedBox(height: 10),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 10),
+                        ...List.generate(
+                          _projectDetails
+                              .projectImages.projectHighlights.length,
+                          (index) => _projectDetails.projectImages
+                                  .projectHighlights[index].isEmpty
+                              ? const SizedBox()
+                              : GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PhotoViewGallery.builder(
+                                          itemCount: _projectDetails
+                                              .projectImages
+                                              .projectHighlights
+                                              .length,
+                                          builder: (context, index) {
+                                            return PhotoViewGalleryPageOptions(
+                                              imageProvider: NetworkImage(
+                                                _projectDetails.projectImages
+                                                    .projectHighlights[index]
+                                                    .trim(),
+                                              ),
+                                              minScale: PhotoViewComputedScale
+                                                  .contained,
+                                              maxScale: PhotoViewComputedScale
+                                                      .covered *
+                                                  2,
+                                            );
+                                          },
+                                          scrollPhysics:
+                                              const BouncingScrollPhysics(),
+                                          backgroundDecoration:
+                                              const BoxDecoration(
+                                            color: Colors.black,
+                                          ),
+                                          pageController: PageController(
+                                              initialPage: index),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 200,
+                                    width: 300,
+                                    margin: const EdgeInsets.only(right: 16),
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: BoxDecoration(
+                                      color: CustomColors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Image.network(
+                                      _projectDetails.projectImages
+                                          .projectHighlights[index]
+                                          .trim(),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 16),
                     const Text(
                       "Configurations",
                       style: TextStyle(
@@ -637,48 +710,100 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       height: 12,
                       color: CustomColors.black50,
                     ),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _configurations.length,
-                        itemBuilder: (context, index) {
-                          return CustomChip(
-                              text: _configurations[index],
-                              isSelected: _selectedConfig == 0,
-                              onTap: () {
-                                setState(() {
-                                  _selectedConfig = 0;
+                    if (_configurations.isNotEmpty)
+                      SizedBox(
+                        height: 40,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _configurations.length,
+                          itemBuilder: (context, index) {
+                            return ConfigChips(
+                                text: _configurations[index],
+                                isSelected: _selectedConfig == 0,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedConfig = 0;
+                                  });
                                 });
-                              });
-                        },
+                          },
+                        ),
                       ),
-                    ),
                     const SizedBox(height: 8),
-                    if (_projectDetails.gallery.isNotEmpty)
+                    if (_projectDetails
+                        .projectImages.elevationImages.isNotEmpty)
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
                             const SizedBox(width: 10),
                             ...List.generate(
-                              _projectDetails.configImages.length,
+                              _projectDetails.unitPlanConfigFilesFormatted.first
+                                  .unitPlanConfigFiles.length,
                               (index) => _projectDetails
-                                      .configImages[index].isEmpty
+                                      .unitPlanConfigFilesFormatted.isEmpty
                                   ? const SizedBox()
-                                  : Container(
-                                      height: 200,
-                                      width: 300,
-                                      margin: const EdgeInsets.only(right: 16),
-                                      clipBehavior: Clip.hardEdge,
-                                      decoration: BoxDecoration(
-                                        color: CustomColors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Image.network(
-                                        _projectDetails.configImages[index]
-                                            .trim(),
-                                        fit: BoxFit.cover,
+                                  : GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                PhotoViewGallery.builder(
+                                              itemCount: _projectDetails
+                                                  .unitPlanConfigFilesFormatted
+                                                  .first
+                                                  .unitPlanConfigFiles
+                                                  .length,
+                                              builder: (context, index) {
+                                                return PhotoViewGalleryPageOptions(
+                                                  imageProvider: NetworkImage(
+                                                    _projectDetails
+                                                        .unitPlanConfigFilesFormatted
+                                                        .first
+                                                        .unitPlanConfigFiles[
+                                                            index]
+                                                        .trim(),
+                                                  ),
+                                                  minScale:
+                                                      PhotoViewComputedScale
+                                                          .contained,
+                                                  maxScale:
+                                                      PhotoViewComputedScale
+                                                              .covered *
+                                                          2,
+                                                );
+                                              },
+                                              scrollPhysics:
+                                                  const BouncingScrollPhysics(),
+                                              backgroundDecoration:
+                                                  const BoxDecoration(
+                                                color: Colors.black,
+                                              ),
+                                              pageController: PageController(
+                                                  initialPage: index),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 200,
+                                        width: 300,
+                                        margin:
+                                            const EdgeInsets.only(right: 16),
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(
+                                          color: CustomColors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Image.network(
+                                          _projectDetails
+                                              .unitPlanConfigFilesFormatted
+                                              .first
+                                              .unitPlanConfigFiles[index]
+                                              .trim(),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                             ),
@@ -688,31 +813,309 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-            const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                "Amenities",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: CustomColors.white,
-                ),
+            if (_projectDetails.projectDetails.amenities.isNotEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Amenities",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.white,
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    height: 20,
+                    color: CustomColors.black50,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 10),
+                        Column(
+                          children: [
+                            const Text(
+                              "General Amenities",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: CustomColors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 50,
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: CustomColors.black75,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Wrap(
+                                children: List.generate(
+                                  _projectDetails.projectDetails.amenities
+                                      .split(",")
+                                      .length,
+                                  (index) => CustomChip(
+                                    text: _projectDetails
+                                        .projectDetails.amenities
+                                        .split(",")[index],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const Text(
+                              "Clubhouse Amenities",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: CustomColors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 50,
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: CustomColors.black75,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Wrap(
+                                children: List.generate(
+                                  _projectDetails
+                                      .projectDetails.clubHouseAmenities
+                                      .split(",")
+                                      .length,
+                                  (index) => CustomChip(
+                                    text: _projectDetails
+                                        .projectDetails.clubHouseAmenities
+                                        .split(",")[index],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const Text(
+                              "Outdoor Amenities",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                color: CustomColors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 50,
+                              ),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: CustomColors.black75,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Wrap(
+                                children: List.generate(
+                                  _projectDetails
+                                      .projectDetails.outdoorAmenities
+                                      .split(",")
+                                      .length,
+                                  (index) => CustomChip(
+                                    text: _projectDetails
+                                        .projectDetails.outdoorAmenities
+                                        .split(",")[index],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-            ),
+            if (_projectDetails.projectDetails.hospitals.isNotEmpty &&
+                _projectDetails.projectDetails.offices.isNotEmpty &&
+                _projectDetails.projectDetails.connectivity.isNotEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Key Highlights ",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.white,
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    height: 20,
+                    color: CustomColors.black50,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 10),
+                        if (_projectDetails.projectDetails.hospitals.isNotEmpty)
+                          Column(
+                            children: [
+                              const Text(
+                                "Hospitals",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                  color: CustomColors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                margin: const EdgeInsets.only(right: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black75,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Wrap(
+                                  children: List.generate(
+                                    _projectDetails
+                                        .projectDetails.hospitals.length,
+                                    (index) => _keyHighlights(
+                                      _projectDetails
+                                          .projectDetails.hospitals[index].name,
+                                      _projectDetails
+                                          .projectDetails.hospitals[index].dist,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (_projectDetails.projectDetails.offices.isNotEmpty)
+                          Column(
+                            children: [
+                              const Text(
+                                "Offices",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                  color: CustomColors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                margin: const EdgeInsets.only(right: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black75,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Wrap(
+                                  children: List.generate(
+                                    _projectDetails
+                                        .projectDetails.offices.length,
+                                    (index) => _keyHighlights(
+                                      _projectDetails
+                                          .projectDetails.offices[index].name,
+                                      _projectDetails
+                                          .projectDetails.offices[index].dist,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (_projectDetails
+                            .projectDetails.connectivity.isNotEmpty)
+                          Column(
+                            children: [
+                              const Text(
+                                "Connectivity",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                  color: CustomColors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                margin: const EdgeInsets.only(right: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black75,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Wrap(
+                                  children: List.generate(
+                                    _projectDetails
+                                        .projectDetails.connectivity.length,
+                                    (index) => _keyHighlights(
+                                      _projectDetails.projectDetails
+                                          .connectivity[index].name,
+                                      _projectDetails.projectDetails
+                                          .connectivity[index].dist,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        // const SizedBox(width: 10),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             const Divider(
               height: 20,
               color: CustomColors.black50,
             ),
-            Wrap(
-              children: List.generate(
-                _amenities.length,
-                (index) => CustomChip(
-                  text: _amenities[index],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -824,208 +1227,219 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     return Stack(
       children: [
         Hero(
-          tag: widget.bestDeals
-              ? "best-${widget.apartment.apartmentID}"
-              : widget.apartment.apartmentID,
+          tag: widget.heroTag,
           child: Container(
-            height: h,
+            height: h + 32,
             width: double.infinity,
             decoration: BoxDecoration(
               color: CustomColors.black25,
-              image: widget.apartment.image.isNotEmpty
+              image: widget.apartment.coverImage.isNotEmpty
                   ? DecorationImage(
-                      image: NetworkImage(widget.apartment.image),
+                      image: NetworkImage(widget.apartment.coverImage),
                       fit: BoxFit.cover,
                     )
                   : null,
             ),
           ),
         ),
-        Container(
-          height: h,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                CustomColors.black.withOpacity(0.4),
-                CustomColors.black.withOpacity(0),
-                CustomColors.black.withOpacity(0.4),
-              ],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+
+        Animate(
+          target: _showKeyHighlights ? 1 : 0,
+          effects: const [
+            FadeEffect(
+              duration: Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            ),
+          ],
+          child: Container(
+            height: h + 32,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  CustomColors.black.withOpacity(0.8),
+                  CustomColors.black.withOpacity(0),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
             ),
           ),
         ),
         Container(
-          height: h + 30,
+          height: h * 0.35,
           width: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
+                CustomColors.black.withOpacity(0.8),
                 CustomColors.black.withOpacity(0),
-                CustomColors.black.withOpacity(0.3),
-                CustomColors.black.withOpacity(1),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
           ),
         ),
+
         //apartment name
         Positioned(
           top: 36,
-          left: 16,
+          left: 0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Icon(
-                    Icons.arrow_back,
-                    color: CustomColors.white.withOpacity(0.8),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width - 30,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.apartment.apartmentName,
-                          style: const TextStyle(
-                            color: CustomColors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: CustomColors.white.withOpacity(0.8),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            rightSlideTransition(
-                              context,
-                              BuilderPortfolio(
-                                projectId: widget.apartment.projectId,
-                              ),
-                            );
-                          },
-                          child: RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                color: CustomColors.white,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                              ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width - 30,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const TextSpan(
-                                  text: "By ",
-                                ),
-                                TextSpan(
-                                  text: widget.apartment.companyName,
+                                Text(
+                                  widget.apartment.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: CustomColors.white,
-                                    decorationThickness: 2,
+                                    color: CustomColors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    rightSlideTransition(
+                                      context,
+                                      BuilderPortfolio(
+                                        projectId: widget.apartment.projectId,
+                                      ),
+                                    );
+                                  },
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ),
+                                      children: [
+                                        const TextSpan(
+                                          text: "By ",
+                                        ),
+                                        TextSpan(
+                                          text: widget.apartment.companyName,
+                                          style: const TextStyle(
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor: CustomColors.white,
+                                            decorationThickness: 2,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        ref
-                                .read(savedPropertiesProvider)
-                                .contains(widget.apartment)
-                            ? ref
-                                .read(savedPropertiesProvider.notifier)
-                                .removeApartment(widget.apartment)
-                            : ref
-                                .read(savedPropertiesProvider.notifier)
-                                .addApartment(widget.apartment);
-                      },
-                      icon: Icon(
-                        ref
-                                .watch(savedPropertiesProvider)
-                                .contains(widget.apartment)
-                            ? Icons.bookmark
-                            : Icons.bookmark_outline,
-                        color: CustomColors.white,
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _showKeyHighlights = !_showKeyHighlights;
+                              });
+                            },
+                            icon: Icon(
+                              _showKeyHighlights ? Icons.menu_open : Icons.menu,
+                              color: CustomColors.white,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              ref
+                                      .read(savedPropertiesProvider)
+                                      .contains(widget.apartment)
+                                  ? ref
+                                      .read(savedPropertiesProvider.notifier)
+                                      .removeApartment(widget.apartment)
+                                  : ref
+                                      .read(savedPropertiesProvider.notifier)
+                                      .addApartment(widget.apartment);
+                            },
+                            icon: Icon(
+                              ref
+                                      .watch(savedPropertiesProvider)
+                                      .contains(widget.apartment)
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_outline,
+                              color: CustomColors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 30),
-              SizedBox(
-                width: MediaQuery.of(context).size.width - 30,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ...List.generate(
-                          (_highlights.length / 2).ceil(),
-                          (index) => Animate(
-                            effects: [
-                              SlideEffect(
-                                begin: const Offset(-3, 0),
-                                end: const Offset(0, 0),
-                                curve: Curves.easeIn,
-                                duration: const Duration(milliseconds: 1000),
-                                delay: Duration(milliseconds: 100 * index),
-                              )
-                            ],
-                            child: highlightsOption(
-                              _highlights[index]["title"],
-                              _highlights[index]["value"],
+              if (_highlights.isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  width: MediaQuery.of(context).size.width * 0.66,
+                  decoration: BoxDecoration(
+                    // color: CustomColors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...List.generate(
+                        _highlights.length,
+                        (index) => Animate(
+                          target: _showKeyHighlights ? 1 : 0,
+                          effects: const [
+                            SlideEffect(
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              begin: Offset(-1, 0),
                             ),
+                            FadeEffect(
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            ),
+                          ],
+                          delay: Duration(milliseconds: index * 100),
+                          child: highlightsOption(
+                            _highlights[index]["title"],
+                            _highlights[index]["value"],
                           ),
                         ),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ...List.generate(
-                          _highlights.length - (_highlights.length / 2).ceil(),
-                          (index) => Animate(
-                            effects: [
-                              SlideEffect(
-                                begin: const Offset(3, 0),
-                                end: const Offset(0, 0),
-                                curve: Curves.easeIn,
-                                duration: const Duration(milliseconds: 1000),
-                                delay: Duration(milliseconds: 100 * index),
-                              )
-                            ],
-                            child: highlightsOption(
-                              _highlights[_highlights.length - index - 1]
-                                  ["title"],
-                              _highlights[_highlights.length - index - 1]
-                                  ["value"],
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -1037,13 +1451,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     if (_isOverlayVisible) {
       _removeOverlay();
     } else {
-      _showOverlay(context);
+      _showOverlay(context,
+          contactButtonKey.currentContext!.findRenderObject() as RenderBox);
     }
   }
 
-  void _showOverlay(BuildContext context) {
-    final RenderBox renderBox =
-        contactButtonKey.currentContext!.findRenderObject() as RenderBox;
+  void _showOverlay(BuildContext context, RenderBox renderBox) {
     final Size size = renderBox.size;
     final Offset position = renderBox.localToGlobal(Offset.zero);
 
@@ -1120,8 +1533,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             child: SvgPicture.asset(
                               "assets/icons/phone_incoming.svg",
                             )),
-                        'Request call back',
-                        () => _removeOverlay()),
+                        'Request call back', () {
+                      enquiryFormPopup();
+                      _removeOverlay();
+                    }),
                   ],
                 ),
               ),
@@ -1164,14 +1579,60 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   getPropertyDetails() {
     Uri url = Uri.parse(
-        "${dotenv.env['BASE_URL']}/user/getProjectHighlights/${widget.apartment.apartmentID}");
+        "${dotenv.env['BASE_URL']}/user/getProjectHighlightsNew/${widget.apartment.projectId}");
+    debugPrint("---------------------$url");
     http.get(url, headers: {
       "Authorization": "Bearer ${ref.read(userProvider).token}",
     }).then((response) {
       if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
-          _projectDetails = ApartmentDetailsModel.fromJson(
-              jsonDecode(response.body)['formattedHighlightsApartment'][0]);
+          _projectDetails =
+              ApartmentDetailsResponse.fromJson(jsonDecode(response.body));
+
+          _configurations = _projectDetails.unitPlanConfigFilesFormatted
+              .map((e) => e.bHKType)
+              .toList();
+
+          _highlights = [
+            {
+              "title": "Configurations",
+              "value": _projectDetails.unitPlanConfigFilesFormatted.isEmpty
+                  ? "Not specified"
+                  : "${_projectDetails.unitPlanConfigFilesFormatted.length} BHK"
+            },
+            {
+              "title": "No. of Floors",
+              "value": _projectDetails.projectDetails.noOfFloors
+            },
+            {
+              "title": "No. of Flats",
+              "value": _projectDetails.projectDetails.noOfFlats
+            },
+            {
+              "title": "Launch Date",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectLaunchedDate
+                      .substring(0, 10)))
+            },
+            {
+              "title": "Possession Date",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectPossession
+                      .substring(0, 10)))
+            },
+            {
+              "title": "Club House Size",
+              "value":
+                  int.tryParse(_projectDetails.projectDetails.clubhousesize) !=
+                          null
+                      ? '${_projectDetails.projectDetails.clubhousesize} Sq.ft'
+                      : _projectDetails.projectDetails.clubhousesize
+            },
+            {
+              "title": "Open Space",
+              "value": "${_projectDetails.projectDetails.totalOpenSpace} Sq.ft"
+            },
+          ];
         });
       }
     });
@@ -1180,34 +1641,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   @override
   void initState() {
     getPropertyDetails();
-    _configurations = widget.apartment.configuration.split(',');
-    _amenities = widget.apartment.amenities.split(',');
     _nameController.text = ref.read(userProvider).name;
     _mobileController.text = ref.read(userProvider).phoneNumber;
     _emailController.text = ref.read(userProvider).email;
 
-    _highlights = [
-      {
-        "title": "Configurations",
-        "value":
-            "${widget.apartment.configuration.split(',').map((config) => config.replaceAll('BHK', '')).join(',')} BHK"
-      },
-      {"title": "No. of Floors", "value": widget.apartment.noOfFloor},
-      {"title": "No. of Flats", "value": widget.apartment.noOfFlats},
-      {"title": "No. of Blocks", "value": widget.apartment.noOfBlocks},
-      {
-        "title": "Possession Date",
-        "value": DateFormat("MMM yyyy")
-            .format(DateTime.parse(widget.apartment.possessionDate))
-      },
-      {
-        "title": "Club House Size",
-        "value": int.tryParse(widget.apartment.clubhouseSize) != null
-            ? '${widget.apartment.clubhouseSize} Sq.ft'
-            : widget.apartment.clubhouseSize
-      },
-      {"title": "Open Space", "value": "${widget.apartment.openSpace} Sq.ft"},
-    ];
     super.initState();
   }
 
@@ -1221,8 +1658,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   @override
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
+    // debugPrint(
+    //     "-----------${_projectDetails.unitPlanConfigFilesFormatted.length}");
     return Scaffold(
-      backgroundColor: CustomColors.primary10,
+      backgroundColor: CustomColors.black,
       floatingActionButton: FloatingActionButton(
         key: contactButtonKey,
         backgroundColor: CustomColors.primary,
@@ -1240,11 +1679,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           return [
             SliverAppBar(
               backgroundColor: CustomColors.black,
-              expandedHeight: h * 0.5,
+              expandedHeight: h * 0.7,
               floating: false,
               automaticallyImplyLeading: false,
               pinned: false,
-              flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h * 0.5)),
+              flexibleSpace: FlexibleSpaceBar(background: heroAppbar(h * 0.7)),
             ),
           ];
         },

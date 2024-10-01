@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/widgets/ribbon.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PropertyGridView extends ConsumerStatefulWidget {
   final List<ApartmentModel> sortedApartments;
@@ -111,10 +109,10 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                       SvgPicture.asset("assets/icons/phone.svg"),
                       'Call now',
                       () {
-                        launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
-                            .then(
-                          (value) => _removeOverlay(),
-                        );
+                        //   launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
+                        //       .then(
+                        //     (value) => _removeOverlay(),
+                        //   );
                       },
                     ),
                     _buildOption(
@@ -125,11 +123,11 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                               "assets/icons/whatsapp.svg",
                             )),
                         'Chat on Whatsapp', () {
-                      launchUrl(Uri.parse(
-                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
-                          .then(
-                        (value) => _removeOverlay(),
-                      );
+                      // launchUrl(Uri.parse(
+                      //         'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                      //     .then(
+                      //   (value) => _removeOverlay(),
+                      // );
                     }),
                     _buildOption(
                         SizedBox(
@@ -199,6 +197,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
               MaterialPageRoute(
                 builder: (context) => PropertyDetails(
                   apartment: widget.sortedApartments[index],
+                  heroTag: "property-${widget.sortedApartments[index].projectId}",
                 ),
               ),
             );
@@ -225,7 +224,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                   child: Stack(
                     children: [
                       Hero(
-                        tag: widget.sortedApartments[index].apartmentID,
+                        tag: "property-${widget.sortedApartments[index].projectId}",
                         child: Container(
                           height: 180,
                           decoration: BoxDecoration(
@@ -236,7 +235,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                             ),
                             image: DecorationImage(
                               image: NetworkImage(
-                                  widget.sortedApartments[index].image),
+                                  widget.sortedApartments[index].coverImage),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -256,28 +255,6 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(10),
                             topRight: Radius.circular(10),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 10,
-                        left: 0,
-                        child: CustomPaint(
-                          painter: RibbonPainter(CustomColors.primary),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            child: const Text(
-                              'RERA Approved',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                           ),
                         ),
                       ),
@@ -317,7 +294,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                         child: Align(
                           alignment: Alignment.bottomLeft,
                           child: Text(
-                            widget.sortedApartments[index].apartmentName,
+                            widget.sortedApartments[index].name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -340,13 +317,13 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
+                          text: const TextSpan(
+                            style: TextStyle(
                               fontSize: 14,
                               color: Colors.black,
                             ),
                             children: [
-                              const TextSpan(
+                              TextSpan(
                                 text: "Area: ",
                                 style: TextStyle(
                                   color: CustomColors.black75,
@@ -354,15 +331,15 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
+                              // TextSpan(
+                              //   text: widget.sortedApartments[index].flatSize
+                              //       .toStringAsFixed(0),
+                              //   style: const TextStyle(
+                              //     fontWeight: FontWeight.bold,
+                              //     fontSize: 14,
+                              //   ),
+                              // ),
                               TextSpan(
-                                text: widget.sortedApartments[index].flatSize
-                                    .toStringAsFixed(0),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const TextSpan(
                                 text: " sq.ft",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -374,13 +351,13 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                         ),
                         const SizedBox(width: 10),
                         RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
+                          text: const TextSpan(
+                            style: TextStyle(
                               fontSize: 14,
                               color: Colors.black, // Default text color
                             ),
                             children: [
-                              const TextSpan(
+                              TextSpan(
                                 text: "Cost: ",
                                 style: TextStyle(
                                   color: CustomColors.black75,
@@ -388,14 +365,14 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                   fontSize: 14,
                                 ),
                               ),
-                              TextSpan(
-                                text: formatBudget(
-                                    widget.sortedApartments[index].budget),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
+                              // TextSpan(
+                              //   text: formatBudget(
+                              //       widget.sortedApartments[index].budget),
+                              //   style: const TextStyle(
+                              //     fontWeight: FontWeight.bold,
+                              //     fontSize: 14,
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

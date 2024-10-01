@@ -15,7 +15,7 @@ class ApartmentListNotifier extends StateNotifier<List<ApartmentModel>> {
   }
 
   void removeApartment(ApartmentModel apartment) {
-    state = state.where((a) => a.apartmentID != apartment.apartmentID).toList();
+    state = state.where((a) => a.projectId != apartment.projectId).toList();
   }
 
   void clearApartments() {

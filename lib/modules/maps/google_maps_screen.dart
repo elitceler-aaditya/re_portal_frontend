@@ -63,11 +63,12 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocationUpdate();
       final apartments = ref.read(homePropertiesProvider).apartments;
-      locations = apartments.map((e) => LatLng(e.lat, e.long)).toList();
+      locations =
+          apartments.map((e) => LatLng(e.latitude, e.longitude)).toList();
 
       // Set the initial selected apartment
       if (apartments.isNotEmpty) {
-        _selectedApartmentId = widget.apartment.apartmentID;
+        _selectedApartmentId = widget.apartment.projectId;
       }
     });
   }
@@ -81,105 +82,91 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: currentLocation == null
-          ? const Center(
-              child: CircularProgressIndicator(
-                color: CustomColors.primary,
-                strokeCap: StrokeCap.round,
+      body: Stack(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: GoogleMap(
+              onMapCreated: (GoogleMapController controller) {
+                _googleMapsController.complete(controller);
+                // Show info window for the initial selected apartment
+                if (_selectedApartmentId != null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    controller
+                        .showMarkerInfoWindow(MarkerId(_selectedApartmentId!));
+                  });
+                }
+              },
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    widget.apartment.latitude, widget.apartment.longitude),
+                zoom: 14,
               ),
-            )
-          : Stack(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: GoogleMap(
-                    onMapCreated: (GoogleMapController controller) {
-                      _googleMapsController.complete(controller);
-                      // Show info window for the initial selected apartment
-                      if (_selectedApartmentId != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          controller.showMarkerInfoWindow(
-                              MarkerId(_selectedApartmentId!));
-                        });
-                      }
-                    },
-                    initialCameraPosition: CameraPosition(
-                      target:
-                          LatLng(widget.apartment.lat, widget.apartment.long),
-                      zoom: 14,
-                    ),
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId('currentLocation'),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(2),
-                        position: currentLocation!,
-                        infoWindow: const InfoWindow(title: 'Current Location'),
+              markers: {
+                ...ref.watch(homePropertiesProvider).apartments.map(
+                      (e) => Marker(
+                        markerId: MarkerId(e.projectId),
+                        position: LatLng(e.latitude, e.longitude),
+                        infoWindow: InfoWindow(title: e.name),
+                        onTap: () =>
+                            setState(() => _selectedApartmentId = e.projectId),
                       ),
-                      ...ref.watch(homePropertiesProvider).apartments.map(
-                            (e) => Marker(
-                              markerId: MarkerId(e.apartmentID),
-                              position: LatLng(e.lat, e.long),
-                              infoWindow: InfoWindow(title: e.apartmentName),
-                              onTap: () => setState(
-                                  () => _selectedApartmentId = e.apartmentID),
-                            ),
-                          )
-                    },
-                  ),
-                ),
-                //top left close button
-                Positioned(
-                  top: 50,
-                  left: 10,
-                  child: IconButton.filled(
-                    style: IconButton.styleFrom(
-                        backgroundColor: CustomColors.primary),
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                  ),
-                ),
-                Positioned(
-                  bottom: 20,
-                  right: 0,
-                  left: 0,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        //Apaprtmet list
-                        const SizedBox(width: 10),
-                        ...ref.watch(homePropertiesProvider).apartments.map(
-                              (e) => MapsPropertyCard(
-                                apartment: e,
-                                onTap: () {
-                                  _googleMapsController.future
-                                      .then((controller) {
-                                    controller
-                                        .animateCamera(
-                                      CameraUpdate.newCameraPosition(
-                                        CameraPosition(
-                                          target: LatLng(e.lat, e.long),
-                                          zoom: 14,
-                                        ),
-                                      ),
-                                    )
-                                        .then((_) {
-                                      setState(() =>
-                                          _selectedApartmentId = e.apartmentID);
-                                      controller.showMarkerInfoWindow(
-                                          MarkerId(e.apartmentID));
-                                    });
-                                  });
-                                },
-                              ),
-                            ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                    )
+              },
             ),
+          ),
+          //top left close button
+          Positioned(
+            top: 50,
+            left: 10,
+            child: IconButton.filled(
+              style:
+                  IconButton.styleFrom(backgroundColor: CustomColors.primary),
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.close),
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            right: 0,
+            left: 0,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  //Apaprtmet list
+                  const SizedBox(width: 10),
+                  ...ref.watch(homePropertiesProvider).apartments.map(
+                        (e) => MapsPropertyCard(
+                          apartment: e,
+                          onTap: () {
+                            _googleMapsController.future.then((controller) {
+                              controller
+                                  .animateCamera(
+                                CameraUpdate.newCameraPosition(
+                                  CameraPosition(
+                                    target: LatLng(e.latitude, e.longitude),
+                                    zoom: 14,
+                                  ),
+                                ),
+                              )
+                                  .then((_) {
+                                setState(
+                                    () => _selectedApartmentId = e.projectId);
+                                controller.showMarkerInfoWindow(
+                                    MarkerId(e.projectId));
+                              });
+                            });
+                          },
+                        ),
+                      ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -14,110 +14,712 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-ApartmentDetailsModel _$ApartmentDetailsModelFromJson(
+ApartmentDetailsResponse _$ApartmentDetailsResponseFromJson(
     Map<String, dynamic> json) {
-  return _ApartmentDetailsModel.fromJson(json);
+  return _ApartmentDetailsResponse.fromJson(json);
 }
 
 /// @nodoc
-mixin _$ApartmentDetailsModel {
-  String get projectHighlightsID => throw _privateConstructorUsedError;
-  String get apartmentID => throw _privateConstructorUsedError;
-  List<String> get configImages => throw _privateConstructorUsedError;
-  List<String> get gallery => throw _privateConstructorUsedError;
-  List<String> get highlightsImage11 => throw _privateConstructorUsedError;
-  List<String> get projectHighlightsDescription =>
+mixin _$ApartmentDetailsResponse {
+  String get message => throw _privateConstructorUsedError;
+  ProjectImages get projectImages => throw _privateConstructorUsedError;
+  ProjectDetails get projectDetails => throw _privateConstructorUsedError;
+  List<UnitPlanConfig> get unitPlanConfigFilesFormatted =>
       throw _privateConstructorUsedError;
-  List<Institution> get educationalInstitutions =>
-      throw _privateConstructorUsedError;
-  List<Institution> get hospitals => throw _privateConstructorUsedError;
-  List<Institution> get offices => throw _privateConstructorUsedError;
-  List<Institution> get connectivity => throw _privateConstructorUsedError;
-  String get flatSizes => throw _privateConstructorUsedError;
 
-  /// Serializes this ApartmentDetailsModel to a JSON map.
+  /// Serializes this ApartmentDetailsResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of ApartmentDetailsModel
+  /// Create a copy of ApartmentDetailsResponse
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ApartmentDetailsModelCopyWith<ApartmentDetailsModel> get copyWith =>
+  $ApartmentDetailsResponseCopyWith<ApartmentDetailsResponse> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ApartmentDetailsModelCopyWith<$Res> {
-  factory $ApartmentDetailsModelCopyWith(ApartmentDetailsModel value,
-          $Res Function(ApartmentDetailsModel) then) =
-      _$ApartmentDetailsModelCopyWithImpl<$Res, ApartmentDetailsModel>;
+abstract class $ApartmentDetailsResponseCopyWith<$Res> {
+  factory $ApartmentDetailsResponseCopyWith(ApartmentDetailsResponse value,
+          $Res Function(ApartmentDetailsResponse) then) =
+      _$ApartmentDetailsResponseCopyWithImpl<$Res, ApartmentDetailsResponse>;
   @useResult
   $Res call(
-      {String projectHighlightsID,
-      String apartmentID,
-      List<String> configImages,
-      List<String> gallery,
-      List<String> highlightsImage11,
-      List<String> projectHighlightsDescription,
-      List<Institution> educationalInstitutions,
-      List<Institution> hospitals,
-      List<Institution> offices,
-      List<Institution> connectivity,
-      String flatSizes});
+      {String message,
+      ProjectImages projectImages,
+      ProjectDetails projectDetails,
+      List<UnitPlanConfig> unitPlanConfigFilesFormatted});
+
+  $ProjectImagesCopyWith<$Res> get projectImages;
+  $ProjectDetailsCopyWith<$Res> get projectDetails;
 }
 
 /// @nodoc
-class _$ApartmentDetailsModelCopyWithImpl<$Res,
-        $Val extends ApartmentDetailsModel>
-    implements $ApartmentDetailsModelCopyWith<$Res> {
-  _$ApartmentDetailsModelCopyWithImpl(this._value, this._then);
+class _$ApartmentDetailsResponseCopyWithImpl<$Res,
+        $Val extends ApartmentDetailsResponse>
+    implements $ApartmentDetailsResponseCopyWith<$Res> {
+  _$ApartmentDetailsResponseCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ApartmentDetailsModel
+  /// Create a copy of ApartmentDetailsResponse
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? projectHighlightsID = null,
-    Object? apartmentID = null,
-    Object? configImages = null,
-    Object? gallery = null,
-    Object? highlightsImage11 = null,
-    Object? projectHighlightsDescription = null,
+    Object? message = null,
+    Object? projectImages = null,
+    Object? projectDetails = null,
+    Object? unitPlanConfigFilesFormatted = null,
+  }) {
+    return _then(_value.copyWith(
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectImages: null == projectImages
+          ? _value.projectImages
+          : projectImages // ignore: cast_nullable_to_non_nullable
+              as ProjectImages,
+      projectDetails: null == projectDetails
+          ? _value.projectDetails
+          : projectDetails // ignore: cast_nullable_to_non_nullable
+              as ProjectDetails,
+      unitPlanConfigFilesFormatted: null == unitPlanConfigFilesFormatted
+          ? _value.unitPlanConfigFilesFormatted
+          : unitPlanConfigFilesFormatted // ignore: cast_nullable_to_non_nullable
+              as List<UnitPlanConfig>,
+    ) as $Val);
+  }
+
+  /// Create a copy of ApartmentDetailsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ProjectImagesCopyWith<$Res> get projectImages {
+    return $ProjectImagesCopyWith<$Res>(_value.projectImages, (value) {
+      return _then(_value.copyWith(projectImages: value) as $Val);
+    });
+  }
+
+  /// Create a copy of ApartmentDetailsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ProjectDetailsCopyWith<$Res> get projectDetails {
+    return $ProjectDetailsCopyWith<$Res>(_value.projectDetails, (value) {
+      return _then(_value.copyWith(projectDetails: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$ApartmentDetailsResponseImplCopyWith<$Res>
+    implements $ApartmentDetailsResponseCopyWith<$Res> {
+  factory _$$ApartmentDetailsResponseImplCopyWith(
+          _$ApartmentDetailsResponseImpl value,
+          $Res Function(_$ApartmentDetailsResponseImpl) then) =
+      __$$ApartmentDetailsResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String message,
+      ProjectImages projectImages,
+      ProjectDetails projectDetails,
+      List<UnitPlanConfig> unitPlanConfigFilesFormatted});
+
+  @override
+  $ProjectImagesCopyWith<$Res> get projectImages;
+  @override
+  $ProjectDetailsCopyWith<$Res> get projectDetails;
+}
+
+/// @nodoc
+class __$$ApartmentDetailsResponseImplCopyWithImpl<$Res>
+    extends _$ApartmentDetailsResponseCopyWithImpl<$Res,
+        _$ApartmentDetailsResponseImpl>
+    implements _$$ApartmentDetailsResponseImplCopyWith<$Res> {
+  __$$ApartmentDetailsResponseImplCopyWithImpl(
+      _$ApartmentDetailsResponseImpl _value,
+      $Res Function(_$ApartmentDetailsResponseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ApartmentDetailsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? message = null,
+    Object? projectImages = null,
+    Object? projectDetails = null,
+    Object? unitPlanConfigFilesFormatted = null,
+  }) {
+    return _then(_$ApartmentDetailsResponseImpl(
+      message: null == message
+          ? _value.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectImages: null == projectImages
+          ? _value.projectImages
+          : projectImages // ignore: cast_nullable_to_non_nullable
+              as ProjectImages,
+      projectDetails: null == projectDetails
+          ? _value.projectDetails
+          : projectDetails // ignore: cast_nullable_to_non_nullable
+              as ProjectDetails,
+      unitPlanConfigFilesFormatted: null == unitPlanConfigFilesFormatted
+          ? _value._unitPlanConfigFilesFormatted
+          : unitPlanConfigFilesFormatted // ignore: cast_nullable_to_non_nullable
+              as List<UnitPlanConfig>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ApartmentDetailsResponseImpl implements _ApartmentDetailsResponse {
+  const _$ApartmentDetailsResponseImpl(
+      {this.message = '',
+      this.projectImages = const ProjectImages(),
+      this.projectDetails = const ProjectDetails(),
+      final List<UnitPlanConfig> unitPlanConfigFilesFormatted = const []})
+      : _unitPlanConfigFilesFormatted = unitPlanConfigFilesFormatted;
+
+  factory _$ApartmentDetailsResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ApartmentDetailsResponseImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String message;
+  @override
+  @JsonKey()
+  final ProjectImages projectImages;
+  @override
+  @JsonKey()
+  final ProjectDetails projectDetails;
+  final List<UnitPlanConfig> _unitPlanConfigFilesFormatted;
+  @override
+  @JsonKey()
+  List<UnitPlanConfig> get unitPlanConfigFilesFormatted {
+    if (_unitPlanConfigFilesFormatted is EqualUnmodifiableListView)
+      return _unitPlanConfigFilesFormatted;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_unitPlanConfigFilesFormatted);
+  }
+
+  @override
+  String toString() {
+    return 'ApartmentDetailsResponse(message: $message, projectImages: $projectImages, projectDetails: $projectDetails, unitPlanConfigFilesFormatted: $unitPlanConfigFilesFormatted)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ApartmentDetailsResponseImpl &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.projectImages, projectImages) ||
+                other.projectImages == projectImages) &&
+            (identical(other.projectDetails, projectDetails) ||
+                other.projectDetails == projectDetails) &&
+            const DeepCollectionEquality().equals(
+                other._unitPlanConfigFilesFormatted,
+                _unitPlanConfigFilesFormatted));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      message,
+      projectImages,
+      projectDetails,
+      const DeepCollectionEquality().hash(_unitPlanConfigFilesFormatted));
+
+  /// Create a copy of ApartmentDetailsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ApartmentDetailsResponseImplCopyWith<_$ApartmentDetailsResponseImpl>
+      get copyWith => __$$ApartmentDetailsResponseImplCopyWithImpl<
+          _$ApartmentDetailsResponseImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ApartmentDetailsResponseImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ApartmentDetailsResponse implements ApartmentDetailsResponse {
+  const factory _ApartmentDetailsResponse(
+          {final String message,
+          final ProjectImages projectImages,
+          final ProjectDetails projectDetails,
+          final List<UnitPlanConfig> unitPlanConfigFilesFormatted}) =
+      _$ApartmentDetailsResponseImpl;
+
+  factory _ApartmentDetailsResponse.fromJson(Map<String, dynamic> json) =
+      _$ApartmentDetailsResponseImpl.fromJson;
+
+  @override
+  String get message;
+  @override
+  ProjectImages get projectImages;
+  @override
+  ProjectDetails get projectDetails;
+  @override
+  List<UnitPlanConfig> get unitPlanConfigFilesFormatted;
+
+  /// Create a copy of ApartmentDetailsResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ApartmentDetailsResponseImplCopyWith<_$ApartmentDetailsResponseImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+ProjectImages _$ProjectImagesFromJson(Map<String, dynamic> json) {
+  return _ProjectImages.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProjectImages {
+  List<String> get projectHighlights => throw _privateConstructorUsedError;
+  List<String> get elevationImages => throw _privateConstructorUsedError;
+
+  /// Serializes this ProjectImages to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ProjectImages
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ProjectImagesCopyWith<ProjectImages> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProjectImagesCopyWith<$Res> {
+  factory $ProjectImagesCopyWith(
+          ProjectImages value, $Res Function(ProjectImages) then) =
+      _$ProjectImagesCopyWithImpl<$Res, ProjectImages>;
+  @useResult
+  $Res call({List<String> projectHighlights, List<String> elevationImages});
+}
+
+/// @nodoc
+class _$ProjectImagesCopyWithImpl<$Res, $Val extends ProjectImages>
+    implements $ProjectImagesCopyWith<$Res> {
+  _$ProjectImagesCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ProjectImages
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? projectHighlights = null,
+    Object? elevationImages = null,
+  }) {
+    return _then(_value.copyWith(
+      projectHighlights: null == projectHighlights
+          ? _value.projectHighlights
+          : projectHighlights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      elevationImages: null == elevationImages
+          ? _value.elevationImages
+          : elevationImages // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ProjectImagesImplCopyWith<$Res>
+    implements $ProjectImagesCopyWith<$Res> {
+  factory _$$ProjectImagesImplCopyWith(
+          _$ProjectImagesImpl value, $Res Function(_$ProjectImagesImpl) then) =
+      __$$ProjectImagesImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<String> projectHighlights, List<String> elevationImages});
+}
+
+/// @nodoc
+class __$$ProjectImagesImplCopyWithImpl<$Res>
+    extends _$ProjectImagesCopyWithImpl<$Res, _$ProjectImagesImpl>
+    implements _$$ProjectImagesImplCopyWith<$Res> {
+  __$$ProjectImagesImplCopyWithImpl(
+      _$ProjectImagesImpl _value, $Res Function(_$ProjectImagesImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProjectImages
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? projectHighlights = null,
+    Object? elevationImages = null,
+  }) {
+    return _then(_$ProjectImagesImpl(
+      projectHighlights: null == projectHighlights
+          ? _value._projectHighlights
+          : projectHighlights // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      elevationImages: null == elevationImages
+          ? _value._elevationImages
+          : elevationImages // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ProjectImagesImpl implements _ProjectImages {
+  const _$ProjectImagesImpl(
+      {final List<String> projectHighlights = const [],
+      final List<String> elevationImages = const []})
+      : _projectHighlights = projectHighlights,
+        _elevationImages = elevationImages;
+
+  factory _$ProjectImagesImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProjectImagesImplFromJson(json);
+
+  final List<String> _projectHighlights;
+  @override
+  @JsonKey()
+  List<String> get projectHighlights {
+    if (_projectHighlights is EqualUnmodifiableListView)
+      return _projectHighlights;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_projectHighlights);
+  }
+
+  final List<String> _elevationImages;
+  @override
+  @JsonKey()
+  List<String> get elevationImages {
+    if (_elevationImages is EqualUnmodifiableListView) return _elevationImages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_elevationImages);
+  }
+
+  @override
+  String toString() {
+    return 'ProjectImages(projectHighlights: $projectHighlights, elevationImages: $elevationImages)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProjectImagesImpl &&
+            const DeepCollectionEquality()
+                .equals(other._projectHighlights, _projectHighlights) &&
+            const DeepCollectionEquality()
+                .equals(other._elevationImages, _elevationImages));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_projectHighlights),
+      const DeepCollectionEquality().hash(_elevationImages));
+
+  /// Create a copy of ProjectImages
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProjectImagesImplCopyWith<_$ProjectImagesImpl> get copyWith =>
+      __$$ProjectImagesImplCopyWithImpl<_$ProjectImagesImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ProjectImagesImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ProjectImages implements ProjectImages {
+  const factory _ProjectImages(
+      {final List<String> projectHighlights,
+      final List<String> elevationImages}) = _$ProjectImagesImpl;
+
+  factory _ProjectImages.fromJson(Map<String, dynamic> json) =
+      _$ProjectImagesImpl.fromJson;
+
+  @override
+  List<String> get projectHighlights;
+  @override
+  List<String> get elevationImages;
+
+  /// Create a copy of ProjectImages
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProjectImagesImplCopyWith<_$ProjectImagesImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ProjectDetails _$ProjectDetailsFromJson(Map<String, dynamic> json) {
+  return _ProjectDetails.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ProjectDetails {
+  String get projectId => throw _privateConstructorUsedError;
+  String get builderID => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get description => throw _privateConstructorUsedError;
+  String get projectLocation => throw _privateConstructorUsedError;
+  String get projectSize => throw _privateConstructorUsedError;
+  String get noOfFloors => throw _privateConstructorUsedError;
+  String get noOfFlats => throw _privateConstructorUsedError;
+  String get noOfTowers => throw _privateConstructorUsedError;
+  String get noOfFlatsPerFloor => throw _privateConstructorUsedError;
+  String get clubhousesize => throw _privateConstructorUsedError;
+  String get totalOpenSpace => throw _privateConstructorUsedError;
+  String get constructionType => throw _privateConstructorUsedError;
+  double get latitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
+  String get reraID => throw _privateConstructorUsedError;
+  String get projectType => throw _privateConstructorUsedError;
+  String get projectLaunchedDate => throw _privateConstructorUsedError;
+  String get projectPossession => throw _privateConstructorUsedError;
+  String get pricePerSquareFeetRate => throw _privateConstructorUsedError;
+  String get totalArea => throw _privateConstructorUsedError;
+  String get landMark => throw _privateConstructorUsedError;
+  String get nearByHighlights => throw _privateConstructorUsedError;
+  String get amenities => throw _privateConstructorUsedError;
+  String get clubHouseAmenities => throw _privateConstructorUsedError;
+  String get outdoorAmenities => throw _privateConstructorUsedError;
+  Builder get builder => throw _privateConstructorUsedError;
+  List<Institution> get educationalInstitutions =>
+      throw _privateConstructorUsedError;
+  List<Institution> get hospitals => throw _privateConstructorUsedError;
+  List<Institution> get offices => throw _privateConstructorUsedError;
+  List<Institution> get connectivity => throw _privateConstructorUsedError;
+
+  /// Serializes this ProjectDetails to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ProjectDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ProjectDetailsCopyWith<ProjectDetails> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ProjectDetailsCopyWith<$Res> {
+  factory $ProjectDetailsCopyWith(
+          ProjectDetails value, $Res Function(ProjectDetails) then) =
+      _$ProjectDetailsCopyWithImpl<$Res, ProjectDetails>;
+  @useResult
+  $Res call(
+      {String projectId,
+      String builderID,
+      String name,
+      String description,
+      String projectLocation,
+      String projectSize,
+      String noOfFloors,
+      String noOfFlats,
+      String noOfTowers,
+      String noOfFlatsPerFloor,
+      String clubhousesize,
+      String totalOpenSpace,
+      String constructionType,
+      double latitude,
+      double longitude,
+      String reraID,
+      String projectType,
+      String projectLaunchedDate,
+      String projectPossession,
+      String pricePerSquareFeetRate,
+      String totalArea,
+      String landMark,
+      String nearByHighlights,
+      String amenities,
+      String clubHouseAmenities,
+      String outdoorAmenities,
+      Builder builder,
+      List<Institution> educationalInstitutions,
+      List<Institution> hospitals,
+      List<Institution> offices,
+      List<Institution> connectivity});
+
+  $BuilderCopyWith<$Res> get builder;
+}
+
+/// @nodoc
+class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
+    implements $ProjectDetailsCopyWith<$Res> {
+  _$ProjectDetailsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ProjectDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? projectId = null,
+    Object? builderID = null,
+    Object? name = null,
+    Object? description = null,
+    Object? projectLocation = null,
+    Object? projectSize = null,
+    Object? noOfFloors = null,
+    Object? noOfFlats = null,
+    Object? noOfTowers = null,
+    Object? noOfFlatsPerFloor = null,
+    Object? clubhousesize = null,
+    Object? totalOpenSpace = null,
+    Object? constructionType = null,
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? reraID = null,
+    Object? projectType = null,
+    Object? projectLaunchedDate = null,
+    Object? projectPossession = null,
+    Object? pricePerSquareFeetRate = null,
+    Object? totalArea = null,
+    Object? landMark = null,
+    Object? nearByHighlights = null,
+    Object? amenities = null,
+    Object? clubHouseAmenities = null,
+    Object? outdoorAmenities = null,
+    Object? builder = null,
     Object? educationalInstitutions = null,
     Object? hospitals = null,
     Object? offices = null,
     Object? connectivity = null,
-    Object? flatSizes = null,
   }) {
     return _then(_value.copyWith(
-      projectHighlightsID: null == projectHighlightsID
-          ? _value.projectHighlightsID
-          : projectHighlightsID // ignore: cast_nullable_to_non_nullable
+      projectId: null == projectId
+          ? _value.projectId
+          : projectId // ignore: cast_nullable_to_non_nullable
               as String,
-      apartmentID: null == apartmentID
-          ? _value.apartmentID
-          : apartmentID // ignore: cast_nullable_to_non_nullable
+      builderID: null == builderID
+          ? _value.builderID
+          : builderID // ignore: cast_nullable_to_non_nullable
               as String,
-      configImages: null == configImages
-          ? _value.configImages
-          : configImages // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      gallery: null == gallery
-          ? _value.gallery
-          : gallery // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      highlightsImage11: null == highlightsImage11
-          ? _value.highlightsImage11
-          : highlightsImage11 // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      projectHighlightsDescription: null == projectHighlightsDescription
-          ? _value.projectHighlightsDescription
-          : projectHighlightsDescription // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectLocation: null == projectLocation
+          ? _value.projectLocation
+          : projectLocation // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectSize: null == projectSize
+          ? _value.projectSize
+          : projectSize // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfFloors: null == noOfFloors
+          ? _value.noOfFloors
+          : noOfFloors // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfFlats: null == noOfFlats
+          ? _value.noOfFlats
+          : noOfFlats // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfTowers: null == noOfTowers
+          ? _value.noOfTowers
+          : noOfTowers // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfFlatsPerFloor: null == noOfFlatsPerFloor
+          ? _value.noOfFlatsPerFloor
+          : noOfFlatsPerFloor // ignore: cast_nullable_to_non_nullable
+              as String,
+      clubhousesize: null == clubhousesize
+          ? _value.clubhousesize
+          : clubhousesize // ignore: cast_nullable_to_non_nullable
+              as String,
+      totalOpenSpace: null == totalOpenSpace
+          ? _value.totalOpenSpace
+          : totalOpenSpace // ignore: cast_nullable_to_non_nullable
+              as String,
+      constructionType: null == constructionType
+          ? _value.constructionType
+          : constructionType // ignore: cast_nullable_to_non_nullable
+              as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      reraID: null == reraID
+          ? _value.reraID
+          : reraID // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectType: null == projectType
+          ? _value.projectType
+          : projectType // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectLaunchedDate: null == projectLaunchedDate
+          ? _value.projectLaunchedDate
+          : projectLaunchedDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectPossession: null == projectPossession
+          ? _value.projectPossession
+          : projectPossession // ignore: cast_nullable_to_non_nullable
+              as String,
+      pricePerSquareFeetRate: null == pricePerSquareFeetRate
+          ? _value.pricePerSquareFeetRate
+          : pricePerSquareFeetRate // ignore: cast_nullable_to_non_nullable
+              as String,
+      totalArea: null == totalArea
+          ? _value.totalArea
+          : totalArea // ignore: cast_nullable_to_non_nullable
+              as String,
+      landMark: null == landMark
+          ? _value.landMark
+          : landMark // ignore: cast_nullable_to_non_nullable
+              as String,
+      nearByHighlights: null == nearByHighlights
+          ? _value.nearByHighlights
+          : nearByHighlights // ignore: cast_nullable_to_non_nullable
+              as String,
+      amenities: null == amenities
+          ? _value.amenities
+          : amenities // ignore: cast_nullable_to_non_nullable
+              as String,
+      clubHouseAmenities: null == clubHouseAmenities
+          ? _value.clubHouseAmenities
+          : clubHouseAmenities // ignore: cast_nullable_to_non_nullable
+              as String,
+      outdoorAmenities: null == outdoorAmenities
+          ? _value.outdoorAmenities
+          : outdoorAmenities // ignore: cast_nullable_to_non_nullable
+              as String,
+      builder: null == builder
+          ? _value.builder
+          : builder // ignore: cast_nullable_to_non_nullable
+              as Builder,
       educationalInstitutions: null == educationalInstitutions
           ? _value.educationalInstitutions
           : educationalInstitutions // ignore: cast_nullable_to_non_nullable
@@ -134,88 +736,219 @@ class _$ApartmentDetailsModelCopyWithImpl<$Res,
           ? _value.connectivity
           : connectivity // ignore: cast_nullable_to_non_nullable
               as List<Institution>,
-      flatSizes: null == flatSizes
-          ? _value.flatSizes
-          : flatSizes // ignore: cast_nullable_to_non_nullable
-              as String,
     ) as $Val);
+  }
+
+  /// Create a copy of ProjectDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $BuilderCopyWith<$Res> get builder {
+    return $BuilderCopyWith<$Res>(_value.builder, (value) {
+      return _then(_value.copyWith(builder: value) as $Val);
+    });
   }
 }
 
 /// @nodoc
-abstract class _$$ApartmentDetailsModelImplCopyWith<$Res>
-    implements $ApartmentDetailsModelCopyWith<$Res> {
-  factory _$$ApartmentDetailsModelImplCopyWith(
-          _$ApartmentDetailsModelImpl value,
-          $Res Function(_$ApartmentDetailsModelImpl) then) =
-      __$$ApartmentDetailsModelImplCopyWithImpl<$Res>;
+abstract class _$$ProjectDetailsImplCopyWith<$Res>
+    implements $ProjectDetailsCopyWith<$Res> {
+  factory _$$ProjectDetailsImplCopyWith(_$ProjectDetailsImpl value,
+          $Res Function(_$ProjectDetailsImpl) then) =
+      __$$ProjectDetailsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
-      {String projectHighlightsID,
-      String apartmentID,
-      List<String> configImages,
-      List<String> gallery,
-      List<String> highlightsImage11,
-      List<String> projectHighlightsDescription,
+      {String projectId,
+      String builderID,
+      String name,
+      String description,
+      String projectLocation,
+      String projectSize,
+      String noOfFloors,
+      String noOfFlats,
+      String noOfTowers,
+      String noOfFlatsPerFloor,
+      String clubhousesize,
+      String totalOpenSpace,
+      String constructionType,
+      double latitude,
+      double longitude,
+      String reraID,
+      String projectType,
+      String projectLaunchedDate,
+      String projectPossession,
+      String pricePerSquareFeetRate,
+      String totalArea,
+      String landMark,
+      String nearByHighlights,
+      String amenities,
+      String clubHouseAmenities,
+      String outdoorAmenities,
+      Builder builder,
       List<Institution> educationalInstitutions,
       List<Institution> hospitals,
       List<Institution> offices,
-      List<Institution> connectivity,
-      String flatSizes});
+      List<Institution> connectivity});
+
+  @override
+  $BuilderCopyWith<$Res> get builder;
 }
 
 /// @nodoc
-class __$$ApartmentDetailsModelImplCopyWithImpl<$Res>
-    extends _$ApartmentDetailsModelCopyWithImpl<$Res,
-        _$ApartmentDetailsModelImpl>
-    implements _$$ApartmentDetailsModelImplCopyWith<$Res> {
-  __$$ApartmentDetailsModelImplCopyWithImpl(_$ApartmentDetailsModelImpl _value,
-      $Res Function(_$ApartmentDetailsModelImpl) _then)
+class __$$ProjectDetailsImplCopyWithImpl<$Res>
+    extends _$ProjectDetailsCopyWithImpl<$Res, _$ProjectDetailsImpl>
+    implements _$$ProjectDetailsImplCopyWith<$Res> {
+  __$$ProjectDetailsImplCopyWithImpl(
+      _$ProjectDetailsImpl _value, $Res Function(_$ProjectDetailsImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ApartmentDetailsModel
+  /// Create a copy of ProjectDetails
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? projectHighlightsID = null,
-    Object? apartmentID = null,
-    Object? configImages = null,
-    Object? gallery = null,
-    Object? highlightsImage11 = null,
-    Object? projectHighlightsDescription = null,
+    Object? projectId = null,
+    Object? builderID = null,
+    Object? name = null,
+    Object? description = null,
+    Object? projectLocation = null,
+    Object? projectSize = null,
+    Object? noOfFloors = null,
+    Object? noOfFlats = null,
+    Object? noOfTowers = null,
+    Object? noOfFlatsPerFloor = null,
+    Object? clubhousesize = null,
+    Object? totalOpenSpace = null,
+    Object? constructionType = null,
+    Object? latitude = null,
+    Object? longitude = null,
+    Object? reraID = null,
+    Object? projectType = null,
+    Object? projectLaunchedDate = null,
+    Object? projectPossession = null,
+    Object? pricePerSquareFeetRate = null,
+    Object? totalArea = null,
+    Object? landMark = null,
+    Object? nearByHighlights = null,
+    Object? amenities = null,
+    Object? clubHouseAmenities = null,
+    Object? outdoorAmenities = null,
+    Object? builder = null,
     Object? educationalInstitutions = null,
     Object? hospitals = null,
     Object? offices = null,
     Object? connectivity = null,
-    Object? flatSizes = null,
   }) {
-    return _then(_$ApartmentDetailsModelImpl(
-      projectHighlightsID: null == projectHighlightsID
-          ? _value.projectHighlightsID
-          : projectHighlightsID // ignore: cast_nullable_to_non_nullable
+    return _then(_$ProjectDetailsImpl(
+      projectId: null == projectId
+          ? _value.projectId
+          : projectId // ignore: cast_nullable_to_non_nullable
               as String,
-      apartmentID: null == apartmentID
-          ? _value.apartmentID
-          : apartmentID // ignore: cast_nullable_to_non_nullable
+      builderID: null == builderID
+          ? _value.builderID
+          : builderID // ignore: cast_nullable_to_non_nullable
               as String,
-      configImages: null == configImages
-          ? _value._configImages
-          : configImages // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      gallery: null == gallery
-          ? _value._gallery
-          : gallery // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      highlightsImage11: null == highlightsImage11
-          ? _value._highlightsImage11
-          : highlightsImage11 // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      projectHighlightsDescription: null == projectHighlightsDescription
-          ? _value._projectHighlightsDescription
-          : projectHighlightsDescription // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: null == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectLocation: null == projectLocation
+          ? _value.projectLocation
+          : projectLocation // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectSize: null == projectSize
+          ? _value.projectSize
+          : projectSize // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfFloors: null == noOfFloors
+          ? _value.noOfFloors
+          : noOfFloors // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfFlats: null == noOfFlats
+          ? _value.noOfFlats
+          : noOfFlats // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfTowers: null == noOfTowers
+          ? _value.noOfTowers
+          : noOfTowers // ignore: cast_nullable_to_non_nullable
+              as String,
+      noOfFlatsPerFloor: null == noOfFlatsPerFloor
+          ? _value.noOfFlatsPerFloor
+          : noOfFlatsPerFloor // ignore: cast_nullable_to_non_nullable
+              as String,
+      clubhousesize: null == clubhousesize
+          ? _value.clubhousesize
+          : clubhousesize // ignore: cast_nullable_to_non_nullable
+              as String,
+      totalOpenSpace: null == totalOpenSpace
+          ? _value.totalOpenSpace
+          : totalOpenSpace // ignore: cast_nullable_to_non_nullable
+              as String,
+      constructionType: null == constructionType
+          ? _value.constructionType
+          : constructionType // ignore: cast_nullable_to_non_nullable
+              as String,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      reraID: null == reraID
+          ? _value.reraID
+          : reraID // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectType: null == projectType
+          ? _value.projectType
+          : projectType // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectLaunchedDate: null == projectLaunchedDate
+          ? _value.projectLaunchedDate
+          : projectLaunchedDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      projectPossession: null == projectPossession
+          ? _value.projectPossession
+          : projectPossession // ignore: cast_nullable_to_non_nullable
+              as String,
+      pricePerSquareFeetRate: null == pricePerSquareFeetRate
+          ? _value.pricePerSquareFeetRate
+          : pricePerSquareFeetRate // ignore: cast_nullable_to_non_nullable
+              as String,
+      totalArea: null == totalArea
+          ? _value.totalArea
+          : totalArea // ignore: cast_nullable_to_non_nullable
+              as String,
+      landMark: null == landMark
+          ? _value.landMark
+          : landMark // ignore: cast_nullable_to_non_nullable
+              as String,
+      nearByHighlights: null == nearByHighlights
+          ? _value.nearByHighlights
+          : nearByHighlights // ignore: cast_nullable_to_non_nullable
+              as String,
+      amenities: null == amenities
+          ? _value.amenities
+          : amenities // ignore: cast_nullable_to_non_nullable
+              as String,
+      clubHouseAmenities: null == clubHouseAmenities
+          ? _value.clubHouseAmenities
+          : clubHouseAmenities // ignore: cast_nullable_to_non_nullable
+              as String,
+      outdoorAmenities: null == outdoorAmenities
+          ? _value.outdoorAmenities
+          : outdoorAmenities // ignore: cast_nullable_to_non_nullable
+              as String,
+      builder: null == builder
+          ? _value.builder
+          : builder // ignore: cast_nullable_to_non_nullable
+              as Builder,
       educationalInstitutions: null == educationalInstitutions
           ? _value._educationalInstitutions
           : educationalInstitutions // ignore: cast_nullable_to_non_nullable
@@ -232,85 +965,134 @@ class __$$ApartmentDetailsModelImplCopyWithImpl<$Res>
           ? _value._connectivity
           : connectivity // ignore: cast_nullable_to_non_nullable
               as List<Institution>,
-      flatSizes: null == flatSizes
-          ? _value.flatSizes
-          : flatSizes // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$ApartmentDetailsModelImpl implements _ApartmentDetailsModel {
-  const _$ApartmentDetailsModelImpl(
-      {this.projectHighlightsID = '',
-      this.apartmentID = '',
-      final List<String> configImages = const [],
-      final List<String> gallery = const [],
-      final List<String> highlightsImage11 = const [],
-      final List<String> projectHighlightsDescription = const [],
+class _$ProjectDetailsImpl implements _ProjectDetails {
+  const _$ProjectDetailsImpl(
+      {this.projectId = '',
+      this.builderID = '',
+      this.name = '',
+      this.description = '',
+      this.projectLocation = '',
+      this.projectSize = '',
+      this.noOfFloors = '',
+      this.noOfFlats = '',
+      this.noOfTowers = '',
+      this.noOfFlatsPerFloor = '',
+      this.clubhousesize = '',
+      this.totalOpenSpace = '',
+      this.constructionType = '',
+      this.latitude = 0.0,
+      this.longitude = 0.0,
+      this.reraID = '',
+      this.projectType = '',
+      this.projectLaunchedDate = '',
+      this.projectPossession = '',
+      this.pricePerSquareFeetRate = '',
+      this.totalArea = '',
+      this.landMark = '',
+      this.nearByHighlights = '',
+      this.amenities = '',
+      this.clubHouseAmenities = '',
+      this.outdoorAmenities = '',
+      this.builder = const Builder(),
       final List<Institution> educationalInstitutions = const [],
       final List<Institution> hospitals = const [],
       final List<Institution> offices = const [],
-      final List<Institution> connectivity = const [],
-      this.flatSizes = ''})
-      : _configImages = configImages,
-        _gallery = gallery,
-        _highlightsImage11 = highlightsImage11,
-        _projectHighlightsDescription = projectHighlightsDescription,
-        _educationalInstitutions = educationalInstitutions,
+      final List<Institution> connectivity = const []})
+      : _educationalInstitutions = educationalInstitutions,
         _hospitals = hospitals,
         _offices = offices,
         _connectivity = connectivity;
 
-  factory _$ApartmentDetailsModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ApartmentDetailsModelImplFromJson(json);
+  factory _$ProjectDetailsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProjectDetailsImplFromJson(json);
 
   @override
   @JsonKey()
-  final String projectHighlightsID;
+  final String projectId;
   @override
   @JsonKey()
-  final String apartmentID;
-  final List<String> _configImages;
+  final String builderID;
   @override
   @JsonKey()
-  List<String> get configImages {
-    if (_configImages is EqualUnmodifiableListView) return _configImages;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_configImages);
-  }
-
-  final List<String> _gallery;
+  final String name;
   @override
   @JsonKey()
-  List<String> get gallery {
-    if (_gallery is EqualUnmodifiableListView) return _gallery;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_gallery);
-  }
-
-  final List<String> _highlightsImage11;
+  final String description;
   @override
   @JsonKey()
-  List<String> get highlightsImage11 {
-    if (_highlightsImage11 is EqualUnmodifiableListView)
-      return _highlightsImage11;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_highlightsImage11);
-  }
-
-  final List<String> _projectHighlightsDescription;
+  final String projectLocation;
   @override
   @JsonKey()
-  List<String> get projectHighlightsDescription {
-    if (_projectHighlightsDescription is EqualUnmodifiableListView)
-      return _projectHighlightsDescription;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_projectHighlightsDescription);
-  }
-
+  final String projectSize;
+  @override
+  @JsonKey()
+  final String noOfFloors;
+  @override
+  @JsonKey()
+  final String noOfFlats;
+  @override
+  @JsonKey()
+  final String noOfTowers;
+  @override
+  @JsonKey()
+  final String noOfFlatsPerFloor;
+  @override
+  @JsonKey()
+  final String clubhousesize;
+  @override
+  @JsonKey()
+  final String totalOpenSpace;
+  @override
+  @JsonKey()
+  final String constructionType;
+  @override
+  @JsonKey()
+  final double latitude;
+  @override
+  @JsonKey()
+  final double longitude;
+  @override
+  @JsonKey()
+  final String reraID;
+  @override
+  @JsonKey()
+  final String projectType;
+  @override
+  @JsonKey()
+  final String projectLaunchedDate;
+  @override
+  @JsonKey()
+  final String projectPossession;
+  @override
+  @JsonKey()
+  final String pricePerSquareFeetRate;
+  @override
+  @JsonKey()
+  final String totalArea;
+  @override
+  @JsonKey()
+  final String landMark;
+  @override
+  @JsonKey()
+  final String nearByHighlights;
+  @override
+  @JsonKey()
+  final String amenities;
+  @override
+  @JsonKey()
+  final String clubHouseAmenities;
+  @override
+  @JsonKey()
+  final String outdoorAmenities;
+  @override
+  @JsonKey()
+  final Builder builder;
   final List<Institution> _educationalInstitutions;
   @override
   @JsonKey()
@@ -349,104 +1131,220 @@ class _$ApartmentDetailsModelImpl implements _ApartmentDetailsModel {
   }
 
   @override
-  @JsonKey()
-  final String flatSizes;
-
-  @override
   String toString() {
-    return 'ApartmentDetailsModel(projectHighlightsID: $projectHighlightsID, apartmentID: $apartmentID, configImages: $configImages, gallery: $gallery, highlightsImage11: $highlightsImage11, projectHighlightsDescription: $projectHighlightsDescription, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, flatSizes: $flatSizes)';
+    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ApartmentDetailsModelImpl &&
-            (identical(other.projectHighlightsID, projectHighlightsID) ||
-                other.projectHighlightsID == projectHighlightsID) &&
-            (identical(other.apartmentID, apartmentID) ||
-                other.apartmentID == apartmentID) &&
-            const DeepCollectionEquality()
-                .equals(other._configImages, _configImages) &&
-            const DeepCollectionEquality().equals(other._gallery, _gallery) &&
-            const DeepCollectionEquality()
-                .equals(other._highlightsImage11, _highlightsImage11) &&
-            const DeepCollectionEquality().equals(
-                other._projectHighlightsDescription,
-                _projectHighlightsDescription) &&
+            other is _$ProjectDetailsImpl &&
+            (identical(other.projectId, projectId) ||
+                other.projectId == projectId) &&
+            (identical(other.builderID, builderID) ||
+                other.builderID == builderID) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.projectLocation, projectLocation) ||
+                other.projectLocation == projectLocation) &&
+            (identical(other.projectSize, projectSize) ||
+                other.projectSize == projectSize) &&
+            (identical(other.noOfFloors, noOfFloors) ||
+                other.noOfFloors == noOfFloors) &&
+            (identical(other.noOfFlats, noOfFlats) ||
+                other.noOfFlats == noOfFlats) &&
+            (identical(other.noOfTowers, noOfTowers) ||
+                other.noOfTowers == noOfTowers) &&
+            (identical(other.noOfFlatsPerFloor, noOfFlatsPerFloor) ||
+                other.noOfFlatsPerFloor == noOfFlatsPerFloor) &&
+            (identical(other.clubhousesize, clubhousesize) ||
+                other.clubhousesize == clubhousesize) &&
+            (identical(other.totalOpenSpace, totalOpenSpace) ||
+                other.totalOpenSpace == totalOpenSpace) &&
+            (identical(other.constructionType, constructionType) ||
+                other.constructionType == constructionType) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
+            (identical(other.reraID, reraID) || other.reraID == reraID) &&
+            (identical(other.projectType, projectType) ||
+                other.projectType == projectType) &&
+            (identical(other.projectLaunchedDate, projectLaunchedDate) ||
+                other.projectLaunchedDate == projectLaunchedDate) &&
+            (identical(other.projectPossession, projectPossession) ||
+                other.projectPossession == projectPossession) &&
+            (identical(other.pricePerSquareFeetRate, pricePerSquareFeetRate) ||
+                other.pricePerSquareFeetRate == pricePerSquareFeetRate) &&
+            (identical(other.totalArea, totalArea) ||
+                other.totalArea == totalArea) &&
+            (identical(other.landMark, landMark) ||
+                other.landMark == landMark) &&
+            (identical(other.nearByHighlights, nearByHighlights) ||
+                other.nearByHighlights == nearByHighlights) &&
+            (identical(other.amenities, amenities) ||
+                other.amenities == amenities) &&
+            (identical(other.clubHouseAmenities, clubHouseAmenities) ||
+                other.clubHouseAmenities == clubHouseAmenities) &&
+            (identical(other.outdoorAmenities, outdoorAmenities) ||
+                other.outdoorAmenities == outdoorAmenities) &&
+            (identical(other.builder, builder) || other.builder == builder) &&
             const DeepCollectionEquality().equals(
                 other._educationalInstitutions, _educationalInstitutions) &&
             const DeepCollectionEquality()
                 .equals(other._hospitals, _hospitals) &&
             const DeepCollectionEquality().equals(other._offices, _offices) &&
             const DeepCollectionEquality()
-                .equals(other._connectivity, _connectivity) &&
-            (identical(other.flatSizes, flatSizes) ||
-                other.flatSizes == flatSizes));
+                .equals(other._connectivity, _connectivity));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      projectHighlightsID,
-      apartmentID,
-      const DeepCollectionEquality().hash(_configImages),
-      const DeepCollectionEquality().hash(_gallery),
-      const DeepCollectionEquality().hash(_highlightsImage11),
-      const DeepCollectionEquality().hash(_projectHighlightsDescription),
-      const DeepCollectionEquality().hash(_educationalInstitutions),
-      const DeepCollectionEquality().hash(_hospitals),
-      const DeepCollectionEquality().hash(_offices),
-      const DeepCollectionEquality().hash(_connectivity),
-      flatSizes);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        projectId,
+        builderID,
+        name,
+        description,
+        projectLocation,
+        projectSize,
+        noOfFloors,
+        noOfFlats,
+        noOfTowers,
+        noOfFlatsPerFloor,
+        clubhousesize,
+        totalOpenSpace,
+        constructionType,
+        latitude,
+        longitude,
+        reraID,
+        projectType,
+        projectLaunchedDate,
+        projectPossession,
+        pricePerSquareFeetRate,
+        totalArea,
+        landMark,
+        nearByHighlights,
+        amenities,
+        clubHouseAmenities,
+        outdoorAmenities,
+        builder,
+        const DeepCollectionEquality().hash(_educationalInstitutions),
+        const DeepCollectionEquality().hash(_hospitals),
+        const DeepCollectionEquality().hash(_offices),
+        const DeepCollectionEquality().hash(_connectivity)
+      ]);
 
-  /// Create a copy of ApartmentDetailsModel
+  /// Create a copy of ProjectDetails
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ApartmentDetailsModelImplCopyWith<_$ApartmentDetailsModelImpl>
-      get copyWith => __$$ApartmentDetailsModelImplCopyWithImpl<
-          _$ApartmentDetailsModelImpl>(this, _$identity);
+  _$$ProjectDetailsImplCopyWith<_$ProjectDetailsImpl> get copyWith =>
+      __$$ProjectDetailsImplCopyWithImpl<_$ProjectDetailsImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ApartmentDetailsModelImplToJson(
+    return _$$ProjectDetailsImplToJson(
       this,
     );
   }
 }
 
-abstract class _ApartmentDetailsModel implements ApartmentDetailsModel {
-  const factory _ApartmentDetailsModel(
-      {final String projectHighlightsID,
-      final String apartmentID,
-      final List<String> configImages,
-      final List<String> gallery,
-      final List<String> highlightsImage11,
-      final List<String> projectHighlightsDescription,
+abstract class _ProjectDetails implements ProjectDetails {
+  const factory _ProjectDetails(
+      {final String projectId,
+      final String builderID,
+      final String name,
+      final String description,
+      final String projectLocation,
+      final String projectSize,
+      final String noOfFloors,
+      final String noOfFlats,
+      final String noOfTowers,
+      final String noOfFlatsPerFloor,
+      final String clubhousesize,
+      final String totalOpenSpace,
+      final String constructionType,
+      final double latitude,
+      final double longitude,
+      final String reraID,
+      final String projectType,
+      final String projectLaunchedDate,
+      final String projectPossession,
+      final String pricePerSquareFeetRate,
+      final String totalArea,
+      final String landMark,
+      final String nearByHighlights,
+      final String amenities,
+      final String clubHouseAmenities,
+      final String outdoorAmenities,
+      final Builder builder,
       final List<Institution> educationalInstitutions,
       final List<Institution> hospitals,
       final List<Institution> offices,
-      final List<Institution> connectivity,
-      final String flatSizes}) = _$ApartmentDetailsModelImpl;
+      final List<Institution> connectivity}) = _$ProjectDetailsImpl;
 
-  factory _ApartmentDetailsModel.fromJson(Map<String, dynamic> json) =
-      _$ApartmentDetailsModelImpl.fromJson;
+  factory _ProjectDetails.fromJson(Map<String, dynamic> json) =
+      _$ProjectDetailsImpl.fromJson;
 
   @override
-  String get projectHighlightsID;
+  String get projectId;
   @override
-  String get apartmentID;
+  String get builderID;
   @override
-  List<String> get configImages;
+  String get name;
   @override
-  List<String> get gallery;
+  String get description;
   @override
-  List<String> get highlightsImage11;
+  String get projectLocation;
   @override
-  List<String> get projectHighlightsDescription;
+  String get projectSize;
+  @override
+  String get noOfFloors;
+  @override
+  String get noOfFlats;
+  @override
+  String get noOfTowers;
+  @override
+  String get noOfFlatsPerFloor;
+  @override
+  String get clubhousesize;
+  @override
+  String get totalOpenSpace;
+  @override
+  String get constructionType;
+  @override
+  double get latitude;
+  @override
+  double get longitude;
+  @override
+  String get reraID;
+  @override
+  String get projectType;
+  @override
+  String get projectLaunchedDate;
+  @override
+  String get projectPossession;
+  @override
+  String get pricePerSquareFeetRate;
+  @override
+  String get totalArea;
+  @override
+  String get landMark;
+  @override
+  String get nearByHighlights;
+  @override
+  String get amenities;
+  @override
+  String get clubHouseAmenities;
+  @override
+  String get outdoorAmenities;
+  @override
+  Builder get builder;
   @override
   List<Institution> get educationalInstitutions;
   @override
@@ -455,15 +1353,179 @@ abstract class _ApartmentDetailsModel implements ApartmentDetailsModel {
   List<Institution> get offices;
   @override
   List<Institution> get connectivity;
-  @override
-  String get flatSizes;
 
-  /// Create a copy of ApartmentDetailsModel
+  /// Create a copy of ProjectDetails
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ApartmentDetailsModelImplCopyWith<_$ApartmentDetailsModelImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$ProjectDetailsImplCopyWith<_$ProjectDetailsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Builder _$BuilderFromJson(Map<String, dynamic> json) {
+  return _Builder.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Builder {
+  String get CompanyPhone => throw _privateConstructorUsedError;
+  String get CompanyName => throw _privateConstructorUsedError;
+
+  /// Serializes this Builder to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Builder
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $BuilderCopyWith<Builder> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $BuilderCopyWith<$Res> {
+  factory $BuilderCopyWith(Builder value, $Res Function(Builder) then) =
+      _$BuilderCopyWithImpl<$Res, Builder>;
+  @useResult
+  $Res call({String CompanyPhone, String CompanyName});
+}
+
+/// @nodoc
+class _$BuilderCopyWithImpl<$Res, $Val extends Builder>
+    implements $BuilderCopyWith<$Res> {
+  _$BuilderCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Builder
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? CompanyPhone = null,
+    Object? CompanyName = null,
+  }) {
+    return _then(_value.copyWith(
+      CompanyPhone: null == CompanyPhone
+          ? _value.CompanyPhone
+          : CompanyPhone // ignore: cast_nullable_to_non_nullable
+              as String,
+      CompanyName: null == CompanyName
+          ? _value.CompanyName
+          : CompanyName // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$BuilderImplCopyWith<$Res> implements $BuilderCopyWith<$Res> {
+  factory _$$BuilderImplCopyWith(
+          _$BuilderImpl value, $Res Function(_$BuilderImpl) then) =
+      __$$BuilderImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String CompanyPhone, String CompanyName});
+}
+
+/// @nodoc
+class __$$BuilderImplCopyWithImpl<$Res>
+    extends _$BuilderCopyWithImpl<$Res, _$BuilderImpl>
+    implements _$$BuilderImplCopyWith<$Res> {
+  __$$BuilderImplCopyWithImpl(
+      _$BuilderImpl _value, $Res Function(_$BuilderImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Builder
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? CompanyPhone = null,
+    Object? CompanyName = null,
+  }) {
+    return _then(_$BuilderImpl(
+      CompanyPhone: null == CompanyPhone
+          ? _value.CompanyPhone
+          : CompanyPhone // ignore: cast_nullable_to_non_nullable
+              as String,
+      CompanyName: null == CompanyName
+          ? _value.CompanyName
+          : CompanyName // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$BuilderImpl implements _Builder {
+  const _$BuilderImpl({this.CompanyPhone = '', this.CompanyName = ''});
+
+  factory _$BuilderImpl.fromJson(Map<String, dynamic> json) =>
+      _$$BuilderImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String CompanyPhone;
+  @override
+  @JsonKey()
+  final String CompanyName;
+
+  @override
+  String toString() {
+    return 'Builder(CompanyPhone: $CompanyPhone, CompanyName: $CompanyName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BuilderImpl &&
+            (identical(other.CompanyPhone, CompanyPhone) ||
+                other.CompanyPhone == CompanyPhone) &&
+            (identical(other.CompanyName, CompanyName) ||
+                other.CompanyName == CompanyName));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, CompanyPhone, CompanyName);
+
+  /// Create a copy of Builder
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BuilderImplCopyWith<_$BuilderImpl> get copyWith =>
+      __$$BuilderImplCopyWithImpl<_$BuilderImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$BuilderImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _Builder implements Builder {
+  const factory _Builder(
+      {final String CompanyPhone, final String CompanyName}) = _$BuilderImpl;
+
+  factory _Builder.fromJson(Map<String, dynamic> json) = _$BuilderImpl.fromJson;
+
+  @override
+  String get CompanyPhone;
+  @override
+  String get CompanyName;
+
+  /// Create a copy of Builder
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BuilderImplCopyWith<_$BuilderImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 Institution _$InstitutionFromJson(Map<String, dynamic> json) {
@@ -650,5 +1712,233 @@ abstract class _Institution implements Institution {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$InstitutionImplCopyWith<_$InstitutionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+UnitPlanConfig _$UnitPlanConfigFromJson(Map<String, dynamic> json) {
+  return _UnitPlanConfig.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UnitPlanConfig {
+  String get bHKType => throw _privateConstructorUsedError;
+  String get sizeInSqft => throw _privateConstructorUsedError;
+  String get facing => throw _privateConstructorUsedError;
+  List<String> get unitPlanConfigFiles => throw _privateConstructorUsedError;
+
+  /// Serializes this UnitPlanConfig to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UnitPlanConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UnitPlanConfigCopyWith<UnitPlanConfig> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UnitPlanConfigCopyWith<$Res> {
+  factory $UnitPlanConfigCopyWith(
+          UnitPlanConfig value, $Res Function(UnitPlanConfig) then) =
+      _$UnitPlanConfigCopyWithImpl<$Res, UnitPlanConfig>;
+  @useResult
+  $Res call(
+      {String bHKType,
+      String sizeInSqft,
+      String facing,
+      List<String> unitPlanConfigFiles});
+}
+
+/// @nodoc
+class _$UnitPlanConfigCopyWithImpl<$Res, $Val extends UnitPlanConfig>
+    implements $UnitPlanConfigCopyWith<$Res> {
+  _$UnitPlanConfigCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UnitPlanConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bHKType = null,
+    Object? sizeInSqft = null,
+    Object? facing = null,
+    Object? unitPlanConfigFiles = null,
+  }) {
+    return _then(_value.copyWith(
+      bHKType: null == bHKType
+          ? _value.bHKType
+          : bHKType // ignore: cast_nullable_to_non_nullable
+              as String,
+      sizeInSqft: null == sizeInSqft
+          ? _value.sizeInSqft
+          : sizeInSqft // ignore: cast_nullable_to_non_nullable
+              as String,
+      facing: null == facing
+          ? _value.facing
+          : facing // ignore: cast_nullable_to_non_nullable
+              as String,
+      unitPlanConfigFiles: null == unitPlanConfigFiles
+          ? _value.unitPlanConfigFiles
+          : unitPlanConfigFiles // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UnitPlanConfigImplCopyWith<$Res>
+    implements $UnitPlanConfigCopyWith<$Res> {
+  factory _$$UnitPlanConfigImplCopyWith(_$UnitPlanConfigImpl value,
+          $Res Function(_$UnitPlanConfigImpl) then) =
+      __$$UnitPlanConfigImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String bHKType,
+      String sizeInSqft,
+      String facing,
+      List<String> unitPlanConfigFiles});
+}
+
+/// @nodoc
+class __$$UnitPlanConfigImplCopyWithImpl<$Res>
+    extends _$UnitPlanConfigCopyWithImpl<$Res, _$UnitPlanConfigImpl>
+    implements _$$UnitPlanConfigImplCopyWith<$Res> {
+  __$$UnitPlanConfigImplCopyWithImpl(
+      _$UnitPlanConfigImpl _value, $Res Function(_$UnitPlanConfigImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UnitPlanConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bHKType = null,
+    Object? sizeInSqft = null,
+    Object? facing = null,
+    Object? unitPlanConfigFiles = null,
+  }) {
+    return _then(_$UnitPlanConfigImpl(
+      bHKType: null == bHKType
+          ? _value.bHKType
+          : bHKType // ignore: cast_nullable_to_non_nullable
+              as String,
+      sizeInSqft: null == sizeInSqft
+          ? _value.sizeInSqft
+          : sizeInSqft // ignore: cast_nullable_to_non_nullable
+              as String,
+      facing: null == facing
+          ? _value.facing
+          : facing // ignore: cast_nullable_to_non_nullable
+              as String,
+      unitPlanConfigFiles: null == unitPlanConfigFiles
+          ? _value._unitPlanConfigFiles
+          : unitPlanConfigFiles // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UnitPlanConfigImpl implements _UnitPlanConfig {
+  const _$UnitPlanConfigImpl(
+      {this.bHKType = '',
+      this.sizeInSqft = '',
+      this.facing = '',
+      final List<String> unitPlanConfigFiles = const []})
+      : _unitPlanConfigFiles = unitPlanConfigFiles;
+
+  factory _$UnitPlanConfigImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UnitPlanConfigImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String bHKType;
+  @override
+  @JsonKey()
+  final String sizeInSqft;
+  @override
+  @JsonKey()
+  final String facing;
+  final List<String> _unitPlanConfigFiles;
+  @override
+  @JsonKey()
+  List<String> get unitPlanConfigFiles {
+    if (_unitPlanConfigFiles is EqualUnmodifiableListView)
+      return _unitPlanConfigFiles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_unitPlanConfigFiles);
+  }
+
+  @override
+  String toString() {
+    return 'UnitPlanConfig(bHKType: $bHKType, sizeInSqft: $sizeInSqft, facing: $facing, unitPlanConfigFiles: $unitPlanConfigFiles)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UnitPlanConfigImpl &&
+            (identical(other.bHKType, bHKType) || other.bHKType == bHKType) &&
+            (identical(other.sizeInSqft, sizeInSqft) ||
+                other.sizeInSqft == sizeInSqft) &&
+            (identical(other.facing, facing) || other.facing == facing) &&
+            const DeepCollectionEquality()
+                .equals(other._unitPlanConfigFiles, _unitPlanConfigFiles));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, bHKType, sizeInSqft, facing,
+      const DeepCollectionEquality().hash(_unitPlanConfigFiles));
+
+  /// Create a copy of UnitPlanConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UnitPlanConfigImplCopyWith<_$UnitPlanConfigImpl> get copyWith =>
+      __$$UnitPlanConfigImplCopyWithImpl<_$UnitPlanConfigImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UnitPlanConfigImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UnitPlanConfig implements UnitPlanConfig {
+  const factory _UnitPlanConfig(
+      {final String bHKType,
+      final String sizeInSqft,
+      final String facing,
+      final List<String> unitPlanConfigFiles}) = _$UnitPlanConfigImpl;
+
+  factory _UnitPlanConfig.fromJson(Map<String, dynamic> json) =
+      _$UnitPlanConfigImpl.fromJson;
+
+  @override
+  String get bHKType;
+  @override
+  String get sizeInSqft;
+  @override
+  String get facing;
+  @override
+  List<String> get unitPlanConfigFiles;
+
+  /// Create a copy of UnitPlanConfig
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UnitPlanConfigImplCopyWith<_$UnitPlanConfigImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

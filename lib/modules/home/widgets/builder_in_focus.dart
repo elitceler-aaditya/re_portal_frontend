@@ -120,7 +120,7 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         MaterialPageRoute(
           builder: (context) => PropertyDetails(
             apartment: apartment,
-            bestDeals: false,
+            heroTag: "builder-${apartment.projectId}",
             nextApartment: nextApartment,
           ),
         ),
@@ -134,14 +134,14 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         children: [
           Expanded(
             child: Hero(
-              tag: apartment.apartmentID,
+              tag: "builder-${apartment.projectId}",
               child: Container(
                 width: 200,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   image: DecorationImage(
-                    image: NetworkImage(apartment.image),
+                    image: NetworkImage(apartment.coverImage),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -150,7 +150,7 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
           ),
           const SizedBox(height: 4),
           Text(
-            apartment.apartmentName,
+            apartment.name,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -158,7 +158,7 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
             ),
           ),
           Text(
-            "@${apartment.locality},Hyderabad",
+            "@${apartment.projectLocation},Hyderabad",
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.normal,

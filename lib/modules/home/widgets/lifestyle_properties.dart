@@ -47,6 +47,7 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
         MaterialPageRoute(
           builder: (context) => PropertyDetails(
             apartment: lifestyleProperty,
+            heroTag: "lifestyle-${lifestyleProperty.projectId}",
           ),
         ),
       );
@@ -64,11 +65,11 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
         children: [
           Expanded(
             child: Hero(
-              tag: lifestyleProperty.apartmentID,
+              tag: "lifestyle-${lifestyleProperty.projectId}",
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Image.network(
-                  lifestyleProperty.image,
+                  lifestyleProperty.coverImage,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -97,7 +98,7 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      lifestyleProperty.apartmentName,
+                      lifestyleProperty.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -105,15 +106,15 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
                         fontSize: 18,
                       ),
                     ),
-                    Text(
-                      "By ${lifestyleProperty.companyName}",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: CustomColors.black50,
-                      ),
-                    ),
+                    // Text(
+                    //   "By ${lifestyleProperty.companyName}",
+                    //   maxLines: 1,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   style: const TextStyle(
+                    //     fontSize: 14,
+                    //     color: CustomColors.black50,
+                    //   ),
+                    // ),
                   ],
                 )
               ],
