@@ -213,7 +213,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                             ),
                             TextSpan(
                               text: formatBudget(
-                                  int.parse(widget.apartment.budget)),
+                                  widget.apartment.budget),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,

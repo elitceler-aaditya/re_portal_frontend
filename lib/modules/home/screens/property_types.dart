@@ -50,9 +50,9 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
         title: GestureDetector(
           onTap: () async {
             //get refresh token
-            SharedPreferences prefs = await SharedPreferences.getInstance();
+            // SharedPreferences prefs = await SharedPreferences.getInstance();
             // await prefs.setString('refreshToken', "what tf?");
-            String refreshToken = prefs.getString('refreshToken') ?? '';
+            // String refreshToken = prefs.getString('refreshToken') ?? '';
           },
           child: RichText(
             textAlign: TextAlign.start,

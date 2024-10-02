@@ -7,7 +7,7 @@ part 'apartment_details_model.g.dart';
 class ApartmentDetailsResponse with _$ApartmentDetailsResponse {
   const factory ApartmentDetailsResponse({
     @Default('') String message,
-    @Default(ProjectImages()) ProjectImages projectImages,
+    @Default([]) List<ProjectImageModel> projectImages,
     @Default(ProjectDetails()) ProjectDetails projectDetails,
     @Default([]) List<UnitPlanConfig> unitPlanConfigFilesFormatted,
   }) = _ApartmentDetailsResponse;
@@ -17,14 +17,14 @@ class ApartmentDetailsResponse with _$ApartmentDetailsResponse {
 }
 
 @freezed
-class ProjectImages with _$ProjectImages {
-  const factory ProjectImages({
-    @Default([]) List<String> projectHighlights,
-    @Default([]) List<String> elevationImages,
-  }) = _ProjectImages;
+class ProjectImageModel with _$ProjectImageModel {
+  const factory ProjectImageModel({
+    @Default('') String title,
+    @Default([]) List<String> images,
+  }) = _ProjectImageModel;
 
-  factory ProjectImages.fromJson(Map<String, dynamic> json) =>
-      _$ProjectImagesFromJson(json);
+  factory ProjectImageModel.fromJson(Map<String, dynamic> json) =>
+      _$ProjectImageModelFromJson(json);
 }
 
 @freezed

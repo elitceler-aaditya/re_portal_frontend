@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
@@ -16,6 +15,7 @@ import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/fetch_home_data.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
@@ -113,19 +113,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         loading = false;
       });
     });
-  }
-
-  filterBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-      isScrollControlled: true,
-      backgroundColor: CustomColors.primary10,
-      scrollControlDisabledMaxHeightRatio: 1,
-      builder: (context) {
-        return AppartmentFilter(apartmentList: allApartments);
-      },
-    );
   }
 
   apartmentBody() {
@@ -240,6 +227,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       );
                     },
                     child: Container(
+                      height: 50,
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         color: CustomColors.white,
@@ -262,15 +250,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => GoogleMapsScreen(
-                                    apartment: ref
-                                        .watch(homePropertiesProvider)
-                                        .apartments[0],
-                                  ),
-                                ),
-                              );
+                              // Navigator.of(context).push(
+                              //   MaterialPageRoute(
+                              //     builder: (context) => GoogleMapsScreen(
+                              //       apartment: ref
+                              //           .watch(homePropertiesProvider)
+                              //           .apartments[0],
+                              //     ),
+                              //   ),
+                              // );
                             },
                             child: Padding(
                               padding:
@@ -280,24 +268,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                           ),
-                          TextButton.icon(
-                            style: TextButton.styleFrom(
-                              backgroundColor: CustomColors.secondary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            onPressed: () {
-                              filterBottomSheet();
-                            },
-                            icon: SvgPicture.asset("assets/icons/filter.svg"),
-                            label: const Text(
-                              "Filters",
-                              style: TextStyle(
-                                color: CustomColors.white,
-                              ),
-                            ),
-                          )
                         ],
                       ),
                     ),
@@ -308,178 +278,158 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(height: 10),
 
             //Best deals
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (allApartments.isNotEmpty)
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 10, bottom: 8),
-                        child: Text(
-                          "Best Deals",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      FlutterCarousel.builder(
-                        itemCount: min(
-                            5,
-                            ref
-                                .watch(homePropertiesProvider)
-                                .apartments
-                                .length),
-                        itemBuilder: (context, index, realIndex) =>
-                            GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => PropertyDetails(
-                                  apartment: ref
-                                      .watch(homePropertiesProvider)
-                                      .apartments[index],
-                                  heroTag:
-                                      "best-${ref.watch(homePropertiesProvider).apartments[index].projectId}",
-                                  nextApartment: ref
-                                          .watch(homePropertiesProvider)
-                                          .apartments[
-                                      (index + 1) %
-                                          ref
-                                              .watch(homePropertiesProvider)
-                                              .apartments
-                                              .length],
-                                ),
-                              ),
-                            );
-                          },
-                          child: Stack(
-                            children: [
-                              Hero(
-                                tag:
-                                    "best-${ref.watch(homePropertiesProvider).apartments[index].projectId}",
-                                child: Container(
-                                  height: MediaQuery.of(context).size.width,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    color: CustomColors.black25,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: ref
-                                            .watch(homePropertiesProvider)
-                                            .apartments[index]
-                                            .coverImage
-                                            .isNotEmpty
-                                        ? DecorationImage(
-                                            image: NetworkImage(ref
-                                                .watch(homePropertiesProvider)
-                                                .apartments[index]
-                                                .coverImage),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: MediaQuery.of(context).size.width,
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      CustomColors.black.withOpacity(0),
-                                      CustomColors.black.withOpacity(0.8),
-                                    ],
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.9,
-                                  padding: const EdgeInsets.all(8),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        ref
-                                            .watch(homePropertiesProvider)
-                                            .apartments[index]
-                                            .name,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: CustomColors.white,
-                                          fontSize: 20,
-                                          height: 1,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        "@ ${ref.watch(homePropertiesProvider).apartments[index].projectLocation}",
-                                        style: const TextStyle(
-                                          color: CustomColors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        "₹${formatBudget(int.parse(ref.watch(homePropertiesProvider).apartments[index].budget))} onwards",
-                                        style: const TextStyle(
-                                          color: CustomColors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        options: CarouselOptions(
-                          height: MediaQuery.of(context).size.width,
-                          viewportFraction: 0.95,
-                          enlargeCenterPage: true,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 5),
-                          autoPlayAnimationDuration:
-                              const Duration(milliseconds: 1000),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          enableInfiniteScroll: true,
-                          initialPage: 0,
-                          reverse: false,
-                          scrollDirection: Axis.horizontal,
-                          showIndicator: true,
-                          floatingIndicator: false,
-                          slideIndicator: const CircularSlideIndicator(
-                            slideIndicatorOptions: SlideIndicatorOptions(
-                              indicatorRadius: 4,
-                              currentIndicatorColor: CustomColors.black,
-                              indicatorBackgroundColor: CustomColors.black50,
-                              itemSpacing: 16,
+            if (bestDeals.isNotEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (allApartments.isNotEmpty)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 10, bottom: 8),
+                          child: Text(
+                            "Best Deals",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
+                        FlutterCarousel.builder(
+                          itemCount: min(5, bestDeals.length),
+                          itemBuilder: (context, index, realIndex) =>
+                              GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => PropertyDetails(
+                                    apartment: bestDeals[index],
+                                    heroTag:
+                                        "best-${bestDeals[index].projectId}",
+                                    nextApartment: bestDeals[
+                                        (index + 1) % bestDeals.length],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Stack(
+                              children: [
+                                Hero(
+                                  tag: "best-${bestDeals[index].projectId}",
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.width,
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: CustomColors.black25,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: bestDeals[index]
+                                              .coverImage
+                                              .isNotEmpty
+                                          ? DecorationImage(
+                                              image: NetworkImage(
+                                                  bestDeals[index].coverImage),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  height: MediaQuery.of(context).size.width,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        CustomColors.black.withOpacity(0),
+                                        CustomColors.black.withOpacity(0.8),
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          bestDeals[index].name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: CustomColors.white,
+                                            fontSize: 20,
+                                            height: 1,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "@ ${bestDeals[index].projectLocation}",
+                                          style: const TextStyle(
+                                            color: CustomColors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          "₹${formatBudget(bestDeals[index].budget)} onwards",
+                                          style: const TextStyle(
+                                            color: CustomColors.white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          options: CarouselOptions(
+                            height: MediaQuery.of(context).size.width,
+                            viewportFraction: 0.95,
+                            enlargeCenterPage: true,
+                            autoPlay: true,
+                            autoPlayInterval: const Duration(seconds: 5),
+                            autoPlayAnimationDuration:
+                                const Duration(milliseconds: 1000),
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            enableInfiniteScroll: true,
+                            initialPage: 0,
+                            reverse: false,
+                            scrollDirection: Axis.horizontal,
+                            showIndicator: true,
+                            floatingIndicator: false,
+                            slideIndicator: const CircularSlideIndicator(
+                              slideIndicatorOptions: SlideIndicatorOptions(
+                                indicatorRadius: 4,
+                                currentIndicatorColor: CustomColors.black,
+                                indicatorBackgroundColor: CustomColors.black50,
+                                itemSpacing: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             const SizedBox(height: 10),
 
-            loading
+            (loading)
                 ? ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

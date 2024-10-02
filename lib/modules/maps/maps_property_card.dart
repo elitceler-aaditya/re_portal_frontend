@@ -90,15 +90,14 @@ class MapsPropertyCard extends StatelessWidget {
                               width: 1,
                             ),
                           ),
-                          // child: Text(
-                          //   formatBudget(
-                          //       int.parse(apartment.pricePerSquareFeetRate)),
-                          //   style: const TextStyle(
-                          //     fontSize: 12,
-                          //     fontWeight: FontWeight.bold,
-                          //     color: CustomColors.primary,
-                          //   ),
-                          // ),
+                          child: Text(
+                            formatBudget(apartment.budget),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColors.primary,
+                            ),
+                          ),
                         )
                       ],
                     ),

@@ -22,7 +22,7 @@ class ApartmentModel with _$ApartmentModel {
     @Default([]) List<String> configuration,
     @Default(null) String? videoLink,
     @Default("0") String flatSize,
-    @Default("0") String budget,
+    @Default(0) int budget,
   }) = _ApartmentModel;
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) =>

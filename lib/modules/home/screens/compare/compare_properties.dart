@@ -15,7 +15,6 @@ class CompareProperties extends ConsumerStatefulWidget {
 
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   bool _isFixedColumnVisible = true;
-  final ScrollController _scrollController = ScrollController();
   formatPrice(double price) {
     if (price > 1000000) {
       return '${(price / 1000000).toStringAsFixed(0)} Lac';

@@ -22,12 +22,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> checkIfLoggedIn() async {
     String token = "";
-    String refreshToken = "";
 
     try {
       SharedPreferences.getInstance().then((sharedPref) {
         token = sharedPref.getString('token') ?? "";
-        refreshToken = sharedPref.getString('refreshToken') ?? "";
+        // refreshToken = sharedPref.getString('refreshToken') ?? "";
 
         if (token.isEmpty) {
           Navigator.pushReplacement(context,
@@ -41,8 +40,6 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       });
     } catch (e) {
-      // Handle any errors (e.g., file read errors)
-      print('Error checking login status: $e');
       isExpired = true;
       if (mounted) {
         Navigator.pushReplacement(context,

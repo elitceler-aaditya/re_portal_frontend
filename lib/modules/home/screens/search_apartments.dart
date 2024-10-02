@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -25,6 +27,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   List<GlobalKey> _globalKeys = [];
+  String searchPrefix = "";
+
+  List<String> searchOptions = ["properties", "apartments", "plots", "flats"];
+  int searchOptionsIndex = 0;
 
   void _toggleOverlay(
       BuildContext context, ApartmentModel apartment, GlobalKey globalKey) {
@@ -51,6 +57,19 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
           ],
         ),
       ),
+    );
+  }
+
+  filterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+      isScrollControlled: true,
+      backgroundColor: CustomColors.primary10,
+      scrollControlDisabledMaxHeightRatio: 1,
+      builder: (context) {
+        return AppartmentFilter(apartmentList: allApartments);
+      },
     );
   }
 
@@ -211,6 +230,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       getAllProjects();
       setGlobalKeys();
     });
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      setState(() {
+        searchOptionsIndex = (searchOptionsIndex + 1) % searchOptions.length;
+      });
+    });
   }
 
   @override
@@ -222,10 +246,27 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
 
   void _filterApartments(String searchTerm) {
     setState(() {
-      filteredApartments = allApartments
-          .where((apartment) =>
-              apartment.name.toLowerCase().contains(searchTerm.toLowerCase()))
-          .toList();
+      filteredApartments = allApartments.where((apartment) {
+        if (apartment.name.toLowerCase().contains(searchTerm.toLowerCase())) {
+          setState(() {
+            searchPrefix = "by name - ";
+          });
+          return apartment.name
+              .toLowerCase()
+              .contains(searchTerm.toLowerCase());
+        }
+        if (apartment.projectLocation
+            .toLowerCase()
+            .contains(searchTerm.toLowerCase())) {
+          setState(() {
+            searchPrefix = "by location - ";
+          });
+          return apartment.projectLocation
+              .toLowerCase()
+              .contains(searchTerm.toLowerCase());
+        }
+        return false;
+      }).toList();
     });
   }
 
@@ -261,6 +302,15 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                           color: CustomColors.white,
                         ),
                       ),
+                      if (_searchController.text.trim().isNotEmpty)
+                        Text(
+                          " $searchPrefix ${_searchController.text.trim()}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: CustomColors.white,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -293,13 +343,13 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                           child: TextField(
                             controller: _searchController,
                             onChanged: _filterApartments,
-                            autofocus: true,
                             style: const TextStyle(
                               fontSize: 14,
                             ),
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.zero,
-                              hintText: 'Search properties...',
+                              hintText:
+                                  'Search ${searchOptions[searchOptionsIndex]}...',
                               hintStyle: const TextStyle(
                                 color: CustomColors.black50,
                               ),
@@ -310,6 +360,36 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                             ),
                           ),
                         ),
+                        if (_searchController.text.trim().isEmpty)
+                          GestureDetector(
+                            onTap: () {},
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4),
+                              child: SvgPicture.string(
+                                """<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M20 12C20 16.4183 16.4183 20 12 20M20 12C20 7.58172 16.4183 4 12 4M20 12H22M12 20C7.58172 20 4 16.4183 4 12M12 20V22M4 12C4 7.58172 7.58172 4 12 4M4 12H2M12 4V2M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>""",
+                              ),
+                            ),
+                          ),
+                        if (_searchController.text.trim().isEmpty)
+                          TextButton.icon(
+                            style: TextButton.styleFrom(
+                              backgroundColor: CustomColors.secondary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              filterBottomSheet();
+                            },
+                            icon: SvgPicture.asset("assets/icons/filter.svg"),
+                            label: const Text(
+                              "Filters",
+                              style: TextStyle(
+                                color: CustomColors.white,
+                              ),
+                            ),
+                          )
                       ],
                     ),
                   ),
@@ -318,11 +398,18 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: SingleChildScrollView(
-                    child: PropertyListView(
-                        sortedApartments: filteredApartments,
-                        compare: true,
-                        displayAds: true,
-                      ),
+                      child: filteredApartments.isEmpty
+                          ? SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              child: const Center(
+                                child: Text("No results found"),
+                              ),
+                            )
+                          : PropertyListView(
+                              sortedApartments: filteredApartments,
+                              compare: true,
+                              displayAds: true,
+                            ),
                     ),
                   ),
                 ),

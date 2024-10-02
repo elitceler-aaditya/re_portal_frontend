@@ -10,10 +10,11 @@ _$ApartmentDetailsResponseImpl _$$ApartmentDetailsResponseImplFromJson(
         Map<String, dynamic> json) =>
     _$ApartmentDetailsResponseImpl(
       message: json['message'] as String? ?? '',
-      projectImages: json['projectImages'] == null
-          ? const ProjectImages()
-          : ProjectImages.fromJson(
-              json['projectImages'] as Map<String, dynamic>),
+      projectImages: (json['projectImages'] as List<dynamic>?)
+              ?.map(
+                  (e) => ProjectImageModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       projectDetails: json['projectDetails'] == null
           ? const ProjectDetails()
           : ProjectDetails.fromJson(
@@ -34,22 +35,21 @@ Map<String, dynamic> _$$ApartmentDetailsResponseImplToJson(
       'unitPlanConfigFilesFormatted': instance.unitPlanConfigFilesFormatted,
     };
 
-_$ProjectImagesImpl _$$ProjectImagesImplFromJson(Map<String, dynamic> json) =>
-    _$ProjectImagesImpl(
-      projectHighlights: (json['projectHighlights'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
-      elevationImages: (json['elevationImages'] as List<dynamic>?)
+_$ProjectImageModelImpl _$$ProjectImageModelImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ProjectImageModelImpl(
+      title: json['title'] as String? ?? '',
+      images: (json['images'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$$ProjectImagesImplToJson(_$ProjectImagesImpl instance) =>
+Map<String, dynamic> _$$ProjectImageModelImplToJson(
+        _$ProjectImageModelImpl instance) =>
     <String, dynamic>{
-      'projectHighlights': instance.projectHighlights,
-      'elevationImages': instance.elevationImages,
+      'title': instance.title,
+      'images': instance.images,
     };
 
 _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>

@@ -36,7 +36,7 @@ mixin _$ApartmentModel {
   List<String> get configuration => throw _privateConstructorUsedError;
   String? get videoLink => throw _privateConstructorUsedError;
   String get flatSize => throw _privateConstructorUsedError;
-  String get budget => throw _privateConstructorUsedError;
+  int get budget => throw _privateConstructorUsedError;
 
   /// Serializes this ApartmentModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -71,7 +71,7 @@ abstract class $ApartmentModelCopyWith<$Res> {
       List<String> configuration,
       String? videoLink,
       String flatSize,
-      String budget});
+      int budget});
 }
 
 /// @nodoc
@@ -175,7 +175,7 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
     ) as $Val);
   }
 }
@@ -205,7 +205,7 @@ abstract class _$$ApartmentModelImplCopyWith<$Res>
       List<String> configuration,
       String? videoLink,
       String flatSize,
-      String budget});
+      int budget});
 }
 
 /// @nodoc
@@ -307,7 +307,7 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
-              as String,
+              as int,
     ));
   }
 }
@@ -332,7 +332,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
       final List<String> configuration = const [],
       this.videoLink = null,
       this.flatSize = "0",
-      this.budget = "0"})
+      this.budget = 0})
       : _projectGallery = projectGallery,
         _configuration = configuration;
 
@@ -401,7 +401,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
   final String flatSize;
   @override
   @JsonKey()
-  final String budget;
+  final int budget;
 
   @override
   String toString() {
@@ -504,7 +504,7 @@ abstract class _ApartmentModel implements ApartmentModel {
       final List<String> configuration,
       final String? videoLink,
       final String flatSize,
-      final String budget}) = _$ApartmentModelImpl;
+      final int budget}) = _$ApartmentModelImpl;
 
   factory _ApartmentModel.fromJson(Map<String, dynamic> json) =
       _$ApartmentModelImpl.fromJson;
@@ -542,7 +542,7 @@ abstract class _ApartmentModel implements ApartmentModel {
   @override
   String get flatSize;
   @override
-  String get budget;
+  int get budget;
 
   /// Create a copy of ApartmentModel
   /// with the given fields replaced by the non-null parameter values.

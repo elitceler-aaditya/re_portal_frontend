@@ -29,7 +29,6 @@ class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
     http.get(url, headers: {
       "Authorization": "Bearer $token",
     }).then((response) {
-      print(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
         builder = BuilderModel.fromJson(
           jsonDecode(response.body)['builderDetails'],
@@ -40,7 +39,6 @@ class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
         isLoading = false;
       });
     }).onError((error, stackTrace) {
-      print(error);
     });
 
     setState(() {

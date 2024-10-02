@@ -22,7 +22,8 @@ ApartmentDetailsResponse _$ApartmentDetailsResponseFromJson(
 /// @nodoc
 mixin _$ApartmentDetailsResponse {
   String get message => throw _privateConstructorUsedError;
-  ProjectImages get projectImages => throw _privateConstructorUsedError;
+  List<ProjectImageModel> get projectImages =>
+      throw _privateConstructorUsedError;
   ProjectDetails get projectDetails => throw _privateConstructorUsedError;
   List<UnitPlanConfig> get unitPlanConfigFilesFormatted =>
       throw _privateConstructorUsedError;
@@ -45,11 +46,10 @@ abstract class $ApartmentDetailsResponseCopyWith<$Res> {
   @useResult
   $Res call(
       {String message,
-      ProjectImages projectImages,
+      List<ProjectImageModel> projectImages,
       ProjectDetails projectDetails,
       List<UnitPlanConfig> unitPlanConfigFilesFormatted});
 
-  $ProjectImagesCopyWith<$Res> get projectImages;
   $ProjectDetailsCopyWith<$Res> get projectDetails;
 }
 
@@ -82,7 +82,7 @@ class _$ApartmentDetailsResponseCopyWithImpl<$Res,
       projectImages: null == projectImages
           ? _value.projectImages
           : projectImages // ignore: cast_nullable_to_non_nullable
-              as ProjectImages,
+              as List<ProjectImageModel>,
       projectDetails: null == projectDetails
           ? _value.projectDetails
           : projectDetails // ignore: cast_nullable_to_non_nullable
@@ -92,16 +92,6 @@ class _$ApartmentDetailsResponseCopyWithImpl<$Res,
           : unitPlanConfigFilesFormatted // ignore: cast_nullable_to_non_nullable
               as List<UnitPlanConfig>,
     ) as $Val);
-  }
-
-  /// Create a copy of ApartmentDetailsResponse
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ProjectImagesCopyWith<$Res> get projectImages {
-    return $ProjectImagesCopyWith<$Res>(_value.projectImages, (value) {
-      return _then(_value.copyWith(projectImages: value) as $Val);
-    });
   }
 
   /// Create a copy of ApartmentDetailsResponse
@@ -126,12 +116,10 @@ abstract class _$$ApartmentDetailsResponseImplCopyWith<$Res>
   @useResult
   $Res call(
       {String message,
-      ProjectImages projectImages,
+      List<ProjectImageModel> projectImages,
       ProjectDetails projectDetails,
       List<UnitPlanConfig> unitPlanConfigFilesFormatted});
 
-  @override
-  $ProjectImagesCopyWith<$Res> get projectImages;
   @override
   $ProjectDetailsCopyWith<$Res> get projectDetails;
 }
@@ -162,9 +150,9 @@ class __$$ApartmentDetailsResponseImplCopyWithImpl<$Res>
           : message // ignore: cast_nullable_to_non_nullable
               as String,
       projectImages: null == projectImages
-          ? _value.projectImages
+          ? _value._projectImages
           : projectImages // ignore: cast_nullable_to_non_nullable
-              as ProjectImages,
+              as List<ProjectImageModel>,
       projectDetails: null == projectDetails
           ? _value.projectDetails
           : projectDetails // ignore: cast_nullable_to_non_nullable
@@ -182,10 +170,11 @@ class __$$ApartmentDetailsResponseImplCopyWithImpl<$Res>
 class _$ApartmentDetailsResponseImpl implements _ApartmentDetailsResponse {
   const _$ApartmentDetailsResponseImpl(
       {this.message = '',
-      this.projectImages = const ProjectImages(),
+      final List<ProjectImageModel> projectImages = const [],
       this.projectDetails = const ProjectDetails(),
       final List<UnitPlanConfig> unitPlanConfigFilesFormatted = const []})
-      : _unitPlanConfigFilesFormatted = unitPlanConfigFilesFormatted;
+      : _projectImages = projectImages,
+        _unitPlanConfigFilesFormatted = unitPlanConfigFilesFormatted;
 
   factory _$ApartmentDetailsResponseImpl.fromJson(Map<String, dynamic> json) =>
       _$$ApartmentDetailsResponseImplFromJson(json);
@@ -193,9 +182,15 @@ class _$ApartmentDetailsResponseImpl implements _ApartmentDetailsResponse {
   @override
   @JsonKey()
   final String message;
+  final List<ProjectImageModel> _projectImages;
   @override
   @JsonKey()
-  final ProjectImages projectImages;
+  List<ProjectImageModel> get projectImages {
+    if (_projectImages is EqualUnmodifiableListView) return _projectImages;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_projectImages);
+  }
+
   @override
   @JsonKey()
   final ProjectDetails projectDetails;
@@ -220,8 +215,8 @@ class _$ApartmentDetailsResponseImpl implements _ApartmentDetailsResponse {
         (other.runtimeType == runtimeType &&
             other is _$ApartmentDetailsResponseImpl &&
             (identical(other.message, message) || other.message == message) &&
-            (identical(other.projectImages, projectImages) ||
-                other.projectImages == projectImages) &&
+            const DeepCollectionEquality()
+                .equals(other._projectImages, _projectImages) &&
             (identical(other.projectDetails, projectDetails) ||
                 other.projectDetails == projectDetails) &&
             const DeepCollectionEquality().equals(
@@ -234,7 +229,7 @@ class _$ApartmentDetailsResponseImpl implements _ApartmentDetailsResponse {
   int get hashCode => Object.hash(
       runtimeType,
       message,
-      projectImages,
+      const DeepCollectionEquality().hash(_projectImages),
       projectDetails,
       const DeepCollectionEquality().hash(_unitPlanConfigFilesFormatted));
 
@@ -258,7 +253,7 @@ class _$ApartmentDetailsResponseImpl implements _ApartmentDetailsResponse {
 abstract class _ApartmentDetailsResponse implements ApartmentDetailsResponse {
   const factory _ApartmentDetailsResponse(
           {final String message,
-          final ProjectImages projectImages,
+          final List<ProjectImageModel> projectImages,
           final ProjectDetails projectDetails,
           final List<UnitPlanConfig> unitPlanConfigFilesFormatted}) =
       _$ApartmentDetailsResponseImpl;
@@ -269,7 +264,7 @@ abstract class _ApartmentDetailsResponse implements ApartmentDetailsResponse {
   @override
   String get message;
   @override
-  ProjectImages get projectImages;
+  List<ProjectImageModel> get projectImages;
   @override
   ProjectDetails get projectDetails;
   @override
@@ -283,100 +278,100 @@ abstract class _ApartmentDetailsResponse implements ApartmentDetailsResponse {
       get copyWith => throw _privateConstructorUsedError;
 }
 
-ProjectImages _$ProjectImagesFromJson(Map<String, dynamic> json) {
-  return _ProjectImages.fromJson(json);
+ProjectImageModel _$ProjectImageModelFromJson(Map<String, dynamic> json) {
+  return _ProjectImageModel.fromJson(json);
 }
 
 /// @nodoc
-mixin _$ProjectImages {
-  List<String> get projectHighlights => throw _privateConstructorUsedError;
-  List<String> get elevationImages => throw _privateConstructorUsedError;
+mixin _$ProjectImageModel {
+  String get title => throw _privateConstructorUsedError;
+  List<String> get images => throw _privateConstructorUsedError;
 
-  /// Serializes this ProjectImages to a JSON map.
+  /// Serializes this ProjectImageModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of ProjectImages
+  /// Create a copy of ProjectImageModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ProjectImagesCopyWith<ProjectImages> get copyWith =>
+  $ProjectImageModelCopyWith<ProjectImageModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ProjectImagesCopyWith<$Res> {
-  factory $ProjectImagesCopyWith(
-          ProjectImages value, $Res Function(ProjectImages) then) =
-      _$ProjectImagesCopyWithImpl<$Res, ProjectImages>;
+abstract class $ProjectImageModelCopyWith<$Res> {
+  factory $ProjectImageModelCopyWith(
+          ProjectImageModel value, $Res Function(ProjectImageModel) then) =
+      _$ProjectImageModelCopyWithImpl<$Res, ProjectImageModel>;
   @useResult
-  $Res call({List<String> projectHighlights, List<String> elevationImages});
+  $Res call({String title, List<String> images});
 }
 
 /// @nodoc
-class _$ProjectImagesCopyWithImpl<$Res, $Val extends ProjectImages>
-    implements $ProjectImagesCopyWith<$Res> {
-  _$ProjectImagesCopyWithImpl(this._value, this._then);
+class _$ProjectImageModelCopyWithImpl<$Res, $Val extends ProjectImageModel>
+    implements $ProjectImageModelCopyWith<$Res> {
+  _$ProjectImageModelCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ProjectImages
+  /// Create a copy of ProjectImageModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? projectHighlights = null,
-    Object? elevationImages = null,
+    Object? title = null,
+    Object? images = null,
   }) {
     return _then(_value.copyWith(
-      projectHighlights: null == projectHighlights
-          ? _value.projectHighlights
-          : projectHighlights // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      elevationImages: null == elevationImages
-          ? _value.elevationImages
-          : elevationImages // ignore: cast_nullable_to_non_nullable
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      images: null == images
+          ? _value.images
+          : images // ignore: cast_nullable_to_non_nullable
               as List<String>,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$ProjectImagesImplCopyWith<$Res>
-    implements $ProjectImagesCopyWith<$Res> {
-  factory _$$ProjectImagesImplCopyWith(
-          _$ProjectImagesImpl value, $Res Function(_$ProjectImagesImpl) then) =
-      __$$ProjectImagesImplCopyWithImpl<$Res>;
+abstract class _$$ProjectImageModelImplCopyWith<$Res>
+    implements $ProjectImageModelCopyWith<$Res> {
+  factory _$$ProjectImageModelImplCopyWith(_$ProjectImageModelImpl value,
+          $Res Function(_$ProjectImageModelImpl) then) =
+      __$$ProjectImageModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<String> projectHighlights, List<String> elevationImages});
+  $Res call({String title, List<String> images});
 }
 
 /// @nodoc
-class __$$ProjectImagesImplCopyWithImpl<$Res>
-    extends _$ProjectImagesCopyWithImpl<$Res, _$ProjectImagesImpl>
-    implements _$$ProjectImagesImplCopyWith<$Res> {
-  __$$ProjectImagesImplCopyWithImpl(
-      _$ProjectImagesImpl _value, $Res Function(_$ProjectImagesImpl) _then)
+class __$$ProjectImageModelImplCopyWithImpl<$Res>
+    extends _$ProjectImageModelCopyWithImpl<$Res, _$ProjectImageModelImpl>
+    implements _$$ProjectImageModelImplCopyWith<$Res> {
+  __$$ProjectImageModelImplCopyWithImpl(_$ProjectImageModelImpl _value,
+      $Res Function(_$ProjectImageModelImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ProjectImages
+  /// Create a copy of ProjectImageModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? projectHighlights = null,
-    Object? elevationImages = null,
+    Object? title = null,
+    Object? images = null,
   }) {
-    return _then(_$ProjectImagesImpl(
-      projectHighlights: null == projectHighlights
-          ? _value._projectHighlights
-          : projectHighlights // ignore: cast_nullable_to_non_nullable
-              as List<String>,
-      elevationImages: null == elevationImages
-          ? _value._elevationImages
-          : elevationImages // ignore: cast_nullable_to_non_nullable
+    return _then(_$ProjectImageModelImpl(
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      images: null == images
+          ? _value._images
+          : images // ignore: cast_nullable_to_non_nullable
               as List<String>,
     ));
   }
@@ -384,92 +379,80 @@ class __$$ProjectImagesImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ProjectImagesImpl implements _ProjectImages {
-  const _$ProjectImagesImpl(
-      {final List<String> projectHighlights = const [],
-      final List<String> elevationImages = const []})
-      : _projectHighlights = projectHighlights,
-        _elevationImages = elevationImages;
+class _$ProjectImageModelImpl implements _ProjectImageModel {
+  const _$ProjectImageModelImpl(
+      {this.title = '', final List<String> images = const []})
+      : _images = images;
 
-  factory _$ProjectImagesImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ProjectImagesImplFromJson(json);
+  factory _$ProjectImageModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProjectImageModelImplFromJson(json);
 
-  final List<String> _projectHighlights;
   @override
   @JsonKey()
-  List<String> get projectHighlights {
-    if (_projectHighlights is EqualUnmodifiableListView)
-      return _projectHighlights;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_projectHighlights);
-  }
-
-  final List<String> _elevationImages;
+  final String title;
+  final List<String> _images;
   @override
   @JsonKey()
-  List<String> get elevationImages {
-    if (_elevationImages is EqualUnmodifiableListView) return _elevationImages;
+  List<String> get images {
+    if (_images is EqualUnmodifiableListView) return _images;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_elevationImages);
+    return EqualUnmodifiableListView(_images);
   }
 
   @override
   String toString() {
-    return 'ProjectImages(projectHighlights: $projectHighlights, elevationImages: $elevationImages)';
+    return 'ProjectImageModel(title: $title, images: $images)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ProjectImagesImpl &&
-            const DeepCollectionEquality()
-                .equals(other._projectHighlights, _projectHighlights) &&
-            const DeepCollectionEquality()
-                .equals(other._elevationImages, _elevationImages));
+            other is _$ProjectImageModelImpl &&
+            (identical(other.title, title) || other.title == title) &&
+            const DeepCollectionEquality().equals(other._images, _images));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_projectHighlights),
-      const DeepCollectionEquality().hash(_elevationImages));
+      runtimeType, title, const DeepCollectionEquality().hash(_images));
 
-  /// Create a copy of ProjectImages
+  /// Create a copy of ProjectImageModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ProjectImagesImplCopyWith<_$ProjectImagesImpl> get copyWith =>
-      __$$ProjectImagesImplCopyWithImpl<_$ProjectImagesImpl>(this, _$identity);
+  _$$ProjectImageModelImplCopyWith<_$ProjectImageModelImpl> get copyWith =>
+      __$$ProjectImageModelImplCopyWithImpl<_$ProjectImageModelImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ProjectImagesImplToJson(
+    return _$$ProjectImageModelImplToJson(
       this,
     );
   }
 }
 
-abstract class _ProjectImages implements ProjectImages {
-  const factory _ProjectImages(
-      {final List<String> projectHighlights,
-      final List<String> elevationImages}) = _$ProjectImagesImpl;
+abstract class _ProjectImageModel implements ProjectImageModel {
+  const factory _ProjectImageModel(
+      {final String title,
+      final List<String> images}) = _$ProjectImageModelImpl;
 
-  factory _ProjectImages.fromJson(Map<String, dynamic> json) =
-      _$ProjectImagesImpl.fromJson;
+  factory _ProjectImageModel.fromJson(Map<String, dynamic> json) =
+      _$ProjectImageModelImpl.fromJson;
 
   @override
-  List<String> get projectHighlights;
+  String get title;
   @override
-  List<String> get elevationImages;
+  List<String> get images;
 
-  /// Create a copy of ProjectImages
+  /// Create a copy of ProjectImageModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProjectImagesImplCopyWith<_$ProjectImagesImpl> get copyWith =>
+  _$$ProjectImageModelImplCopyWith<_$ProjectImageModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

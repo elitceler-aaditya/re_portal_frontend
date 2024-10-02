@@ -31,7 +31,7 @@ _$ApartmentModelImpl _$$ApartmentModelImplFromJson(Map<String, dynamic> json) =>
           const [],
       videoLink: json['videoLink'] as String? ?? null,
       flatSize: json['flatSize'] as String? ?? "0",
-      budget: json['budget'] as String? ?? "0",
+      budget: (json['budget'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$ApartmentModelImplToJson(

@@ -106,15 +106,15 @@ _lifestylePropertyCard(context, ApartmentModel lifestyleProperty) {
                         fontSize: 18,
                       ),
                     ),
-                    // Text(
-                    //   "By ${lifestyleProperty.companyName}",
-                    //   maxLines: 1,
-                    //   overflow: TextOverflow.ellipsis,
-                    //   style: const TextStyle(
-                    //     fontSize: 14,
-                    //     color: CustomColors.black50,
-                    //   ),
-                    // ),
+                    Text(
+                      "By ${lifestyleProperty.companyName}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: CustomColors.black50,
+                      ),
+                    ),
                   ],
                 )
               ],
