@@ -6,6 +6,7 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PropertyCard extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
@@ -73,20 +74,36 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     tag: "property-${widget.apartment.projectId}",
                     child: Container(
                       height: 180,
-                      decoration: BoxDecoration(
-                        color: CustomColors.black25,
-                        borderRadius: const BorderRadius.only(
+                      clipBehavior: Clip.hardEdge,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
                         ),
-                        image: widget.apartment.coverImage.isNotEmpty
-                            ? DecorationImage(
-                                image:
-                                    NetworkImage(widget.apartment.coverImage),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
                       ),
+                      child: widget.apartment.coverImage.isNotEmpty
+                          ? Image.network(
+                              widget.apartment.coverImage,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child,
+                                      loadingProgress) =>
+                                  loadingProgress == null
+                                      ? child
+                                      : Shimmer.fromColors(
+                                          baseColor: CustomColors.black75,
+                                          highlightColor: CustomColors.black25,
+                                          child: Container(
+                                            height: 200,
+                                            width: 400,
+                                            decoration: BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                          ),
+                                        ),
+                            )
+                          : null,
                     ),
                   ),
                   Container(
@@ -212,8 +229,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               ),
                             ),
                             TextSpan(
-                              text: formatBudget(
-                                  widget.apartment.budget),
+                              text: formatBudget(widget.apartment.budget),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,

@@ -62,7 +62,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocationUpdate();
-      final apartments = ref.read(homePropertiesProvider).apartments;
+      final apartments = ref.read(homePropertiesProvider).allApartments;
       locations =
           apartments.map((e) => LatLng(e.latitude, e.longitude)).toList();
 
@@ -104,7 +104,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                 zoom: 14,
               ),
               markers: {
-                ...ref.watch(homePropertiesProvider).apartments.map(
+                ...ref.watch(homePropertiesProvider).allApartments.map(
                       (e) => Marker(
                         markerId: MarkerId(e.projectId),
                         position: LatLng(e.latitude, e.longitude),
@@ -137,7 +137,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                 children: [
                   //Apaprtmet list
                   const SizedBox(width: 10),
-                  ...ref.watch(homePropertiesProvider).apartments.map(
+                  ...ref.watch(homePropertiesProvider).allApartments.map(
                         (e) => MapsPropertyCard(
                           apartment: e,
                           onTap: () {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
@@ -12,10 +13,9 @@ import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dar
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
-import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
+import 'package:re_portal_frontend/modules/home/widgets/video_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/riverpod/fetch_home_data.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
@@ -100,7 +100,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ...readyToMoveIn,
           ...lifestyleProjects,
         ];
-        ref.watch(homePropertiesProvider.notifier).setApartments(allApartments);
+        ref.watch(homePropertiesProvider.notifier).setBestDeals(bestDeals);
+        ref
+            .watch(homePropertiesProvider.notifier)
+            .setSelectedProperties(selectedProperties);
+        ref
+            .watch(homePropertiesProvider.notifier)
+            .setEditorsChoice(editorsChoice);
+        ref
+            .watch(homePropertiesProvider.notifier)
+            .setBuilderInFocus(builderInFocus);
+        ref.watch(homePropertiesProvider.notifier).setNewProjects(newProjects);
+        ref
+            .watch(homePropertiesProvider.notifier)
+            .setReadyToMoveIn(readyToMoveIn);
+        ref
+            .watch(homePropertiesProvider.notifier)
+            .setLifestyleProjects(lifestyleProjects);
+        ref
+            .watch(homePropertiesProvider.notifier)
+            .setAllApartments(allApartments);
 
         setState(() {
           loading = false;
@@ -131,7 +150,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
-        PropertyStackCard(apartments: bestDeals),
+        PropertyStackCard(
+            apartments: ref.watch(homePropertiesProvider).selectedProperties),
         const Padding(
           padding: EdgeInsets.all(10),
           child: Text(
@@ -142,11 +162,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
-        EditorsChoiceCard(apartments: editorsChoice),
-        BuilderInFocus(apartments: builderInFocus),
-        NewPropertiesSection(apartments: newProjects),
-        LifestyleProperties(lifestyleProperties: lifestyleProjects),
-        ReadyToMovein(apartments: readyToMoveIn),
+        EditorsChoiceCard(
+            apartments: ref.watch(homePropertiesProvider).editorsChoice),
+        BuilderInFocus(
+            apartments: ref.watch(homePropertiesProvider).builderInFocus),
+        NewPropertiesSection(
+            apartments: ref.watch(homePropertiesProvider).newProjects),
+        LifestyleProperties(
+            lifestyleProperties:
+                ref.watch(homePropertiesProvider).lifestyleProjects),
+        ReadyToMovein(
+            apartments: ref.watch(homePropertiesProvider).readyToMoveIn),
         const SizedBox(height: 20),
       ],
     );
@@ -155,7 +181,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getApartments();
+      if (ref.watch(homePropertiesProvider).allApartments.isEmpty) {
+        getApartments();
+      }
     });
     super.initState();
   }
@@ -250,15 +278,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              // Navigator.of(context).push(
-                              //   MaterialPageRoute(
-                              //     builder: (context) => GoogleMapsScreen(
-                              //       apartment: ref
-                              //           .watch(homePropertiesProvider)
-                              //           .apartments[0],
+                              //   Navigator.of(context).push(
+                              //     MaterialPageRoute(
+                              //       builder: (context) => const VideoScreen(),
                               //     ),
-                              //   ),
-                              // );
+                              //   );
                             },
                             child: Padding(
                               padding:
@@ -278,158 +302,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(height: 10),
 
             //Best deals
-            if (bestDeals.isNotEmpty)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (allApartments.isNotEmpty)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10, bottom: 8),
-                          child: Text(
-                            "Best Deals",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        FlutterCarousel.builder(
-                          itemCount: min(5, bestDeals.length),
-                          itemBuilder: (context, index, realIndex) =>
-                              GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PropertyDetails(
-                                    apartment: bestDeals[index],
-                                    heroTag:
-                                        "best-${bestDeals[index].projectId}",
-                                    nextApartment: bestDeals[
-                                        (index + 1) % bestDeals.length],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Stack(
-                              children: [
-                                Hero(
-                                  tag: "best-${bestDeals[index].projectId}",
-                                  child: Container(
-                                    height: MediaQuery.of(context).size.width,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                      color: CustomColors.black25,
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: bestDeals[index]
-                                              .coverImage
-                                              .isNotEmpty
-                                          ? DecorationImage(
-                                              image: NetworkImage(
-                                                  bestDeals[index].coverImage),
-                                              fit: BoxFit.cover,
-                                            )
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  height: MediaQuery.of(context).size.width,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        CustomColors.black.withOpacity(0),
-                                        CustomColors.black.withOpacity(0.8),
-                                      ],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  left: 0,
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
-                                    padding: const EdgeInsets.all(8),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          bestDeals[index].name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: CustomColors.white,
-                                            fontSize: 20,
-                                            height: 1,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          "@ ${bestDeals[index].projectLocation}",
-                                          style: const TextStyle(
-                                            color: CustomColors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          "₹${formatBudget(bestDeals[index].budget)} onwards",
-                                          style: const TextStyle(
-                                            color: CustomColors.white,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          options: CarouselOptions(
-                            height: MediaQuery.of(context).size.width,
-                            viewportFraction: 0.95,
-                            enlargeCenterPage: true,
-                            autoPlay: true,
-                            autoPlayInterval: const Duration(seconds: 5),
-                            autoPlayAnimationDuration:
-                                const Duration(milliseconds: 1000),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enableInfiniteScroll: true,
-                            initialPage: 0,
-                            reverse: false,
-                            scrollDirection: Axis.horizontal,
-                            showIndicator: true,
-                            floatingIndicator: false,
-                            slideIndicator: const CircularSlideIndicator(
-                              slideIndicatorOptions: SlideIndicatorOptions(
-                                indicatorRadius: 4,
-                                currentIndicatorColor: CustomColors.black,
-                                indicatorBackgroundColor: CustomColors.black50,
-                                itemSpacing: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
+            if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
+              BestDealsSection(
+                height: MediaQuery.of(context).size.width,
               ),
             const SizedBox(height: 10),
 
-            (loading)
+            (loading && ref.watch(homePropertiesProvider).allApartments.isEmpty)
                 ? ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -451,7 +330,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       );
                     },
                   )
-                : allApartments.isEmpty
+                : ref.watch(homePropertiesProvider).allApartments.isEmpty
                     ? const SizedBox(
                         height: 500,
                         width: double.infinity,

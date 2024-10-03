@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PropertyListView extends ConsumerStatefulWidget {
   final List<ApartmentModel> sortedApartments;
@@ -107,10 +108,10 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
                       SvgPicture.asset("assets/icons/phone.svg"),
                       'Call now',
                       () {
-                        // launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
-                        //     .then(
-                        //   (value) => _removeOverlay(),
-                        // );
+                        launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
+                            .then(
+                          (value) => _removeOverlay(),
+                        );
                       },
                     ),
                     _buildOption(
@@ -121,11 +122,11 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
                               "assets/icons/whatsapp.svg",
                             )),
                         'Chat on Whatsapp', () {
-                      // launchUrl(Uri.parse(
-                      //         'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
-                      //     .then(
-                      //   (value) => _removeOverlay(),
-                      // );
+                      launchUrl(Uri.parse(
+                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                          .then(
+                        (value) => _removeOverlay(),
+                      );
                     }),
                     _buildOption(
                         SizedBox(
@@ -178,6 +179,7 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
       itemCount: widget.displayAds
           ? widget.sortedApartments.length +
               (widget.sortedApartments.length ~/ 4)

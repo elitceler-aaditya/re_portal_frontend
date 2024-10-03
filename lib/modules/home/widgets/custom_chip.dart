@@ -57,23 +57,26 @@ class CustomListChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(4),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? CustomColors.primary : CustomColors.white,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(
-            color: isSelected ? CustomColors.primary : CustomColors.black25,
-            width: 1,
+      child: Opacity(
+        opacity: isSelected ? 1 : 0.5,
+        child: Container(
+          margin: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: isSelected ? CustomColors.primary : CustomColors.white,
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              color: isSelected ? CustomColors.primary : CustomColors.black25,
+              width: 1,
+            ),
           ),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? CustomColors.white : CustomColors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: isSelected ? CustomColors.white : CustomColors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ),

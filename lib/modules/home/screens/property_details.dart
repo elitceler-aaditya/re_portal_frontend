@@ -43,7 +43,6 @@ class PropertyDetails extends ConsumerStatefulWidget {
 }
 
 class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
-  int _selectedConfig = 0;
   bool _showFullDescription = false;
   bool _showKeyHighlights = true;
   final _nameController = TextEditingController();
