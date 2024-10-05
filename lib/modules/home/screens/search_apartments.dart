@@ -13,6 +13,7 @@ import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_grid_view.dart';
 import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -28,7 +29,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class SearchApartment extends ConsumerStatefulWidget {
-  const SearchApartment({super.key});
+  final bool openFilters;
+  const SearchApartment({super.key, this.openFilters = false});
 
   @override
   ConsumerState<SearchApartment> createState() => _SearchApartmentState();
@@ -197,7 +199,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       builder: (context) {
         return const AppartmentFilter();
       },
-    );
+    ).then((value) {
+      setState(() {
+        isEndReached = false;
+        currentPage = 1;
+      });
+    });
   }
 
   void _showSortBottomSheet(BuildContext context) {
@@ -281,6 +288,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/project/filterApartmentsNew";
     Uri uri = Uri.parse(url).replace(queryParameters: params);
+    debugPrint("-----------params: $params");
 
     http.get(
       uri,
@@ -349,9 +357,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
               );
           _globalKeys =
               List.generate(responseBody.length, (index) => GlobalKey());
-          debugPrint(
-            "---------filterappt: ${ref.watch(homePropertiesProvider).filteredApartments}",
-          );
         }
       } else {
         throw Exception('Failed to load filtered apartments');
@@ -381,8 +386,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
         List<String> localities =
             responseBody.map((item) => item.toString()).toList();
         ref.read(localityListProvider.notifier).setLocalities(localities);
-
-        debugPrint("---------localityList: $localities");
       } else {
         throw Exception('Failed to load localities');
       }
@@ -423,8 +426,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLocationHomes();
-
       if (ref.watch(localityListProvider).isEmpty) {
         getLocalitiesList();
       }
@@ -432,8 +433,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       if (ref.watch(homePropertiesProvider).filteredApartments.isEmpty) {
         getFilteredApartments(params: {'page': "1"});
       }
-      // if (ref.watch(locationHomesProvider) == null) {
-      // }
+
+      if (ref.watch(locationHomesProvider) == null) {
+        getLocationHomes();
+      }
+      if (widget.openFilters) filterBottomSheet();
     });
 
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -784,64 +788,73 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                itemCount: ref
-                                        .watch(homePropertiesProvider)
-                                        .filteredApartments
-                                        .length +
-                                    (ref
-                                            .watch(homePropertiesProvider)
-                                            .filteredApartments
-                                            .length ~/
-                                        4),
-                                itemBuilder: (context, index) {
-                                  if (index % 4 == 0 && index != 0) {
-                                    int adsIndex = index ~/ 4;
-                                    return adsIndex % 3 == 1
-                                        ? const ProjectSnippets()
-                                        : const AdsSection();
-                                  } else {
-                                    int listIndex = index - (index ~/ 4);
-                                    return PropertyCard(
-                                      apartment: ref
+                              child: !isListview
+                                  ? PropertyGridView(
+                                      sortedApartments: ref
                                           .watch(homePropertiesProvider)
-                                          .filteredApartments[listIndex],
-                                      nextApartment: listIndex + 1 <
-                                              ref
-                                                  .watch(homePropertiesProvider)
-                                                  .filteredApartments
-                                                  .length
-                                          ? ref
-                                              .watch(homePropertiesProvider)
-                                              .filteredApartments[listIndex + 1]
-                                          : ref
+                                          .filteredApartments,
+                                      globalKeys: _globalKeys,
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.zero,
+                                      itemCount: ref
                                               .watch(homePropertiesProvider)
                                               .filteredApartments
-                                              .first,
-                                      isCompare: true,
-                                      onCallPress: (context) {
-                                        _toggleOverlay(
-                                            context,
-                                            ref
+                                              .length +
+                                          (ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments
+                                                  .length ~/
+                                              4),
+                                      itemBuilder: (context, index) {
+                                        if (index % 4 == 0 && index != 0) {
+                                          int adsIndex = index ~/ 4;
+                                          return adsIndex % 3 == 1
+                                              ? const ProjectSnippets()
+                                              : const AdsSection();
+                                        } else {
+                                          int listIndex = index - (index ~/ 4);
+                                          return PropertyCard(
+                                            apartment: ref
                                                 .watch(homePropertiesProvider)
                                                 .filteredApartments[listIndex],
-                                            _globalKeys[listIndex]);
+                                            nextApartment: listIndex + 1 <
+                                                    ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .filteredApartments
+                                                        .length
+                                                ? ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .filteredApartments[
+                                                    listIndex + 1]
+                                                : ref
+                                                    .watch(
+                                                        homePropertiesProvider)
+                                                    .filteredApartments
+                                                    .first,
+                                            isCompare: true,
+                                            onCallPress: (context) {
+                                              _toggleOverlay(
+                                                  context,
+                                                  ref
+                                                          .watch(
+                                                              homePropertiesProvider)
+                                                          .filteredApartments[
+                                                      listIndex],
+                                                  _globalKeys[listIndex]);
+                                            },
+                                            globalKey: _globalKeys[listIndex],
+                                          );
+                                        }
                                       },
-                                      globalKey: _globalKeys[listIndex],
-                                    );
-                                  }
-                                },
-                              ),
+                                    ),
                             ),
-                            if (ref.watch(filtersProvider).totalCount <=
-                                    ref
-                                        .watch(homePropertiesProvider)
-                                        .filteredApartments
-                                        .length &&
-                                !isEndReached)
+                            if (!isEndReached)
                               VisibilityDetector(
                                 key: const Key('load-more-detector'),
                                 onVisibilityChanged: (visibilityInfo) {
@@ -853,25 +866,54 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                     getMoreProjects(params: params);
                                   }
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Shimmer.fromColors(
-                                    baseColor: Colors.grey[300]!,
-                                    highlightColor: Colors.grey[100]!,
-                                    child: Container(
-                                      height: 150,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Shimmer.fromColors(
+                                          baseColor: Colors.grey[300]!,
+                                          highlightColor: Colors.grey[100]!,
+                                          child: Container(
+                                            height: 150,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    if (!isListview)
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16.0),
+                                          child: Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: Container(
+                                              height: 150,
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
-                            if (ref.watch(filtersProvider).totalCount >=
+                            if (ref.watch(filtersProvider).totalCount ==
                                     ref
                                         .watch(homePropertiesProvider)
                                         .filteredApartments
@@ -879,9 +921,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                 isEndReached)
                               const Column(
                                 children: [
+                                  ReadyToMovein(),
                                   BudgetHomes(),
                                   LocationHomes(),
-                                  ReadyToMovein(),
                                   NewPropertiesSection()
                                 ],
                               ),

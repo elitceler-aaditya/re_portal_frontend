@@ -121,7 +121,7 @@ class EditorsChoiceCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            "your dream flat @ ${int.parse(apartments[index].pricePerSquareFeetRate.toString())}/sqft",
+                            "your dream flat @ ${formatBudget(apartments[index].budget)}",
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 12,

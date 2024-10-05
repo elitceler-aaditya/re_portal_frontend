@@ -12,10 +12,12 @@ import 'package:url_launcher/url_launcher.dart';
 class PropertyGridView extends ConsumerStatefulWidget {
   final List<ApartmentModel> sortedApartments;
   final bool compare;
+  final List<GlobalKey> globalKeys;
   const PropertyGridView({
     super.key,
     required this.sortedApartments,
     this.compare = false,
+    required this.globalKeys,
   });
 
   @override
@@ -173,10 +175,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
   @override
   void initState() {
     super.initState();
-    _globalKeys = List.generate(
-      widget.sortedApartments.length,
-      (index) => GlobalKey(),
-    );
+    _globalKeys = widget.globalKeys;
   }
 
   @override

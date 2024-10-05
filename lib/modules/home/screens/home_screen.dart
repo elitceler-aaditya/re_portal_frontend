@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
+import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
@@ -11,6 +12,7 @@ import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart
 import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
@@ -220,7 +222,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //top search bar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -298,11 +300,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const SearchApartment(),
-                                ),
-                              );
+                              if (!loading) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const SearchApartment(
+                                        openFilters: true),
+                                  ),
+                                );
+                              }
                             },
                             icon: SvgPicture.asset("assets/icons/filter.svg"),
                             label: const Text(
@@ -311,10 +316,106 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 color: CustomColors.white,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
+                  ),
+
+                  Container(
+                    padding: const EdgeInsets.only(top: 10),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          CustomColors.primary,
+                          Color(0xFFCE4F32),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(20),
+                      ),
+                    ),
+                    child: ref.watch(filtersProvider).selectedLocalities.isEmpty
+                        ? const SizedBox(
+                            width: double.infinity,
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  "Selected localities",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 32,
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            backgroundColor:
+                                                CustomColors.secondary,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const SearchApartment(
+                                                        openFilters: true),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text(
+                                            "+ Add more",
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: CustomColors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      ...ref
+                                          .watch(filtersProvider)
+                                          .selectedLocalities
+                                          .map((locality) {
+                                        return CustomListChip(
+                                          text: locality,
+                                          isSelected: true,
+                                          onTap: () {
+                                            List<String> localities = ref
+                                                .watch(filtersProvider)
+                                                .selectedLocalities;
+                                            localities.remove(locality);
+                                            setState(() {
+                                              ref
+                                                  .read(
+                                                      filtersProvider.notifier)
+                                                  .updateSelectedLocalities(
+                                                      localities);
+                                              // getFilteredApartments();
+                                            });
+                                          },
+                                        );
+                                      }),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                   ),
                 ],
               ),

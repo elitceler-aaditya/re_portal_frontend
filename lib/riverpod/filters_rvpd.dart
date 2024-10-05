@@ -67,12 +67,6 @@ class FiltersModel {
     if (maxBudget > 0) {
       json['maxBudget'] = maxBudget.toString();
     }
-    if (minFlatSize > 0) {
-      json['minFlatSize'] = minFlatSize.toString();
-    }
-    if (maxFlatSize > 0) {
-      json['maxFlatSize'] = maxFlatSize.toString();
-    }
 
     return json;
   }

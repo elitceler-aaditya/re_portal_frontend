@@ -85,15 +85,19 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   Future<void> getFilteredApartments() async {
     if (!mounted) return;
+    setState(() {
+      _loading = true;
+    });
     try {
-      setState(() {
-        _loading = true;
-      });
       Map<String, dynamic> params = {
-        'minBudget': _budgetSliderMin.toString(),
-        'maxBudget': _budgetSliderMax.toString(),
-        // 'minFlatSize': _flatSizeSliderMin.toString(),
-        // 'maxFlatSize': _flatSizeSliderMax.toString(),
+        'minBudget': _minBudget == _budgetSliderMin
+            ? '0'
+            : _budgetSliderMin.toStringAsFixed(0),
+        'maxBudget': _maxBudget == _budgetSliderMax
+            ? '99999999'
+            : _budgetSliderMax.toStringAsFixed(0),
+        // 'minFlatSize': _flatSizeSliderMin.toStringAsFixed(0),
+        // 'maxFlatSize': _flatSizeSliderMax.toStringAsFixed(0),
       };
 
       if (localities.isNotEmpty) {
@@ -102,48 +106,56 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
       if (amenities.isNotEmpty) {
         params['amenities'] = amenities.join(',');
       }
-      if (appartmentType != null) {
+      if (appartmentType != null &&
+          appartmentType! < apartmentTypeList.length) {
         params['projectType'] = apartmentTypeList[appartmentType!];
-        debugPrint("---------projectType: ${params['projectType']}");
       }
       if (selectedConfigurations.isNotEmpty) {
-        params['BHKType'] = selectedConfigurations.first.replaceAll(" ", "");
+        params['BHKType'] = selectedConfigurations
+            .map((config) => config.replaceAll(" ", ""))
+            .join(',');
       }
+
+      debugPrint("-----------params: $params");
 
       String baseUrl = dotenv.get('BASE_URL');
       String url = "$baseUrl/project/filterApartmentsNew";
       Uri uri = Uri.parse(url).replace(queryParameters: params);
-      http
-          .get(
+
+      final response = await http.get(
         uri,
-        // headers: {
-        //   "Authorization": "Bearer ${ref.watch(userProvider).token}",
-        // },
-      )
-          .then((response) async {
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          List responseBody = jsonDecode(response.body)['projects'];
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['projects'] is List) {
+          List<dynamic> responseBody = responseData['projects'];
           if (mounted) {
             ref.read(homePropertiesProvider.notifier).setfilteredApartments(
                   responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
                 );
-            debugPrint(
-              "---------filterappt: ${ref.watch(homePropertiesProvider).filteredApartments}",
-            );
+            debugPrint("Filtered apartments count: ${responseBody.length}");
             Navigator.pop(context);
           }
+        } else {
+          throw Exception('Invalid response format: projects is not a List');
         }
+      } else {
+        throw Exception(
+            'Failed to load filtered apartments: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint("Error in getFilteredApartments: $e");
+      // Show error message to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load apartments: $e')),
+      );
+    } finally {
+      if (mounted) {
         setState(() {
           _loading = false;
         });
-      }).catchError((error) {
-        debugPrint("------------error$error");
-      });
-      setState(() {
-        _loading = false;
-      });
-    } catch (e) {
-      // Handle error
+      }
     }
   }
 
@@ -221,7 +233,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("---------localityList: ${localities.join(',')}");
     return Column(
       children: [
         Expanded(
