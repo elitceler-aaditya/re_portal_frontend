@@ -10,16 +10,18 @@ class FiltersModel {
   final double maxBudget;
   final double minFlatSize;
   final double maxFlatSize;
+  final int totalCount;
 
   FiltersModel({
-     this.selectedLocalities = const [],
-     this.apartmentType = '',
-     this.amenities = const [],
-     this.selectedConfigurations = const [],
-     this.minBudget = 0.0,
-     this.maxBudget = 0.0,
-     this.minFlatSize = 0.0,
-     this.maxFlatSize = 0.0,
+    this.selectedLocalities = const [],
+    this.apartmentType = '',
+    this.amenities = const [],
+    this.selectedConfigurations = const [],
+    this.minBudget = 0.0,
+    this.maxBudget = 0.0,
+    this.minFlatSize = 0.0,
+    this.maxFlatSize = 0.0,
+    this.totalCount = 0,
   });
 
   FiltersModel copyWith({
@@ -31,6 +33,7 @@ class FiltersModel {
     double? maxBudget,
     double? minFlatSize,
     double? maxFlatSize,
+    int? totalCount,
   }) {
     return FiltersModel(
       selectedLocalities: selectedLocalities ?? this.selectedLocalities,
@@ -42,7 +45,36 @@ class FiltersModel {
       maxBudget: maxBudget ?? this.maxBudget,
       minFlatSize: minFlatSize ?? this.minFlatSize,
       maxFlatSize: maxFlatSize ?? this.maxFlatSize,
+      totalCount: totalCount ?? this.totalCount,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = {};
+
+    if (selectedLocalities.isNotEmpty) {
+      json['projectLocation'] = selectedLocalities.join(',');
+    }
+    if (apartmentType.isNotEmpty) {
+      json['projectType'] = apartmentType;
+    }
+    if (selectedConfigurations.isNotEmpty) {
+      json['selectedConfigurations'] = selectedConfigurations.join(',');
+    }
+    if (minBudget > 0) {
+      json['minBudget'] = minBudget.toString();
+    }
+    if (maxBudget > 0) {
+      json['maxBudget'] = maxBudget.toString();
+    }
+    if (minFlatSize > 0) {
+      json['minFlatSize'] = minFlatSize.toString();
+    }
+    if (maxFlatSize > 0) {
+      json['maxFlatSize'] = maxFlatSize.toString();
+    }
+
+    return json;
   }
 }
 
@@ -58,6 +90,7 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
           maxBudget: 0,
           minFlatSize: 0,
           maxFlatSize: 0,
+          totalCount: 0,
         ));
 
   void setAllFilters(FiltersModel filters) {
@@ -94,6 +127,10 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
 
   void updateMaxFlatSize(double size) {
     state = state.copyWith(maxFlatSize: size);
+  }
+
+  void updateTotalCount(int count) {
+    state = state.copyWith(totalCount: count);
   }
 }
 

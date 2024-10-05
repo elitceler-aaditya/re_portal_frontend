@@ -10,10 +10,10 @@ class ProjectSnippetCard extends StatefulWidget {
   final String videoLink;
 
   const ProjectSnippetCard({
-    Key? key,
+    super.key,
     required this.apartment,
     required this.videoLink,
-  }) : super(key: key);
+  });
 
   @override
   _ProjectSnippetCardState createState() => _ProjectSnippetCardState();

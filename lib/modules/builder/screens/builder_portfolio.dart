@@ -38,8 +38,7 @@ class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
       setState(() {
         isLoading = false;
       });
-    }).onError((error, stackTrace) {
-    });
+    }).onError((error, stackTrace) {});
 
     setState(() {
       isLoading = false;

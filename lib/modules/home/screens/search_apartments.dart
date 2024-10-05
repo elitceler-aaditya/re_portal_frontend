@@ -8,11 +8,19 @@ import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
+import 'package:re_portal_frontend/modules/home/widgets/budget_homes.dart';
+import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/home/widgets/location_homes_screen.dart';
+import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/locality_list.dart';
+import 'package:re_portal_frontend/riverpod/location_homes.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -31,17 +39,18 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   List<ApartmentModel> allApartments = [];
   List<ApartmentModel> snippets = [];
   List<String> videoLinks = [];
-  bool loading = true;
+  List<GlobalKey> _globalKeys = List.generate(100, (index) => GlobalKey());
+  bool loading = false;
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   String searchPrefix = "";
   bool isListview = true;
-  bool isMoreLoading = false;
-  int currentPage = 0;
-  int totalCount = 0;
+  int currentPage = 1;
+  Timer? _timer;
 
   List<String> searchOptions = ["properties", "apartments", "plots", "flats"];
   int searchOptionsIndex = 0;
+  bool isEndReached = false;
 
   void _toggleOverlay(
       BuildContext context, ApartmentModel apartment, GlobalKey globalKey) {
@@ -171,9 +180,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {
-      _isOverlayVisible = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isOverlayVisible = false;
+      });
+    }
   }
 
   filterBottomSheet() {
@@ -181,10 +192,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       context: context,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       isScrollControlled: true,
-      backgroundColor: CustomColors.primary10,
+      backgroundColor: CustomColors.white,
       scrollControlDisabledMaxHeightRatio: 1,
       builder: (context) {
-        return AppartmentFilter(apartmentList: allApartments);
+        return const AppartmentFilter();
       },
     );
   }
@@ -217,27 +228,42 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
               ListTile(
                 title: const Text('Popularity'),
                 onTap: () {
-                  ref
-                      .read(homePropertiesProvider.notifier)
-                      .sortFilteredApartments(2);
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(2);
+                  }
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: const Text('Price - low to high'),
                 onTap: () {
-                  ref
-                      .read(homePropertiesProvider.notifier)
-                      .sortFilteredApartments(0);
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(0);
+                  }
                   Navigator.pop(context);
                 },
               ),
               ListTile(
                 title: const Text('Price - high to low'),
                 onTap: () {
-                  ref
-                      .read(homePropertiesProvider.notifier)
-                      .sortFilteredApartments(1);
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(1);
+                  }
                   Navigator.pop(context);
                 },
               ),
@@ -246,49 +272,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
         );
       },
     );
-  }
-
-  Future<void> getAllProjects({
-    Map<String, dynamic> params = const {},
-  }) async {
-    String baseUrl = dotenv.get('BASE_URL');
-    String url = "$baseUrl/project/filterApartmentsNew";
-    Uri uri = Uri.parse(url).replace(queryParameters: params);
-    http.get(
-      uri,
-      headers: {
-        "Authorization": "Bearer ${ref.watch(userProvider).token}",
-      },
-    ).then((response) async {
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        currentPage = responseData['currentPage'];
-        totalCount = responseData['totalCount'];
-        if (responseData['projects'] is List) {
-          List<dynamic> responseBody = responseData['projects'];
-          allApartments = responseBody
-              .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-          ref
-              .watch(homePropertiesProvider.notifier)
-              .setfilteredApartments(allApartments);
-        } else {
-          // Handle the case where 'properties' is not a List
-          debugPrint("Error: projects is not a List");
-          allApartments = [];
-        }
-
-        setState(() {
-          loading = false;
-        });
-      }
-    }).onError((error, stackTrace) {
-      debugPrint("error: $error");
-      debugPrint("stackTrace: $stackTrace");
-      setState(() {
-        loading = false;
-      });
-    });
   }
 
   Future<void> getMoreProjects({
@@ -306,16 +289,19 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       },
     ).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
-        setState(() {
-          isMoreLoading = false;
-        });
         Map<String, dynamic> responseData = jsonDecode(response.body);
         currentPage = responseData['currentPage'];
+        debugPrint("---------page $currentPage data: $responseData");
         if (responseData['projects'] is List) {
           List<dynamic> responseBody = responseData['projects'];
           List<ApartmentModel> moreApartments = responseBody
               .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
               .toList();
+          if (moreApartments.isEmpty) {
+            isEndReached = true;
+          }
+          _globalKeys.addAll(
+              List.generate(moreApartments.length, (index) => GlobalKey()));
           ref
               .watch(homePropertiesProvider.notifier)
               .addFilteredApartments(moreApartments);
@@ -323,10 +309,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
           debugPrint("Error: projects is not a List");
           allApartments = [];
         }
-
-        setState(() {
-          loading = false;
-        });
       }
     }).onError((error, stackTrace) {
       debugPrint("error: $error");
@@ -337,16 +319,124 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
     });
   }
 
+  Future<void> getFilteredApartments({
+    Map<String, dynamic> params = const {},
+  }) async {
+    setState(() {
+      loading = true;
+    });
+    try {
+      String baseUrl = dotenv.get('BASE_URL');
+      String url = "$baseUrl/project/filterApartmentsNew";
+      Uri uri = Uri.parse(url).replace(queryParameters: params);
+
+      final response = await http.get(
+        uri,
+        headers: {
+          "Authorization": "Bearer ${ref.watch(userProvider).token}",
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        List responseBody = responseData['projects'] ?? [];
+        if (mounted) {
+          ref
+              .read(filtersProvider.notifier)
+              .updateTotalCount(responseData['totalCount']);
+          ref.read(homePropertiesProvider.notifier).setfilteredApartments(
+                responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
+              );
+          _globalKeys =
+              List.generate(responseBody.length, (index) => GlobalKey());
+          debugPrint(
+            "---------filterappt: ${ref.watch(homePropertiesProvider).filteredApartments}",
+          );
+        }
+      } else {
+        throw Exception('Failed to load filtered apartments');
+      }
+    } catch (e) {
+      debugPrint("Error in getFilteredApartments: $e");
+      // Handle error (e.g., show error message to user)
+    } finally {
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
+    }
+  }
+
+  void getLocalitiesList() async {
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/user/getLocations";
+    Uri uri = Uri.parse(url);
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        List<dynamic> responseBody = responseData['data'];
+        List<String> localities =
+            responseBody.map((item) => item.toString()).toList();
+        ref.read(localityListProvider.notifier).setLocalities(localities);
+
+        debugPrint("---------localityList: $localities");
+      } else {
+        throw Exception('Failed to load localities');
+      }
+    } catch (error, stackTrace) {
+      debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
+    }
+  }
+
+  void getLocationHomes() async {
+    debugPrint("-----------------getting location homes");
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/user/getPopularLocalities";
+    Uri uri = Uri.parse(url).replace(queryParameters: {
+      "latitude": "17.4141",
+      "longitude": "78.5791",
+    });
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        debugPrint("-----------------locationHomes: $responseData");
+        ref
+            .read(locationHomesProvider.notifier)
+            .setLocationHomesData(responseData);
+      } else {
+        throw Exception('Error ${response.statusCode}: ${response.body}');
+      }
+    } catch (error, stackTrace) {
+      debugPrint("1111error: $error");
+      debugPrint("1111stackTrace: $stackTrace");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getAllProjects(
-        params: {"page": "1"},
-      );
+      getLocationHomes();
+
+      if (ref.watch(localityListProvider).isEmpty) {
+        getLocalitiesList();
+      }
+
+      if (ref.watch(homePropertiesProvider).filteredApartments.isEmpty) {
+        getFilteredApartments(params: {'page': "1"});
+      }
+      // if (ref.watch(locationHomesProvider) == null) {
+      // }
     });
 
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       setState(() {
         searchOptionsIndex = (searchOptionsIndex + 1) % searchOptions.length;
       });
@@ -355,11 +445,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _searchController.dispose();
-      
-      _removeOverlay();
-    });
+    _searchController.dispose();
+    if (_isOverlayVisible) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      _timer?.cancel();
+    }
     super.dispose();
   }
 
@@ -397,7 +488,29 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? SizedBox(
+              width: double.infinity,
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
           : SingleChildScrollView(
               child: Column(
                 children: [
@@ -440,19 +553,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                   ),
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          CustomColors.primary,
-                          Color(0xFFCE4F32),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20),
-                      ),
-                    ),
+                    decoration:
+                        const BoxDecoration(color: CustomColors.primary),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
@@ -520,24 +622,104 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                       ),
                     ),
                   ),
-                  if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
-                    const BestDealsSection(
-                      height: 200,
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 0, 10),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          CustomColors.primary,
+                          Color(0xFFCE4F32),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(20),
+                      ),
                     ),
+                    child: ref.watch(filtersProvider).selectedLocalities.isEmpty
+                        ? const SizedBox(
+                            width: double.infinity,
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  "Selected localities",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 32,
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            backgroundColor:
+                                                CustomColors.secondary,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            filterBottomSheet();
+                                          },
+                                          child: const Text(
+                                            "+ Add more",
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: CustomColors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      ...ref
+                                          .watch(filtersProvider)
+                                          .selectedLocalities
+                                          .map((locality) {
+                                        return CustomListChip(
+                                          text: locality,
+                                          isSelected: true,
+                                          onTap: () {
+                                            List<String> localities = ref
+                                                .watch(filtersProvider)
+                                                .selectedLocalities;
+                                            localities.remove(locality);
+                                            setState(() {
+                                              ref
+                                                  .read(
+                                                      filtersProvider.notifier)
+                                                  .updateSelectedLocalities(
+                                                      localities);
+                                              getFilteredApartments();
+                                            });
+                                          },
+                                        );
+                                      }),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+                  if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
+                    const BestDealsSection(height: 200, showTitle: false),
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          "All properties",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                         SizedBox(
                           height: 36,
                           width: 80,
@@ -556,7 +738,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                               _showSortBottomSheet(context);
                             },
                             icon: const Icon(
-                              Icons.sort,
+                              Icons.filter_list,
                               size: 20,
                               color: CustomColors.primary,
                             ),
@@ -568,22 +750,22 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                             ),
                           ),
                         ),
-                        // IconButton(
-                        //   onPressed: () {
-                        //     setState(() {
-                        //       isListview = !isListview;
-                        //     });
-                        //   },
-                        //   icon: isListview
-                        //       ? const Icon(
-                        //           Icons.grid_view_outlined,
-                        //           size: 28,
-                        //         )
-                        //       : const Icon(
-                        //           Icons.list,
-                        //           size: 28,
-                        //         ),
-                        // )
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isListview = !isListview;
+                            });
+                          },
+                          icon: isListview
+                              ? const Icon(
+                                  Icons.grid_view_outlined,
+                                  size: 28,
+                                )
+                              : const Icon(
+                                  Icons.list,
+                                  size: 28,
+                                ),
+                        )
                       ],
                     ),
                   ),
@@ -597,106 +779,115 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                             ),
                           ),
                         )
-                      : Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length +
-                                (ref
+                      : Column(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
+                                itemCount: ref
                                         .watch(homePropertiesProvider)
                                         .filteredApartments
-                                        .length ~/
-                                    4),
-                            itemBuilder: (context, index) {
-                              if (index % 4 == 0 && index != 0) {
-                                int adsIndex = index ~/ 4;
-                                return adsIndex % 3 == 1
-                                    ? const ProjectSnippets()
-                                    : const AdsSection();
-                              } else {
-                                int listIndex = index - (index ~/ 4);
-                                return VisibilityDetector(
-                                  key: GlobalKey(),
-                                  onVisibilityChanged: (visibility) {
-                                    if (visibility.visibleFraction > 0.2) {
-                                      // Check if this is the last item in the list
-                                      if ((listIndex ==
-                                              ref
-                                                      .watch(
-                                                          homePropertiesProvider)
-                                                      .filteredApartments
-                                                      .length -
-                                                  1) &&
-                                          ref
-                                                  .watch(homePropertiesProvider)
-                                                  .filteredApartments
-                                                  .length <
-                                              totalCount) {
-                                        if (!isMoreLoading) {
-                                          setState(() {
-                                            isMoreLoading = true;
-                                          });
-                                          getMoreProjects(
-                                            params: {
-                                              "page":
-                                                  (currentPage + 1).toString(),
-                                            },
-                                          );
-                                        }
-                                      }
-                                    }
-                                  },
-                                  child: PropertyCard(
-                                    apartment: ref
-                                        .watch(homePropertiesProvider)
-                                        .filteredApartments[listIndex],
-                                    nextApartment: listIndex + 1 <
-                                            ref
-                                                .watch(homePropertiesProvider)
-                                                .filteredApartments
-                                                .length
-                                        ? ref
-                                            .watch(homePropertiesProvider)
-                                            .filteredApartments[listIndex + 1]
-                                        : ref
+                                        .length +
+                                    (ref
                                             .watch(homePropertiesProvider)
                                             .filteredApartments
-                                            .first,
-                                    isCompare: true,
-                                    onCallPress: (context) {
-                                      _toggleOverlay(
-                                          context,
-                                          ref
+                                            .length ~/
+                                        4),
+                                itemBuilder: (context, index) {
+                                  if (index % 4 == 0 && index != 0) {
+                                    int adsIndex = index ~/ 4;
+                                    return adsIndex % 3 == 1
+                                        ? const ProjectSnippets()
+                                        : const AdsSection();
+                                  } else {
+                                    int listIndex = index - (index ~/ 4);
+                                    return PropertyCard(
+                                      apartment: ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments[listIndex],
+                                      nextApartment: listIndex + 1 <
+                                              ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments
+                                                  .length
+                                          ? ref
                                               .watch(homePropertiesProvider)
-                                              .filteredApartments[listIndex],
-                                          GlobalKey());
-                                    },
-                                    globalKey: GlobalKey(),
+                                              .filteredApartments[listIndex + 1]
+                                          : ref
+                                              .watch(homePropertiesProvider)
+                                              .filteredApartments
+                                              .first,
+                                      isCompare: true,
+                                      onCallPress: (context) {
+                                        _toggleOverlay(
+                                            context,
+                                            ref
+                                                .watch(homePropertiesProvider)
+                                                .filteredApartments[listIndex],
+                                            _globalKeys[listIndex]);
+                                      },
+                                      globalKey: _globalKeys[listIndex],
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            if (ref.watch(filtersProvider).totalCount <=
+                                    ref
+                                        .watch(homePropertiesProvider)
+                                        .filteredApartments
+                                        .length &&
+                                !isEndReached)
+                              VisibilityDetector(
+                                key: const Key('load-more-detector'),
+                                onVisibilityChanged: (visibilityInfo) {
+                                  if (visibilityInfo.visibleFraction > 0) {
+                                    Map<String, dynamic> params =
+                                        ref.watch(filtersProvider).toJson();
+                                    params['page'] =
+                                        (currentPage + 1).toString();
+                                    getMoreProjects(params: params);
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: Container(
+                                      height: 150,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
                                   ),
-                                );
-                              }
-                            },
-                          ),
+                                ),
+                              ),
+                            if (ref.watch(filtersProvider).totalCount >=
+                                    ref
+                                        .watch(homePropertiesProvider)
+                                        .filteredApartments
+                                        .length ||
+                                isEndReached)
+                              const Column(
+                                children: [
+                                  BudgetHomes(),
+                                  LocationHomes(),
+                                  ReadyToMovein(),
+                                  NewPropertiesSection()
+                                ],
+                              ),
+                          ],
                         ),
-                  if (isMoreLoading)
-                    Shimmer.fromColors(
-                      baseColor: CustomColors.black25,
-                      highlightColor: CustomColors.black50,
-                      child: Container(
-                        height: 200,
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),

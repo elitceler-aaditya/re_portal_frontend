@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class CustomRadioButton extends StatelessWidget {
   final String text;
@@ -21,7 +20,7 @@ class CustomRadioButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
-          color: CustomColors.white,
+          color: Colors.grey.withOpacity(0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

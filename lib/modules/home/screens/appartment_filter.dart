@@ -10,12 +10,11 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/locality_list.dart';
 
 class AppartmentFilter extends ConsumerStatefulWidget {
-  final List<ApartmentModel> apartmentList;
   const AppartmentFilter({
     super.key,
-    required this.apartmentList,
   });
 
   @override
@@ -60,8 +59,10 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     'Security',
     'Air Conditioning'
   ];
-  TextEditingController _localitySearchController = TextEditingController();
-  TextEditingController _amenitySearchController = TextEditingController();
+  final TextEditingController _localitySearchController =
+      TextEditingController();
+  final TextEditingController _amenitySearchController =
+      TextEditingController();
 
   updateFilters() {
     ref.watch(filtersProvider.notifier).setAllFilters(
@@ -84,7 +85,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   Future<void> getFilteredApartments() async {
     if (!mounted) return;
-
     try {
       setState(() {
         _loading = true;
@@ -162,19 +162,27 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   void initValues() {
     // min and max budget
-    _minBudget = widget.apartmentList
+    _minBudget = ref
+        .watch(homePropertiesProvider)
+        .allApartments
         .map((e) => e.budget)
         .reduce((value, element) => value < element ? value : element)
         .toDouble();
-    _maxBudget = widget.apartmentList
+    _maxBudget = ref
+        .watch(homePropertiesProvider)
+        .allApartments
         .map((e) => e.budget)
         .reduce((value, element) => value > element ? value : element)
         .toDouble();
     //min and max flat size
-    _minFlatSize = widget.apartmentList
+    _minFlatSize = ref
+        .watch(homePropertiesProvider)
+        .allApartments
         .map((e) => double.parse(e.flatSize))
         .reduce((value, element) => value < element ? value : element);
-    _maxFlatSize = widget.apartmentList
+    _maxFlatSize = ref
+        .watch(homePropertiesProvider)
+        .allApartments
         .map((e) => double.parse(e.flatSize))
         .reduce((value, element) => value > element ? value : element);
 
@@ -213,6 +221,7 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("---------localityList: ${localities.join(',')}");
     return Column(
       children: [
         Expanded(
@@ -320,82 +329,49 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      if (_localitySearchController.text.isNotEmpty)
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: widget.apartmentList
-                                .map((e) => e.projectLocation.trim())
-                                .toSet() // Remove duplicates
-                                .where((e) => e.toLowerCase().contains(
-                                    _localitySearchController.text
-                                        .trim()
-                                        .toLowerCase()))
-                                .map(
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            ...localities.take(4).map(
                                   (e) => CustomListChip(
                                     text: e,
-                                    isSelected: localities.contains(e),
+                                    isSelected: true,
                                     onTap: () {
                                       setState(() {
-                                        if (localities.contains(e)) {
-                                          localities.remove(e);
-                                        } else if (localities.length < 4) {
-                                          localities.add(e);
-                                        } else {
-                                          // Show a message that max 4 localities can be selected
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'You can select up to 4 localities'),
-                                            ),
-                                          );
-                                        }
+                                        localities.remove(e);
                                       });
-                                      _localitySearchController.clear();
                                     },
                                   ),
-                                )
-                                .toList(),
-                          ),
-                        ),
-                      if (_localitySearchController.text.isEmpty)
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              ...localities.map(
-                                (e) => CustomListChip(
-                                  text: e,
-                                  isSelected: true,
-                                  onTap: () {
-                                    localities.remove(e);
-                                    setState(() {});
-                                  },
                                 ),
-                              ),
-                              ...widget.apartmentList
-                                  .map((e) => e.projectLocation.trim())
-                                  .where((e) => !localities.contains(e))
+                            if (_localitySearchController.text.isNotEmpty &&
+                                localities.length < 4)
+                              ...ref
+                                  .watch(localityListProvider)
                                   .toSet()
+                                  .where((e) => e.toLowerCase().contains(
+                                      _localitySearchController.text
+                                          .trim()
+                                          .toLowerCase()))
+                                  .where((e) => !localities.contains(e))
+                                  .take(4 - localities.length)
                                   .map(
                                     (e) => CustomListChip(
                                       text: e,
                                       isSelected: false,
                                       onTap: () {
-                                        if (localities.contains(e)) {
-                                          localities.remove(e);
-                                        } else {
-                                          localities.add(e);
-                                        }
-                                        setState(() {});
-                                        _localitySearchController.clear();
+                                        setState(() {
+                                          if (localities.length < 4) {
+                                            localities.add(e);
+                                            _localitySearchController.clear();
+                                          }
+                                        });
                                       },
                                     ),
                                   ),
-                            ],
-                          ),
+                          ],
                         ),
+                      ),
 
                       const Divider(
                         color: CustomColors.secondary,
@@ -631,7 +607,10 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         child: RangeSlider(
                           min: _minBudget,
                           max: _maxBudget,
-                          divisions: widget.apartmentList.length,
+                          divisions: ref
+                              .watch(homePropertiesProvider)
+                              .allApartments
+                              .length,
                           labels: RangeLabels(
                             '₹${formatBudget(_budgetSliderMin)}',
                             '₹${formatBudget(_budgetSliderMax)}',
@@ -683,7 +662,10 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         child: RangeSlider(
                           min: _minFlatSize,
                           max: _maxFlatSize,
-                          divisions: widget.apartmentList.length,
+                          divisions: ref
+                              .watch(homePropertiesProvider)
+                              .allApartments
+                              .length,
                           labels: RangeLabels(
                             '${_flatSizeSliderMin.toStringAsFixed(1)} sq.ft',
                             '${_flatSizeSliderMax.toInt()} sq.ft',

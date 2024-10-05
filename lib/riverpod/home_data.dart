@@ -13,8 +13,10 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
   }
 
   void addFilteredApartments(List<ApartmentModel> filteredApartments) {
-    state = state.copyWith(
-        filteredApartments: [...state.filteredApartments, ...filteredApartments]);
+    state = state.copyWith(filteredApartments: [
+      ...state.filteredApartments,
+      ...filteredApartments
+    ]);
   }
 
   void sortFilteredApartments(int sortBy) {
@@ -61,6 +63,17 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
 
   void setPropertyType(String propertyType) {
     state = state.copyWith(propertyType: propertyType);
+  }
+
+  List<ApartmentModel> getBudgetHomes(int maxBudget, int minBudget) {
+    if (minBudget == 0 && maxBudget == 0) {
+      return state.allApartments;
+    } else {
+      return state.allApartments
+          .where((apartment) =>
+              apartment.budget >= minBudget && apartment.budget <= maxBudget)
+          .toList();
+    }
   }
 }
 

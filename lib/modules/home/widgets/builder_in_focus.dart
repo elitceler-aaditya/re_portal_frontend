@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BuilderInFocus extends StatefulWidget {
   final List<ApartmentModel> apartments;
@@ -137,13 +138,29 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
               tag: "builder-${apartment.projectId}",
               child: Container(
                 width: 200,
+                clipBehavior: Clip.hardEdge,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                    image: NetworkImage(apartment.coverImage),
-                    fit: BoxFit.cover,
-                  ),
+                ),
+                child: Image.network(
+                  apartment.coverImage,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) =>
+                      loadingProgress == null
+                          ? child
+                          : Shimmer.fromColors(
+                              baseColor: CustomColors.black25,
+                              highlightColor: CustomColors.black10,
+                              child: Container(
+                                height: 200,
+                                width: 320,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
                 ),
               ),
             ),

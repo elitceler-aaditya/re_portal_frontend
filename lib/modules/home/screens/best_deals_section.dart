@@ -9,7 +9,9 @@ import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class BestDealsSection extends ConsumerStatefulWidget {
   final double height;
-  const BestDealsSection({super.key, required this.height});
+  final bool showTitle;
+  const BestDealsSection(
+      {super.key, required this.height, this.showTitle = true});
 
   @override
   ConsumerState<BestDealsSection> createState() => _BestDealsSectionState();
@@ -37,16 +39,18 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 10, bottom: 8, top: 8),
-              child: Text(
-                "Best Deals",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+            if (!widget.showTitle) const SizedBox(height: 10),
+            if (widget.showTitle)
+              const Padding(
+                padding: EdgeInsets.only(left: 10, bottom: 8, top: 8),
+                child: Text(
+                  "Best Deals",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
             FlutterCarousel.builder(
               itemCount:
                   min(5, ref.watch(homePropertiesProvider).bestDeals.length),

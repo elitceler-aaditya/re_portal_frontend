@@ -19,8 +19,6 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  bool isLoggedIn = false;
-
   _listTile({
     String title = "",
     String subtitle = "",
@@ -45,32 +43,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Future<void> checkIfLoggedIn() async {
-    String token = "";
-
-    try {
-      SharedPreferences.getInstance().then((sharedPref) {
-        token = sharedPref.getString('token') ?? "";
-        // refreshToken = sharedPref.getString('refreshToken') ?? "";
-
-        if (token.isEmpty) {
-          isLoggedIn = false;
-        } else {
-          isLoggedIn = true;
-        }
-      });
-    } catch (e) {
-      if (mounted) {
-        isLoggedIn = false;
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CustomColors.primary10,
-      body: isLoggedIn
+      body: ref.watch(userProvider).name.isNotEmpty
           ? Column(
               children: [
                 SizedBox(
@@ -164,7 +141,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 _listTile(
                   title: 'My Account',
-                  subtitle: 'Logout from the app',
+                  subtitle: 'My account details',
                   icon: Icons.person_outline,
                   onTap: () async {
                     SharedPreferences.getInstance().then((sharedPref) {
@@ -189,6 +166,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
                     SharedPreferences.getInstance().then((sharedPref) {
                       sharedPref.clear();
+                      ref.read(userProvider.notifier).clearUser();
                       if (mounted) {
                         Navigator.pushAndRemoveUntil(
                           context,
