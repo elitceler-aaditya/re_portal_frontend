@@ -14,7 +14,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class OTPScreen extends StatefulWidget {
   final String otpSentTo;
   final String orderId;
-  const OTPScreen({super.key, required this.otpSentTo, required this.orderId});
+  final Function()? resend;
+  const OTPScreen({
+    super.key,
+    required this.otpSentTo,
+    required this.orderId,
+    this.resend,
+  });
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -261,7 +267,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                             ),
                                           ),
                                           GestureDetector(
-                                            onTap: () {},
+                                            onTap: widget.resend,
                                             child: const Text(
                                               'Resend',
                                               style: TextStyle(

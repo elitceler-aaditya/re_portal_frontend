@@ -285,7 +285,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                           color: CustomColors.green,
                                         )
                                       : SvgPicture.asset(
-                                          "assets/icons/compare.svg",
+                                          "assets/icons/compare_active.svg",
                                           color: CustomColors.primary,
                                           height: 20,
                                           width: 20,

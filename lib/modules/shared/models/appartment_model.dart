@@ -21,7 +21,7 @@ class ApartmentModel with _$ApartmentModel {
     @Default([]) List<String> projectGallery,
     @Default([]) List<String> configuration,
     @Default(null) String? videoLink,
-    @Default("0") String flatSize,
+    @Default(0) int flatSize,
     @Default(0) int budget,
   }) = _ApartmentModel;
 

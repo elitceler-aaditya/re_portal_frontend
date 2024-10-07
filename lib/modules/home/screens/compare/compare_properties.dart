@@ -43,9 +43,14 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
         ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
       child: Scaffold(
-        backgroundColor: CustomColors.primary10,
         appBar: AppBar(
-          automaticallyImplyLeading: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            onPressed: () {
+              ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
           backgroundColor: CustomColors.primary10,
           actions: [
             IconButton(

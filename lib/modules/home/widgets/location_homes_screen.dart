@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/home/models/location_homes_data.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
-import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
 
@@ -35,14 +33,14 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Popular locations in",
+                        "Popular locations near",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        ref.watch(locationHomesProvider)!.area,
+                        ref.watch(locationHomesProvider)!.searchedLocation,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -127,7 +125,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                                   .getLocations()[selectedlocation])!
                               .projects,
                         ),
-                )
+                ),
               ],
             ),
           );

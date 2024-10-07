@@ -8,7 +8,8 @@ import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class NewPropertiesSection extends ConsumerWidget {
-  const NewPropertiesSection({super.key});
+  final String title;
+  const NewPropertiesSection({super.key, required this.title});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,11 +18,11 @@ class NewPropertiesSection extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
           child: Text(
-            "New Projects",
-            style: TextStyle(
+            title,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -228,10 +229,11 @@ class NewPropertiesSection extends ConsumerWidget {
                                                 decoration: BoxDecoration(
                                                   border: index !=
                                                           apartments[index]
-                                                              .configuration
-                                                              .where((item) =>
-                                                                  item.isNotEmpty)
-                                                              .length
+                                                                  .configuration
+                                                                  .where((item) =>
+                                                                      item.isNotEmpty)
+                                                                  .length -
+                                                              1
                                                       ? const Border(
                                                           right: BorderSide(
                                                             color: CustomColors
@@ -271,7 +273,7 @@ class NewPropertiesSection extends ConsumerWidget {
                                           builder: (context) => PropertyDetails(
                                             apartment: apartments[index],
                                             heroTag:
-                                                "new-${apartments[index].projectId}",
+                                                "${title.toLowerCase()}-${apartments[index].projectId}",
                                           ),
                                         ),
                                       );
@@ -307,9 +309,9 @@ class NewPropertiesSection extends ConsumerWidget {
                         ),
                         color: Colors.redAccent,
                       ),
-                      child: const Text(
-                        "New",
-                        style: TextStyle(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

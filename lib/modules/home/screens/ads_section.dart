@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class AdsSection extends ConsumerStatefulWidget {
-  const AdsSection({super.key, this.darkMode = false});
-  final bool darkMode;
+  const AdsSection({super.key});
 
   @override
   ConsumerState<AdsSection> createState() => _AdsSectionState();
 }
 
 class _AdsSectionState extends ConsumerState<AdsSection> {
+  Future<void> getAds() async {}
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -19,12 +25,12 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Similar Properties",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: widget.darkMode ? CustomColors.white : CustomColors.black,
+              color: CustomColors.black,
             ),
           ),
           const SizedBox(height: 10),

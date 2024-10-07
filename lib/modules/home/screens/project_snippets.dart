@@ -82,7 +82,7 @@ class _ProjectSnippetsState extends ConsumerState<ProjectSnippets> {
           ),
         ),
         Container(
-            height: 200,
+            height: 250,
             margin: const EdgeInsets.symmetric(vertical: 8),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,

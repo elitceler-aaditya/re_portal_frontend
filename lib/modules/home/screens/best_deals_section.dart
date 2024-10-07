@@ -19,7 +19,6 @@ class BestDealsSection extends ConsumerStatefulWidget {
 
 class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
   String formatBudget(int budget) {
-    //return budget in k format or lakh and cr format
     if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(00)}K";
     } else if (budget < 10000000) {

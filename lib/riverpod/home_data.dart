@@ -65,6 +65,12 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
     state = state.copyWith(propertyType: propertyType);
   }
 
+  List<ApartmentModel> getUltraLuxuryHomes() {
+    return state.allApartments
+        .where((apartment) => apartment.budget >= 20000000)
+        .toList();
+  }
+
   List<ApartmentModel> getBudgetHomes(int maxBudget, int minBudget) {
     if (minBudget == 0 && maxBudget == 0) {
       return state.allApartments;

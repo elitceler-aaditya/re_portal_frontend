@@ -22,8 +22,8 @@ class MapsPropertyCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 130,
-        width: 230,
+        height: 180,
+        width: 250,
         padding: const EdgeInsets.all(8),
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
@@ -46,7 +46,7 @@ class MapsPropertyCard extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: double.infinity,
-                    width: 100,
+                    width: 110,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(

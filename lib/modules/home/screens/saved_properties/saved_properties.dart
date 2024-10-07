@@ -39,7 +39,6 @@ class _ComparePropertiesState extends ConsumerState<SavedProperties> {
         ref.watch(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
       child: Scaffold(
-        backgroundColor: CustomColors.primary10,
         body: ref.watch(savedPropertiesProvider).isEmpty
             ? const Center(
                 child: Column(

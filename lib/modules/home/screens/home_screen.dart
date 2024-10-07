@@ -163,7 +163,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             apartments: ref.watch(homePropertiesProvider).editorsChoice),
         BuilderInFocus(
             apartments: ref.watch(homePropertiesProvider).builderInFocus),
-        const NewPropertiesSection(),
+        const NewPropertiesSection(title: "New Projects",),
         const LifestyleProperties(),
         const ReadyToMovein(),
         const SizedBox(height: 20),
@@ -184,7 +184,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFCE2DB),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

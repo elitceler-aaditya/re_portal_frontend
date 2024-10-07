@@ -335,7 +335,8 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                 ),
                               ),
                               TextSpan(
-                                text: widget.sortedApartments[index].flatSize,
+                                text: widget.sortedApartments[index].flatSize
+                                    .toString(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,

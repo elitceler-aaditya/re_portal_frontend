@@ -190,12 +190,12 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     _minFlatSize = ref
         .watch(homePropertiesProvider)
         .allApartments
-        .map((e) => double.parse(e.flatSize))
+        .map((e) => double.parse(e.flatSize.toString()))
         .reduce((value, element) => value < element ? value : element);
     _maxFlatSize = ref
         .watch(homePropertiesProvider)
         .allApartments
-        .map((e) => double.parse(e.flatSize))
+        .map((e) => double.parse(e.flatSize.toString()))
         .reduce((value, element) => value > element ? value : element);
 
     localities = ref.watch(filtersProvider).selectedLocalities;

@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return phoneError == null && passwordError == null;
   }
 
-  _sendOTP() async {
+  _sendOTP(bool isResend) async {
     setState(() {
       _isLoading = true;
     });
@@ -60,15 +60,30 @@ class _LoginScreenState extends State<LoginScreen> {
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OTPScreen(
-                otpSentTo: _phoneController.text.trim(),
-                orderId: responseData['data']['orderId'],
+          if (!isResend) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OTPScreen(
+                  otpSentTo: _phoneController.text.trim(),
+                  orderId: responseData['data']['orderId'],
+                  resend: () => _sendOTP(true),
+                ),
               ),
-            ),
-          );
+            );
+          } else {
+            successSnackBar(context, "OTP resent");
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OTPScreen(
+                  otpSentTo: _phoneController.text.trim(),
+                  orderId: responseData['data']['orderId'],
+                  resend: () => _sendOTP(true),
+                ),
+              ),
+            );
+          }
           setState(() {
             _isLoading = false;
           });
@@ -218,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         CustomPrimaryButton(
                                           title: 'Send OTP',
                                           onTap: () {
-                                            _sendOTP();
+                                            _sendOTP(false);
                                           },
                                         ),
                                       const SizedBox(height: 24),

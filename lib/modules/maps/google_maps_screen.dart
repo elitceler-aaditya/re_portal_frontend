@@ -24,6 +24,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   final Completer<GoogleMapController> _googleMapsController =
       Completer<GoogleMapController>();
   String? _selectedApartmentId;
+  final PageController _scrollController = PageController();
 
   fetchLocationUpdate() async {
     bool serviceEnabled;
@@ -63,10 +64,19 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocationUpdate();
       final apartments = ref.read(homePropertiesProvider).allApartments;
-      locations =
-          apartments.map((e) => LatLng(e.latitude, e.longitude)).toList();
 
-      // Set the initial selected apartment
+      apartments.removeWhere(
+          (element) => element.latitude == 0 && element.longitude == 0);
+      apartments.removeWhere(
+          (element) => element.projectId == widget.apartment.projectId);
+
+      //inseart widget.apartment at the first position
+      apartments.insert(0, widget.apartment);
+      setState(() {
+        locations =
+            apartments.map((e) => LatLng(e.latitude, e.longitude)).toList();
+      });
+
       if (apartments.isNotEmpty) {
         _selectedApartmentId = widget.apartment.projectId;
       }
@@ -76,6 +86,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   @override
   void dispose() {
     _locationSubscription?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -109,14 +120,24 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                         markerId: MarkerId(e.projectId),
                         position: LatLng(e.latitude, e.longitude),
                         infoWindow: InfoWindow(title: e.name),
-                        onTap: () =>
-                            setState(() => _selectedApartmentId = e.projectId),
+                        onTap: () {
+                          setState(() {
+                            _selectedApartmentId = e.projectId;
+                          });
+
+                          int index = ref
+                              .watch(homePropertiesProvider)
+                              .allApartments
+                              .indexOf(e);
+                          _scrollController.animateToPage(index,
+                              duration: const Duration(milliseconds: 800),
+                              curve: Curves.easeInOut);
+                        },
                       ),
                     )
               },
             ),
           ),
-          //top left close button
           Positioned(
             top: 50,
             left: 10,
@@ -131,37 +152,42 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
             bottom: 20,
             right: 0,
             left: 0,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  //Apaprtmet list
-                  const SizedBox(width: 10),
-                  ...ref.watch(homePropertiesProvider).allApartments.map(
-                        (e) => MapsPropertyCard(
-                          apartment: e,
-                          onTap: () {
-                            _googleMapsController.future.then((controller) {
-                              controller
-                                  .animateCamera(
-                                CameraUpdate.newCameraPosition(
-                                  CameraPosition(
-                                    target: LatLng(e.latitude, e.longitude),
-                                    zoom: 14,
-                                  ),
-                                ),
-                              )
-                                  .then((_) {
-                                setState(
-                                    () => _selectedApartmentId = e.projectId);
-                                controller.showMarkerInfoWindow(
-                                    MarkerId(e.projectId));
-                              });
-                            });
-                          },
-                        ),
-                      ),
-                ],
+            child: SizedBox(
+              height: 180, // Adjust this height as needed
+              child: PageView.builder(
+                controller: _scrollController,
+                itemCount:
+                    ref.watch(homePropertiesProvider).allApartments.length,
+                itemBuilder: (context, index) {
+                  final apartment =
+                      ref.watch(homePropertiesProvider).allApartments[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: MapsPropertyCard(
+                      apartment: apartment,
+                      onTap: () {
+                        _googleMapsController.future.then((controller) {
+                          controller
+                              .animateCamera(
+                            CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                target: LatLng(
+                                    apartment.latitude, apartment.longitude),
+                                zoom: 14,
+                              ),
+                            ),
+                          )
+                              .then((_) {
+                            setState(() =>
+                                _selectedApartmentId = apartment.projectId);
+                            controller.showMarkerInfoWindow(
+                                MarkerId(apartment.projectId));
+                          });
+                        });
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           ),
