@@ -733,9 +733,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                       loadingProgress == null
                                           ? child
                                           : Shimmer.fromColors(
-                                              baseColor: CustomColors.black75,
+                                              baseColor: CustomColors.black25,
                                               highlightColor:
-                                                  CustomColors.black25,
+                                                  CustomColors.black50,
                                               child: Container(
                                                 height: 200,
                                                 width: 320,
@@ -879,8 +879,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 loadingProgress == null
                                     ? child
                                     : Shimmer.fromColors(
-                                        baseColor: CustomColors.black75,
-                                        highlightColor: CustomColors.black25,
+                                        baseColor: CustomColors.black25,
+                                        highlightColor: CustomColors.black50,
                                         child: Container(
                                           height: 200,
                                           width: 320,
@@ -1343,7 +1343,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             const SizedBox(height: 20),
-            const AdsSection(),
+            if (mounted) const AdsSection(),
             const SizedBox(height: 70),
           ],
         ),
@@ -1407,6 +1407,21 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     child: Image.network(
                       _images[index],
                       fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) =>
+                          loadingProgress == null
+                              ? child
+                              : Shimmer.fromColors(
+                                  baseColor: CustomColors.black25,
+                                  highlightColor: CustomColors.black50,
+                                  child: Container(
+                                    height: 200,
+                                    width: 320,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                ),
                     ),
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
@@ -14,6 +15,7 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/similar_properties_riverpod.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -163,9 +165,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             apartments: ref.watch(homePropertiesProvider).editorsChoice),
         BuilderInFocus(
             apartments: ref.watch(homePropertiesProvider).builderInFocus),
-        const NewPropertiesSection(title: "New Projects",),
+        const NewPropertiesSection(
+          title: "New Projects",
+        ),
         const LifestyleProperties(),
         const ReadyToMovein(),
+        const AdsSection(),
         const SizedBox(height: 20),
       ],
     );

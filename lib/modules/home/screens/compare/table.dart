@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FixedColumnDataTable extends ConsumerStatefulWidget {
   final List<ApartmentModel> comparedProperties;
+  final List<ComparePropertyData> comparedPropertyData;
   final bool isFixedColumnVisible;
 
   const FixedColumnDataTable(
       {super.key,
       required this.comparedProperties,
+      required this.comparedPropertyData,
       this.isFixedColumnVisible = true});
 
   @override
@@ -61,7 +64,6 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   rows: _buildFixedColumnRows(),
                 ),
               ),
-            // if (!widget.isFixedColumnVisible) const SizedBox(width: 50),
             // Scrollable Columns
             Expanded(
               child: SingleChildScrollView(
@@ -122,50 +124,48 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   }
 
   List<DataRow> _buildFixedColumnRows() {
+    List attributes = [
+      'Name',
+      'Type',
+      'Flat size',
+      'Approval',
+      'Project size',
+      'Flat size',
+      'Units',
+      'Floors',
+      'Configuration',
+      'Possession',
+      'Base price',
+      'Club size',
+      'Open area'
+    ];
     return [
-      const DataRow(
-          cells: [DataCell(Text('Name', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Type', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(
-          cells: [DataCell(Text('Flat size', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Approval', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(cells: [
-        DataCell(Text('Project size', style: TextStyle(fontSize: 12)))
-      ], color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Units', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(
-          cells: [DataCell(Text('Floors', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(cells: [
-        DataCell(Text('Configuration', style: TextStyle(fontSize: 12)))
-      ], color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(
-          cells: [DataCell(Text('Possession', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Base price', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(
-          cells: [DataCell(Text('Club size', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text('Open area', style: TextStyle(fontSize: 12)))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
+      ...List<DataRow>.generate(
+        attributes.length,
+        (index) {
+          final rowColor =
+              index % 2 == 0 ? CustomColors.primary10 : CustomColors.primary20;
+
+          return DataRow(
+            color: MaterialStateProperty.all(rowColor),
+            cells: [
+              DataCell(
+                Text(
+                  attributes[index],
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
       const DataRow(cells: [
         DataCell(Text('Cost',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)))
-      ], color: WidgetStatePropertyAll(CustomColors.primary10)),
+      ], color: WidgetStatePropertyAll(CustomColors.primary20)),
       const DataRow(
           cells: [DataCell(Text('Contact'))],
-          color: WidgetStatePropertyAll(CustomColors.primary20)),
+          color: WidgetStatePropertyAll(CustomColors.primary10)),
       const DataRow(
           cells: [DataCell(Text(''))],
           color: WidgetStatePropertyAll(CustomColors.primary10)),
@@ -173,48 +173,48 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   }
 
   List<DataRow> _buildScrollableRows() {
-    return [];
-    // return [
-    //   _buildDataRow((prop) => prop.apartmentType, const TextStyle(fontSize: 12),
-    //       CustomColors.primary20),
-    //   _buildDataRow((prop) => "${prop.flatSize.toStringAsFixed(0)} sq.ft.",
-    //       const TextStyle(fontSize: 12)),
-    //   _buildDataRow((_) => 'RERA Approved', const TextStyle(fontSize: 12),
-    //       CustomColors.primary20),
-    //   _buildDataRow((prop) => prop.flatSize.toString()),
-    //   _buildDataRow((prop) => prop.noOfFlats.toString(),
-    //       const TextStyle(fontSize: 12), CustomColors.primary20),
-    //   _buildDataRow(
-    //       (prop) => prop.noOfFloor.toString(), const TextStyle(fontSize: 12)),
-    //   _buildDataRow((prop) => prop.configuration.toString(),
-    //       const TextStyle(fontSize: 12), CustomColors.primary20),
-    //   _buildDataRow(
-    //       (prop) => DateFormat("MMM yyyy")
-    //           .format(DateTime.parse(prop.possessionDate)),
-    //       const TextStyle(fontSize: 12)),
-    //   _buildDataRow(
-    //       (prop) => '₹${formatPrice(prop.budget / prop.flatSize)} per sq.ft.',
-    //       const TextStyle(fontSize: 12),
-    //       CustomColors.primary20),
-    //   _buildDataRow((prop) => prop.clubhouseSize.toString(),
-    //       const TextStyle(fontSize: 12)),
-    //   _buildDataRow(
-    //     (prop) => prop.openSpace.toString(),
-    //     const TextStyle(fontSize: 12),
-    //     CustomColors.primary20,
-    //   ),
-    //   _buildDataRow((prop) => formatBudget(prop.budget),
-    //       const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-    //   DataRow(
-    //       cells: _buildContactButtons(),
-    //       color: const WidgetStatePropertyAll(CustomColors.primary20)),
-    // ];
+    List attributes = [
+      (ComparePropertyData prop) => prop.name,
+      (ComparePropertyData prop) => prop.projectType,
+      (ComparePropertyData prop) => "${prop.flatSizes.toString()} sq.ft.",
+      (ComparePropertyData prop) =>
+          prop.rERAApproval ? 'RERA Approved' : 'Not Approved',
+      (ComparePropertyData prop) => prop.projectSize,
+      (ComparePropertyData prop) => prop.flatSizes.toString(),
+      (ComparePropertyData prop) => prop.noOfTowers,
+      (ComparePropertyData prop) => prop.noOfFloors,
+      (ComparePropertyData prop) =>
+          prop.unitPlanConfigs.map((config) => config.BHKType).join(', '),
+      (ComparePropertyData prop) => prop.projectPossession.substring(0, 10),
+      (ComparePropertyData prop) =>
+          '₹${prop.pricePerSquareFeetRate} per sq.ft.',
+      (ComparePropertyData prop) => prop.clubhousesize,
+      (ComparePropertyData prop) => prop.totalOpenSpace,
+    ];
+    return [
+      ...List<DataRow>.generate(
+        attributes.length,
+        (index) => _buildDataRow(
+          attributes[index],
+          const TextStyle(fontSize: 12),
+          index % 2 == 0 ? CustomColors.primary20 : CustomColors.primary10,
+        ),
+      ),
+      _buildDataRow(
+        (prop) => formatBudget(prop.budget),
+        const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+        CustomColors.primary10,
+      ),
+      DataRow(
+          cells: _buildContactButtons(),
+          color: const WidgetStatePropertyAll(CustomColors.primary10)),
+    ];
   }
 
-  DataRow _buildDataRow(String Function(ApartmentModel) getValue,
+  DataRow _buildDataRow(String Function(ComparePropertyData) getValue,
       [TextStyle? style, Color? color]) {
     return DataRow(
-        cells: widget.comparedProperties
+        cells: widget.comparedPropertyData
             .map((prop) => DataCell(Text(getValue(prop), style: style)))
             .toList(),
         color: WidgetStatePropertyAll(color));

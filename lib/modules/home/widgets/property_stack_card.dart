@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PropertyStackCard extends StatelessWidget {
   final List<ApartmentModel> apartments;
@@ -13,11 +14,11 @@ class PropertyStackCard extends StatelessWidget {
   String formatBudget(double budget) {
     //return budget in k format or lakh and cr format
     if (budget < 100000) {
-      return "${(budget / 1000).toStringAsFixed(00)}K";
+      return "₹${(budget / 1000).toStringAsFixed(00)}K";
     } else if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(1)}L";
+      return "₹${(budget / 100000).toStringAsFixed(1)}L";
     } else {
-      return "${(budget / 10000000).toStringAsFixed(2)}Cr";
+      return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
     }
   }
 
@@ -62,6 +63,22 @@ class PropertyStackCard extends StatelessWidget {
                       child: Image.network(
                         apartments[index].coverImage,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) =>
+                            loadingProgress == null
+                                ? child
+                                : Shimmer.fromColors(
+                                    baseColor: CustomColors.black75,
+                                    highlightColor: CustomColors.black25,
+                                    child: Container(
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.8,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  ),
                       ),
                     ),
                   ),

@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/table.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
+import 'package:http/http.dart' as http;
 
 class CompareProperties extends ConsumerStatefulWidget {
   const CompareProperties({super.key});
@@ -15,6 +20,44 @@ class CompareProperties extends ConsumerStatefulWidget {
 
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   bool _isFixedColumnVisible = true;
+  bool _isLoading = true;
+  List<ComparePropertyData> _comparedProperties = [];
+
+  void getPropertyData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/project/compareApartments";
+    Uri uri = Uri.parse(url).replace(queryParameters: {
+      "ids": ref
+          .watch(comparePropertyProvider)
+          .map((e) => e.apartmentID)
+          .join(","),
+    });
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        List<dynamic> responseBody = jsonDecode(response.body)['apartments'];
+        _comparedProperties =
+            responseBody.map((e) => ComparePropertyData.fromJson(e)).toList();
+      } else {
+        throw Exception(response.body);
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (error, stackTrace) {
+      debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   formatPrice(double price) {
     if (price > 1000000) {
       return '${(price / 1000000).toStringAsFixed(0)} Lac';
@@ -34,13 +77,21 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getPropertyData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<ApartmentModel> comparedProperties =
         ref.watch(comparePropertyProvider);
     return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+      canPop: false,
+      onPopInvokedWithResult: (didPop, results) {
+        if (!didPop) ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -97,23 +148,27 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                   ),
                 ),
               )
-            : SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: FixedColumnDataTable(
-                          comparedProperties: comparedProperties,
-                          isFixedColumnVisible: _isFixedColumnVisible,
+            : _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: FixedColumnDataTable(
+                              comparedProperties: comparedProperties,
+                              isFixedColumnVisible: _isFixedColumnVisible,
+                              comparedPropertyData: _comparedProperties,
+                            ),
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+                      ],
+                    ),
+                  ),
       ),
     );
   }
