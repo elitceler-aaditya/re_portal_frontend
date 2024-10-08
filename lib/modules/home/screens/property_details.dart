@@ -261,7 +261,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 12,
-                color: CustomColors.white,
+                color: CustomColors.black,
               ),
             ),
           ),
@@ -272,17 +272,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               lineThickness: 1.5,
               dashLength: 8,
               dashGapLength: 8,
-              dashColor: CustomColors.white,
+              dashColor: CustomColors.black,
             ),
           ),
           const Icon(Icons.arrow_forward_ios,
-              size: 10, color: CustomColors.white),
+              size: 10, color: CustomColors.black),
           const SizedBox(width: 8),
           Text(
             value,
             style: const TextStyle(
               fontSize: 12,
-              color: CustomColors.white,
+              color: CustomColors.black,
             ),
           ),
         ],
@@ -585,8 +585,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: CustomColors.darkYellow,
+                  color: CustomColors.white,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -597,7 +605,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.white,
+                        color: CustomColors.black,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -614,7 +622,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.normal,
-                          color: CustomColors.white,
+                          color: CustomColors.black,
                         ),
                       ),
                     ),
@@ -961,7 +969,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: CustomColors.darkYellow,
+                                color: CustomColors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Wrap(
@@ -977,6 +992,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 10),
                           ],
                         ),
                         Column(
@@ -999,7 +1015,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: CustomColors.darkYellow,
+                                color: CustomColors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Wrap(
@@ -1038,7 +1061,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: CustomColors.darkYellow,
+                                color: CustomColors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Wrap(
@@ -1115,7 +1145,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CustomColors.darkYellow,
+                                  color: CustomColors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Wrap(
@@ -1131,6 +1169,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 10),
                             ],
                           ),
                         if (_projectDetails.projectDetails.offices.isNotEmpty)
@@ -1154,7 +1193,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CustomColors.darkYellow,
+                                  color: CustomColors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Wrap(
@@ -1194,7 +1241,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CustomColors.darkYellow,
+                                  color: CustomColors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Wrap(
@@ -2031,6 +2086,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
+      // backgroundColor: CustomColors.white,
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

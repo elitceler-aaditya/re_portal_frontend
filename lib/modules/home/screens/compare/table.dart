@@ -147,7 +147,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
               index % 2 == 0 ? CustomColors.primary10 : CustomColors.primary20;
 
           return DataRow(
-            color: MaterialStateProperty.all(rowColor),
+            color: WidgetStateProperty.all(rowColor),
             cells: [
               DataCell(
                 Text(

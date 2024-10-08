@@ -21,7 +21,7 @@ class CustomChip extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? CustomColors.primary20 : Colors.transparent,
+          color: isSelected ? CustomColors.primary20 : CustomColors.primary10,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
             color: isSelected ? CustomColors.primary : CustomColors.black25,
@@ -31,7 +31,7 @@ class CustomChip extends StatelessWidget {
         child: Text(
           text,
           style: TextStyle(
-            color: isSelected ? CustomColors.primary : CustomColors.black25,
+            color: isSelected ? CustomColors.primary : CustomColors.black,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),

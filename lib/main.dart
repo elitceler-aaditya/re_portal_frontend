@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(
             seedColor: CustomColors.primary,
           ),
+          scaffoldBackgroundColor: CustomColors.white,
           useMaterial3: true,
         ),
         home: const SplashScreen(),

@@ -49,7 +49,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   bool _isOverlayVisible = false;
   bool isListview = true;
   int currentPage = 1;
-  ScrollController _masterScrollController = ScrollController();
+  final ScrollController _masterScrollController = ScrollController();
   Timer? _timer;
 
   List<String> searchOptions = ["properties", "apartments", "plots", "flats"];
@@ -709,7 +709,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                                   .read(
                                                       filtersProvider.notifier)
                                                   .updateSelectedLocalities(
-                                                      [locality]);
+                                                      [locality]);    
                                               getFilteredApartments(
                                                       params: {'page': "1"})
                                                   .then((value) {
