@@ -43,9 +43,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.primary10,
       appBar: AppBar(
-        backgroundColor: CustomColors.primary10,
         centerTitle: true,
         title: GestureDetector(
           onTap: () async {

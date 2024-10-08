@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/widgets/budget_homes.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
@@ -46,9 +47,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   bool loading = false;
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
-  String searchPrefix = "";
   bool isListview = true;
   int currentPage = 1;
+  ScrollController _masterScrollController = ScrollController();
   Timer? _timer;
 
   List<String> searchOptions = ["properties", "apartments", "plots", "flats"];
@@ -331,9 +332,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   Future<void> getFilteredApartments({
     Map<String, dynamic> params = const {},
   }) async {
-    setState(() {
-      loading = true;
-    });
     try {
       String baseUrl = dotenv.get('BASE_URL');
       String url = "$baseUrl/project/filterApartmentsNew";
@@ -409,7 +407,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       final response = await http.get(uri);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
-        debugPrint("-----------------locationHomes: $responseData");
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
@@ -432,6 +429,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       }
 
       if (ref.watch(homePropertiesProvider).filteredApartments.isEmpty) {
+        setState(() {
+          loading = true;
+        });
         getFilteredApartments(params: {'page': "1"});
       }
 
@@ -460,33 +460,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   }
 
   void _filterApartments(String searchTerm) {
-    setState(() {
-      ref
-          .read(homePropertiesProvider.notifier)
-          .setfilteredApartments(allApartments.where((apartment) {
-            if (apartment.name
-                .toLowerCase()
-                .contains(searchTerm.toLowerCase())) {
-              setState(() {
-                searchPrefix = "by name - ";
-              });
-              return apartment.name
-                  .toLowerCase()
-                  .contains(searchTerm.toLowerCase());
-            }
-            if (apartment.projectLocation
-                .toLowerCase()
-                .contains(searchTerm.toLowerCase())) {
-              setState(() {
-                searchPrefix = "by location - ";
-              });
-              return apartment.projectLocation
-                  .toLowerCase()
-                  .contains(searchTerm.toLowerCase());
-            }
-            return false;
-          }).toList());
-    });
+    setState(() {});
   }
 
   @override
@@ -500,7 +474,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 16.0),
+                      vertical: 8,
+                      horizontal: 16,
+                    ),
                     child: Shimmer.fromColors(
                       baseColor: Colors.grey[300]!,
                       highlightColor: Colors.grey[100]!,
@@ -517,6 +493,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
               ),
             )
           : SingleChildScrollView(
+              controller: _masterScrollController,
               child: Column(
                 children: [
                   Container(
@@ -546,7 +523,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                         ),
                         if (_searchController.text.trim().isNotEmpty)
                           Text(
-                            " $searchPrefix ${_searchController.text.trim()}",
+                            '"${_searchController.text.trim()}"',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -642,11 +619,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                         bottom: Radius.circular(20),
                       ),
                     ),
-                    child: ref.watch(filtersProvider).selectedLocalities.isEmpty
-                        ? const SizedBox(
-                            width: double.infinity,
-                          )
-                        : SizedBox(
+                    child: (_searchController.text.trim().isNotEmpty ||
+                            ref
+                                .watch(filtersProvider)
+                                .selectedLocalities
+                                .isNotEmpty)
+                        ? SizedBox(
                             width: double.infinity,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -709,11 +687,58 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                           },
                                         );
                                       }),
+                                      if (_searchController.text
+                                          .trim()
+                                          .isNotEmpty)
+                                        ...ref
+                                            .read(localityListProvider)
+                                            .where((locality) => locality
+                                                .toLowerCase()
+                                                .contains(_searchController.text
+                                                    .toLowerCase()))
+                                            .where((locality) => !ref
+                                                .watch(filtersProvider)
+                                                .selectedLocalities
+                                                .contains(locality))
+                                            .map((locality) {
+                                          return CustomListChip(
+                                            text: locality,
+                                            isSelected: false,
+                                            onTap: () {
+                                              ref
+                                                  .read(
+                                                      filtersProvider.notifier)
+                                                  .updateSelectedLocalities(
+                                                      [locality]);
+                                              getFilteredApartments(
+                                                      params: {'page': "1"})
+                                                  .then((value) {
+                                                _searchController.clear();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 500), () {
+                                                  _masterScrollController
+                                                      .animateTo(
+                                                    400,
+                                                    duration: const Duration(
+                                                        milliseconds: 500),
+                                                    curve: Curves.easeInOut,
+                                                  );
+                                                });
+                                              });
+                                            },
+                                          );
+                                        }),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
+                          )
+                        : const SizedBox(
+                            width: double.infinity,
                           ),
                   ),
                   if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
@@ -802,56 +827,52 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                           const NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.zero,
                                       itemCount: ref
-                                          .watch(homePropertiesProvider)
-                                          .filteredApartments
-                                          .length,
-                                      //     +
-                                      // (ref
-                                      //         .watch(homePropertiesProvider)
-                                      //         .filteredApartments
-                                      //         .length ~/
-                                      //     4),
-                                      itemBuilder: (context, listIndex) {
-                                        // if (index % 4 == 0 && index != 0) {
-                                        //   int adsIndex = index ~/ 4;
-                                        //   return adsIndex % 3 == 1
-                                        //       ? const ProjectSnippets()
-                                        //       : const AdsSection();
-                                        // } else {
-                                        // int listIndex = index - (index ~/ 4);
-                                        return PropertyCard(
-                                          apartment: ref
                                               .watch(homePropertiesProvider)
-                                              .filteredApartments[listIndex],
-                                          nextApartment: listIndex + 1 <
-                                                  ref
-                                                      .watch(
-                                                          homePropertiesProvider)
-                                                      .filteredApartments
-                                                      .length
-                                              ? ref
-                                                      .watch(homePropertiesProvider)
-                                                      .filteredApartments[
-                                                  listIndex + 1]
-                                              : ref
-                                                  .watch(homePropertiesProvider)
-                                                  .filteredApartments
-                                                  .first,
-                                          isCompare: true,
-                                          onCallPress: (context) {
-                                            _toggleOverlay(
-                                                context,
-                                                ref
+                                              .filteredApartments
+                                              .length +
+                                          1,
+                                      itemBuilder: (context, index) {
+                                        if (index == 4) {
+                                          return const ProjectSnippets();
+                                        } else {
+                                          int listIndex =
+                                              index > 4 ? index - 1 : index;
+                                          return PropertyCard(
+                                            apartment: ref
+                                                .watch(homePropertiesProvider)
+                                                .filteredApartments[listIndex],
+                                            nextApartment: listIndex + 1 <
+                                                    ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .filteredApartments
+                                                        .length
+                                                ? ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .filteredApartments[
+                                                    listIndex + 1]
+                                                : ref
                                                     .watch(
                                                         homePropertiesProvider)
-                                                    .filteredApartments[listIndex],
-                                                _globalKeys[listIndex]);
-                                          },
-                                          globalKey: _globalKeys[listIndex],
-                                        );
-                                      }
-                                      // },
-                                      ),
+                                                    .filteredApartments
+                                                    .first,
+                                            isCompare: true,
+                                            onCallPress: (context) {
+                                              _toggleOverlay(
+                                                  context,
+                                                  ref
+                                                          .watch(
+                                                              homePropertiesProvider)
+                                                          .filteredApartments[
+                                                      listIndex],
+                                                  _globalKeys[listIndex]);
+                                            },
+                                            globalKey: _globalKeys[listIndex],
+                                          );
+                                        }
+                                      },
+                                    ),
                             ),
                             if (!isEndReached)
                               VisibilityDetector(
@@ -918,123 +939,129 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                         .filteredApartments
                                         .length ||
                                 isEndReached)
-                              const ProjectSnippets(),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: Text(
-                                    "New Launches",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      "New Launches",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                EditorsChoiceCard(
-                                    apartments: ref
-                                        .watch(homePropertiesProvider)
-                                        .newProjects),
-                                const BudgetHomes(),
-                                const LocationHomes(),
-                                const ReadyToMovein(),
-                                const UltraLuxuryHomes(),
-                                const NewPropertiesSection(
-                                    title: "Editor's Choice"),
-                                SizedBox(
-                                  height: 150,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(16, 10, 16, 0),
-                                        child: Text(
-                                          "Explore Locations",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                  EditorsChoiceCard(
+                                      apartments: ref
+                                          .watch(homePropertiesProvider)
+                                          .newProjects),
+                                  const BudgetHomes(),
+                                  const LocationHomes(),
+                                  const ReadyToMovein(),
+                                  const UltraLuxuryHomes(),
+                                  const NewPropertiesSection(
+                                      title: "Editor's Choice"),
+                                  SizedBox(
+                                    height: 150,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              16, 10, 16, 0),
+                                          child: Text(
+                                            "Explore Locations",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Expanded(
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: Row(
-                                            children: [
-                                              const SizedBox(width: 10),
-                                              ...List.generate(
-                                                ref
-                                                    .watch(localityListProvider)
-                                                    .length,
-                                                (index) => GestureDetector(
-                                                  onTap: () {
-                                                    //add locality to filters
-                                                    ref
-                                                        .read(filtersProvider
-                                                            .notifier)
-                                                        .updateSelectedLocalities([
-                                                      ref.watch(
-                                                              localityListProvider)[
-                                                          index]
-                                                    ]);
-                                                    getFilteredApartments();
-                                                  },
-                                                  child: Container(
-                                                    height: double.infinity,
-                                                    width: 300,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      // color: CustomColors.black25,
-                                                      gradient:
-                                                          const LinearGradient(
-                                                        colors: [
-                                                          CustomColors.black50,
-                                                          CustomColors.black75
-                                                        ],
-                                                        begin:
-                                                            Alignment.topLeft,
-                                                        end: Alignment
-                                                            .bottomRight,
-                                                      ),
-                                                    ),
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 10),
-                                                    child: Center(
-                                                      child: Text(
+                                        const SizedBox(height: 4),
+                                        Expanded(
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              children: [
+                                                const SizedBox(width: 10),
+                                                ...List.generate(
+                                                  ref
+                                                      .watch(
+                                                          localityListProvider)
+                                                      .length,
+                                                  (index) => GestureDetector(
+                                                    onTap: () {
+                                                      //add locality to filters
+                                                      ref
+                                                          .read(filtersProvider
+                                                              .notifier)
+                                                          .updateSelectedLocalities([
                                                         ref.watch(
                                                                 localityListProvider)[
-                                                            index],
-                                                        style: const TextStyle(
-                                                          color: CustomColors
-                                                              .white,
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                            index]
+                                                      ]);
+                                                      setState(() {
+                                                        loading = true;
+                                                      });
+                                                      getFilteredApartments();
+                                                    },
+                                                    child: Container(
+                                                      height: double.infinity,
+                                                      width: 300,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        // color: CustomColors.black25,
+                                                        gradient:
+                                                            const LinearGradient(
+                                                          colors: [
+                                                            CustomColors
+                                                                .black50,
+                                                            CustomColors.black75
+                                                          ],
+                                                          begin:
+                                                              Alignment.topLeft,
+                                                          end: Alignment
+                                                              .bottomRight,
+                                                        ),
+                                                      ),
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              right: 10),
+                                                      child: Center(
+                                                        child: Text(
+                                                          ref.watch(
+                                                                  localityListProvider)[
+                                                              index],
+                                                          style:
+                                                              const TextStyle(
+                                                            color: CustomColors
+                                                                .white,
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                              const SizedBox(width: 10),
-                                            ],
+                                                const SizedBox(width: 10),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
                           ],
                         ),
                   const SizedBox(height: 10),

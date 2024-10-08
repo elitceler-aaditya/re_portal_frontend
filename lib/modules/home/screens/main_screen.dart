@@ -25,6 +25,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: _screens[ref.watch(navBarIndexProvider)],
       bottomNavigationBar: const CustomBottomNavBar(),
     );

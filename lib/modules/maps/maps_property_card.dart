@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class MapsPropertyCard extends StatelessWidget {
   final ApartmentModel apartment;
+  final ApartmentDetailsResponse apartmentDetails;
   final Function()? onTap;
-  const MapsPropertyCard({super.key, required this.apartment, this.onTap});
+  const MapsPropertyCard({
+    super.key,
+    required this.apartment,
+    required this.apartmentDetails,
+    this.onTap,
+  });
 
   String formatBudget(int budget) {
     if (budget < 100000) {
-      return "${(budget / 1000).toStringAsFixed(00)}K";
+      return "₹${(budget / 1000).toStringAsFixed(00)}K";
     } else if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(1)}L";
+      return "₹${(budget / 100000).toStringAsFixed(1)}L";
     } else {
-      return "${(budget / 10000000).toStringAsFixed(2)}Cr";
+      return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
     }
   }
 
@@ -23,9 +30,8 @@ class MapsPropertyCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 180,
-        width: 250,
+        width: 280,
         padding: const EdgeInsets.all(8),
-        margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           color: CustomColors.white,
           borderRadius: BorderRadius.circular(16),
@@ -66,17 +72,19 @@ class MapsPropertyCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          apartment.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            height: 1.1,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            apartment.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              height: 1.1,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -98,7 +106,59 @@ class MapsPropertyCard extends StatelessWidget {
                               color: CustomColors.primary,
                             ),
                           ),
-                        )
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_rounded,
+                              color: CustomColors.primary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              apartment.projectLocation,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.home_work_rounded,
+                              color: CustomColors.primary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              apartmentDetails.projectDetails.projectType,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.fullscreen,
+                              color: CustomColors.primary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "${apartment.flatSize} sq.ft",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

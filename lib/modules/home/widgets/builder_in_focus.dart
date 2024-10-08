@@ -1,116 +1,229 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BuilderInFocus extends StatefulWidget {
-  final List<ApartmentModel> apartments;
-  const BuilderInFocus({super.key, required this.apartments});
+  final List<BuilderDataModel> builderData;
+  const BuilderInFocus({super.key, required this.builderData});
 
   @override
   State<BuilderInFocus> createState() => _BuilderInFocusState();
 }
 
 class _BuilderInFocusState extends State<BuilderInFocus> {
+  List<BuilderDataModel> builders = [];
+
+  @override
+  void initState() {
+    super.initState();
+    builders = widget.builderData;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: CustomColors.primary20,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+    // return SizedBox(height: 300, child: Text(builders.length.toString()));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: const Padding(
+            padding: EdgeInsets.fromLTRB(8, 4, 8, 10),
+            child: Row(
               children: [
-                const Text(
-                  "Builder In Focus",
+                Text(
+                  "Builders in Focus",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: CustomColors.primary,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: const Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Balaji Constructors",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: CustomColors.white,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              "RERA ID: P0244000006675",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      CircleAvatar(
-                        radius: 24,
-                      )
-                    ],
+                Spacer(),
+                Text(
+                  "Scroll for more>",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 250,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: widget
-                  .apartments.length, // Use the actual length of apartments
-              itemBuilder: (context, index) {
-                final apartments = widget.apartments;
-                final nextIndex =
-                    (index + 1) % apartments.length; // Ensure circular access
-                return _builderInFocusCard(
-                  context,
-                  apartments[index],
-                  apartments[nextIndex],
-                );
-              },
-            ),
-          )
-        ],
-      ),
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              const SizedBox(width: 10),
+              ...List.generate(
+                builders.length,
+                (index) => _builderCard(context, builders[index]),
+              ),
+              const SizedBox(width: 10),
+            ],
+          ),
+        ),
+      ],
     );
   }
+}
+
+Widget _builderCard(BuildContext context, BuilderDataModel builder) {
+  return Container(
+    width: 330,
+    margin: const EdgeInsets.only(right: 10),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: CustomColors.primary),
+      color: CustomColors.primary20,
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: CustomColors.primary.withOpacity(0.8),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(11),
+              topRight: Radius.circular(11),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundColor: CustomColors.white.withOpacity(0.3),
+                radius: 24,
+                child: Image.network(
+                  builder.CompanyLogo,
+                  loadingBuilder: (context, child, loadingProgress) =>
+                      loadingProgress == null
+                          ? child
+                          : Shimmer.fromColors(
+                              baseColor: CustomColors.black25,
+                              highlightColor: CustomColors.black10,
+                              child: Container(),
+                            ),
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Text(
+                      builder.CompanyName[0],
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      builder.CompanyName,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.black10,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(
+                              Icons.verified_user_rounded,
+                              color: Color(0xFFEBD300),
+                              size: 14,
+                            ),
+                            SizedBox(width: 4),
+                            Text(
+                              "Verified",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFFEBD300),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "|",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: CustomColors.black10,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.apartment,
+                              color: CustomColors.black10,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "${builder.builderTotalProjects} projects",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: CustomColors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 250,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount:
+                builder.projects.length, // Use the actual length of apartments
+            itemBuilder: (context, index) {
+              final apartments = builder.projects;
+              final nextIndex =
+                  (index + 1) % apartments.length; // Ensure circular access
+              return _builderInFocusCard(
+                context,
+                apartments[index],
+                apartments[nextIndex],
+              );
+            },
+          ),
+        )
+      ],
+    ),
+  );
 }
 
 _builderInFocusCard(BuildContext context, ApartmentModel apartment,

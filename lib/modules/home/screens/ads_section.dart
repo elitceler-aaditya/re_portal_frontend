@@ -61,29 +61,35 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Similar Properties",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: CustomColors.black,
+          const Padding(
+            padding: EdgeInsets.fromLTRB(8, 4, 8, 10),
+            child: Text(
+              "Similar Properties",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: CustomColors.black,
+              ),
             ),
           ),
-          const SizedBox(height: 10),
           SizedBox(
-            height: 120,
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: ref.watch(similarPropertiesProvider).length,
-              itemBuilder: (context, index) {
-                return _adsCard(
-                  context,
-                  ref.watch(similarPropertiesProvider)[index],
-                );
-              },
-            ),
-          ),
+              height: 150,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 10),
+                    ...List.generate(
+                      ref.watch(similarPropertiesProvider).length,
+                      (index) => _adsCard(
+                        context,
+                        ref.watch(similarPropertiesProvider)[index],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                  ],
+                ),
+              )),
         ],
       ),
     );
@@ -111,7 +117,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
       ));
     },
     child: Container(
-      width: 250,
+      width: 260,
       margin: const EdgeInsets.only(right: 10),
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
@@ -122,7 +128,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
         children: [
           SizedBox(
             child: SizedBox(
-              height: 180,
+              height: 150,
               width: double.infinity,
               child: Image.network(
                 apartment.coverImage,
@@ -134,7 +140,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
                             baseColor: CustomColors.black25,
                             highlightColor: CustomColors.black50,
                             child: Container(
-                              height: 180,
+                              height: 150,
                               width: 250,
                               decoration: BoxDecoration(
                                 color: Colors.black,
@@ -146,7 +152,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
             ),
           ),
           Container(
-            height: 120,
+            height: 150,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),

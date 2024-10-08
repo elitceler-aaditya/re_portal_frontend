@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 
 class HomeDataNotifier extends StateNotifier<HomeData> {
@@ -33,6 +34,10 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
     }
   }
 
+  void resetFilteredApartments() {
+    state = state.copyWith(filteredApartments: state.allApartments);
+  }
+
   void setBestDeals(List<ApartmentModel> bestDeals) {
     state = state.copyWith(bestDeals: bestDeals);
   }
@@ -65,6 +70,13 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
     state = state.copyWith(propertyType: propertyType);
   }
 
+  void setBuilderData(List<BuilderDataModel> builderData) {
+    //remove element which dont have any projects
+    builderData =
+        builderData.where((element) => element.projects.isNotEmpty).toList();
+    state = state.copyWith(builderData: builderData);
+  }
+
   List<ApartmentModel> getUltraLuxuryHomes() {
     return state.allApartments
         .where((apartment) => apartment.budget >= 20000000)
@@ -85,6 +97,7 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
 
 class HomeData {
   final List<ApartmentModel> allApartments;
+  final List<BuilderDataModel> builderData;
   final List<ApartmentModel> filteredApartments;
   final List<ApartmentModel> bestDeals;
   final List<ApartmentModel> selectedProperties;
@@ -97,6 +110,7 @@ class HomeData {
 
   HomeData({
     this.allApartments = const [],
+    this.builderData = const [],
     this.filteredApartments = const [],
     this.bestDeals = const [],
     this.selectedProperties = const [],
@@ -110,6 +124,7 @@ class HomeData {
 
   HomeData copyWith({
     List<ApartmentModel>? allApartments,
+    List<BuilderDataModel>? builderData,
     List<ApartmentModel>? filteredApartments,
     List<ApartmentModel>? bestDeals,
     List<ApartmentModel>? selectedProperties,
@@ -122,6 +137,7 @@ class HomeData {
   }) {
     return HomeData(
       allApartments: allApartments ?? this.allApartments,
+      builderData: builderData ?? this.builderData,
       filteredApartments: filteredApartments ?? this.filteredApartments,
       bestDeals: bestDeals ?? this.bestDeals,
       selectedProperties: selectedProperties ?? this.selectedProperties,

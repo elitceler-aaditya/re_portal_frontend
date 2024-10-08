@@ -74,6 +74,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     tag: "property-${widget.apartment.projectId}",
                     child: Container(
                       height: 180,
+                      width: double.infinity,
                       clipBehavior: Clip.hardEdge,
                       decoration: const BoxDecoration(
                         borderRadius: BorderRadius.only(
@@ -182,7 +183,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                       fontSize: 14,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 2),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.end,

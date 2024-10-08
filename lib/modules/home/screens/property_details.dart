@@ -129,6 +129,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   enquirySuccessBottomSheet() {
     return showModalBottomSheet(
+      backgroundColor: CustomColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      barrierColor: CustomColors.black.withOpacity(0.9),
       context: context,
       isScrollControlled: true,
       builder: (context) {
@@ -543,6 +548,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               MaterialPageRoute(
                                 builder: (context) => GoogleMapsScreen(
                                   apartment: widget.apartment,
+                                  apartmentDetails: _projectDetails,
                                 ),
                               ),
                             ).then((value) {
@@ -579,7 +585,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: CustomColors.black75,
+                  color: CustomColors.darkYellow,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -955,7 +961,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: CustomColors.black75,
+                                color: CustomColors.darkYellow,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Wrap(
@@ -993,7 +999,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: CustomColors.black75,
+                                color: CustomColors.darkYellow,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Wrap(
@@ -1032,7 +1038,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: CustomColors.black75,
+                                color: CustomColors.darkYellow,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Wrap(
@@ -1109,7 +1115,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CustomColors.black75,
+                                  color: CustomColors.darkYellow,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Wrap(
@@ -1148,7 +1154,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CustomColors.black75,
+                                  color: CustomColors.darkYellow,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Wrap(
@@ -1188,7 +1194,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CustomColors.black75,
+                                  color: CustomColors.darkYellow,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Wrap(
@@ -1344,7 +1350,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
             const SizedBox(height: 20),
             if (mounted) const AdsSection(),
-            const SizedBox(height: 70),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -1528,13 +1534,24 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
+                                        _timer?.cancel();
                                         rightSlideTransition(
-                                          context,
-                                          BuilderPortfolio(
-                                            projectId:
-                                                widget.apartment.projectId,
-                                          ),
-                                        );
+                                            context,
+                                            BuilderPortfolio(
+                                              projectId:
+                                                  widget.apartment.projectId,
+                                            ),
+                                            onComplete: () =>
+                                                _timer = Timer.periodic(
+                                                    const Duration(seconds: 3),
+                                                    (timer) {
+                                                  if (timerIndex == 1) {
+                                                    _showKeyHighlights = false;
+                                                  }
+                                                  setState(() {
+                                                    timerIndex++;
+                                                  });
+                                                }));
                                       },
                                       child: RichText(
                                         text: TextSpan(
@@ -1807,7 +1824,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   }
 
   void _showOverlay(BuildContext context, RenderBox renderBox) {
-    final Size size = renderBox.size;
     final Offset position = renderBox.localToGlobal(Offset.zero);
 
     _overlayEntry = OverlayEntry(

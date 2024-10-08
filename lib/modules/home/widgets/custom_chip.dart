@@ -63,12 +63,19 @@ class CustomListChip extends StatelessWidget {
           margin: const EdgeInsets.all(4),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: isSelected ? CustomColors.primary20 : CustomColors.white,
+            color: isSelected ? CustomColors.primary20 : CustomColors.black10,
             borderRadius: BorderRadius.circular(100),
             border: Border.all(
               color: isSelected ? CustomColors.primary : CustomColors.black25,
               width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.white.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 0),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -80,15 +87,20 @@ class CustomListChip extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              if (isSelected)
-                const Padding(
-                  padding: EdgeInsets.only(left: 4),
-                  child: Icon(
-                    Icons.close,
-                    size: 12,
-                    color: CustomColors.primary,
-                  ),
-                )
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: isSelected
+                    ? const Icon(
+                        Icons.close,
+                        size: 12,
+                        color: CustomColors.primary,
+                      )
+                    : const Icon(
+                        Icons.add,
+                        size: 12,
+                        color: CustomColors.black,
+                      ),
+              )
             ],
           ),
         ),

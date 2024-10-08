@@ -1,17 +1,26 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:re_portal_frontend/modules/maps/maps_property_card.dart';
+import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'
+    as carousel;
 
 class GoogleMapsScreen extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
-  const GoogleMapsScreen({super.key, required this.apartment});
+  final ApartmentDetailsResponse apartmentDetails;
+  const GoogleMapsScreen({
+    super.key,
+    required this.apartment,
+    required this.apartmentDetails,
+  });
 
   @override
   ConsumerState<GoogleMapsScreen> createState() => _GoogleMapsScreenState();
@@ -24,7 +33,8 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   final Completer<GoogleMapController> _googleMapsController =
       Completer<GoogleMapController>();
   String? _selectedApartmentId;
-  final PageController _scrollController = PageController();
+  final carousel.CarouselController carouselController =
+      carousel.CarouselController();
 
   fetchLocationUpdate() async {
     bool serviceEnabled;
@@ -86,7 +96,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   @override
   void dispose() {
     _locationSubscription?.cancel();
-    _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -129,7 +139,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                               .watch(homePropertiesProvider)
                               .allApartments
                               .indexOf(e);
-                          _scrollController.animateToPage(index,
+                          carouselController.animateToPage(index,
                               duration: const Duration(milliseconds: 800),
                               curve: Curves.easeInOut);
                         },
@@ -153,18 +163,18 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
             right: 0,
             left: 0,
             child: SizedBox(
-              height: 180, // Adjust this height as needed
-              child: PageView.builder(
-                controller: _scrollController,
+              height: 180,
+              child: FlutterCarousel.builder(
                 itemCount:
                     ref.watch(homePropertiesProvider).allApartments.length,
-                itemBuilder: (context, index) {
+                itemBuilder: (context, index, realIndex) {
                   final apartment =
                       ref.watch(homePropertiesProvider).allApartments[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: MapsPropertyCard(
                       apartment: apartment,
+                      apartmentDetails: widget.apartmentDetails,
                       onTap: () {
                         _googleMapsController.future.then((controller) {
                           controller
@@ -188,6 +198,15 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                     ),
                   );
                 },
+                options: CarouselOptions(
+                  controller: carouselController,
+                  height: 180,
+                  viewportFraction: 0.8,
+                  enableInfiniteScroll: false,
+                  enlargeCenterPage: true,
+                  enlargeStrategy: CenterPageEnlargeStrategy.height,
+                  padEnds: false,
+                ),
               ),
             ),
           ),

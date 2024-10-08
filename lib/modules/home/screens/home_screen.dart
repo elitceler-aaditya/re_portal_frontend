@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
@@ -15,7 +16,6 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
-import 'package:re_portal_frontend/riverpod/similar_properties_riverpod.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -30,6 +30,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  List<BuilderDataModel> builderData = [];
   List<ApartmentModel> allApartments = [];
   List<ApartmentModel> bestDeals = [];
   List<ApartmentModel> selectedProperties = [];
@@ -65,6 +66,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map responseBody = jsonDecode(response.body)['properties'];
+
+        builderData = (responseBody['builderData'] as List<dynamic>)
+            .map((e) => BuilderDataModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+
         bestDeals = (responseBody['bestDeals'] as List<dynamic>)
             .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
             .toList();
@@ -99,6 +105,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ...readyToMoveIn,
           ...lifestyleProjects,
         ];
+        ref.watch(homePropertiesProvider.notifier).setBuilderData(builderData);
         ref.watch(homePropertiesProvider.notifier).setBestDeals(bestDeals);
         ref
             .watch(homePropertiesProvider.notifier)
@@ -163,14 +170,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         EditorsChoiceCard(
             apartments: ref.watch(homePropertiesProvider).editorsChoice),
-        BuilderInFocus(
-            apartments: ref.watch(homePropertiesProvider).builderInFocus),
         const NewPropertiesSection(
           title: "New Projects",
         ),
+        BuilderInFocus(
+            builderData: ref.watch(homePropertiesProvider).builderData),
         const LifestyleProperties(),
         const ReadyToMovein(),
-        const AdsSection(),
         const SizedBox(height: 20),
       ],
     );
