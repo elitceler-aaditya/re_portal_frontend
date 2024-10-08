@@ -8,6 +8,7 @@ class ProfileTextField extends StatelessWidget {
   final int? maxLength;
   final String? errorText;
   final Icon? icon;
+  final int? maxLines;
 
   const ProfileTextField({
     super.key,
@@ -17,6 +18,7 @@ class ProfileTextField extends StatelessWidget {
     this.maxLength,
     this.errorText,
     this.icon,
+    this.maxLines,
   });
 
   @override
@@ -25,12 +27,14 @@ class ProfileTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       maxLength: maxLength,
+      minLines: 1,
+      maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hint,
         errorText: errorText,
         prefixIcon: icon,
         filled: true,
-        fillColor: CustomColors.white,
+        fillColor: CustomColors.primary10,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: CustomColors.black, width: 1),

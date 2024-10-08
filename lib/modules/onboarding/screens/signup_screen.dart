@@ -175,7 +175,6 @@ class _SignupScreenState extends State<SignupScreen> {
           .then((response) async {
         if (response.statusCode == 200 || response.statusCode == 201) {
           final responseData = jsonDecode(response.body);
-          debugPrint("--------------$responseData");
           await setUser(responseData).then((value) async {
             await _sendOTP();
           });
@@ -188,7 +187,6 @@ class _SignupScreenState extends State<SignupScreen> {
       });
     } catch (e) {
       errorSnackBar(context, e.toString());
-      debugPrint("--------------$e");
       setState(() {
         _isLoading = false;
       });

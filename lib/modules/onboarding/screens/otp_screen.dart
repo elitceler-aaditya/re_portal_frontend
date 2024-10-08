@@ -1,21 +1,26 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pinput/pinput.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OTPScreen extends StatefulWidget {
   final String otpSentTo;
   final String orderId;
-  const OTPScreen({super.key, required this.otpSentTo, required this.orderId});
+  final Function()? resend;
+  const OTPScreen({
+    super.key,
+    required this.otpSentTo,
+    required this.orderId,
+    this.resend,
+  });
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -36,7 +41,6 @@ class _OTPScreenState extends State<OTPScreen> {
       "otp": _otpController.text,
       "orderId": widget.orderId,
     };
-    debugPrint("----------printing to: $url");
     try {
       await http
           .post(
@@ -48,14 +52,12 @@ class _OTPScreenState extends State<OTPScreen> {
         setState(() {
           _isLoading = false;
         });
-        debugPrint("----------${response.body}");
         if (response.statusCode == 200 || response.statusCode == 201) {
           Map responseData = jsonDecode(response.body);
-          await getTemporaryDirectory().then((tempDir) {
-            final file = File('${tempDir.path}/token.json');
-            file.delete();
-            file.writeAsString(responseData['token']);
-            debugPrint("Token saved to ${file.path}");
+
+          await SharedPreferences.getInstance().then((sharedPref) {
+            sharedPref.setString('token', responseData['token']);
+            sharedPref.setString('refreshToken', responseData['refreshToken']);
 
             Navigator.pushAndRemoveUntil(
               context,
@@ -265,7 +267,7 @@ class _OTPScreenState extends State<OTPScreen> {
                                             ),
                                           ),
                                           GestureDetector(
-                                            onTap: () {},
+                                            onTap: widget.resend,
                                             child: const Text(
                                               'Resend',
                                               style: TextStyle(

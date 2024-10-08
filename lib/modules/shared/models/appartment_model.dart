@@ -6,28 +6,25 @@ part 'appartment_model.g.dart';
 @freezed
 class ApartmentModel with _$ApartmentModel {
   const factory ApartmentModel({
-    @Default("") String apartmentID,
     @Default("") String projectId,
-    @Default("") String apartmentName,
-    @Default("") String locality,
-    @Default("") String apartmentType,
-    @Default("") String amenities,
-    @Default("") String configuration,
-    @Default(0.0) double budget,
-    @Default(0.0) double flatSize,
-    @Default("") String companyName,
+    @Default("") String builderID,
+    @Default("") String apartmentID,
     @Default("") String companyPhone,
-    @Default("") String noOfFloor,
-    @Default("") String noOfFlats,
-    @Default("") String noOfBlocks,
-    @Default("") String possessionDate,
-    @Default("") String clubhouseSize,
-    @Default(0) int openSpace,
-    @Default("") String createdAt,
-    @Default("") String updatedAt,
-    @Default("") String image,
-  }) = _AppartmentModel;
+    @Default("") String companyName,
+    @Default("") String name,
+    @Default("") String description,
+    @Default("") String projectLocation,
+    @Default(0) int pricePerSquareFeetRate,
+    @Default(0.0) double latitude,
+    @Default(0.0) double longitude,
+    @Default("") String coverImage,
+    @Default([]) List<String> projectGallery,
+    @Default([]) List<String> configuration,
+    @Default(null) String? videoLink,
+    @Default(0) int flatSize,
+    @Default(0) int budget,
+  }) = _ApartmentModel;
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) =>
-      _$AppartmentModelFromJson(json);
+      _$ApartmentModelFromJson(json);
 }

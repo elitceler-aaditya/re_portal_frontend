@@ -11,7 +11,6 @@ successSnackBar(BuildContext context, String? message,
       backgroundColor: Colors.green,
       duration: const Duration(seconds: 2),
       action: action,
-      
     ),
   );
 }

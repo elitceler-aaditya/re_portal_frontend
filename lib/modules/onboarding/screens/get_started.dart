@@ -28,7 +28,6 @@ class _GetStartedState extends State<GetStarted> {
 
   @override
   Widget build(BuildContext context) {
-    var w = MediaQuery.of(context).size.width;
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Stack(
@@ -38,7 +37,7 @@ class _GetStartedState extends State<GetStarted> {
             // left: 0,
             // right: 0,
             child: Container(
-              height: h * 0.65,
+              height: h * 0.75,
               color: CustomColors.white,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -96,21 +95,31 @@ class _GetStartedState extends State<GetStarted> {
               ),
             ),
           ),
-          Positioned(
-            bottom: h * 0.35,
-            left: 0,
-            right: 0,
-            child: Container(
-              width: double.infinity,
-              height: h * 0.3,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    CustomColors.white.withOpacity(0),
-                    CustomColors.white,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+          Animate(
+            effects: const [
+              SlideEffect(
+                begin: Offset(0, 1),
+                end: Offset.zero,
+                duration: Duration(milliseconds: 1000),
+                curve: Curves.easeOut,
+              ),
+            ],
+            child: Positioned(
+              bottom: h * 0.4,
+              left: 0,
+              right: 0,
+              child: Container(
+                width: double.infinity,
+                height: h * 0.3,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      CustomColors.white.withOpacity(0),
+                      CustomColors.white,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
             ),
@@ -129,7 +138,7 @@ class _GetStartedState extends State<GetStarted> {
               left: 0,
               right: 0,
               child: Container(
-                height: h * 0.35,
+                height: h * 0.4,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: const BoxDecoration(
                   color: CustomColors.white,

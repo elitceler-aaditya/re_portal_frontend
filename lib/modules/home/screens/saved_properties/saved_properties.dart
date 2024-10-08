@@ -13,8 +13,6 @@ class SavedProperties extends ConsumerStatefulWidget {
 }
 
 class _ComparePropertiesState extends ConsumerState<SavedProperties> {
-  bool isCompare = false;
-
   formatPrice(double price) {
     if (price > 1000000) {
       return '${(price / 1000000).toStringAsFixed(0)} Lac';
@@ -38,50 +36,49 @@ class _ComparePropertiesState extends ConsumerState<SavedProperties> {
     return PopScope(
       canPop: true,
       onPopInvoked: (didPop) {
-        ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+        ref.watch(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
       child: Scaffold(
-          body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 10),
-                if (ref.watch(savedPropertiesProvider).isEmpty)
-                  const Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          "No saved properties",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          "Save your favourite properties to view them here",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: CustomColors.black50,
-                          ),
-                        ),
-                      ],
+        body: ref.watch(savedPropertiesProvider).isEmpty
+            ? const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "No saved properties",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
+                    Text(
+                      "Save your favourite properties to view them here",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: CustomColors.black50,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 10),
+                      PropertyList(
+                        apartments: ref.watch(savedPropertiesProvider),
+                        compare: true,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
-                if (ref.watch(savedPropertiesProvider).isNotEmpty)
-                  PropertyList(
-                    apartments: ref.watch(savedPropertiesProvider),
-                    compare: true,
-                  ),
-                const SizedBox(height: 60),
-              ],
-            ),
-          ),
-        ),
-      )),
+                ),
+              ),
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_grid_view.dart';
@@ -93,8 +94,6 @@ class _PropertState extends ConsumerState<PropertyList> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //Main body
         Padding(
@@ -110,7 +109,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                     child: TextButton.icon(
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
-                        backgroundColor: CustomColors.white,
+                        backgroundColor: CustomColors.primary10,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(6),
                         ),
@@ -124,6 +123,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                       icon: const Icon(
                         Icons.sort,
                         size: 20,
+                        color: CustomColors.primary,
                       ),
                       label: const Text(
                         "Sort",
@@ -160,6 +160,7 @@ class _PropertState extends ConsumerState<PropertyList> {
                   : PropertyGridView(
                       sortedApartments: sortedApartments,
                       compare: widget.compare,
+                      globalKeys: List.generate(100, (index) => GlobalKey()),
                     )
             ],
           ),

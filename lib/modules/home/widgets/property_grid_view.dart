@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/widgets/ribbon.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
@@ -10,26 +9,179 @@ import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class PropertyGridView extends ConsumerWidget {
+class PropertyGridView extends ConsumerStatefulWidget {
   final List<ApartmentModel> sortedApartments;
   final bool compare;
+  final List<GlobalKey> globalKeys;
   const PropertyGridView({
     super.key,
     required this.sortedApartments,
     this.compare = false,
+    required this.globalKeys,
   });
 
-  formatBudget(double budget) {
+  @override
+  ConsumerState<PropertyGridView> createState() => _PropertyGridViewState();
+}
+
+class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
+  OverlayEntry? _overlayEntry;
+  bool _isOverlayVisible = false;
+  List<GlobalKey> _globalKeys = [];
+
+  void _toggleOverlay(
+      BuildContext context, ApartmentModel apartment, int index) {
+    if (_isOverlayVisible) {
+      _removeOverlay();
+    } else {
+      _showOverlay(context, apartment, index);
+    }
+  }
+
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
+    return InkWell(
+      onTap: () {
+        _removeOverlay();
+        onTap();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Row(
+          children: [
+            icon,
+            const SizedBox(width: 12),
+            Text(text),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showOverlay(BuildContext context, ApartmentModel apartment, int index) {
+    GlobalKey contactButtonKey = _globalKeys[index];
+    final RenderBox renderBox =
+        contactButtonKey.currentContext!.findRenderObject() as RenderBox;
+    final Size size = renderBox.size;
+    final Offset position = renderBox.localToGlobal(Offset.zero);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _removeOverlay,
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+          ),
+          Positioned(
+            left: index % 2 == 0
+                ? position.dx + size.width / 2
+                : position.dx - 200,
+            top: position.dy + size.height,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(index % 2 == 0 ? 0 : 10),
+                    bottomLeft: const Radius.circular(10),
+                    bottomRight: const Radius.circular(10),
+                    topRight: Radius.circular(index % 2 == 0 ? 10 : 0),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildOption(
+                      SvgPicture.asset("assets/icons/phone.svg"),
+                      'Call now',
+                      () {
+                        launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
+                            .then(
+                          (value) => _removeOverlay(),
+                        );
+                      },
+                    ),
+                    _buildOption(
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: SvgPicture.asset(
+                              "assets/icons/whatsapp.svg",
+                            )),
+                        'Chat on Whatsapp', () {
+                      launchUrl(Uri.parse(
+                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                          .then(
+                        (value) => _removeOverlay(),
+                      );
+                    }),
+                    _buildOption(
+                        SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: SvgPicture.asset(
+                              "assets/icons/phone_incoming.svg",
+                            )),
+                        'Request call back',
+                        () => _removeOverlay()),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() {
+      _isOverlayVisible = true;
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    setState(() {
+      _isOverlayVisible = false;
+    });
+  }
+
+  formatBudget(int budget) {
     if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(2)} L";
+      return "${(budget / 100000).toStringAsFixed(2)} Lac.";
     } else {
       return "${(budget / 10000000).toStringAsFixed(2)} Cr";
     }
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _globalKeys = widget.globalKeys;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return GridView.builder(
+      padding: EdgeInsets.zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -38,14 +190,16 @@ class PropertyGridView extends ConsumerWidget {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemCount: sortedApartments.length,
+      itemCount: widget.sortedApartments.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PropertyDetails(
-                  appartment: sortedApartments[index],
+                  apartment: widget.sortedApartments[index],
+                  heroTag:
+                      "property-${widget.sortedApartments[index].projectId}",
                 ),
               ),
             );
@@ -72,7 +226,8 @@ class PropertyGridView extends ConsumerWidget {
                   child: Stack(
                     children: [
                       Hero(
-                        tag: sortedApartments[index].apartmentID,
+                        tag:
+                            "property-${widget.sortedApartments[index].projectId}",
                         child: Container(
                           height: 180,
                           decoration: BoxDecoration(
@@ -82,8 +237,8 @@ class PropertyGridView extends ConsumerWidget {
                               topRight: Radius.circular(10),
                             ),
                             image: DecorationImage(
-                              image:
-                                  NetworkImage(sortedApartments[index].image),
+                              image: NetworkImage(
+                                  widget.sortedApartments[index].coverImage),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -107,47 +262,27 @@ class PropertyGridView extends ConsumerWidget {
                         ),
                       ),
                       Positioned(
-                        top: 10,
-                        left: 0,
-                        child: CustomPaint(
-                          painter: RibbonPainter(CustomColors.primary),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            child: const Text(
-                              'RERA Approved',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
                           top: 0,
                           right: 0,
                           child: IconButton(
                             onPressed: () {
                               if (!ref
                                   .watch(savedPropertiesProvider)
-                                  .contains(sortedApartments[index])) {
+                                  .contains(widget.sortedApartments[index])) {
                                 ref
                                     .read(savedPropertiesProvider.notifier)
-                                    .addApartment(sortedApartments[index]);
+                                    .addApartment(
+                                        widget.sortedApartments[index]);
                               } else {
                                 ref
                                     .read(savedPropertiesProvider.notifier)
-                                    .removeApartment(sortedApartments[index]);
+                                    .removeApartment(
+                                        widget.sortedApartments[index]);
                               }
                             },
                             icon: ref
                                     .watch(savedPropertiesProvider)
-                                    .contains(sortedApartments[index])
+                                    .contains(widget.sortedApartments[index])
                                 ? const Icon(
                                     Icons.bookmark,
                                     color: CustomColors.white,
@@ -162,7 +297,7 @@ class PropertyGridView extends ConsumerWidget {
                         child: Align(
                           alignment: Alignment.bottomLeft,
                           child: Text(
-                            sortedApartments[index].apartmentName,
+                            widget.sortedApartments[index].name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -200,9 +335,8 @@ class PropertyGridView extends ConsumerWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: sortedApartments[index]
-                                    .flatSize
-                                    .toStringAsFixed(0),
+                                text: widget.sortedApartments[index].flatSize
+                                    .toString(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
@@ -236,7 +370,7 @@ class PropertyGridView extends ConsumerWidget {
                               ),
                               TextSpan(
                                 text: formatBudget(
-                                    sortedApartments[index].budget),
+                                    widget.sortedApartments[index].budget),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
@@ -251,15 +385,16 @@ class PropertyGridView extends ConsumerWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (compare)
+                              if (widget.compare)
                                 SizedBox(
-                                  height: 36,
-                                  width: 36,
+                                  height: 32,
+                                  width: 32,
                                   child: IconButton.filled(
                                     style: IconButton.styleFrom(
                                       backgroundColor: ref
                                               .watch(comparePropertyProvider)
-                                              .contains(sortedApartments[index])
+                                              .contains(widget
+                                                  .sortedApartments[index])
                                           ? CustomColors.green10
                                           : CustomColors.primary20,
                                       shape: RoundedRectangleBorder(
@@ -271,7 +406,8 @@ class PropertyGridView extends ConsumerWidget {
                                     onPressed: () {
                                       if (!ref
                                           .watch(comparePropertyProvider)
-                                          .contains(sortedApartments[index])) {
+                                          .contains(
+                                              widget.sortedApartments[index])) {
                                         if (ref
                                                 .read(comparePropertyProvider)
                                                 .length >=
@@ -282,20 +418,21 @@ class PropertyGridView extends ConsumerWidget {
                                           ref
                                               .read(comparePropertyProvider
                                                   .notifier)
-                                              .addApartment(
-                                                  sortedApartments[index]);
+                                              .addApartment(widget
+                                                  .sortedApartments[index]);
                                         }
                                       } else {
                                         ref
                                             .read(comparePropertyProvider
                                                 .notifier)
                                             .removeApartment(
-                                                sortedApartments[index]);
+                                                widget.sortedApartments[index]);
                                       }
                                     },
                                     icon: !ref
                                             .watch(comparePropertyProvider)
-                                            .contains(sortedApartments[index])
+                                            .contains(
+                                                widget.sortedApartments[index])
                                         ? SvgPicture.asset(
                                             "assets/icons/compare.svg",
                                             color: CustomColors.primary,
@@ -309,8 +446,9 @@ class PropertyGridView extends ConsumerWidget {
                                 ),
                               const SizedBox(width: 4),
                               SizedBox(
-                                height: 36,
-                                width: 36,
+                                key: _globalKeys[index],
+                                height: 32,
+                                width: 32,
                                 child: IconButton.filled(
                                   style: IconButton.styleFrom(
                                     backgroundColor: CustomColors.secondary,
@@ -319,18 +457,18 @@ class PropertyGridView extends ConsumerWidget {
                                     ),
                                   ),
                                   onPressed: () {
-                                    final Uri phoneUri = Uri(
-                                        scheme: 'tel',
-                                        path: sortedApartments[index]
-                                            .companyPhone);
-
-                                    launchUrl(phoneUri);
+                                    _toggleOverlay(
+                                      context,
+                                      widget.sortedApartments[index],
+                                      index,
+                                    );
                                   },
                                   icon: SvgPicture.asset(
-                                      "assets/icons/phone.svg",
-                                      color: CustomColors.white,
-                                      height: 20,
-                                      width: 20),
+                                    "assets/icons/phone.svg",
+                                    color: CustomColors.white,
+                                    height: 20,
+                                    width: 20,
+                                  ),
                                 ),
                               ),
                             ],

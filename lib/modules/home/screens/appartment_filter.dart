@@ -1,400 +1,697 @@
-import 'package:flutter/material.dart';
-import 'package:re_portal_frontend/modules/home/widgets/filter_button.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'dart:convert';
 
-class AppartmentFilter extends StatefulWidget {
-  const AppartmentFilter({super.key});
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/home/widgets/filter_button.dart';
+import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
+import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/locality_list.dart';
+
+class AppartmentFilter extends ConsumerStatefulWidget {
+  const AppartmentFilter({
+    super.key,
+  });
 
   @override
-  State<AppartmentFilter> createState() => _AppartmentFilterState();
+  ConsumerState<AppartmentFilter> createState() => _AppartmentFilterState();
 }
 
-class _AppartmentFilterState extends State<AppartmentFilter> {
-  int appartmentType = 0;
-  int configurationType = 0;
-  double _minBudget = 10.0;
-  double _maxBudget = 300.0;
+class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
+  bool _loading = false;
+  int? appartmentType;
+  List<String> selectedConfigurations = [];
+  double _minBudget = 0;
+  double _maxBudget = 1;
+  double _budgetSliderMin = 1;
+  double _budgetSliderMax = 1;
+  double _minFlatSize = 0;
+  double _maxFlatSize = 1;
+  double _flatSizeSliderMin = 1;
+  double _flatSizeSliderMax = 1;
+  List<String> localities = [];
+  List<String> amenities = [];
+  List<String> apartmentTypeList = [
+    "Standalone",
+    "Semi-gated",
+    "Fully-gated",
+  ];
+  List<String> configurationList = [
+    "1 BHK",
+    "2 BHK",
+    "3 BHK",
+    "4 BHK",
+    "4+ BHK"
+  ];
+  List<String> basicAmenities = [
+    'Parking',
+    'Gym',
+    'Pool',
+    'Internet',
+    'Laundry',
+    'Pet-Friendly',
+    'Balcony',
+    'Storage',
+    'Security',
+    'Air Conditioning'
+  ];
+  final TextEditingController _localitySearchController =
+      TextEditingController();
+  final TextEditingController _amenitySearchController =
+      TextEditingController();
 
-  double _minFlatSize = 50;
-  double _maxFlatSize = 5000;
+  updateFilters() {
+    ref.watch(filtersProvider.notifier).setAllFilters(
+          FiltersModel(
+            selectedLocalities: localities,
+            apartmentType: appartmentType == null
+                ? ''
+                : apartmentTypeList[appartmentType!],
+            amenities: amenities,
+            selectedConfigurations: selectedConfigurations,
+            minBudget: _budgetSliderMin,
+            maxBudget: _budgetSliderMax,
+            minFlatSize: _flatSizeSliderMin,
+            maxFlatSize: _flatSizeSliderMax,
+          ),
+        );
+
+    getFilteredApartments();
+  }
+
+  Future<void> getFilteredApartments() async {
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+    });
+    try {
+      Map<String, dynamic> params = {
+        'minBudget': _minBudget == _budgetSliderMin
+            ? '0'
+            : _budgetSliderMin.toStringAsFixed(0),
+        'maxBudget': _maxBudget == _budgetSliderMax
+            ? '99999999'
+            : _budgetSliderMax.toStringAsFixed(0),
+        // 'minFlatSize': _flatSizeSliderMin.toStringAsFixed(0),
+        // 'maxFlatSize': _flatSizeSliderMax.toStringAsFixed(0),
+      };
+
+      if (localities.isNotEmpty) {
+        params['projectLocation'] = localities.join(',');
+      }
+      if (amenities.isNotEmpty) {
+        params['amenities'] = amenities.join(',');
+      }
+      if (appartmentType != null &&
+          appartmentType! < apartmentTypeList.length) {
+        params['projectType'] = apartmentTypeList[appartmentType!];
+      }
+      if (selectedConfigurations.isNotEmpty) {
+        params['BHKType'] = selectedConfigurations
+            .map((config) => config.replaceAll(" ", ""))
+            .join(',');
+      }
+
+      debugPrint("-----------params: $params");
+
+      String baseUrl = dotenv.get('BASE_URL');
+      String url = "$baseUrl/project/filterApartmentsNew";
+      Uri uri = Uri.parse(url).replace(queryParameters: params);
+
+      final response = await http.get(
+        uri,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['projects'] is List) {
+          List<dynamic> responseBody = responseData['projects'];
+          if (mounted) {
+            ref.read(homePropertiesProvider.notifier).setfilteredApartments(
+                  responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
+                );
+            debugPrint("Filtered apartments count: ${responseBody.length}");
+            Navigator.pop(context);
+          }
+        } else {
+          throw Exception('Invalid response format: projects is not a List');
+        }
+      } else {
+        throw Exception(
+            'Failed to load filtered apartments: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint("Error in getFilteredApartments: $e");
+      // Show error message to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load apartments: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
+    }
+  }
 
   String formatBudget(double budget) {
-    //return budget in k format or lakh format
-    if (budget < 100) {
-      return "${budget.toStringAsFixed(0)}k";
-    } else if (budget < 1000) {
-      return "${(budget / 100).toStringAsFixed(2)}L";
+    //return budget in km lac and cr
+    if (budget < 1000) {
+      return budget.toStringAsFixed(0);
+    } else if (budget < 100000) {
+      return "${(budget / 1000).toStringAsFixed(0)}K";
+    } else if (budget < 10000000) {
+      return "${(budget / 100000).toStringAsFixed(0)}L";
     } else {
-      return "${(budget / 100).toStringAsFixed(0)}L";
+      return "${(budget / 10000000).toStringAsFixed(0)}Cr";
     }
+  }
+
+  void initValues() {
+    // min and max budget
+    _minBudget = ref
+        .watch(homePropertiesProvider)
+        .allApartments
+        .map((e) => e.budget)
+        .reduce((value, element) => value < element ? value : element)
+        .toDouble();
+    _maxBudget = ref
+        .watch(homePropertiesProvider)
+        .allApartments
+        .map((e) => e.budget)
+        .reduce((value, element) => value > element ? value : element)
+        .toDouble();
+    //min and max flat size
+    _minFlatSize = ref
+        .watch(homePropertiesProvider)
+        .allApartments
+        .map((e) => double.parse(e.flatSize.toString()))
+        .reduce((value, element) => value < element ? value : element);
+    _maxFlatSize = ref
+        .watch(homePropertiesProvider)
+        .allApartments
+        .map((e) => double.parse(e.flatSize.toString()))
+        .reduce((value, element) => value > element ? value : element);
+
+    localities = ref.watch(filtersProvider).selectedLocalities;
+    int index = apartmentTypeList.indexWhere(
+        (element) => element == ref.watch(filtersProvider).apartmentType);
+    if (index != -1) {
+      appartmentType = index;
+    } else {
+      // Handle case when ref.watch(filtersProvider).apartmentType is not in the list
+    }
+    amenities = ref.watch(filtersProvider).amenities;
+    selectedConfigurations = ref.watch(filtersProvider).selectedConfigurations;
+    _budgetSliderMin = ref.watch(filtersProvider).minBudget == 0
+        ? _minBudget
+        : ref.watch(filtersProvider).minBudget;
+    _budgetSliderMax = ref.watch(filtersProvider).maxBudget == 0
+        ? _maxBudget
+        : ref.watch(filtersProvider).maxBudget;
+    _flatSizeSliderMin = ref.watch(filtersProvider).minFlatSize == 0
+        ? _minFlatSize
+        : ref.watch(filtersProvider).minFlatSize;
+    _flatSizeSliderMax = ref.watch(filtersProvider).maxFlatSize == 0
+        ? _maxFlatSize
+        : ref.watch(filtersProvider).maxFlatSize;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initValues();
+    });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: SingleChildScrollView(
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 50),
-                const Text(
-                  "Filters",
-                  style: TextStyle(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      color: CustomColors.secondary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(text: "You are searching in "),
-                      TextSpan(
-                        text: "Hyderabad",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      const SizedBox(height: 50),
+                      const Text(
+                        "Filters",
+                        style: TextStyle(
+                          color: CustomColors.primary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                const Divider(
-                  color: CustomColors.secondary,
-                  height: 30,
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Localities",
-                      style: TextStyle(
+                      RichText(
+                        text: const TextSpan(
+                          style: TextStyle(
+                            color: CustomColors.secondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          children: [
+                            TextSpan(text: "You are searching in "),
+                            TextSpan(
+                              text: "Hyderabad",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(
                         color: CustomColors.secondary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        height: 30,
                       ),
-                    ),
-                    Text(
-                      "Add upto 4 locations",
-                      style: TextStyle(
-                        color: CustomColors.black50,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Localities",
+                            style: TextStyle(
+                              color: CustomColors.secondary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            "Add upto 4 locations",
+                            style: TextStyle(
+                              color: CustomColors.black50,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                //search box
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 44,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search for localities',
-                      hintStyle: const TextStyle(
-                          color: CustomColors.black25,
-                          fontWeight: FontWeight.w600),
-                      prefixIcon:
-                          const Icon(Icons.search, color: CustomColors.black50),
-                      filled: true,
-                      fillColor: CustomColors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: CustomColors.black25),
+                      //search box
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 44,
+                        child: TextField(
+                          controller: _localitySearchController,
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search for localities',
+                            hintStyle: const TextStyle(
+                                color: CustomColors.black25,
+                                fontWeight: FontWeight.w600),
+                            prefixIcon: const Icon(Icons.search,
+                                color: CustomColors.black50),
+                            filled: true,
+                            fillColor: CustomColors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: CustomColors.black25),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: CustomColors.black25),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: CustomColors.primary),
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: CustomColors.black,
+                          ),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: CustomColors.black25),
+                      const SizedBox(height: 4),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            ...localities.take(4).map(
+                                  (e) => CustomListChip(
+                                    text: e,
+                                    isSelected: true,
+                                    onTap: () {
+                                      setState(() {
+                                        localities.remove(e);
+                                      });
+                                    },
+                                  ),
+                                ),
+                            if (_localitySearchController.text.isNotEmpty &&
+                                localities.length < 4)
+                              ...ref
+                                  .watch(localityListProvider)
+                                  .toSet()
+                                  .where((e) => e.toLowerCase().contains(
+                                      _localitySearchController.text
+                                          .trim()
+                                          .toLowerCase()))
+                                  .where((e) => !localities.contains(e))
+                                  .take(4 - localities.length)
+                                  .map(
+                                    (e) => CustomListChip(
+                                      text: e,
+                                      isSelected: false,
+                                      onTap: () {
+                                        setState(() {
+                                          if (localities.length < 4) {
+                                            localities.add(e);
+                                            _localitySearchController.clear();
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ),
+                          ],
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: CustomColors.primary),
-                      ),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: CustomColors.black,
-                    ),
-                  ),
-                ),
-                const Divider(
-                  color: CustomColors.secondary,
-                  height: 30,
-                ),
 
-                const Text(
-                  "Apartment Types",
-                  style: TextStyle(
-                    color: CustomColors.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 6),
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CustomRadioButton(
-                        text: "Standalone",
-                        isSelected: appartmentType == 0,
-                        onTap: () {
-                          setState(() {
-                            appartmentType = 0;
-                          });
-                        },
+                      const Text(
+                        "Apartment Types",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      CustomRadioButton(
-                        text: "Semi-gated",
-                        isSelected: appartmentType == 1,
-                        onTap: () {
-                          setState(() {
-                            appartmentType = 1;
-                          });
-                        },
+                      const SizedBox(height: 6),
+
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: apartmentTypeList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: apartmentTypeList[index],
+                              isSelected: appartmentType == index,
+                              onTap: () {
+                                //tap to unselect
+                                if (appartmentType == index) {
+                                  setState(() {
+                                    appartmentType = null;
+                                  });
+                                } else {
+                                  setState(() {
+                                    appartmentType = index;
+                                  });
+                                }
+                              },
+                            );
+                          },
+                        ),
                       ),
-                      CustomRadioButton(
-                        text: "Fully-gated",
-                        isSelected: appartmentType == 2,
-                        onTap: () {
-                          setState(() {
-                            appartmentType = 2;
-                          });
-                        },
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+
+                      const Text(
+                        "Amenities",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      //search box
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        height: 44,
+                        child: TextField(
+                          controller: _amenitySearchController,
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search Amenities',
+                            hintStyle: const TextStyle(
+                                color: CustomColors.black25,
+                                fontWeight: FontWeight.w600),
+                            prefixIcon: const Icon(Icons.search,
+                                color: CustomColors.black50),
+                            filled: true,
+                            fillColor: CustomColors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: CustomColors.black25),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: CustomColors.black25),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  const BorderSide(color: CustomColors.primary),
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: CustomColors.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            if (_amenitySearchController.text.isNotEmpty)
+                              ...basicAmenities
+                                  .where((e) => e.toLowerCase().contains(
+                                      _amenitySearchController.text
+                                          .trim()
+                                          .toLowerCase()))
+                                  .map(
+                                    (e) => CustomListChip(
+                                      text: e,
+                                      isSelected: amenities.contains(e),
+                                      onTap: () {
+                                        setState(() {
+                                          if (amenities.contains(e)) {
+                                            amenities.remove(e);
+                                          } else {
+                                            amenities.add(e);
+                                          }
+                                        });
+                                        _amenitySearchController.clear();
+                                      },
+                                    ),
+                                  ),
+                            if (_amenitySearchController.text.isEmpty)
+                              ...amenities.map(
+                                (e) => CustomListChip(
+                                  text: e,
+                                  isSelected: true,
+                                  onTap: () {
+                                    setState(() {
+                                      amenities.remove(e);
+                                    });
+                                    _amenitySearchController.clear();
+                                  },
+                                ),
+                              ),
+                            if (_amenitySearchController.text.isEmpty)
+                              ...basicAmenities
+                                  .where((e) => !amenities.contains(e))
+                                  .map(
+                                    (e) => CustomListChip(
+                                      text: e,
+                                      isSelected: false,
+                                      onTap: () {
+                                        setState(() {
+                                          if (amenities.contains(e)) {
+                                            amenities.remove(e);
+                                          } else {
+                                            amenities.add(e);
+                                          }
+                                        });
+                                        _amenitySearchController.clear();
+                                      },
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+                      const Text(
+                        "Configuration",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      SizedBox(
+                        height: 30,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 5,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: configurationList[index],
+                              isSelected: selectedConfigurations
+                                  .contains(configurationList[index]),
+                              onTap: () {
+                                setState(() {
+                                  if (selectedConfigurations
+                                      .contains(configurationList[index])) {
+                                    selectedConfigurations.clear();
+                                  } else {
+                                    selectedConfigurations.clear();
+                                    selectedConfigurations
+                                        .add(configurationList[index]);
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+                      const Text(
+                        "Budget",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text("₹${formatBudget(_budgetSliderMin)}"),
+                          Text("₹${formatBudget(_budgetSliderMax)}"),
+                        ],
+                      ),
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: CustomColors.primary,
+                          inactiveTrackColor: CustomColors.black10,
+                          thumbColor: CustomColors.primary,
+                          overlayColor: CustomColors.primary.withOpacity(0.2),
+                          valueIndicatorColor: CustomColors.primary,
+                          valueIndicatorTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                        child: RangeSlider(
+                          min: _minBudget,
+                          max: _maxBudget,
+                          divisions: ref
+                              .watch(homePropertiesProvider)
+                              .allApartments
+                              .length,
+                          labels: RangeLabels(
+                            '₹${formatBudget(_budgetSliderMin)}',
+                            '₹${formatBudget(_budgetSliderMax)}',
+                          ),
+                          values: RangeValues(_budgetSliderMin,
+                              _budgetSliderMax), // Update the values to use _budgetSliderMin and _budgetSliderMax
+                          onChanged: (RangeValues values) {
+                            setState(() {
+                              _budgetSliderMin = values.start;
+                              _budgetSliderMax = values.end;
+                            });
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+                      const Text(
+                        "Flat Size",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text("${_flatSizeSliderMin.toInt()} sq.ft"),
+                          Text("${_flatSizeSliderMax.toInt()} sq.ft"),
+                        ],
+                      ),
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: CustomColors.primary,
+                          inactiveTrackColor: CustomColors.black10,
+                          thumbColor: CustomColors.primary,
+                          overlayColor: CustomColors.primary.withOpacity(0.2),
+                          valueIndicatorColor: CustomColors.primary,
+                          valueIndicatorTextStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                        child: RangeSlider(
+                          min: _minFlatSize,
+                          max: _maxFlatSize,
+                          divisions: ref
+                              .watch(homePropertiesProvider)
+                              .allApartments
+                              .length,
+                          labels: RangeLabels(
+                            '${_flatSizeSliderMin.toStringAsFixed(1)} sq.ft',
+                            '${_flatSizeSliderMax.toInt()} sq.ft',
+                          ),
+                          values: RangeValues(
+                              _flatSizeSliderMin, _flatSizeSliderMax),
+                          onChanged: (RangeValues values) {
+                            setState(() {
+                              _flatSizeSliderMin = values.start;
+                              _flatSizeSliderMax = values.end;
+                            });
+                          },
+                        ),
                       ),
                     ],
-                  ),
-                ),
-
-                const Divider(
-                  color: CustomColors.secondary,
-                  height: 30,
-                ),
-
-                const Text(
-                  "Amenities",
-                  style: TextStyle(
-                    color: CustomColors.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                //search box
-                const SizedBox(height: 6),
-                SizedBox(
-                  height: 44,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search Amenities',
-                      hintStyle: const TextStyle(
-                          color: CustomColors.black25,
-                          fontWeight: FontWeight.w600),
-                      prefixIcon:
-                          const Icon(Icons.search, color: CustomColors.black50),
-                      filled: true,
-                      fillColor: CustomColors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: CustomColors.black25),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: CustomColors.black25),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: CustomColors.primary),
-                      ),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: CustomColors.black,
-                    ),
-                  ),
-                ),
-
-                const Divider(
-                  color: CustomColors.secondary,
-                  height: 30,
-                ),
-                const Text(
-                  "Configuration",
-                  style: TextStyle(
-                    color: CustomColors.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 6),
-
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      CustomRadioButton(
-                        text: "1 BHK",
-                        isSelected: configurationType == 0,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 0;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "2 BHK",
-                        isSelected: configurationType == 1,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 1;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "3 BHK",
-                        isSelected: configurationType == 2,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 2;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "4 BHK",
-                        isSelected: configurationType == 3,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 3;
-                          });
-                        },
-                      ),
-                      CustomRadioButton(
-                        text: "4+ BHK",
-                        isSelected: configurationType == 4,
-                        onTap: () {
-                          setState(() {
-                            configurationType = 4;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(
-                  color: CustomColors.secondary,
-                  height: 30,
-                ),
-                const Text(
-                  "Budget",
-                  style: TextStyle(
-                    color: CustomColors.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text("₹${formatBudget(10)}"),
-                    Text("₹${formatBudget(300)}"),
-                  ],
-                ),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: CustomColors.primary,
-                    inactiveTrackColor: CustomColors.black10,
-                    thumbColor: CustomColors.primary,
-                    overlayColor: CustomColors.primary.withOpacity(0.2),
-                    valueIndicatorColor: CustomColors.primary,
-                    valueIndicatorTextStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                  child: RangeSlider(
-                    min: 10.0,
-                    max: 300.0,
-                    divisions: 20,
-                    labels: RangeLabels(
-                      '₹${formatBudget(_minBudget)}',
-                      '₹${formatBudget(_maxBudget)}',
-                    ),
-                    values: RangeValues(_minBudget, _maxBudget),
-                    onChanged: (RangeValues values) {
-                      setState(() {
-                        _minBudget = values.start;
-                        _maxBudget = values.end;
-                      });
-                    },
-                  ),
-                ),
-
-                const Divider(
-                  color: CustomColors.secondary,
-                  height: 30,
-                ),
-                const Text(
-                  "Flat Size",
-                  style: TextStyle(
-                    color: CustomColors.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text("${_minFlatSize.toStringAsFixed(1)} sq.ft"),
-                    Text("${_maxFlatSize.toInt()}+ sq.ft"),
-                  ],
-                ),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: CustomColors.primary,
-                    inactiveTrackColor: CustomColors.black10,
-                    thumbColor: CustomColors.primary,
-                    overlayColor: CustomColors.primary.withOpacity(0.2),
-                    valueIndicatorColor: CustomColors.primary,
-                    valueIndicatorTextStyle: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                  child: RangeSlider(
-                    min: 50,
-                    max: 5000,
-                    divisions: 100,
-                    labels: RangeLabels(
-                      '${_minFlatSize.toInt()}',
-                      '${_maxFlatSize.toInt()}',
-                    ),
-                    values: RangeValues(_minFlatSize, _maxFlatSize),
-                    onChanged: (RangeValues values) {
-                      setState(() {
-                        _minFlatSize = values.start;
-                        _maxFlatSize = values.end;
-                      });
-                    },
                   ),
                 ),
               ],
@@ -441,21 +738,27 @@ class _AppartmentFilterState extends State<AppartmentFilter> {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    updateFilters();
                   },
                   child: Container(
                     height: 60,
                     width: double.infinity,
                     color: CustomColors.primary20,
-                    child: const Center(
-                      child: Text(
-                        "Apply",
-                        style: TextStyle(
-                          color: CustomColors.primary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
+                    child: Center(
+                      child: _loading
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: CustomColors.primary,
+                              ),
+                            )
+                          : const Text(
+                              "Apply",
+                              style: TextStyle(
+                                color: CustomColors.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
                     ),
                   ),
                 ),
