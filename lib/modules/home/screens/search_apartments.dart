@@ -438,13 +438,20 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
       if (ref.watch(locationHomesProvider) == null) {
         getLocationHomes();
       }
-      if (widget.openFilters) filterBottomSheet();
-    });
-
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      setState(() {
-        searchOptionsIndex = (searchOptionsIndex + 1) % searchOptions.length;
-      });
+      if (widget.openFilters) {
+        filterBottomSheet();
+      } else {
+        _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+          if (mounted) {
+            setState(() {
+              searchOptionsIndex =
+                  (searchOptionsIndex + 1) % searchOptions.length;
+            });
+          } else {
+            timer.cancel();
+          }
+        });
+      }
     });
   }
 
@@ -709,7 +716,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                                   .read(
                                                       filtersProvider.notifier)
                                                   .updateSelectedLocalities(
-                                                      [locality]);    
+                                                      [locality]);
                                               getFilteredApartments(
                                                       params: {'page': "1"})
                                                   .then((value) {

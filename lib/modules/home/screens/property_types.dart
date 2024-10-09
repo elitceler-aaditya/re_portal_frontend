@@ -25,11 +25,12 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
     await getTemporaryDirectory().then((tempDir) async {
       SharedPreferences.getInstance().then((sharedref) {
         String token = sharedref.getString('token') ?? '';
-        final userData = JwtToken.payload(token);
-
-        ref
-            .read(userProvider.notifier)
-            .setUser(User.fromJson({...userData, 'token': token}));
+        if (token.isNotEmpty) {
+          final userData = JwtToken.payload(token);
+          ref
+              .read(userProvider.notifier)
+              .setUser(User.fromJson({...userData, 'token': token}));
+        }
       });
     });
   }

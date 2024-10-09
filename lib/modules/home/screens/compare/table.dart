@@ -174,7 +174,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
   List<DataRow> _buildScrollableRows() {
     List attributes = [
-      (ComparePropertyData prop) => prop.name,
+      // (ComparePropertyData prop) => prop.name,
       (ComparePropertyData prop) => prop.projectType,
       (ComparePropertyData prop) => "${prop.flatSizes.toString()} sq.ft.",
       (ComparePropertyData prop) =>

@@ -9,6 +9,7 @@ import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart'
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BuilderPortfolio extends ConsumerStatefulWidget {
   final String projectId;
@@ -76,115 +77,174 @@ class _BuilderPortfolioState extends ConsumerState<BuilderPortfolio> {
         iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 40,
       ),
-      body: isLoading
-          ? const Center(
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: CircularProgressIndicator(
-                  color: CustomColors.black,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+              decoration: const BoxDecoration(
+                color: CustomColors.primary,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
               ),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+                    height: 84,
+                    width: 84,
+                    clipBehavior: Clip.hardEdge,
                     decoration: const BoxDecoration(
-                      color: CustomColors.primary,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
+                      shape: BoxShape.circle,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const CircleAvatar(
-                          radius: 50,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  builder.companyName,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
+                    child: Image.network(
+                      "",
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        return loadingProgress == null
+                            ? child
+                            : Shimmer.fromColors(
+                                baseColor: CustomColors.black25,
+                                highlightColor: CustomColors.black50,
+                                child: Container(
+                                  height: 84,
+                                  width: 84,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
-                                const SizedBox(height: 2),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/icons/id_card.svg",
-                                      height: 20,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      builder.reraId,
-                                      style: const TextStyle(
-                                        color: CustomColors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.apartment_outlined,
-                                      color: CustomColors.white,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      "${builder.totalNoOfProjects} Projects",
-                                      style: const TextStyle(
-                                        color: CustomColors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                              );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 84,
+                          width: 84,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            builder.companyName[0],
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Properties by ${builder.companyName}",
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            builder.companyName,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/icons/id_card.svg",
+                                height: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                builder.reraId,
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.apartment_outlined,
+                                color: CustomColors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                "${builder.totalNoOfProjects} Projects",
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  PropertyListView(
-                    sortedApartments: builder.apartments,
-                    compare: true,
-                  )
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  Text(
+                    "Properties by ${builder.companyName}",
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            isLoading
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
+                        child: Shimmer.fromColors(
+                          baseColor: CustomColors.black25,
+                          highlightColor: CustomColors.black50,
+                          child: Container(
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: PropertyListView(
+                      sortedApartments: builder.apartments,
+                      compare: true,
+                    ),
+                  )
+          ],
+        ),
+      ),
     );
   }
 }

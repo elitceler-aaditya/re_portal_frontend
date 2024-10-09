@@ -309,14 +309,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             onPressed: () {
-                              if (!loading) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const SearchApartment(
-                                        openFilters: true),
-                                  ),
-                                );
-                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SearchApartment(openFilters: true),
+                                ),
+                              );
                             },
                             icon: SvgPicture.asset("assets/icons/filter.svg"),
                             label: const Text(
