@@ -421,6 +421,28 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     }
   }
 
+  void getLocalitiesList() async {
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/user/getLocations";
+    Uri uri = Uri.parse(url);
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        List<dynamic> responseBody = responseData['data'];
+        List<String> localities =
+            responseBody.map((item) => item.toString()).toList();
+        ref.read(localityListProvider.notifier).setLocalities(localities);
+      } else {
+        throw Exception('Failed to load localities');
+      }
+    } catch (error, stackTrace) {
+      debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -428,7 +450,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Map<String, dynamic> params = ref.watch(filtersProvider).toJson();
       params['page'] = "1";
-
+      if (ref.watch(localityListProvider).isEmpty) {
+        getLocalitiesList();
+      }
       getFilteredApartments(params: params);
       if (widget.openFilters) {
         filterBottomSheet();
@@ -855,11 +879,47 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                               .filteredApartments
                                               .length,
                                       itemBuilder: (context, index) {
-                                        if (index == 4) {
-                                          return const ProjectSnippets();
-                                        } else {
-                                          int listIndex =
-                                              index > 4 ? index - 1 : index;
+                                        if (index % 5 == 0 && index != 0) {
+                                          List<Widget> widgetList = [
+                                            const NewLaunchSection(
+                                                title: "Editor's Choice"),
+                                            const ProjectSnippets(),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: Text(
+                                                    "New Launches",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                EditorsChoiceCard(
+                                                    apartments: ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .newProjects),
+                                              ],
+                                            ),
+                                            const BudgetHomes(),
+                                            const LocationHomes(),
+                                            const ReadyToMovein(),
+                                            const UltraLuxuryHomes(),
+                                          ];
+                                          int adsIndex = index ~/ 5;
+                                          return widgetList[
+                                              adsIndex % widgetList.length];
+                                        }
+                                        {
+                                          int listIndex = index - (index ~/ 5);
+
                                           return PropertyCard(
                                             apartment: ref
                                                 .watch(homePropertiesProvider)
@@ -962,26 +1022,66 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      "New Launches",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  EditorsChoiceCard(
-                                      apartments: ref
+                                  if (ref
                                           .watch(homePropertiesProvider)
-                                          .newProjects),
-                                  const BudgetHomes(),
-                                  const LocationHomes(),
-                                  const ReadyToMovein(),
-                                  const UltraLuxuryHomes(),
-                                  const NewLaunchSection(
-                                      title: "Editor's Choice"),
+                                          .filteredApartments
+                                          .length <
+                                      5)
+                                    const ProjectSnippets(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <
+                                      8)
+                                    Column(
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text(
+                                            "New Launches",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        EditorsChoiceCard(
+                                            apartments: ref
+                                                .watch(homePropertiesProvider)
+                                                .newProjects),
+                                      ],
+                                    ),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <
+                                      12)
+                                    const BudgetHomes(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <
+                                      16)
+                                    const LocationHomes(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <
+                                      20)
+                                    const ReadyToMovein(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <
+                                      24)
+                                    const UltraLuxuryHomes(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <
+                                      28)
+                                    const NewLaunchSection(
+                                        title: "Editor's Choice"),
                                   SizedBox(
                                     height: 150,
                                     child: Column(
@@ -1024,10 +1124,29 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                                 localityListProvider)[
                                                             index]
                                                       ]);
-                                                      setState(() {
-                                                        loading = true;
+                                                      Map<String, dynamic>
+                                                          params = ref
+                                                              .watch(
+                                                                  filtersProvider)
+                                                              .toJson();
+                                                      params['page'] = "1";
+                                                      getFilteredApartments(
+                                                          params: params);
+                                                      Future.delayed(
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500), () {
+                                                        _masterScrollController
+                                                            .animateTo(
+                                                          0,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                          curve:
+                                                              Curves.easeInOut,
+                                                        );
                                                       });
-                                                      getFilteredApartments();
                                                     },
                                                     child: Container(
                                                       height: double.infinity,
