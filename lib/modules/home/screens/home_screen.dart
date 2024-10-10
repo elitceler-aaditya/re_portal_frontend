@@ -7,6 +7,7 @@ import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
@@ -14,6 +15,7 @@ import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart
 import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
@@ -40,6 +42,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
   bool loading = true;
+
+  List<Map<String, dynamic>> categoryOptions = [
+    {
+      'title': 'Budget properties',
+      'filter': {'maxBudget': '10000000'},
+    },
+    {
+      'title': 'Standalone properties',
+      'filter': {'projectType': 'Standalone'},
+    },
+    {
+      'title': 'Family apartments',
+      'filter': {'BHKType': '3BHK'},
+    },
+    {
+      'title': 'Apartments in Boduppal',
+      'filter': {'projectLocation': 'Boduppal'},
+    },
+  ];
 
   String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
@@ -288,11 +309,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              //   Navigator.of(context).push(
-                              //     MaterialPageRoute(
-                              //       builder: (context) => const VideoScreen(),
-                              //     ),
-                              //   );
+                              upSlideTransition(
+                                  context, const UserLocationProperties());
                             },
                             child: Padding(
                               padding:
@@ -427,6 +445,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                   ),
                 ],
+              ),
+            ),
+
+            //category options
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  categoryOptions.length,
+                  (index) => GestureDetector(
+                    onTap: () {
+                      ref.read(filtersProvider.notifier).setAllFilters(
+                          FiltersModel()
+                              .fromJson(categoryOptions[index]['filter']));
+
+                      rightSlideTransition(
+                          context, const SearchApartmentResults());
+                    },
+                    child: Container(
+                      height: 80,
+                      width: 150,
+                      margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        gradient: const LinearGradient(
+                          colors: [
+                            CustomColors.secondary50,
+                            CustomColors.secondary,
+                          ],
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        categoryOptions[index]['title'],
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: CustomColors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
 

@@ -209,7 +209,7 @@ class NewLaunchSection extends ConsumerWidget {
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Padding(
@@ -264,7 +264,7 @@ class NewLaunchSection extends ConsumerWidget {
                                                             item.isNotEmpty)
                                                         .first,
                                                     style: const TextStyle(
-                                                      fontSize: 16,
+                                                      fontSize: 12,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),

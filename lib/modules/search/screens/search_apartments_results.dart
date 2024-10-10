@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
+import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/budget_homes.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
@@ -20,6 +21,7 @@ import 'package:re_portal_frontend/modules/search/screens/appartment_filter.dart
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
@@ -48,6 +50,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   bool isListview = true;
+  bool pricePerSqFt = false;
   int currentPage = 1;
   final ScrollController _masterScrollController = ScrollController();
   Timer? _timer;
@@ -249,20 +252,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ListTile(
                 title: const Text('Popularity'),
                 onTap: () {
-                  if (ref
-                      .watch(homePropertiesProvider)
-                      .filteredApartments
-                      .isNotEmpty) {
-                    ref
-                        .read(homePropertiesProvider.notifier)
-                        .sortFilteredApartments(2);
-                  }
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('Price - low to high'),
-                onTap: () {
+                  pricePerSqFt = false;
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -275,8 +265,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                 },
               ),
               ListTile(
-                title: const Text('Price - high to low'),
+                title: const Text('Price - low to high'),
                 onTap: () {
+                  pricePerSqFt = false;
+
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -284,6 +276,52 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     ref
                         .read(homePropertiesProvider.notifier)
                         .sortFilteredApartments(1);
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Price - high to low'),
+                onTap: () {
+                  pricePerSqFt = false;
+
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(2);
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Price per sq.ft - high to low'),
+                onTap: () {
+                  pricePerSqFt = true;
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(3);
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Price per sq.ft - low to high'),
+                onTap: () {
+                  pricePerSqFt = true;
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(4);
                   }
                   Navigator.pop(context);
                 },
@@ -535,7 +573,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                upSlideTransition(
+                                    context, const UserLocationProperties());
+                              },
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 4),
@@ -846,6 +887,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                   _globalKeys[listIndex]);
                                             },
                                             globalKey: _globalKeys[listIndex],
+                                            pricePerSqFt: pricePerSqFt,
                                           );
                                         }
                                       },

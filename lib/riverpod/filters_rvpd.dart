@@ -70,6 +70,18 @@ class FiltersModel {
 
     return json;
   }
+
+  FiltersModel fromJson(Map<String, dynamic> json) {
+    return FiltersModel(
+      selectedLocalities: json['projectLocation']?.split(',') ?? [],
+      apartmentType: json['projectType'] ?? '',
+      selectedConfigurations: json['BHKType']?.split(',') ?? [],
+      minBudget: double.tryParse(json['minBudget'] ?? '') ?? 0,
+      maxBudget: double.tryParse(json['maxBudget'] ?? '') ?? 0,
+      minFlatSize: double.tryParse(json['minFlatSize'] ?? '') ?? 0,
+      maxFlatSize: double.tryParse(json['maxFlatSize'] ?? '') ?? 0,
+    );
+  }
 }
 
 // Define the state notifier

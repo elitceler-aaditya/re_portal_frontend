@@ -23,15 +23,25 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
 
   void sortFilteredApartments(int sortBy) {
     if (sortBy == 0) {
-      state = state.copyWith(
-          filteredApartments: state.filteredApartments
-            ..sort((a, b) => a.budget.compareTo(b.budget)));
+      state = state.copyWith(filteredApartments: state.allApartments);
     } else if (sortBy == 1) {
       state = state.copyWith(
           filteredApartments: state.filteredApartments
             ..sort((a, b) => b.budget.compareTo(a.budget)));
-    } else {
-      state = state.copyWith(filteredApartments: state.allApartments);
+    } else if (sortBy == 2) {
+      state = state.copyWith(
+          filteredApartments: state.filteredApartments
+            ..sort((a, b) => a.budget.compareTo(b.budget)));
+    } else if (sortBy == 3) {
+      state = state.copyWith(
+          filteredApartments: state.filteredApartments
+            ..sort((a, b) =>
+                b.pricePerSquareFeetRate.compareTo(a.pricePerSquareFeetRate)));
+    } else if (sortBy == 4) {
+      state = state.copyWith(
+          filteredApartments: state.filteredApartments
+            ..sort((a, b) =>
+                a.pricePerSquareFeetRate.compareTo(b.pricePerSquareFeetRate)));
     }
   }
 

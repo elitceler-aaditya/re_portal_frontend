@@ -14,6 +14,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/search/widgets/photo_gallery.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
@@ -139,109 +140,122 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       barrierColor: CustomColors.black.withOpacity(0.9),
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 150,
-              width: double.infinity,
-              child: Stack(
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.3,
+          maxChildSize: 1,
+          expand: false,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
                     height: 150,
                     width: double.infinity,
-                    child: ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(20)),
-                      child: Image.network(
-                        widget.apartment.coverImage,
-                        fit: BoxFit.cover,
-                      ),
+                    child: Stack(
+                      children: [
+                        SizedBox(
+                          height: 150,
+                          width: double.infinity,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(20)),
+                            child: Image.network(
+                              widget.apartment.coverImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(
+                                Icons.close,
+                                color: CustomColors.white,
+                              )),
+                        )
+                      ],
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(
-                          Icons.close,
+                  Container(
+                    color: CustomColors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.check_circle,
                           color: CustomColors.white,
-                        )),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              color: CustomColors.green,
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: CustomColors.white,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    "Your details have been shared",
-                    style: TextStyle(
-                      color: CustomColors.white,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          "Your details have been shared",
+                          style: TextStyle(
+                            color: CustomColors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () =>
-                  launchUrlString('tel:${widget.apartment.companyPhone}'),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.phone,
-                      color: CustomColors.black,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      "For more details ${widget.apartment.companyPhone}",
-                      style: const TextStyle(
-                        color: CustomColors.black,
-                        fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () =>
+                        launchUrlString('tel:${widget.apartment.companyPhone}'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.phone,
+                            color: CustomColors.black,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            "For more details ${widget.apartment.companyPhone}",
+                            style: const TextStyle(
+                              color: CustomColors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Column(
+                    children: [
+                      if (widget.nextApartment != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: PropertyCard(
+                            apartment: widget.nextApartment!,
+                            isCompare: false,
+                            onCallPress: (context) {
+                              _showOverlay(
+                                context,
+                                nextPropertyButtonKey.currentContext!
+                                    .findRenderObject() as RenderBox,
+                              );
+                            },
+                            globalKey: nextPropertyButtonKey,
+                          ),
+                        ),
+                      const LocationHomes(),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            if (widget.nextApartment != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: PropertyCard(
-                  apartment: widget.nextApartment!,
-                  isCompare: false,
-                  onCallPress: (context) {
-                    _showOverlay(
-                      context,
-                      nextPropertyButtonKey.currentContext!.findRenderObject()
-                          as RenderBox,
-                    );
-                  },
-                  globalKey: nextPropertyButtonKey,
-                ),
-              ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: AdsSection(),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -285,11 +299,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           const Icon(Icons.arrow_forward_ios,
               size: 10, color: CustomColors.black),
           const SizedBox(width: 8),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 12,
-              color: CustomColors.black,
+          SizedBox(
+            width: 52,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 12,
+                color: CustomColors.black,
+              ),
             ),
           ),
         ],
@@ -515,72 +532,100 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ],
                     ),
                   const SizedBox(height: 10),
-                  Container(
-                    height: 100,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: CustomColors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: GoogleMap(
-                            zoomControlsEnabled: false,
-                            mapToolbarEnabled: false,
-                            initialCameraPosition: CameraPosition(
-                              target: LatLng(widget.apartment.latitude,
-                                  widget.apartment.longitude),
-                              zoom: 10,
-                            ),
-                            markers: {
-                              Marker(
-                                markerId: MarkerId(widget.apartment.projectId),
-                                position: LatLng(widget.apartment.latitude,
-                                    widget.apartment.longitude),
-                                icon: BitmapDescriptor.defaultMarkerWithHue(2),
-                                infoWindow: InfoWindow(
-                                  title: widget.apartment.name,
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: Container(
+                          height: 100,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: CustomColors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Stack(
+                            children: [
+                              GoogleMap(
+                                zoomControlsEnabled: false,
+                                mapToolbarEnabled: false,
+                                initialCameraPosition: CameraPosition(
+                                  target: LatLng(widget.apartment.latitude,
+                                      widget.apartment.longitude),
+                                  zoom: 10,
+                                ),
+                                markers: {
+                                  Marker(
+                                    markerId:
+                                        MarkerId(widget.apartment.projectId),
+                                    position: LatLng(widget.apartment.latitude,
+                                        widget.apartment.longitude),
+                                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                                        2),
+                                    infoWindow: InfoWindow(
+                                      title: widget.apartment.name,
+                                    ),
+                                  ),
+                                },
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _timer!.cancel();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => GoogleMapsScreen(
+                                        apartment: widget.apartment,
+                                        apartmentDetails: _projectDetails,
+                                      ),
+                                    ),
+                                  ).then((value) {
+                                    _timer = Timer.periodic(
+                                        const Duration(seconds: 3), (timer) {
+                                      if (timerIndex == 1) {
+                                        _showKeyHighlights = false;
+                                      }
+                                      setState(() {
+                                        timerIndex++;
+                                      });
+                                    });
+                                  });
+                                },
+                                child: Container(
+                                  height: 150,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        CustomColors.black.withOpacity(0.001),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                               ),
-                            },
+                            ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            _timer!.cancel();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => GoogleMapsScreen(
-                                  apartment: widget.apartment,
-                                  apartmentDetails: _projectDetails,
-                                ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: SizedBox(
+                            height: 60,
+                            width: 60,
+                            child: IconButton.filled(
+                              style: IconButton.styleFrom(
+                                  backgroundColor: CustomColors.primary),
+                              onPressed: () => launchUrlString(
+                                  'tel:${widget.apartment.companyPhone}'),
+                              icon: SvgPicture.asset(
+                                "assets/icons/phone.svg",
+                                color: Colors.white,
                               ),
-                            ).then((value) {
-                              _timer = Timer.periodic(
-                                  const Duration(seconds: 3), (timer) {
-                                if (timerIndex == 1) {
-                                  _showKeyHighlights = false;
-                                }
-                                setState(() {
-                                  timerIndex++;
-                                });
-                              });
-                            });
-                          },
-                          child: Container(
-                            height: 150,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: CustomColors.black.withOpacity(0.001),
-                              borderRadius: BorderRadius.circular(10),
+                              color: CustomColors.white,
+                              tooltip: 'Call ${widget.apartment.companyPhone}',
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -969,22 +1014,25 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 color: CustomColors.white,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.3),
+                                    color: CustomColors.black.withOpacity(0.2),
                                     blurRadius: 10,
                                     offset: const Offset(0, 0),
                                   ),
                                 ],
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Wrap(
-                                children: List.generate(
-                                  _projectDetails.projectDetails.amenities
-                                      .split(",")
-                                      .length,
-                                  (index) => CustomChip(
-                                    text: _projectDetails
-                                        .projectDetails.amenities
-                                        .split(",")[index],
+                              child: SingleChildScrollView(
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  children: List.generate(
+                                    _projectDetails.projectDetails.amenities
+                                        .split(",")
+                                        .length,
+                                    (index) => CustomChip(
+                                      text: _projectDetails
+                                          .projectDetails.amenities
+                                          .split(",")[index],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1022,16 +1070,19 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ],
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Wrap(
-                                children: List.generate(
-                                  _projectDetails
-                                      .projectDetails.clubHouseAmenities
-                                      .split(",")
-                                      .length,
-                                  (index) => CustomChip(
-                                    text: _projectDetails
+                              child: SingleChildScrollView(
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  children: List.generate(
+                                    _projectDetails
                                         .projectDetails.clubHouseAmenities
-                                        .split(",")[index],
+                                        .split(",")
+                                        .length,
+                                    (index) => CustomChip(
+                                      text: _projectDetails
+                                          .projectDetails.clubHouseAmenities
+                                          .split(",")[index],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1068,16 +1119,19 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ],
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Wrap(
-                                children: List.generate(
-                                  _projectDetails
-                                      .projectDetails.outdoorAmenities
-                                      .split(",")
-                                      .length,
-                                  (index) => CustomChip(
-                                    text: _projectDetails
+                              child: SingleChildScrollView(
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  children: List.generate(
+                                    _projectDetails
                                         .projectDetails.outdoorAmenities
-                                        .split(",")[index],
+                                        .split(",")
+                                        .length,
+                                    (index) => CustomChip(
+                                      text: _projectDetails
+                                          .projectDetails.outdoorAmenities
+                                          .split(",")[index],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1135,6 +1189,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               Container(
                                 height: 150,
                                 margin: const EdgeInsets.only(right: 10),
+                                clipBehavior: Clip.hardEdge,
                                 constraints: BoxConstraints(
                                   maxWidth:
                                       MediaQuery.of(context).size.width - 50,
@@ -1152,7 +1207,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Wrap(
+                                child: Column(
                                   children: List.generate(
                                     _projectDetails
                                         .projectDetails.hospitals.length,
@@ -1187,7 +1242,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   maxWidth:
                                       MediaQuery.of(context).size.width - 50,
                                 ),
-                                padding: const EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 6, 10, 0),
                                 decoration: BoxDecoration(
                                   color: CustomColors.white,
                                   boxShadow: [
@@ -1200,15 +1256,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Wrap(
-                                  children: List.generate(
-                                    _projectDetails
-                                        .projectDetails.offices.length,
-                                    (index) => _keyHighlights(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: List.generate(
                                       _projectDetails
-                                          .projectDetails.offices[index].name,
-                                      _projectDetails
-                                          .projectDetails.offices[index].dist,
+                                          .projectDetails.offices.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails
+                                            .projectDetails.offices[index].name,
+                                        _projectDetails
+                                            .projectDetails.offices[index].dist,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1248,15 +1306,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Wrap(
-                                  children: List.generate(
-                                    _projectDetails
-                                        .projectDetails.connectivity.length,
-                                    (index) => _keyHighlights(
-                                      _projectDetails.projectDetails
-                                          .connectivity[index].name,
-                                      _projectDetails.projectDetails
-                                          .connectivity[index].dist,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.connectivity.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .connectivity[index].name,
+                                        _projectDetails.projectDetails
+                                            .connectivity[index].dist,
+                                      ),
                                     ),
                                   ),
                                 ),
