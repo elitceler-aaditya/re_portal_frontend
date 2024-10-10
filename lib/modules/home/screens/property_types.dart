@@ -79,7 +79,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 2),
         child: Column(
           children: [
             PropertiesTiles(

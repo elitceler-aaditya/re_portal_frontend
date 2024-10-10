@@ -36,9 +36,8 @@ class LifestyleProjectCard extends StatelessWidget {
         );
       },
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
+        width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.width * 0.8,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -52,7 +51,7 @@ class LifestyleProjectCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
+                      width: double.infinity,
                       height: MediaQuery.of(context).size.width * 0.8,
                       child: Image.network(
                         lifestyleProperty.coverImage,

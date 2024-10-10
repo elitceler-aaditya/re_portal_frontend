@@ -41,7 +41,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
             if (!widget.showTitle) const SizedBox(height: 10),
             if (widget.showTitle)
               const Padding(
-                padding: EdgeInsets.only(left: 10, bottom: 8, top: 8),
+                padding: EdgeInsets.only(left: 4, bottom: 8, top: 8),
                 child: Text(
                   "Best Deals",
                   style: TextStyle(
@@ -162,7 +162,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
               ),
               options: CarouselOptions(
                 height: widget.height,
-                viewportFraction: 0.95,
+                viewportFraction: 1,
                 enlargeCenterPage: true,
                 autoPlay: true,
                 autoPlayInterval: const Duration(seconds: 5),

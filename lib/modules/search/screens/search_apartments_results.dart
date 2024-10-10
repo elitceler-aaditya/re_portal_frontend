@@ -4,46 +4,46 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/home/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
+import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
-import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/widgets/budget_homes.dart';
+import 'package:re_portal_frontend/modules/search/widgets/budget_homes.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
-import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
-import 'package:re_portal_frontend/modules/home/widgets/location_homes_screen.dart';
+import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_grid_view.dart';
 import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
-import 'package:re_portal_frontend/modules/home/widgets/ultra_luxury_homes.dart';
+import 'package:re_portal_frontend/modules/search/widgets/ultra_luxury_homes.dart';
+import 'package:re_portal_frontend/modules/search/screens/appartment_filter.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
-import 'package:re_portal_frontend/riverpod/location_homes.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-class SearchApartment extends ConsumerStatefulWidget {
+class SearchApartmentResults extends ConsumerStatefulWidget {
   final bool openFilters;
-  const SearchApartment({super.key, this.openFilters = false});
+  const SearchApartmentResults({super.key, this.openFilters = false});
 
   @override
-  ConsumerState<SearchApartment> createState() => _SearchApartmentState();
+  ConsumerState<SearchApartmentResults> createState() =>
+      _SearchApartmentState();
 }
 
-class _SearchApartmentState extends ConsumerState<SearchApartment> {
+class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   final TextEditingController _searchController = TextEditingController();
   List<ApartmentModel> allApartments = [];
   List<ApartmentModel> snippets = [];
   List<String> videoLinks = [];
-  List<GlobalKey> _globalKeys = List.generate(100, (index) => GlobalKey());
+  List<GlobalKey> _globalKeys = List.generate(50, (index) => GlobalKey());
   bool loading = false;
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
@@ -52,7 +52,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   final ScrollController _masterScrollController = ScrollController();
   Timer? _timer;
 
-  List<String> searchOptions = ["properties", "apartments", "plots", "flats"];
+  List<String> searchOptions = [
+    "project",
+    "loction",
+    "builder name",
+  ];
   int searchOptionsIndex = 0;
   bool isEndReached = false;
 
@@ -202,6 +206,14 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
         return const AppartmentFilter();
       },
     ).then((value) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _masterScrollController.animateTo(
+          400,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      });
       setState(() {
         isEndReached = false;
         currentPage = 1;
@@ -332,6 +344,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
   Future<void> getFilteredApartments({
     Map<String, dynamic> params = const {},
   }) async {
+    debugPrint("-----------------params: $params");
     try {
       String baseUrl = dotenv.get('BASE_URL');
       String url = "$baseUrl/project/filterApartmentsNew";
@@ -354,8 +367,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
           ref.read(homePropertiesProvider.notifier).setfilteredApartments(
                 responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
               );
-          _globalKeys =
-              List.generate(responseBody.length, (index) => GlobalKey());
         }
       } else {
         throw Exception('Failed to load filtered apartments');
@@ -372,72 +383,15 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
     }
   }
 
-  void getLocalitiesList() async {
-    String baseUrl = dotenv.get('BASE_URL');
-    String url = "$baseUrl/user/getLocations";
-    Uri uri = Uri.parse(url);
-
-    try {
-      final response = await http.get(uri);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        List<dynamic> responseBody = responseData['data'];
-        List<String> localities =
-            responseBody.map((item) => item.toString()).toList();
-        ref.read(localityListProvider.notifier).setLocalities(localities);
-      } else {
-        throw Exception('Failed to load localities');
-      }
-    } catch (error, stackTrace) {
-      debugPrint("error: $error");
-      debugPrint("stackTrace: $stackTrace");
-    }
-  }
-
-  void getLocationHomes() async {
-    debugPrint("-----------------getting location homes");
-    String baseUrl = dotenv.get('BASE_URL');
-    String url = "$baseUrl/user/getPopularLocalities";
-    Uri uri = Uri.parse(url).replace(queryParameters: {
-      "latitude": "17.4141",
-      "longitude": "78.5791",
-    });
-
-    try {
-      final response = await http.get(uri);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        ref
-            .read(locationHomesProvider.notifier)
-            .setLocationHomesData(responseData);
-      } else {
-        throw Exception('Error ${response.statusCode}: ${response.body}');
-      }
-    } catch (error, stackTrace) {
-      debugPrint("1111error: $error");
-      debugPrint("1111stackTrace: $stackTrace");
-    }
-  }
-
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.watch(localityListProvider).isEmpty) {
-        getLocalitiesList();
-      }
+      Map<String, dynamic> params = ref.watch(filtersProvider).toJson();
+      params['page'] = "1";
 
-      if (ref.watch(homePropertiesProvider).filteredApartments.isEmpty) {
-        setState(() {
-          loading = true;
-        });
-        getFilteredApartments(params: {'page': "1"});
-      }
-
-      if (ref.watch(locationHomesProvider) == null) {
-        getLocationHomes();
-      }
+      getFilteredApartments(params: params);
       if (widget.openFilters) {
         filterBottomSheet();
       } else {
@@ -540,42 +494,46 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                    decoration:
-                        const BoxDecoration(color: CustomColors.primary),
+                  GestureDetector(
+                    onTap: () {
+                      if (ref
+                          .watch(homePropertiesProvider)
+                          .allApartments
+                          .isNotEmpty) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => const GlobalSearch(),
+                          ),
+                        );
+                      } else {
+                        debugPrint("loading");
+                      }
+                    },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: CustomColors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.search),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: _filterApartments,
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.zero,
-                                hintText:
-                                    'Search ${searchOptions[searchOptionsIndex]}...',
-                                hintStyle: const TextStyle(
+                      color: CustomColors.primary,
+                      child: Container(
+                        height: 50,
+                        margin: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: CustomColors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.search),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
                                   color: CustomColors.black50,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide.none,
                                 ),
                               ),
                             ),
-                          ),
-                          if (_searchController.text.trim().isEmpty)
                             GestureDetector(
                               onTap: () {},
                               child: Padding(
@@ -586,7 +544,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                 ),
                               ),
                             ),
-                          if (_searchController.text.trim().isEmpty)
                             TextButton.icon(
                               style: TextButton.styleFrom(
                                 backgroundColor: CustomColors.secondary,
@@ -595,9 +552,13 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                 ),
                               ),
                               onPressed: () {
-                                //remove focus from search bar
-                                FocusManager.instance.primaryFocus?.unfocus();
-                                filterBottomSheet();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SearchApartmentResults(
+                                            openFilters: true),
+                                  ),
+                                );
                               },
                               icon: SvgPicture.asset("assets/icons/filter.svg"),
                               label: const Text(
@@ -606,13 +567,13 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                   color: CustomColors.white,
                                 ),
                               ),
-                            )
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 0, 10),
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -622,16 +583,14 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20),
-                      ),
                     ),
                     child: (_searchController.text.trim().isNotEmpty ||
                             ref
                                 .watch(filtersProvider)
                                 .selectedLocalities
                                 .isNotEmpty)
-                        ? SizedBox(
+                        ? Container(
+                            padding: const EdgeInsets.fromLTRB(2, 0, 0, 2),
                             width: double.infinity,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -689,7 +648,13 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                                       filtersProvider.notifier)
                                                   .updateSelectedLocalities(
                                                       localities);
-                                              getFilteredApartments();
+
+                                              Map<String, dynamic> params = ref
+                                                  .watch(filtersProvider)
+                                                  .toJson();
+                                              params['page'] = "1";
+                                              getFilteredApartments(
+                                                  params: params);
                                             });
                                           },
                                         );
@@ -717,9 +682,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                                       filtersProvider.notifier)
                                                   .updateSelectedLocalities(
                                                       [locality]);
-                                              getFilteredApartments(
-                                                      params: {'page': "1"})
-                                                  .then((value) {
+                                              getFilteredApartments(params: {
+                                                'page': "1",
+                                                "projectLocation": locality
+                                              }).then((value) {
                                                 _searchController.clear();
                                                 FocusScope.of(context)
                                                     .unfocus();
@@ -752,7 +718,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                     const BestDealsSection(height: 200, showTitle: false),
                   Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -820,7 +786,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                           children: [
                             Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                                  const EdgeInsets.symmetric(horizontal: 2),
                               child: !isListview
                                   ? PropertyGridView(
                                       sortedApartments: ref
@@ -834,10 +800,19 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                           const NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.zero,
                                       itemCount: ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments
+                                                  .length >
+                                              4
+                                          ? ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments
+                                                  .length +
+                                              1
+                                          : ref
                                               .watch(homePropertiesProvider)
                                               .filteredApartments
-                                              .length +
-                                          1,
+                                              .length,
                                       itemBuilder: (context, index) {
                                         if (index == 4) {
                                           return const ProjectSnippets();
@@ -848,22 +823,17 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                             apartment: ref
                                                 .watch(homePropertiesProvider)
                                                 .filteredApartments[listIndex],
-                                            nextApartment: listIndex + 1 <
-                                                    ref
-                                                        .watch(
-                                                            homePropertiesProvider)
-                                                        .filteredApartments
-                                                        .length
-                                                ? ref
-                                                        .watch(
-                                                            homePropertiesProvider)
-                                                        .filteredApartments[
-                                                    listIndex + 1]
-                                                : ref
+                                            nextApartment: ref
                                                     .watch(
                                                         homePropertiesProvider)
                                                     .filteredApartments
-                                                    .first,
+                                                    .isNotEmpty
+                                                ? ref
+                                                    .watch(
+                                                        homePropertiesProvider)
+                                                    .filteredApartments
+                                                    .first
+                                                : null,
                                             isCompare: true,
                                             onCallPress: (context) {
                                               _toggleOverlay(
@@ -968,7 +938,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                   const LocationHomes(),
                                   const ReadyToMovein(),
                                   const UltraLuxuryHomes(),
-                                  const NewPropertiesSection(
+                                  const NewLaunchSection(
                                       title: "Editor's Choice"),
                                   SizedBox(
                                     height: 150,
@@ -1019,7 +989,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                                     },
                                                     child: Container(
                                                       height: double.infinity,
-                                                      width: 300,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.4,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
@@ -1041,19 +1015,26 @@ class _SearchApartmentState extends ConsumerState<SearchApartment> {
                                                       margin:
                                                           const EdgeInsets.only(
                                                               right: 10),
-                                                      child: Center(
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8),
+                                                        alignment:
+                                                            Alignment.center,
                                                         child: Text(
                                                           ref.watch(
                                                                   localityListProvider)[
                                                               index],
-                                                          style:
-                                                              const TextStyle(
-                                                            color: CustomColors
-                                                                .white,
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: const TextStyle(
+                                                              color:
+                                                                  CustomColors
+                                                                      .white,
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                       ),
                                                     ),

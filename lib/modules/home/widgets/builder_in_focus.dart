@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -32,7 +33,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           child: const Padding(
-            padding: EdgeInsets.fromLTRB(8, 4, 8, 10),
+            padding: EdgeInsets.fromLTRB(8, 10, 8, 0),
             child: Row(
               children: [
                 Text(
@@ -58,17 +59,33 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
             ),
           ),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              const SizedBox(width: 10),
-              ...List.generate(
-                builders.length,
-                (index) => _builderCard(context, builders[index]),
+        FlutterCarousel.builder(
+          itemCount: builders.length,
+          itemBuilder: (context, index, realIndex) {
+            return _builderCard(context, builders[index]);
+          },
+          options: CarouselOptions(
+            height: 350,
+            viewportFraction: 0.8,
+            enlargeCenterPage: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enableInfiniteScroll: true,
+            initialPage: 0,
+            reverse: false,
+            scrollDirection: Axis.horizontal,
+            showIndicator: true,
+            floatingIndicator: false,
+            slideIndicator: const CircularSlideIndicator(
+              slideIndicatorOptions: SlideIndicatorOptions(
+                indicatorRadius: 4,
+                currentIndicatorColor: CustomColors.black,
+                indicatorBackgroundColor: CustomColors.black50,
+                itemSpacing: 16,
               ),
-              const SizedBox(width: 10),
-            ],
+            ),
           ),
         ),
       ],
@@ -78,8 +95,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
 
 Widget _builderCard(BuildContext context, BuilderDataModel builder) {
   return Container(
-    width: 330,
-    margin: const EdgeInsets.only(right: 10),
+    width: double.infinity,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: CustomColors.primary),
@@ -103,11 +119,17 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                backgroundColor: CustomColors.white.withOpacity(0.3),
-                radius: 24,
+              Container(
+                height: 48,
+                width: 48,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  color: CustomColors.white.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
                 child: Image.network(
                   builder.CompanyLogo,
+                  fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) =>
                       loadingProgress == null
                           ? child

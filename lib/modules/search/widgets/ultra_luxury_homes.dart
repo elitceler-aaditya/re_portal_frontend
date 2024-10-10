@@ -34,6 +34,7 @@ class UltraLuxuryHomes extends ConsumerWidget {
           ),
           PropertyStackCard(
             apartments: ultraLuxuryHomes,
+            cardWidth: MediaQuery.of(context).size.width * 0.9,
           ),
         ],
       ),

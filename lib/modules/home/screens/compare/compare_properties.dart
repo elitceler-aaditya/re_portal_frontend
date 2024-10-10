@@ -21,6 +21,8 @@ class CompareProperties extends ConsumerStatefulWidget {
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   bool _isFixedColumnVisible = true;
   bool _isLoading = true;
+  final ScrollController _horizontalController = ScrollController();
+
   List<ComparePropertyData> _comparedProperties = [];
 
   void getPropertyData() async {
@@ -82,6 +84,17 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPropertyData();
     });
+    _horizontalController.addListener(() {
+      if (_horizontalController.position.pixels <= 0) {
+        setState(() {
+          _isFixedColumnVisible = true;
+        });
+      } else {
+        setState(() {
+          _isFixedColumnVisible = false;
+        });
+      }
+    });
   }
 
   @override
@@ -103,24 +116,6 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
             icon: const Icon(Icons.arrow_back),
           ),
           backgroundColor: CustomColors.primary10,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isFixedColumnVisible = !_isFixedColumnVisible;
-                });
-              },
-              icon: _isFixedColumnVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: CustomColors.primary,
-                    )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: CustomColors.primary,
-                    ),
-            ),
-          ],
         ),
         body: comparedProperties.length < 2
             ? const SafeArea(
@@ -163,6 +158,13 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                               comparedProperties: comparedProperties,
                               isFixedColumnVisible: _isFixedColumnVisible,
                               comparedPropertyData: _comparedProperties,
+                              horizontalController: _horizontalController,
+                              onHideFixedColumn: () {
+                                setState(() {
+                                  _isFixedColumnVisible =
+                                      !_isFixedColumnVisible;
+                                });
+                              },
                             ),
                           ),
                         ),

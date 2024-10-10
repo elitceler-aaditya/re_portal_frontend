@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
+import 'package:http/http.dart' as http;
 
 class LocationHomes extends ConsumerStatefulWidget {
   const LocationHomes({super.key});
@@ -14,6 +18,41 @@ class LocationHomes extends ConsumerStatefulWidget {
 class _LocationHomesState extends ConsumerState<LocationHomes> {
   int selectedlocation = 0;
   PageController pageController = PageController();
+
+  void getLocationHomes(double lat, double long) async {
+    debugPrint("-----------------getting location homes");
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/user/getPopularLocalities";
+    Uri uri = Uri.parse(url).replace(queryParameters: {
+      "latitude": lat.toString(),
+      "longitude": long.toString(),
+    });
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        ref
+            .read(locationHomesProvider.notifier)
+            .setLocationHomesData(responseData);
+      } else {
+        throw Exception('Error ${response.statusCode}: ${response.body}');
+      }
+    } catch (error, stackTrace) {
+      debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (ref.watch(locationHomesProvider) == null) {
+        getLocationHomes(17.4141, 78.5791);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +157,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                               "No apartments found in ${ref.watch(locationHomesProvider.notifier).getLocations()[selectedlocation]}"),
                         )
                       : PropertyStackCard(
+                          cardWidth: MediaQuery.of(context).size.width * 0.9,
                           apartments: ref
                               .watch(locationHomesProvider.notifier)
                               .getProjectByLocation(ref

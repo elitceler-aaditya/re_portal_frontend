@@ -11,7 +11,7 @@ class ReadyToMovein extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final apartments = ref.watch(homePropertiesProvider).filteredApartments;
+    final apartments = ref.watch(homePropertiesProvider).readyToMoveIn;
     return apartments.isEmpty
         ? const SizedBox.shrink()
         : Column(
@@ -19,9 +19,9 @@ class ReadyToMovein extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: EdgeInsets.fromLTRB(8, 10, 8, 0),
                 child: Text(
-                  "Ready to move in",
+                  "Ready to move in projects",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -29,7 +29,7 @@ class ReadyToMovein extends ConsumerWidget {
                 ),
               ),
               SizedBox(
-                height: 250,
+                height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: apartments.length,
@@ -47,7 +47,7 @@ class ReadyToMovein extends ConsumerWidget {
                         );
                       },
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        margin: const EdgeInsets.only(right: 10),
                         height: double.infinity,
                         width: MediaQuery.of(context).size.width * 0.8,
                         clipBehavior: Clip.hardEdge,

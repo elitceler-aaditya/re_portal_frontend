@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
-import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
+import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
+import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
-import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
@@ -146,9 +147,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         const SizedBox(height: 10),
         const Padding(
-          padding: EdgeInsets.only(left: 10, bottom: 8),
+          padding: EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
-            "Selected Properties",
+            "Select Properties",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -156,25 +157,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         PropertyStackCard(
+            cardWidth: MediaQuery.of(context).size.width * 0.9,
             apartments: ref.watch(homePropertiesProvider).selectedProperties),
         const Padding(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.only(left: 4, top: 10),
           child: Text(
-            "Editor’s Choice",
+            "Editor's Choice",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        EditorsChoiceCard(
-            apartments: ref.watch(homePropertiesProvider).editorsChoice),
-        const NewPropertiesSection(
-          title: "New Projects",
+        if (mounted)
+          EditorsChoiceCard(
+              apartments: ref.watch(homePropertiesProvider).editorsChoice),
+        const NewLaunchSection(
+          title: "New launch",
         ),
-        BuilderInFocus(
-            builderData: ref.watch(homePropertiesProvider).builderData),
-        const LifestyleProperties(),
+        if (mounted)
+          BuilderInFocus(
+              builderData: ref.watch(homePropertiesProvider).builderData),
+        if (mounted) const LifestyleProperties(),
         const ReadyToMovein(),
         const SizedBox(height: 20),
       ],
@@ -231,7 +235,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //top search bar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              padding: const EdgeInsets.all(2),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -240,9 +244,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(20),
                 ),
               ),
               child: Column(
@@ -256,7 +257,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           .isNotEmpty) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const SearchApartment(),
+                            builder: (context) => const GlobalSearch(),
                           ),
                         );
                       } else {
@@ -312,7 +313,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const SearchApartment(openFilters: true),
+                                      const SearchApartmentResults(
+                                          openFilters: true),
                                 ),
                               );
                             },
@@ -330,7 +332,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
 
                   Container(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 2),
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -380,7 +382,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const SearchApartment(
+                                                    const SearchApartmentResults(
                                                         openFilters: true),
                                               ),
                                             );
@@ -427,7 +429,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
 
             //Best deals
             if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)

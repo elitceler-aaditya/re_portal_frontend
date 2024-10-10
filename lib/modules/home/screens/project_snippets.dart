@@ -72,7 +72,7 @@ class _ProjectSnippetsState extends ConsumerState<ProjectSnippets> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.only(left: 10, top: 4),
+          padding: EdgeInsets.only(left: 4, top: 4),
           child: Text(
             "Project Snippets",
             style: TextStyle(
@@ -82,24 +82,21 @@ class _ProjectSnippetsState extends ConsumerState<ProjectSnippets> {
           ),
         ),
         Container(
-            height: 250,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  const SizedBox(width: 10),
-                  ...List.generate(
-                    apartments.length,
-                    (index) => ProjectSnippetCard(
-                      apartment: apartments[index],
-                      videoLink: videoLinks[index],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                ],
+          height: 250,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(
+                apartments.length,
+                (index) => ProjectSnippetCard(
+                  apartment: apartments[index],
+                  videoLink: videoLinks[index],
+                ),
               ),
-            )),
+            ),
+          ),
+        ),
       ],
     );
   }

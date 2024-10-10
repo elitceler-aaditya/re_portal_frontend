@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:shimmer/shimmer.dart';
@@ -12,15 +13,15 @@ class PropertyCard extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
   final ApartmentModel? nextApartment;
   final bool isCompare;
-  final Function(BuildContext) onCallPress;
+  final Function(BuildContext)? onCallPress;
   final GlobalKey globalKey;
 
   const PropertyCard({
     super.key,
     required this.apartment,
     this.nextApartment,
-    required this.isCompare,
-    required this.onCallPress,
+    this.isCompare = true,
+    this.onCallPress,
     required this.globalKey,
   });
 
@@ -96,11 +97,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                           child: Container(
                                             height: 200,
                                             width: 400,
-                                            decoration: BoxDecoration(
-                                              color: Colors.black,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
+                                            color: Colors.black,
                                           ),
                                         ),
                             )
@@ -264,18 +261,19 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                     if (ref
                                         .watch(comparePropertyProvider)
                                         .contains(widget.apartment)) {
-                                      debugPrint(
-                                        "Compare button pressed for ${widget.apartment.name}",
-                                      );
                                       ref
                                           .read(
                                               comparePropertyProvider.notifier)
                                           .removeApartment(widget.apartment);
+                                      errorSnackBar(context,
+                                          'property removed from compare list');
                                     } else {
                                       ref
                                           .read(
                                               comparePropertyProvider.notifier)
                                           .addApartment(widget.apartment);
+                                      successSnackBar(context,
+                                          'property added to compare list');
                                     }
                                   },
                                   icon: ref
@@ -305,7 +303,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                onPressed: () => widget.onCallPress(context),
+                                onPressed: () => widget.onCallPress!(context),
                                 icon: SvgPicture.asset(
                                   "assets/icons/phone.svg",
                                   color: CustomColors.white,

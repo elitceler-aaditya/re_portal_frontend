@@ -6,7 +6,8 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
   HomeDataNotifier() : super(HomeData());
 
   void setAllApartments(List<ApartmentModel> allApartments) {
-    state = state.copyWith(allApartments: allApartments);
+    final uniqueApartments = allApartments.toSet().toList();
+    state = state.copyWith(allApartments: uniqueApartments);
   }
 
   void setfilteredApartments(List<ApartmentModel> filteredApartments) {
@@ -92,6 +93,25 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
               apartment.budget >= minBudget && apartment.budget <= maxBudget)
           .toList();
     }
+  }
+
+  List<ApartmentModel> getApartmentsByName(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      return state.allApartments;
+    }
+    return state.allApartments
+        .where((apartment) => apartment.name.toLowerCase().contains(searchTerm))
+        .toList();
+  }
+
+  List<ApartmentModel> getApartmentsByBuilderName(String builderName) {
+    if (builderName.isEmpty) {
+      return state.allApartments;
+    }
+    return state.allApartments
+        .where((apartment) =>
+            apartment.companyName.toLowerCase().contains(builderName))
+        .toList();
   }
 }
 

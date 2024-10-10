@@ -9,12 +9,16 @@ class FixedColumnDataTable extends ConsumerStatefulWidget {
   final List<ApartmentModel> comparedProperties;
   final List<ComparePropertyData> comparedPropertyData;
   final bool isFixedColumnVisible;
+  final Function() onHideFixedColumn;
+  final ScrollController horizontalController;
 
   const FixedColumnDataTable(
       {super.key,
       required this.comparedProperties,
       required this.comparedPropertyData,
-      this.isFixedColumnVisible = true});
+      this.isFixedColumnVisible = true,
+      required this.horizontalController,
+      required this.onHideFixedColumn});
 
   @override
   ConsumerState<FixedColumnDataTable> createState() =>
@@ -40,9 +44,6 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
     }
   }
 
-  final ScrollController _horizontalController = ScrollController();
-  final ScrollController _verticalController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -54,13 +55,34 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             // Fixed Column
             if (widget.isFixedColumnVisible)
               SingleChildScrollView(
-                controller: _verticalController,
                 child: DataTable(
-                  headingRowHeight: 75,
-                  columnSpacing: 2,
-                  dataRowMinHeight: 40,
-                  dataRowMaxHeight: 40,
-                  columns: const [DataColumn(label: Text(''))],
+                  headingRowHeight: 83,
+                  columnSpacing: 1,
+                  dataRowMinHeight: 32,
+                  dataRowMaxHeight: 32,
+                  columns: [
+                    DataColumn(
+                      label: TextButton.icon(
+                        style: TextButton.styleFrom(
+                          backgroundColor: CustomColors.primary10,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                        ),
+                        onPressed: widget.onHideFixedColumn,
+                        icon: widget.isFixedColumnVisible
+                            ? const Icon(Icons.arrow_back, size: 20)
+                            : const Icon(Icons.arrow_forward, size: 20),
+                        label: widget.isFixedColumnVisible
+                            ? const Text(
+                                "Hide",
+                                style: TextStyle(color: CustomColors.primary),
+                              )
+                            : const Text(
+                                "Show",
+                                style: TextStyle(color: CustomColors.primary),
+                              ),
+                      ),
+                    )
+                  ],
                   rows: _buildFixedColumnRows(),
                 ),
               ),
@@ -68,14 +90,13 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                controller: _horizontalController,
+                controller: widget.horizontalController,
                 child: SingleChildScrollView(
-                  controller: _verticalController,
                   child: DataTable(
                     headingRowHeight: 115,
                     columnSpacing: 16,
-                    dataRowMinHeight: 40,
-                    dataRowMaxHeight: 40,
+                    dataRowMinHeight: 32,
+                    dataRowMaxHeight: 32,
                     columns: _buildScrollableColumns(),
                     rows: _buildScrollableRows(),
                   ),
@@ -168,7 +189,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
           color: WidgetStatePropertyAll(CustomColors.primary10)),
       const DataRow(
           cells: [DataCell(Text(''))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
+          color: WidgetStatePropertyAll(CustomColors.white)),
     ];
   }
 
@@ -214,10 +235,15 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   DataRow _buildDataRow(String Function(ComparePropertyData) getValue,
       [TextStyle? style, Color? color]) {
     return DataRow(
-        cells: widget.comparedPropertyData
-            .map((prop) => DataCell(Text(getValue(prop), style: style)))
-            .toList(),
-        color: WidgetStatePropertyAll(color));
+      cells: widget.comparedPropertyData
+          .map(
+            (prop) => DataCell(
+              Text(getValue(prop), style: style),
+            ),
+          )
+          .toList(),
+      color: WidgetStatePropertyAll(color),
+    );
   }
 
   List<DataCell> _buildContactButtons() {
