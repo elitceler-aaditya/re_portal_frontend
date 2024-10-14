@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
@@ -18,7 +17,7 @@ class NewLaunchSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(4, 10, 16, 0),
+          padding: const EdgeInsets.fromLTRB(4, 16, 16, 8),
           child: Text(
             title,
             style: const TextStyle(
@@ -28,7 +27,7 @@ class NewLaunchSection extends ConsumerWidget {
           ),
         ),
         SizedBox(
-          height: 350,
+          height: 300,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: apartments.length,
@@ -40,17 +39,16 @@ class NewLaunchSection extends ConsumerWidget {
                     MaterialPageRoute(
                       builder: (context) => PropertyDetails(
                         apartment: apartments[index],
-                        heroTag:
-                            "${title.toLowerCase()}-${apartments[index].projectId}",
+                        heroTag: "$title-${apartments[index].projectId}",
                       ),
                     ),
                   );
                 },
                 child: Container(
-                  height: 350,
+                  height: 300,
                   width: 200,
                   clipBehavior: Clip.hardEdge,
-                  margin: const EdgeInsets.fromLTRB(0, 0, 10, 8),
+                  margin: const EdgeInsets.fromLTRB(2, 0, 10, 8),
                   decoration: BoxDecoration(
                     color: const Color(0XFFFAF5E6),
                     borderRadius: BorderRadius.circular(12),
@@ -68,8 +66,7 @@ class NewLaunchSection extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Hero(
-                            tag:
-                                "${title.toLowerCase()}-${apartments[index].projectId}",
+                            tag: "$title-${apartments[index].projectId}",
                             child: SizedBox(
                               height: 120,
                               width: double.infinity,
@@ -98,70 +95,97 @@ class NewLaunchSection extends ConsumerWidget {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 4),
+                            child: Row(
                               children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
+                                Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        apartments[index].name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: CustomColors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      Text(
-                                        "@ ${apartments[index].projectLocation}",
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: CustomColors.black,
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 12,
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              apartments[index].name,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                color: CustomColors.black,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  size: 14,
+                                                  color: CustomColors.primary,
+                                                ),
+                                                Text(
+                                                  apartments[index]
+                                                      .projectLocation,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    color: CustomColors.black,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(height: 8),
                                 SizedBox(
                                   height: 64,
-                                  width: double.infinity,
+                                  width: 80,
                                   child: Stack(
                                     children: [
-                                      GoogleMap(
-                                        zoomControlsEnabled: false,
-                                        initialCameraPosition: CameraPosition(
-                                          target: LatLng(
-                                              apartments[index].latitude,
-                                              apartments[index].longitude),
-                                          zoom: 5,
-                                        ),
-                                        markers: {
-                                          Marker(
-                                            markerId: const MarkerId(
-                                                'currentLocation'),
-                                            icon: BitmapDescriptor
-                                                .defaultMarkerWithHue(2),
-                                            position: LatLng(
-                                                apartments[index].latitude,
-                                                apartments[index].longitude),
-                                            infoWindow: const InfoWindow(
-                                              title: 'Current Location',
-                                            ),
+                                      Container(
+                                        height: 80,
+                                        width: 80,
+                                        decoration: BoxDecoration(
+                                          color: CustomColors.black10
+                                              .withOpacity(0.1),
+                                          border: Border.all(
+                                            color: CustomColors.black10,
                                           ),
-                                        },
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: CustomColors.black10
+                                                  .withOpacity(0.5),
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 1),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Image.asset(
+                                          'assets/images/map.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      const Center(
+                                        child: Icon(
+                                          Icons.location_on,
+                                          color: CustomColors.primary,
+                                          size: 30,
+                                        ),
                                       ),
                                       GestureDetector(
                                         onTap: () {
@@ -172,7 +196,7 @@ class NewLaunchSection extends ConsumerWidget {
                                                   PropertyDetails(
                                                 apartment: apartments[index],
                                                 heroTag:
-                                                    "${title.toLowerCase()}-${apartments[index].projectId}",
+                                                    "$title-${apartments[index].projectId}",
                                               ),
                                             ),
                                           );
@@ -278,9 +302,8 @@ class NewLaunchSection extends ConsumerWidget {
                                     ],
                                   ),
                                 ),
-                              const SizedBox(width: 16),
                               SizedBox(
-                                height: 34,
+                                height: 36,
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -290,7 +313,7 @@ class NewLaunchSection extends ConsumerWidget {
                                         builder: (context) => PropertyDetails(
                                           apartment: apartments[index],
                                           heroTag:
-                                              "${title.toLowerCase()}-${apartments[index].projectId}",
+                                              "$title-${apartments[index].projectId}",
                                         ),
                                       ),
                                     );
@@ -301,9 +324,7 @@ class NewLaunchSection extends ConsumerWidget {
                                       borderRadius: BorderRadius.circular(0),
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 0,
-                                    ),
+                                        horizontal: 10),
                                   ),
                                   child: const Text(
                                     'View more',
@@ -324,12 +345,13 @@ class NewLaunchSection extends ConsumerWidget {
                             topLeft: Radius.circular(12),
                             bottomRight: Radius.circular(12),
                           ),
-                          color: Colors.redAccent,
+                          color: CustomColors.primary,
                         ),
                         child: Text(
                           title,
                           style: const TextStyle(
                             color: Colors.white,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

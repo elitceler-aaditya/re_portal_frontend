@@ -36,7 +36,7 @@ class EditorsChoiceCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
-                    heroTag: "editor-${apartments[index].projectId}",
+                    heroTag: "editors-choice-${apartments[index].projectId}",
                     nextApartment: index + 1 < apartments.length
                         ? apartments[index + 1]
                         : apartments.first,
@@ -46,7 +46,7 @@ class EditorsChoiceCard extends StatelessWidget {
             },
             child: Container(
               width: MediaQuery.of(context).size.width * 0.9,
-              margin: const EdgeInsets.only(right: 10),
+              margin: const EdgeInsets.only(right: 10, left: 2),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -57,7 +57,7 @@ class EditorsChoiceCard extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Hero(
-                      tag: "editor-${apartments[index].projectId}",
+                      tag: "editors-choice-${apartments[index].projectId}",
                       child: Container(
                         height: 200,
                         width: double.infinity,
@@ -111,13 +111,23 @@ class EditorsChoiceCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(
-                            "@${apartments[index].projectLocation}",
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 14,
+                                color: CustomColors.primary,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                apartments[index].projectLocation,
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
                           ),
                           const Spacer(),
                           Text(

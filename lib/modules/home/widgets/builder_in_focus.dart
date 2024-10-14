@@ -33,7 +33,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           child: const Padding(
-            padding: EdgeInsets.fromLTRB(8, 10, 8, 0),
+            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
             child: Row(
               children: [
                 Text(
@@ -226,20 +226,23 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
         ),
         SizedBox(
           height: 250,
-          child: ListView.builder(
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            itemCount:
-                builder.projects.length, // Use the actual length of apartments
-            itemBuilder: (context, index) {
-              final apartments = builder.projects;
-              final nextIndex =
-                  (index + 1) % apartments.length; // Ensure circular access
-              return _builderInFocusCard(
-                context,
-                apartments[index],
-                apartments[nextIndex],
-              );
-            },
+            child: Row(
+              children: List.generate(
+                builder.projects.length,
+                (index) {
+                  final apartments = builder.projects;
+                  final nextIndex =
+                      (index + 1) % apartments.length; // Ensure circular access
+                  return _builderInFocusCard(
+                    context,
+                    apartments[index],
+                    apartments[nextIndex],
+                  );
+                },
+              ),
+            ),
           ),
         )
       ],
@@ -255,7 +258,7 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         MaterialPageRoute(
           builder: (context) => PropertyDetails(
             apartment: apartment,
-            heroTag: "builder-${apartment.projectId}",
+            heroTag: "builder-in-focus-${apartment.projectId}",
             nextApartment: nextApartment,
           ),
         ),
@@ -269,7 +272,7 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         children: [
           Expanded(
             child: Hero(
-              tag: "builder-${apartment.projectId}",
+              tag: "builder-in-focus-${apartment.projectId}",
               child: Container(
                 width: 200,
                 clipBehavior: Clip.hardEdge,
@@ -308,13 +311,23 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
               color: CustomColors.primary,
             ),
           ),
-          Text(
-            "@${apartment.projectLocation},Hyderabad",
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.normal,
-              color: CustomColors.black,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                size: 14,
+                color: CustomColors.primary,
+              ),
+              const SizedBox(width: 2),
+              Text(
+                "${apartment.projectLocation},Hyderabad",
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: CustomColors.black,
+                ),
+              ),
+            ],
           ),
         ],
       ),

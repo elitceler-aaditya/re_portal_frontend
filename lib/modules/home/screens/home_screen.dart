@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
+import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
-import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
@@ -57,8 +57,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'filter': {'BHKType': '3BHK'},
     },
     {
-      'title': 'Apartments in Boduppal',
-      'filter': {'projectLocation': 'Boduppal'},
+      'title': 'Apartments in Tellapur',
+      'filter': {'projectLocation': 'Tellapur'},
     },
   ];
 
@@ -166,9 +166,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
         const Padding(
-          padding: EdgeInsets.only(left: 4, bottom: 8),
+          padding: EdgeInsets.only(left: 4, bottom: 8, top: 10),
           child: Text(
             "Select Properties",
             style: TextStyle(
@@ -181,7 +180,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             cardWidth: MediaQuery.of(context).size.width * 0.9,
             apartments: ref.watch(homePropertiesProvider).selectedProperties),
         const Padding(
-          padding: EdgeInsets.only(left: 4, top: 10),
+          padding: EdgeInsets.fromLTRB(4, 16, 0, 8),
           child: Text(
             "Editor's Choice",
             style: TextStyle(
@@ -194,7 +193,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           EditorsChoiceCard(
               apartments: ref.watch(homePropertiesProvider).editorsChoice),
         const NewLaunchSection(
-          title: "New launch",
+          title: "New launches",
         ),
         if (mounted)
           BuilderInFocus(
@@ -227,7 +226,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //appbar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 40, bottom: 4),
+              padding: const EdgeInsets.only(top: 36),
               decoration: const BoxDecoration(
                 color: CustomColors.primary,
               ),
@@ -451,37 +450,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //category options
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                  categoryOptions.length,
-                  (index) => GestureDetector(
-                    onTap: () {
-                      ref.read(filtersProvider.notifier).setAllFilters(
-                          FiltersModel()
-                              .fromJson(categoryOptions[index]['filter']));
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Row(
+                  children: List.generate(
+                    categoryOptions.length,
+                    (index) => GestureDetector(
+                      onTap: () {
+                        ref.read(filtersProvider.notifier).setAllFilters(
+                            FiltersModel()
+                                .fromJson(categoryOptions[index]['filter']));
 
-                      rightSlideTransition(
-                          context, const SearchApartmentResults());
-                    },
-                    child: Container(
-                      height: 80,
-                      width: 150,
-                      margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: const LinearGradient(
-                          colors: [
-                            CustomColors.secondary50,
-                            CustomColors.secondary,
-                          ],
+                        rightSlideTransition(
+                            context, const SearchApartmentResults());
+                      },
+                      child: Container(
+                        height: 80,
+                        width: 150,
+                        margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          gradient: const LinearGradient(
+                            colors: [
+                              CustomColors.secondary50,
+                              CustomColors.secondary,
+                            ],
+                          ),
                         ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        categoryOptions[index]['title'],
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: CustomColors.white,
+                        alignment: Alignment.center,
+                        child: Text(
+                          categoryOptions[index]['title'],
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: CustomColors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -493,7 +495,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //Best deals
             if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
               BestDealsSection(
-                height: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width + 50,
               ),
             const SizedBox(height: 10),
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -53,8 +54,17 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Fixed Column
-            if (widget.isFixedColumnVisible)
-              SingleChildScrollView(
+
+            Animate(
+              target: widget.isFixedColumnVisible ? 1 : 0,
+              effects: const [
+                SlideEffect(
+                    duration: Duration(milliseconds: 800),
+                    curve: Curves.easeInOut,
+                    begin: Offset(-1, 0),
+                    end: Offset(0, 0))
+              ],
+              child: SingleChildScrollView(
                 child: DataTable(
                   headingRowHeight: 83,
                   columnSpacing: 1,
@@ -86,6 +96,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   rows: _buildFixedColumnRows(),
                 ),
               ),
+            ),
             // Scrollable Columns
             Expanded(
               child: SingleChildScrollView(
@@ -98,6 +109,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                     dataRowMinHeight: 32,
                     dataRowMaxHeight: 32,
                     columns: _buildScrollableColumns(),
+                    // rows: [],
                     rows: _buildScrollableRows(),
                   ),
                 ),
@@ -194,8 +206,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   }
 
   List<DataRow> _buildScrollableRows() {
-    List attributes = [
-      // (ComparePropertyData prop) => prop.name,
+    List<String Function(ComparePropertyData)> attributes = [
+      (ComparePropertyData prop) => prop.name,
       (ComparePropertyData prop) => prop.projectType,
       (ComparePropertyData prop) => "${prop.flatSizes.toString()} sq.ft.",
       (ComparePropertyData prop) =>
@@ -215,20 +227,67 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
     return [
       ...List<DataRow>.generate(
         attributes.length,
-        (index) => _buildDataRow(
-          attributes[index],
-          const TextStyle(fontSize: 12),
-          index % 2 == 0 ? CustomColors.primary20 : CustomColors.primary10,
+        (index) => DataRow(
+          cells: List.generate(
+            widget.comparedPropertyData.length,
+            (cellIndex) => DataCell(
+              Text(
+                attributes[index](widget.comparedPropertyData[cellIndex]),
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+          ),
+          color: WidgetStateProperty.all(
+            index % 2 == 0 ? CustomColors.primary20 : CustomColors.primary10,
+          ),
         ),
       ),
-      _buildDataRow(
-        (prop) => formatBudget(prop.budget),
-        const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-        CustomColors.primary10,
+      DataRow(
+        cells: List.generate(
+          widget.comparedPropertyData.length,
+          (index) => DataCell(
+            Text(
+              formatBudget(widget.comparedPropertyData[index].budget),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+          ),
+        ),
+        color: const MaterialStatePropertyAll(CustomColors.primary10),
       ),
       DataRow(
-          cells: _buildContactButtons(),
-          color: const WidgetStatePropertyAll(CustomColors.primary10)),
+        cells: List.generate(
+          widget.comparedProperties.length,
+          (index) => DataCell(
+            SizedBox(
+              height: 36,
+              width: 90,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: CustomColors.primary.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6)),
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: () {
+                  final Uri phoneUri = Uri(
+                      scheme: 'tel',
+                      path: widget.comparedProperties[index].builderID);
+                  launchUrl(phoneUri);
+                },
+                child: const Text(
+                  'Contact',
+                  style: TextStyle(
+                      color: CustomColors.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12),
+                ),
+              ),
+            ),
+          ),
+        ),
+        color: const MaterialStatePropertyAll(CustomColors.primary10),
+      ),
     ];
   }
 

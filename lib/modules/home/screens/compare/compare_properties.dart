@@ -12,7 +12,8 @@ import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:http/http.dart' as http;
 
 class CompareProperties extends ConsumerStatefulWidget {
-  const CompareProperties({super.key});
+  final bool isPop;
+  const CompareProperties({super.key, this.isPop = false});
 
   @override
   ConsumerState<CompareProperties> createState() => _ComparePropertiesState();
@@ -102,7 +103,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
     List<ApartmentModel> comparedProperties =
         ref.watch(comparePropertyProvider);
     return PopScope(
-      canPop: false,
+      canPop: widget.isPop,
       onPopInvokedWithResult: (didPop, results) {
         if (!didPop) ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
@@ -111,7 +112,11 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+              if (widget.isPop) {
+                Navigator.pop(context);
+              } else {
+                ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+              }
             },
             icon: const Icon(Icons.arrow_back),
           ),

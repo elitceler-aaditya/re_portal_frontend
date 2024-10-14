@@ -401,27 +401,40 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
                       SizedBox(
                         height: 36,
-                        child: ListView.builder(
+                        child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          itemCount: apartmentTypeList.length,
-                          itemBuilder: (context, index) {
-                            return CustomRadioButton(
-                              text: apartmentTypeList[index],
-                              isSelected: appartmentType == index,
-                              onTap: () {
-                                //tap to unselect
-                                if (appartmentType == index) {
+                          child: Row(
+                            children: [
+                              CustomRadioButton(
+                                text: "All",
+                                isSelected: appartmentType == null,
+                                onTap: () {
                                   setState(() {
                                     appartmentType = null;
                                   });
-                                } else {
-                                  setState(() {
-                                    appartmentType = index;
-                                  });
-                                }
-                              },
-                            );
-                          },
+                                },
+                              ),
+                              ...List.generate(
+                                apartmentTypeList.length,
+                                (index) => CustomRadioButton(
+                                  text: apartmentTypeList[index],
+                                  isSelected: appartmentType == index,
+                                  onTap: () {
+                                    //tap to unselect
+                                    if (appartmentType == index) {
+                                      setState(() {
+                                        appartmentType = null;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        appartmentType = index;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
 

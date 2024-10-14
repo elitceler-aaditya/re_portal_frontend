@@ -19,7 +19,7 @@ class ReadyToMovein extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: EdgeInsets.fromLTRB(8, 10, 8, 0),
+                padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
                 child: Text(
                   "Ready to move in projects",
                   style: TextStyle(
@@ -47,7 +47,7 @@ class ReadyToMovein extends ConsumerWidget {
                         );
                       },
                       child: Container(
-                        margin: const EdgeInsets.only(right: 10),
+                        margin: const EdgeInsets.only(right: 10, left: 2),
                         height: double.infinity,
                         width: MediaQuery.of(context).size.width * 0.8,
                         clipBehavior: Clip.hardEdge,
@@ -95,7 +95,7 @@ class ReadyToMovein extends ConsumerWidget {
                                     child: const Text(
                                       "Ready to move in",
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.bold,
                                         color: CustomColors.white,
                                       ),
@@ -108,7 +108,7 @@ class ReadyToMovein extends ConsumerWidget {
                               width: double.infinity,
                               color: CustomColors.primary,
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 12, horizontal: 16),
+                                  vertical: 10, horizontal: 16),
                               child: Row(
                                 children: [
                                   Expanded(
@@ -129,14 +129,24 @@ class ReadyToMovein extends ConsumerWidget {
                                             color: CustomColors.white,
                                           ),
                                         ),
-                                        Text(
-                                          "@${apartments[index].projectLocation}",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: CustomColors.white,
-                                          ),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.location_on,
+                                              size: 14,
+                                              color: CustomColors.white,
+                                            ),
+                                            const SizedBox(width: 2),
+                                            Text(
+                                              apartments[index].projectLocation,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: CustomColors.white,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),

@@ -51,7 +51,7 @@ class PropertyStackCard extends StatelessWidget {
             },
             child: Container(
               width: cardWidth,
-              margin: const EdgeInsets.only(right: 10),
+              margin: const EdgeInsets.only(right: 10, left: 2),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -138,7 +138,7 @@ class PropertyStackCard extends StatelessWidget {
                               const Icon(
                                 Icons.location_on,
                                 size: 12,
-                                color: CustomColors.white,
+                                color: CustomColors.primary,
                               ),
                               const SizedBox(width: 2),
                               Text(

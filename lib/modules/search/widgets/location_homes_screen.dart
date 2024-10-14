@@ -32,6 +32,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
       final response = await http.get(uri);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
+
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
@@ -67,29 +68,31 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Popular locations near",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
                       ),
-                      Text(
-                        ref.watch(locationHomesProvider)!.searchedLocation,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: CustomColors.primary,
-                          decoration: TextDecoration.underline,
-                          decorationColor: CustomColors.primary,
-                          decorationThickness: 2,
+                      children: [
+                        const TextSpan(
+                            text: "Popular locations near  ",
+                            style: TextStyle(
+                              fontFamily: 'eudoxus',
+                            )),
+                        TextSpan(
+                          text: ref
+                              .watch(locationHomesProvider)!
+                              .searchedLocation,
+                          style: const TextStyle(
+                            fontFamily: 'eudoxus',
+                            fontWeight: FontWeight.bold,
+                            color: CustomColors.primary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(

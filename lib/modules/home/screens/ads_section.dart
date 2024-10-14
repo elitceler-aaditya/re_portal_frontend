@@ -109,7 +109,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => PropertyDetails(
           apartment: apartment,
-          heroTag: "ad-${apartment.apartmentID}",
+          heroTag: "ads-${apartment.apartmentID}",
         ),
       ));
     },

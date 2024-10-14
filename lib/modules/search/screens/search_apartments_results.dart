@@ -45,7 +45,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   List<ApartmentModel> allApartments = [];
   List<ApartmentModel> snippets = [];
   List<String> videoLinks = [];
-  List<GlobalKey> _globalKeys = List.generate(50, (index) => GlobalKey());
+  final List<GlobalKey> _globalKeys = List.generate(50, (index) => GlobalKey());
   bool loading = false;
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
@@ -947,7 +947,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                   _globalKeys[listIndex]);
                                             },
                                             globalKey: _globalKeys[listIndex],
-                                            pricePerSqFt: pricePerSqFt,
                                           );
                                         }
                                       },
@@ -1025,14 +1024,14 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
+                                          .length <=
                                       5)
                                     const ProjectSnippets(),
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
-                                      8)
+                                          .length <=
+                                      9)
                                     Column(
                                       children: [
                                         const Padding(
@@ -1054,32 +1053,32 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
-                                      12)
+                                          .length <=
+                                      13)
                                     const BudgetHomes(),
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
-                                      16)
+                                          .length <=
+                                      17)
                                     const LocationHomes(),
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
-                                      20)
+                                          .length <=
+                                      21)
                                     const ReadyToMovein(),
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
-                                      24)
+                                          .length <=
+                                      25)
                                     const UltraLuxuryHomes(),
                                   if (ref
                                           .watch(homePropertiesProvider)
                                           .filteredApartments
-                                          .length <
-                                      28)
+                                          .length <=
+                                      29)
                                     const NewLaunchSection(
                                         title: "Editor's Choice"),
                                   SizedBox(

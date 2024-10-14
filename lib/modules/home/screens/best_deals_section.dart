@@ -81,7 +81,6 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                           color: CustomColors.black25,
-                          borderRadius: BorderRadius.circular(10),
                           image: ref
                                   .watch(homePropertiesProvider)
                                   .bestDeals[index]
@@ -102,7 +101,6 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                       height: widget.height,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
                         gradient: LinearGradient(
                           colors: [
                             CustomColors.black.withOpacity(0),
@@ -136,13 +134,26 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(
-                              "@ ${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation}",
-                              style: const TextStyle(
-                                color: CustomColors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.location_on,
+                                  size: 16,
+                                  color: CustomColors.primary,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  ref
+                                      .watch(homePropertiesProvider)
+                                      .bestDeals[index]
+                                      .projectLocation,
+                                  style: const TextStyle(
+                                    color: CustomColors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 8),
                             Text(

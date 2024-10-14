@@ -1,15 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
@@ -24,7 +23,8 @@ class GlobalSearch extends ConsumerStatefulWidget {
 
 class _GlobalSearchState extends ConsumerState<GlobalSearch> {
   final TextEditingController _searchController = TextEditingController();
-  int searchOptionsIndex = 0;
+  int _currentHintIndex = 0;
+
   List<String> localities = [];
 
   List<String> searchOptions = [
@@ -67,6 +67,11 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
         getLocalitiesList();
       }
       localities = ref.read(filtersProvider).selectedLocalities;
+    });
+    Timer.periodic(const Duration(milliseconds: 5000), (timer) {
+      setState(() {
+        _currentHintIndex = (_currentHintIndex + 1) % searchOptions.length;
+      });
     });
   }
 
@@ -128,31 +133,23 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                     color: CustomColors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: TextField(
-                          controller: _searchController,
-                          autofocus: true,
-                          onChanged: _filterApartments,
-                          style: const TextStyle(fontSize: 14),
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.zero,
-                            hintText:
-                                'Search ${searchOptions[searchOptionsIndex]}...',
-                            hintStyle: const TextStyle(
-                              color: CustomColors.black50,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                        ),
+                  child: TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    onChanged: (value) => setState(() {}),
+                    style: const TextStyle(fontSize: 14),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 16),
+                      hintText: 'Search ${searchOptions[_currentHintIndex]}...',
+                      hintStyle: const TextStyle(
+                        color: CustomColors.black50,
                       ),
-                    ],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
                 ),
                 if (_searchController.text.trim().isNotEmpty)
@@ -212,17 +209,18 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(4, 10, 4, 4),
-                          child: Text(
-                            "Localities",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: CustomColors.primary,
+                        if (localities.isNotEmpty)
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(4, 10, 4, 4),
+                            child: Text(
+                              "Localities",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: CustomColors.primary,
+                              ),
                             ),
                           ),
-                        ),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -263,86 +261,100 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                             .searchLocality(
                                 _searchController.text.trim(), localities)
                             .isNotEmpty)
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.zero,
-                            itemCount: ref
-                                .read(localityListProvider.notifier)
-                                .searchLocality(
-                                    _searchController.text.trim(), localities)
-                                .length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (!localities.contains(ref
-                                        .read(localityListProvider.notifier)
-                                        .searchLocality(
-                                            _searchController.text.trim(),
-                                            localities)[index])) {
-                                      if (localities.length >= 4) {
-                                        errorSnackBar(context,
-                                            "You can only select 4 localities");
-                                      } else {
-                                        localities.add(ref
-                                            .read(localityListProvider.notifier)
-                                            .searchLocality(
-                                                _searchController.text.trim(),
-                                                localities)[index]);
-                                        _searchController.clear();
-                                      }
-                                    } else {
-                                      localities.remove(ref
-                                          .read(localityListProvider.notifier)
-                                          .searchLocality(
-                                              _searchController.text.trim(),
-                                              localities)[index]);
-                                    }
-                                  });
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 4),
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: localities.contains(ref
-                                            .read(localityListProvider.notifier)
-                                            .searchLocality(
-                                                _searchController.text.trim(),
-                                                localities)[index])
-                                        ? CustomColors.primary20
-                                        : CustomColors.black10,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(ref
-                                          .read(localityListProvider.notifier)
-                                          .searchLocality(
-                                              _searchController.text.trim(),
-                                              localities)[index]),
-                                      Icon(
-                                        localities.contains(ref
+                          _searchController.text.trim().isEmpty
+                              ? const SizedBox.shrink()
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.zero,
+                                  itemCount: ref
+                                      .read(localityListProvider.notifier)
+                                      .searchLocality(
+                                          _searchController.text.trim(),
+                                          localities)
+                                      .length,
+                                  itemBuilder: (context, index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if (!localities.contains(ref
+                                              .read(
+                                                  localityListProvider.notifier)
+                                              .searchLocality(
+                                                  _searchController.text.trim(),
+                                                  localities)[index])) {
+                                            if (localities.length >= 4) {
+                                              errorSnackBar(context,
+                                                  "You can only select 4 localities");
+                                            } else {
+                                              localities.add(ref
+                                                  .read(localityListProvider
+                                                      .notifier)
+                                                  .searchLocality(
+                                                      _searchController.text
+                                                          .trim(),
+                                                      localities)[index]);
+                                              _searchController.clear();
+                                            }
+                                          } else {
+                                            localities.remove(ref
                                                 .read(localityListProvider
                                                     .notifier)
                                                 .searchLocality(
                                                     _searchController.text
                                                         .trim(),
-                                                    localities)[index])
-                                            ? Icons.check
-                                            : Icons.add,
-                                        size: 18,
+                                                    localities)[index]);
+                                          }
+                                        });
+                                      },
+                                      child: Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 4),
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: localities.contains(ref
+                                                  .read(localityListProvider
+                                                      .notifier)
+                                                  .searchLocality(
+                                                      _searchController.text
+                                                          .trim(),
+                                                      localities)[index])
+                                              ? CustomColors.primary20
+                                              : CustomColors.black10,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(ref
+                                                .read(localityListProvider
+                                                    .notifier)
+                                                .searchLocality(
+                                                    _searchController.text
+                                                        .trim(),
+                                                    localities)[index]),
+                                            Icon(
+                                              localities.contains(ref
+                                                      .read(localityListProvider
+                                                          .notifier)
+                                                      .searchLocality(
+                                                          _searchController.text
+                                                              .trim(),
+                                                          localities)[index])
+                                                  ? Icons.check
+                                                  : Icons.add,
+                                              size: 18,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
                       ],
                     ),
                   if (ref
@@ -417,16 +429,16 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: CustomPrimaryButton(
-                title: 'Search',
+                title: 'Apply',
                 btnIcon: const Icon(
-                  Icons.search,
+                  Icons.check,
                   color: CustomColors.white,
                 ),
                 onTap: () {
                   ref
                       .read(filtersProvider.notifier)
                       .updateSelectedLocalities(localities);
-                  Navigator.pushReplacement(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const SearchApartmentResults(
