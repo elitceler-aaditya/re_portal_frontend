@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:re_portal_frontend/modules/search/widgets/photo_scrolling_gallery.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class PhotoGallery extends StatefulWidget {
   final List images;
@@ -24,12 +25,9 @@ class _PhotoGalleryState extends State<PhotoGallery> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PhotoView(
-                    imageProvider: NetworkImage(widget.images[index]),
-                    minScale: PhotoViewComputedScale.contained * 0.8,
-                    maxScale: PhotoViewComputedScale.covered * 2,
-                    initialScale: PhotoViewComputedScale.contained,
-                    heroAttributes: PhotoViewHeroAttributes(tag: 'image$index'),
+                  builder: (context) => PhotoScrollingGallery(
+                    images: widget.images,
+                    initPage: index,
                   ),
                 ),
               );
@@ -38,6 +36,16 @@ class _PhotoGalleryState extends State<PhotoGallery> {
               height: 200,
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
+                border: Border.all(
+                  color: CustomColors.black25,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: CustomColors.black25,
+                    blurRadius: 4,
+                    offset: Offset(0, 3),
+                  ),
+                ],
                 image: DecorationImage(
                   image: NetworkImage(widget.images[index]),
                   fit: BoxFit.cover,

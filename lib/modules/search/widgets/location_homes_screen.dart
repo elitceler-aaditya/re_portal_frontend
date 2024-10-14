@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +8,8 @@ import 'package:re_portal_frontend/riverpod/location_homes.dart';
 import 'package:http/http.dart' as http;
 
 class LocationHomes extends ConsumerStatefulWidget {
-  const LocationHomes({super.key});
+  final bool useActualLocation;
+  const LocationHomes({super.key, this.useActualLocation = false});
 
   @override
   ConsumerState<LocationHomes> createState() => _LocationHomesState();
@@ -32,6 +32,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
       final response = await http.get(uri);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
+        debugPrint("-----------------responseData: $responseData");
 
         ref
             .read(locationHomesProvider.notifier)
@@ -49,8 +50,9 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.watch(locationHomesProvider) == null) {
-        getLocationHomes(17.4141, 78.5791);
+      if (ref.watch(locationHomesProvider) == null &&
+          widget.useActualLocation) {
+        getLocationHomes(17.463, 78.286);
       }
     });
   }

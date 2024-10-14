@@ -18,6 +18,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/location_homes.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -61,6 +62,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'filter': {'projectLocation': 'Tellapur'},
     },
   ];
+
+  void getLocationHomes(double lat, double long) async {
+    debugPrint("-----------------getting location homes");
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/user/getPopularLocalities";
+    Uri uri = Uri.parse(url).replace(queryParameters: {
+      "latitude": lat.toString(),
+      "longitude": long.toString(),
+    });
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        debugPrint("-----------------responseData: $responseData");
+
+        ref
+            .read(locationHomesProvider.notifier)
+            .setLocationHomesData(responseData);
+      } else {
+        throw Exception('Error ${response.statusCode}: ${response.body}');
+      }
+    } catch (error, stackTrace) {
+      debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
+    }
+  }
 
   String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
@@ -210,6 +238,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (ref.watch(homePropertiesProvider).allApartments.isEmpty) {
         getApartments();
+      }
+      if (ref.watch(locationHomesProvider) == null) {
+        getLocationHomes(17.463, 78.286);
       }
     });
     super.initState();

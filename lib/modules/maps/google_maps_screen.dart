@@ -5,6 +5,7 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/maps/maps_property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -167,7 +168,21 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                       (e) => Marker(
                         markerId: MarkerId(e.projectId),
                         position: LatLng(e.latitude, e.longitude),
-                        infoWindow: InfoWindow(title: e.name),
+                        icon: BitmapDescriptor.defaultMarker,
+                        infoWindow: InfoWindow(
+                          title: e.name,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PropertyDetails(
+                                  apartment: e,
+                                  heroTag: "map-prop-${e.projectId}",
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                         onTap: () {
                           setState(() {
                             _selectedApartmentId = e.projectId;

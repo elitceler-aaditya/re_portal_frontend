@@ -11,7 +11,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_io/jwt_io.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:pinput/pinput.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
@@ -153,8 +152,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       useSafeArea: true,
       builder: (context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.9,
-          minChildSize: 0.3,
+          initialChildSize: 0.7,
+          minChildSize: 0.6,
           maxChildSize: 1,
           expand: false,
           builder: (context, scrollController) {
@@ -259,7 +258,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             globalKey: nextPropertyButtonKey,
                           ),
                         ),
-                      const LocationHomes(),
                     ],
                   ),
                 ],
@@ -753,7 +751,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     children: [
                       Expanded(
                         child: Container(
-                          height: 100,
+                          height: 80,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: CustomColors.white,
@@ -822,35 +820,20 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(4),
+                          padding: const EdgeInsets.only(left: 10),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (widget.apartment.projectLocation.isNotEmpty)
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height: 24,
-                                      // width: 32,
-                                      child: SvgPicture.asset(
-                                        "assets/icons/home_location_pin.svg",
-                                        color: CustomColors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        "${widget.apartment.projectLocation}, Hyderabad",
-                                        textAlign: TextAlign.start,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: CustomColors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  "${widget.apartment.projectLocation}, Hyderabad",
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: CustomColors.black,
+                                  ),
                                 ),
                               const SizedBox(height: 4),
                               TextButton.icon(
@@ -1011,16 +994,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => PhotoView(
-                                    imageProvider: NetworkImage(
-                                      _projectDetails
-                                          .projectImages[galleryIndex]
-                                          .images[index],
-                                    ),
-                                    minScale:
-                                        PhotoViewComputedScale.contained * 0.70,
-                                    maxScale:
-                                        PhotoViewComputedScale.contained * 2,
+                                  builder: (context) => PhotoGallery(
+                                    images: _projectDetails
+                                        .projectImages[galleryIndex].images,
                                   ),
                                 ),
                               );
@@ -1161,14 +1137,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => PhotoView(
-                              imageProvider: NetworkImage(
-                                _projectDetails
-                                    .unitPlanConfigFilesFormatted[configIndex]
-                                    .unitPlanConfigFiles[index],
-                              ),
-                              minScale: PhotoViewComputedScale.contained * 0.70,
-                              maxScale: PhotoViewComputedScale.contained * 2,
+                            builder: (context) => PhotoGallery(
+                              images: _projectDetails
+                                  .unitPlanConfigFilesFormatted[configIndex]
+                                  .unitPlanConfigFiles,
                             ),
                           ),
                         );
@@ -1745,6 +1717,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             if (mounted) const AdsSection(),
+            const LocationHomes(),
             const SizedBox(height: 10),
           ],
         ),
@@ -1755,8 +1728,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   heroAppbar(double h) {
     return GestureDetector(
       onTap: () {
-        //photoview gallery
-
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PhotoGallery(images: _images)));
       },
@@ -1830,7 +1801,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
 
           Container(
-            height: h * 0.35,
+            height: h * 0.5,
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -1900,14 +1871,27 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                       ref
                                               .read(savedPropertiesProvider)
                                               .contains(widget.apartment)
-                                          ? ref
-                                              .read(savedPropertiesProvider
-                                                  .notifier)
-                                              .removeApartment(widget.apartment)
-                                          : ref
-                                              .read(savedPropertiesProvider
-                                                  .notifier)
-                                              .addApartment(widget.apartment);
+                                          ? {
+                                              errorSnackBar(context,
+                                                  'Property removed from favourites'),
+                                              ref
+                                                  .read(savedPropertiesProvider
+                                                      .notifier)
+                                                  .removeApartment(
+                                                      widget.apartment)
+                                            }
+                                          : {
+                                              successSnackBar(context,
+                                                  'Property added to favourites'),
+                                              ref
+                                                  .read(savedPropertiesProvider
+                                                      .notifier)
+                                                  .addApartment(
+                                                      widget.apartment)
+                                            };
+                                      setState(() {
+                                        openOptions = false;
+                                      });
                                     },
                                   ),
                                   IconButton(
@@ -1976,6 +1960,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                                 .notifier)
                                             .removeApartment(widget.apartment);
                                       }
+                                      setState(() {
+                                        openOptions = false;
+                                      });
                                     },
                                   ),
                                 ],
@@ -1997,154 +1984,145 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
                 if (_highlights.isNotEmpty)
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => PhotoGallery(images: _images)));
                     },
-                    child: Animate(
-                      target: _showKeyHighlights ? 1 : 0,
-                      effects: const [
-                        SlideEffect(
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut,
-                          begin: Offset(-0.6, 0),
-                        ),
-                      ],
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            width: MediaQuery.of(context).size.width * 0.6,
-                            decoration: BoxDecoration(
-                              color: CustomColors.black.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width - 30,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10, bottom: 16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.apartment.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 22,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _timer?.cancel();
+                                  rightSlideTransition(
+                                    context,
+                                    BuilderPortfolio(
+                                      projectId: widget.apartment.projectId,
+                                    ),
+                                    onComplete: () => _timer = Timer.periodic(
+                                      const Duration(seconds: 3),
+                                      (timer) {
+                                        if (timerIndex == 1) {
+                                          _showKeyHighlights = false;
+                                        }
+                                        setState(() {
+                                          timerIndex++;
+                                        });
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(
+                                      color: CustomColors.white,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16,
+                                    ),
                                     children: [
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              widget.apartment.name,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                color: CustomColors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 24,
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                _timer?.cancel();
-                                                rightSlideTransition(
-                                                    context,
-                                                    BuilderPortfolio(
-                                                      projectId: widget
-                                                          .apartment.projectId,
-                                                    ),
-                                                    onComplete: () => _timer =
-                                                            Timer.periodic(
-                                                                const Duration(
-                                                                    seconds: 3),
-                                                                (timer) {
-                                                          if (timerIndex == 1) {
-                                                            _showKeyHighlights =
-                                                                false;
-                                                          }
-                                                          setState(() {
-                                                            timerIndex++;
-                                                          });
-                                                        }));
-                                              },
-                                              child: RichText(
-                                                text: TextSpan(
-                                                  style: const TextStyle(
-                                                    color: CustomColors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 16,
-                                                  ),
-                                                  children: [
-                                                    const TextSpan(
-                                                      text: "By ",
-                                                    ),
-                                                    TextSpan(
-                                                      text: widget.apartment
-                                                          .companyName,
-                                                      style: const TextStyle(
-                                                        decoration:
-                                                            TextDecoration
-                                                                .underline,
-                                                        decorationColor:
-                                                            CustomColors.white,
-                                                        decorationThickness: 2,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                      const TextSpan(
+                                        text: "By ",
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      TextSpan(
+                                        text: widget.apartment.companyName,
+                                        style: const TextStyle(
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: CustomColors.white,
+                                          decorationThickness: 2,
+                                          fontSize: 14,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                ...List.generate(
-                                  _highlights.length,
-                                  (index) => highlightsOption(
-                                    _highlights[index]["title"],
-                                    _highlights[index]["value"],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Animate(
+                          target: _showKeyHighlights ? 1 : 0,
+                          effects: const [
+                            SlideEffect(
+                              duration: Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                              begin: Offset(-0.4, 0),
+                            ),
+                          ],
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ...List.generate(
+                                      _highlights.length,
+                                      (index) => highlightsOption(
+                                        _highlights[index]["title"],
+                                        _highlights[index]["value"],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _showKeyHighlights = !_showKeyHighlights;
+                                  });
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 150),
+                                  width: 30,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.black.withOpacity(0.5),
+                                    borderRadius: const BorderRadius.only(
+                                      topRight: Radius.circular(10),
+                                      bottomRight: Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    _showKeyHighlights
+                                        ? Icons.keyboard_arrow_left
+                                        : Icons.keyboard_arrow_right,
+                                    color: CustomColors.white,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _showKeyHighlights = !_showKeyHighlights;
-                              });
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 150),
-                              width: 30,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: CustomColors.black.withOpacity(0.5),
-                                borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(10),
-                                  bottomRight: Radius.circular(10),
-                                ),
                               ),
-                              child: Icon(
-                                _showKeyHighlights
-                                    ? Icons.keyboard_arrow_left
-                                    : Icons.keyboard_arrow_right,
-                                color: CustomColors.white,
-                              ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
               ],

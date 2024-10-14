@@ -11,6 +11,7 @@ import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/riverpod/location_homes.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:app_settings/app_settings.dart';
 
@@ -73,7 +74,6 @@ class _UserLocationPropertiesState
   }
 
   void getLocationHomes(double lat, double long) async {
-    debugPrint("-----------------getting location homes");
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getPopularLocalities";
     Uri uri = Uri.parse(url).replace(queryParameters: {
@@ -85,6 +85,9 @@ class _UserLocationPropertiesState
       final response = await http.get(uri);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
+        ref
+            .read(locationHomesProvider.notifier)
+            .setLocationHomesData(responseData);
         setState(() {
           userLocationHomesData = LocationHomesData.fromJson(responseData);
         });

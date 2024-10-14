@@ -65,10 +65,10 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
             return _builderCard(context, builders[index]);
           },
           options: CarouselOptions(
-            height: 350,
+            height: 360,
             viewportFraction: 0.8,
             enlargeCenterPage: true,
-            autoPlay: true,
+            autoPlay: false,
             autoPlayInterval: const Duration(seconds: 5),
             autoPlayAnimationDuration: const Duration(milliseconds: 1000),
             autoPlayCurve: Curves.fastOutSlowIn,
@@ -163,6 +163,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        height: 1,
                         color: CustomColors.black10,
                       ),
                     ),
@@ -224,8 +225,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
             ],
           ),
         ),
-        SizedBox(
-          height: 250,
+        Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -264,7 +264,8 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         ),
       );
     },
-    child: Padding(
+    child: Container(
+      height: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 2, 10, 14),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -276,7 +277,6 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
               child: Container(
                 width: 200,
                 clipBehavior: Clip.hardEdge,
-                height: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
