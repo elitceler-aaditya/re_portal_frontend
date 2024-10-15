@@ -236,6 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(filtersProvider.notifier).clearBuilderName();
       if (ref.watch(homePropertiesProvider).allApartments.isEmpty) {
         getApartments();
       }

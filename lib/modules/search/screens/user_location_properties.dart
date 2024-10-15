@@ -95,6 +95,11 @@ class _UserLocationPropertiesState
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
+      userLocationHomesData = const LocationHomesData(
+        area: '',
+        searchedLocation: '',
+        projects: [],
+      );
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
     }

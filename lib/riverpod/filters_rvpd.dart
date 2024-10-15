@@ -11,6 +11,7 @@ class FiltersModel {
   final double minFlatSize;
   final double maxFlatSize;
   final int totalCount;
+  final String builderName;
 
   FiltersModel({
     this.selectedLocalities = const [],
@@ -22,6 +23,7 @@ class FiltersModel {
     this.minFlatSize = 0.0,
     this.maxFlatSize = 0.0,
     this.totalCount = 0,
+    this.builderName = '',
   });
 
   FiltersModel copyWith({
@@ -34,6 +36,7 @@ class FiltersModel {
     double? minFlatSize,
     double? maxFlatSize,
     int? totalCount,
+    String? builderName,
   }) {
     return FiltersModel(
       selectedLocalities: selectedLocalities ?? this.selectedLocalities,
@@ -46,6 +49,7 @@ class FiltersModel {
       minFlatSize: minFlatSize ?? this.minFlatSize,
       maxFlatSize: maxFlatSize ?? this.maxFlatSize,
       totalCount: totalCount ?? this.totalCount,
+      builderName: builderName ?? this.builderName,
     );
   }
 
@@ -67,6 +71,9 @@ class FiltersModel {
     if (maxBudget > 0) {
       json['maxBudget'] = maxBudget.toString();
     }
+    if (builderName.isNotEmpty) {
+      json['builderName'] = builderName;
+    }
 
     return json;
   }
@@ -80,6 +87,7 @@ class FiltersModel {
       maxBudget: double.tryParse(json['maxBudget'] ?? '') ?? 0,
       minFlatSize: double.tryParse(json['minFlatSize'] ?? '') ?? 0,
       maxFlatSize: double.tryParse(json['maxFlatSize'] ?? '') ?? 0,
+      builderName: json['builderName'] ?? '',
     );
   }
 }
@@ -97,6 +105,7 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
           minFlatSize: 0,
           maxFlatSize: 0,
           totalCount: 0,
+          builderName: '',
         ));
 
   void setAllFilters(FiltersModel filters) {
@@ -137,6 +146,14 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
 
   void updateTotalCount(int count) {
     state = state.copyWith(totalCount: count);
+  }
+
+  void updateBuilderName(String name) {
+    state = state.copyWith(builderName: name);
+  }
+
+  void clearBuilderName() {
+    state = state.copyWith(builderName: '');
   }
 }
 

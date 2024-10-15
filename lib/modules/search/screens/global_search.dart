@@ -63,6 +63,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(filtersProvider.notifier).clearBuilderName();
       if (ref.watch(localityListProvider).isEmpty) {
         getLocalitiesList();
       }
@@ -407,15 +408,88 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: 150,
-                          child: PropertyStackCard(
-                            cardWidth: MediaQuery.of(context).size.width * 0.7,
-                            apartments: ref
-                                .watch(homePropertiesProvider.notifier)
-                                .getApartmentsByBuilderName(
-                                    _searchController.text.trim()),
-                            showCompanyName: true,
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: List.generate(
+                              ref
+                                  .watch(homePropertiesProvider.notifier)
+                                  .getBuilderNames(
+                                      _searchController.text.trim())
+                                  .length,
+                              (index) => GestureDetector(
+                                onTap: () {
+                                  ref
+                                      .read(filtersProvider.notifier)
+                                      .updateBuilderName(ref
+                                          .watch(
+                                              homePropertiesProvider.notifier)
+                                          .getBuilderNames(_searchController
+                                              .text
+                                              .trim())[index]
+                                          .CompanyName);
+
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SearchApartmentResults(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: 80,
+                                  width: 140,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.black,
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(ref
+                                          .watch(
+                                              homePropertiesProvider.notifier)
+                                          .getBuilderNames(_searchController
+                                              .text
+                                              .trim())[index]
+                                          .CompanyLogo),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: CustomColors.black
+                                              .withOpacity(0.75),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Center(
+                                          child: Text(
+                                            ref
+                                                .watch(homePropertiesProvider
+                                                    .notifier)
+                                                .getBuilderNames(
+                                                    _searchController.text
+                                                        .trim())[index]
+                                                .CompanyName,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              color: CustomColors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],

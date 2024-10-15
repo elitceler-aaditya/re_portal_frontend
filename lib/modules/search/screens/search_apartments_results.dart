@@ -558,18 +558,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      if (ref
-                          .watch(homePropertiesProvider)
-                          .allApartments
-                          .isNotEmpty) {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => const GlobalSearch(),
-                          ),
-                        );
-                      } else {
-                        debugPrint("loading");
-                      }
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       color: CustomColors.primary,
@@ -585,17 +574,20 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           children: [
                             const Icon(Icons.search),
                             const SizedBox(width: 4),
-                            Expanded(
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 500),
                               child: Text(
-                                "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
+                                'Search by ${searchOptions[searchOptionsIndex]}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.start,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: CustomColors.black50,
                                 ),
                               ),
                             ),
+                            const Spacer(),
                             GestureDetector(
                               onTap: () {
                                 upSlideTransition(
@@ -1033,6 +1025,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                           .length <=
                                       9)
                                     Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Padding(
                                           padding: EdgeInsets.all(10),

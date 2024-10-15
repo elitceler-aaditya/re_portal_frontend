@@ -9,7 +9,7 @@ part of 'compare_property_data.dart';
 _$ComparePropertyDataImpl _$$ComparePropertyDataImplFromJson(
         Map<String, dynamic> json) =>
     _$ComparePropertyDataImpl(
-      name: json['name'] as String,
+      name: json['name'] as String? ?? "",
       projectType: json['projectType'] as String? ?? "",
       flatSizes: (json['flatSizes'] as num?)?.toInt() ?? 0,
       projectStatus: json['projectStatus'] as String? ?? "",
@@ -53,7 +53,7 @@ Map<String, dynamic> _$$ComparePropertyDataImplToJson(
 
 _$UnitPlanConfigImpl _$$UnitPlanConfigImplFromJson(Map<String, dynamic> json) =>
     _$UnitPlanConfigImpl(
-      BHKType: json['BHKType'] as String,
+      BHKType: json['BHKType'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$UnitPlanConfigImplToJson(
@@ -64,7 +64,7 @@ Map<String, dynamic> _$$UnitPlanConfigImplToJson(
 
 _$BuilderContactImpl _$$BuilderContactImplFromJson(Map<String, dynamic> json) =>
     _$BuilderContactImpl(
-      CompanyPhone: json['CompanyPhone'] as String,
+      CompanyPhone: json['CompanyPhone'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$BuilderContactImplToJson(

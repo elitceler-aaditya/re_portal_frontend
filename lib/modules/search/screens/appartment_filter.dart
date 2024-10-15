@@ -227,6 +227,7 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       initValues();
+      ref.read(filtersProvider.notifier).clearBuilderName();
     });
     super.initState();
   }

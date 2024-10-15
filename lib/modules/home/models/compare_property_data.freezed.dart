@@ -306,7 +306,7 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ComparePropertyDataImpl implements _ComparePropertyData {
   const _$ComparePropertyDataImpl(
-      {required this.name,
+      {this.name = "",
       this.projectType = "",
       this.flatSizes = 0,
       this.projectStatus = "",
@@ -327,6 +327,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       _$$ComparePropertyDataImplFromJson(json);
 
   @override
+  @JsonKey()
   final String name;
   @override
   @JsonKey()
@@ -455,7 +456,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
 
 abstract class _ComparePropertyData implements ComparePropertyData {
   const factory _ComparePropertyData(
-      {required final String name,
+      {final String name,
       final String projectType,
       final int flatSizes,
       final String projectStatus,
@@ -604,12 +605,13 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UnitPlanConfigImpl implements _UnitPlanConfig {
-  const _$UnitPlanConfigImpl({required this.BHKType});
+  const _$UnitPlanConfigImpl({this.BHKType = ""});
 
   factory _$UnitPlanConfigImpl.fromJson(Map<String, dynamic> json) =>
       _$$UnitPlanConfigImplFromJson(json);
 
   @override
+  @JsonKey()
   final String BHKType;
 
   @override
@@ -647,8 +649,7 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
 }
 
 abstract class _UnitPlanConfig implements UnitPlanConfig {
-  const factory _UnitPlanConfig({required final String BHKType}) =
-      _$UnitPlanConfigImpl;
+  const factory _UnitPlanConfig({final String BHKType}) = _$UnitPlanConfigImpl;
 
   factory _UnitPlanConfig.fromJson(Map<String, dynamic> json) =
       _$UnitPlanConfigImpl.fromJson;
@@ -755,12 +756,13 @@ class __$$BuilderContactImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$BuilderContactImpl implements _BuilderContact {
-  const _$BuilderContactImpl({required this.CompanyPhone});
+  const _$BuilderContactImpl({this.CompanyPhone = ""});
 
   factory _$BuilderContactImpl.fromJson(Map<String, dynamic> json) =>
       _$$BuilderContactImplFromJson(json);
 
   @override
+  @JsonKey()
   final String CompanyPhone;
 
   @override
@@ -799,7 +801,7 @@ class _$BuilderContactImpl implements _BuilderContact {
 }
 
 abstract class _BuilderContact implements BuilderContact {
-  const factory _BuilderContact({required final String CompanyPhone}) =
+  const factory _BuilderContact({final String CompanyPhone}) =
       _$BuilderContactImpl;
 
   factory _BuilderContact.fromJson(Map<String, dynamic> json) =

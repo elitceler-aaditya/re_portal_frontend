@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class FixedColumnDataTable extends ConsumerStatefulWidget {
   final List<ApartmentModel> comparedProperties;
@@ -27,21 +25,28 @@ class FixedColumnDataTable extends ConsumerStatefulWidget {
 }
 
 class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
-  formatPrice(double price) {
-    if (price > 1000000) {
-      return '${(price / 1000000).toStringAsFixed(0)} Lac';
-    } else if (price > 1000) {
-      return '${(price / 1000).toStringAsFixed(0)} K';
-    } else {
-      return price.toStringAsFixed(0);
-    }
-  }
-
+  List attributes = [
+    'Name',
+    'Type',
+    'Flat size',
+    'Approval',
+    'Project size',
+    'Flat size',
+    'Units',
+    'Floors',
+    'Configuration',
+    'Possession',
+    'Base price',
+    'Club size',
+    'Open area',
+    'Cost',
+    ''
+  ];
   formatBudget(int budget) {
     if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(2)} L";
+      return "₹${(budget / 100000).toStringAsFixed(2)} L";
     } else {
-      return "${(budget / 10000000).toStringAsFixed(2)} Cr";
+      return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
     }
   }
 
@@ -54,48 +59,62 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Fixed Column
-
-            Animate(
-              target: widget.isFixedColumnVisible ? 1 : 0,
-              effects: const [
-                SlideEffect(
-                    duration: Duration(milliseconds: 800),
-                    curve: Curves.easeInOut,
-                    begin: Offset(-1, 0),
-                    end: Offset(0, 0))
-              ],
-              child: SingleChildScrollView(
-                child: DataTable(
-                  headingRowHeight: 83,
-                  columnSpacing: 1,
-                  dataRowMinHeight: 32,
-                  dataRowMaxHeight: 32,
-                  columns: [
-                    DataColumn(
-                      label: TextButton.icon(
-                        style: TextButton.styleFrom(
-                          backgroundColor: CustomColors.primary10,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                        ),
-                        onPressed: widget.onHideFixedColumn,
-                        icon: widget.isFixedColumnVisible
-                            ? const Icon(Icons.arrow_back, size: 20)
-                            : const Icon(Icons.arrow_forward, size: 20),
-                        label: widget.isFixedColumnVisible
-                            ? const Text(
-                                "Hide",
-                                style: TextStyle(color: CustomColors.primary),
-                              )
-                            : const Text(
-                                "Show",
-                                style: TextStyle(color: CustomColors.primary),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: widget.isFixedColumnVisible ? 150 : 0,
+              curve: Curves.easeInOut,
+              child: !widget.isFixedColumnVisible
+                  ? const SizedBox()
+                  : Column(
+                      children: [
+                        Container(
+                          height: 79,
+                          width: double.infinity,
+                          color: CustomColors.white,
+                          child: Center(
+                            child: TextButton.icon(
+                              style: TextButton.styleFrom(
+                                backgroundColor: CustomColors.primary10,
                               ),
-                      ),
-                    )
-                  ],
-                  rows: _buildFixedColumnRows(),
-                ),
-              ),
+                              onPressed: widget.onHideFixedColumn,
+                              icon: Icon(
+                                widget.isFixedColumnVisible
+                                    ? Icons.arrow_back
+                                    : Icons.arrow_forward,
+                                color: CustomColors.primary,
+                              ),
+                              label: Text(
+                                widget.isFixedColumnVisible ? 'Hide' : 'Show',
+                                style: const TextStyle(
+                                  color: CustomColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        ...List.generate(
+                          15,
+                          (index) => Container(
+                            height: 36,
+                            width: double.infinity,
+                            color: index % 2 == 0
+                                ? CustomColors.white
+                                : CustomColors.primary10,
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: Text(
+                                attributes[index],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
             ),
             // Scrollable Columns
             Expanded(
@@ -106,10 +125,9 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   child: DataTable(
                     headingRowHeight: 115,
                     columnSpacing: 16,
-                    dataRowMinHeight: 32,
-                    dataRowMaxHeight: 32,
+                    dataRowMinHeight: 36,
+                    dataRowMaxHeight: 36,
                     columns: _buildScrollableColumns(),
-                    // rows: [],
                     rows: _buildScrollableRows(),
                   ),
                 ),
@@ -156,183 +174,42 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
         .toList();
   }
 
-  List<DataRow> _buildFixedColumnRows() {
-    List attributes = [
-      'Name',
-      'Type',
-      'Flat size',
-      'Approval',
-      'Project size',
-      'Flat size',
-      'Units',
-      'Floors',
-      'Configuration',
-      'Possession',
-      'Base price',
-      'Club size',
-      'Open area'
-    ];
-    return [
-      ...List<DataRow>.generate(
-        attributes.length,
-        (index) {
-          final rowColor =
-              index % 2 == 0 ? CustomColors.primary10 : CustomColors.primary20;
-
-          return DataRow(
-            color: WidgetStateProperty.all(rowColor),
-            cells: [
-              DataCell(
-                Text(
-                  attributes[index],
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      const DataRow(cells: [
-        DataCell(Text('Cost',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)))
-      ], color: WidgetStatePropertyAll(CustomColors.primary20)),
-      const DataRow(
-          cells: [DataCell(Text('Contact'))],
-          color: WidgetStatePropertyAll(CustomColors.primary10)),
-      const DataRow(
-          cells: [DataCell(Text(''))],
-          color: WidgetStatePropertyAll(CustomColors.white)),
-    ];
-  }
-
   List<DataRow> _buildScrollableRows() {
-    List<String Function(ComparePropertyData)> attributes = [
-      (ComparePropertyData prop) => prop.name,
-      (ComparePropertyData prop) => prop.projectType,
-      (ComparePropertyData prop) => "${prop.flatSizes.toString()} sq.ft.",
-      (ComparePropertyData prop) =>
-          prop.rERAApproval ? 'RERA Approved' : 'Not Approved',
-      (ComparePropertyData prop) => prop.projectSize,
-      (ComparePropertyData prop) => prop.flatSizes.toString(),
-      (ComparePropertyData prop) => prop.noOfTowers,
-      (ComparePropertyData prop) => prop.noOfFloors,
-      (ComparePropertyData prop) =>
-          prop.unitPlanConfigs.map((config) => config.BHKType).join(', '),
-      (ComparePropertyData prop) => prop.projectPossession.substring(0, 10),
-      (ComparePropertyData prop) =>
-          '₹${prop.pricePerSquareFeetRate} per sq.ft.',
-      (ComparePropertyData prop) => prop.clubhousesize,
-      (ComparePropertyData prop) => prop.totalOpenSpace,
+    final propertyFields = [
+      (ComparePropertyData d) => d.projectType,
+      (ComparePropertyData d) => d.flatSizes.toString(),
+      (ComparePropertyData d) => d.rERAApproval ? 'Yes' : 'No',
+      (ComparePropertyData d) => d.projectSize,
+      (ComparePropertyData d) => d.flatSizes.toString(),
+      (ComparePropertyData d) =>
+          d.unitPlanConfigs.map((e) => e.BHKType).join(', '),
+      (ComparePropertyData d) => d.noOfFloors,
+      (ComparePropertyData d) =>
+          d.unitPlanConfigs.map((e) => e.BHKType).join(', '),
+      (ComparePropertyData d) => d.projectPossession.isEmpty
+          ? ''
+          : d.projectPossession.substring(0, 10),
+      (ComparePropertyData d) => d.pricePerSquareFeetRate,
+      (ComparePropertyData d) => d.clubhousesize,
+      (ComparePropertyData d) => d.totalOpenSpace,
+      (ComparePropertyData d) => formatBudget(d.budget),
     ];
-    return [
-      ...List<DataRow>.generate(
-        attributes.length,
-        (index) => DataRow(
-          cells: List.generate(
-            widget.comparedPropertyData.length,
-            (cellIndex) => DataCell(
-              Text(
-                attributes[index](widget.comparedPropertyData[cellIndex]),
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
-          ),
-          color: WidgetStateProperty.all(
-            index % 2 == 0 ? CustomColors.primary20 : CustomColors.primary10,
-          ),
+
+    return List.generate(propertyFields.length, (index) {
+      return DataRow(
+        color: WidgetStateProperty.all(
+          index % 2 == 0 ? CustomColors.primary10 : CustomColors.white,
         ),
-      ),
-      DataRow(
-        cells: List.generate(
-          widget.comparedPropertyData.length,
-          (index) => DataCell(
+        cells: List.generate(widget.comparedPropertyData.length, (dataIndex) {
+          return DataCell(
             Text(
-              formatBudget(widget.comparedPropertyData[index].budget),
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-            ),
-          ),
-        ),
-        color: const MaterialStatePropertyAll(CustomColors.primary10),
-      ),
-      DataRow(
-        cells: List.generate(
-          widget.comparedProperties.length,
-          (index) => DataCell(
-            SizedBox(
-              height: 36,
-              width: 90,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: CustomColors.primary.withOpacity(0.1),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)),
-                  padding: EdgeInsets.zero,
-                ),
-                onPressed: () {
-                  final Uri phoneUri = Uri(
-                      scheme: 'tel',
-                      path: widget.comparedProperties[index].builderID);
-                  launchUrl(phoneUri);
-                },
-                child: const Text(
-                  'Contact',
-                  style: TextStyle(
-                      color: CustomColors.primary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12),
-                ),
+              propertyFields[index](
+                widget.comparedPropertyData[dataIndex],
               ),
             ),
-          ),
-        ),
-        color: const MaterialStatePropertyAll(CustomColors.primary10),
-      ),
-    ];
-  }
-
-  DataRow _buildDataRow(String Function(ComparePropertyData) getValue,
-      [TextStyle? style, Color? color]) {
-    return DataRow(
-      cells: widget.comparedPropertyData
-          .map(
-            (prop) => DataCell(
-              Text(getValue(prop), style: style),
-            ),
-          )
-          .toList(),
-      color: WidgetStatePropertyAll(color),
-    );
-  }
-
-  List<DataCell> _buildContactButtons() {
-    return widget.comparedProperties.map((prop) {
-      return DataCell(
-        SizedBox(
-          height: 36,
-          width: 90,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              backgroundColor: CustomColors.primary.withOpacity(0.1),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
-              padding: EdgeInsets.zero,
-            ),
-            onPressed: () {
-              final Uri phoneUri = Uri(scheme: 'tel', path: prop.builderID);
-              launchUrl(phoneUri);
-            },
-            child: const Text(
-              'Contact',
-              style: TextStyle(
-                  color: CustomColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12),
-            ),
-          ),
-        ),
+          );
+        }),
       );
-    }).toList();
+    });
   }
 }

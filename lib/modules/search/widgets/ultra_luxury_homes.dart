@@ -23,7 +23,7 @@ class UltraLuxuryHomes extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.fromLTRB(16, 10, 16, 0),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 10),
             child: Text(
               "Ultra Luxury Homes",
               style: TextStyle(

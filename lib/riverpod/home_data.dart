@@ -123,6 +123,17 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
             apartment.companyName.toLowerCase().contains(builderName))
         .toList();
   }
+
+  List<BuilderDataModel> getBuilderNames(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      return state.builderData.map((builder) => builder).toList();
+    }
+    return state.builderData
+        .where(
+            (builder) => builder.CompanyName.toLowerCase().contains(searchTerm))
+        .map((builder) => builder)
+        .toList();
+  }
 }
 
 class HomeData {

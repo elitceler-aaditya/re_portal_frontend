@@ -6,7 +6,7 @@ part 'compare_property_data.g.dart';
 @freezed
 class ComparePropertyData with _$ComparePropertyData {
   const factory ComparePropertyData({
-    required String name,
+    @Default("") String name,
     @Default("") String projectType,
     @Default(0) int flatSizes,
     @Default("") String projectStatus,
@@ -30,7 +30,7 @@ class ComparePropertyData with _$ComparePropertyData {
 @freezed
 class UnitPlanConfig with _$UnitPlanConfig {
   const factory UnitPlanConfig({
-    required String BHKType,
+    @Default("") String BHKType,
   }) = _UnitPlanConfig;
 
   factory UnitPlanConfig.fromJson(Map<String, dynamic> json) =>
@@ -40,7 +40,7 @@ class UnitPlanConfig with _$UnitPlanConfig {
 @freezed
 class BuilderContact with _$BuilderContact {
   const factory BuilderContact({
-    required String CompanyPhone,
+    @Default("") String CompanyPhone,
   }) = _BuilderContact;
 
   factory BuilderContact.fromJson(Map<String, dynamic> json) =>
