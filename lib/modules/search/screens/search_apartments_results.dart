@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
-import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/budget_homes.dart';
@@ -871,10 +870,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                               .filteredApartments
                                               .length,
                                       itemBuilder: (context, index) {
-                                        if (index % 5 == 0 && index != 0) {
+                                        if (index % 5 == 4 && index != 0) {
                                           List<Widget> widgetList = [
-                                            const NewLaunchSection(
-                                                title: "Editor's Choice"),
                                             const ProjectSnippets(),
                                             Column(
                                               mainAxisAlignment:
@@ -904,6 +901,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                             const LocationHomes(),
                                             const ReadyToMovein(),
                                             const UltraLuxuryHomes(),
+                                            const NewLaunchSection(
+                                                title: "Editor's Choice"),
                                           ];
                                           int adsIndex = index ~/ 5;
                                           return widgetList[
@@ -1150,11 +1149,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                                   .size
                                                                   .width *
                                                               0.4,
+                                                      clipBehavior:
+                                                          Clip.hardEdge,
                                                       decoration: BoxDecoration(
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(10),
-                                                        // color: CustomColors.black25,
                                                         gradient:
                                                             const LinearGradient(
                                                           colors: [
@@ -1171,27 +1171,46 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                       margin:
                                                           const EdgeInsets.only(
                                                               right: 10),
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Text(
-                                                          ref.watch(
-                                                                  localityListProvider)[
-                                                              index],
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  CustomColors
-                                                                      .white,
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
+                                                      child: Stack(
+                                                        children: [
+                                                          Positioned.fill(
+                                                            child: Image.asset(
+                                                                "assets/images/locations_bg.jpg",
+                                                                fit: BoxFit
+                                                                    .cover),
+                                                          ),
+                                                          Positioned.fill(
+                                                            child: Container(
+                                                              color: CustomColors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.6),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8),
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: Text(
+                                                              ref.watch(
+                                                                      localityListProvider)[
+                                                                  index],
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: const TextStyle(
+                                                                  color:
+                                                                      CustomColors
+                                                                          .white,
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),

@@ -170,6 +170,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     icon: Icons.logout,
                     onTap: () async {
                       ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+                      ref.read(userProvider.notifier).clearUser();
                       SharedPreferences.getInstance().then((sharedPref) {
                         sharedPref.clear();
                         ref.read(userProvider.notifier).clearUser();

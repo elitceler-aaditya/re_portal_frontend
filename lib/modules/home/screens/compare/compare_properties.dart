@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
@@ -98,6 +99,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     List<ApartmentModel> comparedProperties =
@@ -152,29 +154,75 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: FixedColumnDataTable(
-                              comparedProperties: comparedProperties,
-                              isFixedColumnVisible: _isFixedColumnVisible,
-                              comparedPropertyData: _comparedProperties,
-                              horizontalController: _horizontalController,
-                              onHideFixedColumn: () {
-                                setState(() {
-                                  _isFixedColumnVisible =
-                                      !_isFixedColumnVisible;
-                                });
-                              },
+                : Stack(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: FixedColumnDataTable(
+                                comparedProperties: comparedProperties,
+                                isFixedColumnVisible: _isFixedColumnVisible,
+                                comparedPropertyData: _comparedProperties,
+                                horizontalController: _horizontalController,
+                                onHideFixedColumn: () {
+                                  setState(() {
+                                    _isFixedColumnVisible =
+                                        !_isFixedColumnVisible;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isFixedColumnVisible = !_isFixedColumnVisible;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: _isFixedColumnVisible ? 100 : 24,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: CustomColors.black.withOpacity(0.5),
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _isFixedColumnVisible
+                                      ? Icons.keyboard_arrow_left
+                                      : Icons.keyboard_arrow_right,
+                                  color: CustomColors.white,
+                                ),
+                                if (_isFixedColumnVisible)
+                                  const Text(
+                                    "Hide",
+                                    style: TextStyle(
+                                      color: CustomColors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
       ),
     );

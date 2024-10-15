@@ -73,10 +73,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   String displayImage = "";
   Timer? _timer;
   bool openOptions = false;
-  final _phoneController = TextEditingController();
-  final _otpController = TextEditingController();
-  String phoneError = "";
-
   ScrollController galleryController = ScrollController();
   ScrollController configController = ScrollController();
 
@@ -94,6 +90,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
     final token = ref.read(userProvider).token;
     if (token.isEmpty) {
+      errorSnackBar(context, 'Please login first');
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const LoginScreen()));
       errorSnackBar(context, 'User not logged in');
@@ -366,371 +363,140 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     }
   }
 
-  _sendOTP() async {
-    String url = "${dotenv.env['BASE_URL']}/user/otpless-signin";
-    Map<String, String> body = {
-      "phoneNumber": "+91${_phoneController.text.trim()}",
-    };
-
-    try {
-      await http
-          .post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(body),
-      )
-          .then((response) {
-        if (response.statusCode == 200) {
-          final responseData = jsonDecode(response.body);
-
-          setState(() {
-            otpBottomSheet(responseData['data']['orderId']);
-          });
-        } else {
-          errorSnackBar(context, jsonDecode(response.body)['message']);
-        }
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
-
-  _verifyOTP(String orderId, String phoneNumber) async {
-    String url = "${dotenv.env['BASE_URL']}/user/verify-otp";
-    Map<String, String> body = {
-      "phoneNumber": "+91$phoneNumber",
-      "otp": _otpController.text,
-      "orderId": orderId,
-    };
-    try {
-      await http
-          .post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      )
-          .then((response) async {
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          Map responseData = jsonDecode(response.body);
-          await SharedPreferences.getInstance().then((sharedPref) {
-            sharedPref.setString('token', responseData['token']);
-            sharedPref.setString('refreshToken', responseData['refreshToken']);
-            if (responseData['token'].isNotEmpty) {
-              final userData = JwtToken.payload(responseData['token']);
-              ref.read(userProvider.notifier).setUser(
-                  User.fromJson({...userData, 'token': responseData['token']}));
-            }
-          });
-          successSnackBar(context, 'Logged in successfully');
-        } else {
-          throw Exception('Failed to verify OTP: ${response.body}');
-        }
-        Navigator.pop(context);
-        Navigator.pop(context);
-      });
-    } catch (e) {
-      debugPrint(e.toString());
-      errorSnackBar(context, e.toString());
-    } finally {}
-  }
-
-  Future<void> otpBottomSheet(String orderId) async {
-    return showModalBottomSheet(
+  Future<void> enquiryFormPopup() async {
+    return showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          decoration: const BoxDecoration(
-            color: CustomColors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Enter OTP',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+              16, 16, 16, MediaQuery.of(context).viewInsets.bottom),
+          child: Center(
+            child: Wrap(
+              children: [
+                Material(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(width: 30),
+                            const Text(
+                              'Enquiry Form',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(Icons.close),
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: _nameController,
+                                decoration: const InputDecoration(
+                                  label: Text("Name"),
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _mobileController,
+                                decoration: const InputDecoration(
+                                  label: Text('Mobile'),
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                keyboardType: TextInputType.phone,
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _emailController,
+                                decoration: const InputDecoration(
+                                  label: Text('Email'),
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                              const SizedBox(height: 16),
+                              TextField(
+                                controller: _enquiryDetails,
+                                textAlign: TextAlign.start,
+                                decoration: const InputDecoration(
+                                  label: Text('Enquire about your doubts'),
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(),
+                                  focusColor: CustomColors.black,
+                                  labelStyle: TextStyle(
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                minLines: 1,
+                                maxLines: 3,
+                              ),
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    sendEnquiry(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: CustomColors.primary,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                      color: CustomColors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Pinput(
-                    controller: _otpController,
-                    autofocus: true,
-                    length: 6,
-                    keyboardType: TextInputType.number,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    defaultPinTheme: PinTheme(
-                      width: 50,
-                      height: 50,
-                      textStyle: const TextStyle(
-                        fontSize: 24,
-                        color: CustomColors.black,
-                      ),
-                      decoration: BoxDecoration(
-                        color: CustomColors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: CustomColors.primary),
-                      ),
-                    ),
-                    focusedPinTheme: PinTheme(
-                      width: 50,
-                      height: 50,
-                      textStyle: const TextStyle(
-                        fontSize: 24,
-                        color: CustomColors.black,
-                      ),
-                      decoration: BoxDecoration(
-                        color: CustomColors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: CustomColors.primary, width: 2),
-                      ),
-                    ),
-                    submittedPinTheme: PinTheme(
-                      width: 50,
-                      height: 50,
-                      textStyle: const TextStyle(
-                        fontSize: 24,
-                        color: CustomColors.black,
-                      ),
-                      decoration: BoxDecoration(
-                        color: CustomColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: CustomColors.primary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      _verifyOTP(orderId, _phoneController.text.trim());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text('Verify OTP'),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
       },
     );
-  }
-
-  Future<void> enquiryFormPopup() async {
-    if (ref.read(userProvider).token.isEmpty) {
-      return showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) {
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              decoration: const BoxDecoration(color: CustomColors.white),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20,
-                    horizontal: 16,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          labelText: 'Phone Number',
-                          prefixIcon: const Icon(Icons.phone,
-                              color: CustomColors.primary),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                const BorderSide(color: CustomColors.primary),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: CustomColors.primary, width: 2),
-                          ),
-                          filled: true,
-                          fillColor: CustomColors.white,
-                        ),
-                        style: const TextStyle(fontSize: 16),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your phone number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      CustomPrimaryButton(
-                        title: 'Send OTP',
-                        onTap: () {
-                          _sendOTP();
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          });
-    } else {
-      return showDialog(
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: EdgeInsets.fromLTRB(
-                16, 16, 16, MediaQuery.of(context).viewInsets.bottom),
-            child: Center(
-              child: Wrap(
-                children: [
-                  Material(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 30),
-                              const Text(
-                                'Enquiry Form',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.close),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                TextField(
-                                  controller: _nameController,
-                                  decoration: const InputDecoration(
-                                    label: Text("Name"),
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(),
-                                    focusColor: CustomColors.black,
-                                    labelStyle: TextStyle(
-                                      color: CustomColors.black,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                TextField(
-                                  controller: _mobileController,
-                                  decoration: const InputDecoration(
-                                    label: Text('Mobile'),
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(),
-                                    focusColor: CustomColors.black,
-                                    labelStyle: TextStyle(
-                                      color: CustomColors.black,
-                                    ),
-                                  ),
-                                  keyboardType: TextInputType.phone,
-                                ),
-                                const SizedBox(height: 16),
-                                TextField(
-                                  controller: _emailController,
-                                  decoration: const InputDecoration(
-                                    label: Text('Email'),
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(),
-                                    focusColor: CustomColors.black,
-                                    labelStyle: TextStyle(
-                                      color: CustomColors.black,
-                                    ),
-                                  ),
-                                  keyboardType: TextInputType.emailAddress,
-                                ),
-                                const SizedBox(height: 16),
-                                TextField(
-                                  controller: _enquiryDetails,
-                                  textAlign: TextAlign.start,
-                                  decoration: const InputDecoration(
-                                    label: Text('Enquire about your doubts'),
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(),
-                                    focusColor: CustomColors.black,
-                                    labelStyle: TextStyle(
-                                      color: CustomColors.black,
-                                    ),
-                                  ),
-                                  minLines: 1,
-                                  maxLines: 3,
-                                ),
-                                const SizedBox(height: 24),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      sendEnquiry(context);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: CustomColors.primary,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 16,
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Submit',
-                                      style: TextStyle(
-                                        color: CustomColors.white,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    }
   }
 
   dataSheet() {
@@ -841,7 +607,27 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 style: IconButton.styleFrom(
                                     backgroundColor: CustomColors.primary),
                                 onPressed: () {
-                                  _toggleOverlay(context);
+                                  if (ref.read(userProvider).token.isEmpty) {
+                                    errorSnackBar(
+                                        context, 'Please login first');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginScreen(
+                                          redirectTo: PropertyDetails(
+                                            apartment: widget.apartment,
+                                            heroTag: 'propertyDetails',
+                                            nextApartment: widget.nextApartment,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    _showOverlay(
+                                        context,
+                                        contactButtonKey.currentContext!
+                                            .findRenderObject() as RenderBox);
+                                  }
                                 },
                                 icon: SvgPicture.asset(
                                   "assets/icons/phone.svg",
@@ -914,6 +700,199 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: CustomColors.black.withOpacity(0.3),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 60,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Project size",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  "${_projectDetails.projectDetails.projectSize} sq.ft",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Floors",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  _projectDetails.projectDetails.noOfFloors,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Open Space",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  _projectDetails.projectDetails.totalOpenSpace,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    height: 60,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "RERA verified",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  _projectDetails.projectDetails.reraID.isEmpty
+                                      ? "No"
+                                      : "Yes",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Avl. Units",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  _projectDetails.projectDetails.noOfFlats,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Configurations",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                Text(
+                                  _projectDetails
+                                      .unitPlanConfigFilesFormatted.length
+                                      .toString(),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             if (_projectDetails.projectImages.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -1562,7 +1541,23 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      enquiryFormPopup();
+                      if (ref.read(userProvider).token.isEmpty) {
+                        errorSnackBar(context, 'Please login first');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(
+                              redirectTo: PropertyDetails(
+                                apartment: widget.apartment,
+                                heroTag: 'propertyDetails',
+                                nextApartment: widget.nextApartment,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        enquiryFormPopup();
+                      }
                     },
                     child: Container(
                       height: 120,
@@ -1633,10 +1628,23 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   const SizedBox(width: 10),
                   GestureDetector(
                     onTap: () {
-                      enquiryFormPopup().then((_) {
-                        ();
-                        _otpController.clear();
-                      });
+                      if (ref.read(userProvider).token.isEmpty) {
+                        errorSnackBar(context, 'Please login first');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(
+                              redirectTo: PropertyDetails(
+                                apartment: widget.apartment,
+                                heroTag: 'propertyDetails',
+                                nextApartment: widget.nextApartment,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        enquiryFormPopup();
+                      }
                     },
                     child: Container(
                       height: 120,
@@ -1671,10 +1679,24 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                       CustomColors.black.withOpacity(0.5),
                                 ),
                                 onPressed: () {
-                                  enquiryFormPopup().then((_) {
-                                    ();
-                                    _otpController.clear();
-                                  });
+                                  if (ref.read(userProvider).token.isEmpty) {
+                                    errorSnackBar(
+                                        context, 'Please login first');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginScreen(
+                                          redirectTo: PropertyDetails(
+                                            apartment: widget.apartment,
+                                            heroTag: 'propertyDetails',
+                                            nextApartment: widget.nextApartment,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    enquiryFormPopup();
+                                  }
                                 },
                                 icon: const Icon(Icons.play_arrow),
                               ),
@@ -1692,10 +1714,23 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  enquiryFormPopup().then((_) {
-                    ();
-                    _otpController.clear();
-                  });
+                  if (ref.read(userProvider).token.isEmpty) {
+                    errorSnackBar(context, 'Please login first');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                          redirectTo: PropertyDetails(
+                            apartment: widget.apartment,
+                            heroTag: 'propertyDetails',
+                            nextApartment: widget.nextApartment,
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    enquiryFormPopup();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: CustomColors.primary,
@@ -2133,15 +2168,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     );
   }
 
-  void _toggleOverlay(BuildContext context) {
-    if (_isOverlayVisible) {
-      _removeOverlay();
-    } else {
-      _showOverlay(context,
-          contactButtonKey.currentContext!.findRenderObject() as RenderBox);
-    }
-  }
-
   void _showOverlay(BuildContext context, RenderBox renderBox) {
     final Offset position = renderBox.localToGlobal(Offset.zero);
 
@@ -2192,9 +2218,26 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   "tel:${widget.apartment.companyPhone}"))
                               .then((value) => _removeOverlay());
                         } else {
-                          enquiryFormPopup().then((_) {
-                            _removeOverlay();
-                          });
+                          errorSnackBar(context, 'Please login first');
+
+                          if (ref.read(userProvider).token.isEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(
+                                  redirectTo: PropertyDetails(
+                                    apartment: widget.apartment,
+                                    heroTag: 'propertyDetails',
+                                    nextApartment: widget.nextApartment,
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else {
+                            enquiryFormPopup().then((_) {
+                              _removeOverlay();
+                            });
+                          }
                         }
                       },
                     ),
@@ -2211,9 +2254,19 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             'https://wa.me/+91${widget.apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}',
                           )).then((value) => _removeOverlay());
                         } else {
-                          enquiryFormPopup().then((_) {
-                            _removeOverlay();
-                          });
+                          errorSnackBar(context, 'Please login first');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginScreen(
+                                redirectTo: PropertyDetails(
+                                  apartment: widget.apartment,
+                                  heroTag: 'propertyDetails',
+                                  nextApartment: widget.nextApartment,
+                                ),
+                              ),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -2226,11 +2279,24 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ),
                       'Request call back',
                       () {
-                        enquiryFormPopup().then((_) {
-                          ();
-                          _otpController.clear();
-                        });
-                        _removeOverlay();
+                        if (ref.read(userProvider).token.isEmpty) {
+                          errorSnackBar(context, 'Please login first');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginScreen(
+                                redirectTo: PropertyDetails(
+                                  apartment: widget.apartment,
+                                  heroTag: 'propertyDetails',
+                                  nextApartment: widget.nextApartment,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          enquiryFormPopup();
+                          _removeOverlay();
+                        }
                       },
                     ),
                   ],
@@ -2356,8 +2422,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   @override
   void dispose() {
-    _phoneController.dispose();
-    _otpController.dispose();
     configController.dispose();
     galleryController.dispose();
 
