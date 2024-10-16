@@ -1,8 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_grid_view.dart';
-import 'package:re_portal_frontend/modules/home/widgets/property_list_view.dart';
+import 'package:re_portal_frontend/modules/search/widgets/property_list_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
@@ -97,7 +96,7 @@ class _PropertState extends ConsumerState<PropertyList> {
       children: [
         //Main body
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Column(
             children: [
               Row(

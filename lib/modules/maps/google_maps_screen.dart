@@ -5,6 +5,7 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/maps/maps_property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -28,6 +29,8 @@ class GoogleMapsScreen extends ConsumerStatefulWidget {
 
 class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   LatLng? currentLocation;
+  bool showSearch = false;
+  List<ApartmentModel> apartments = [];
   List<LatLng> locations = [];
   StreamSubscription<LocationData>? _locationSubscription;
   final Completer<GoogleMapController> _googleMapsController =
@@ -35,6 +38,8 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   String? _selectedApartmentId;
   final carousel.CarouselController carouselController =
       carousel.CarouselController();
+  final TextEditingController _searchController = TextEditingController();
+  List<String> propertyLocations = [];
 
   fetchLocationUpdate() async {
     bool serviceEnabled;
@@ -68,13 +73,47 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
     });
   }
 
+  ApartmentModel getApartmentByLocation(String location) {
+    return ref
+        .watch(homePropertiesProvider)
+        .allApartments
+        .where((element) => element.projectLocation == location)
+        .first;
+  }
+
+  panToLocation(ApartmentModel selectedAppt) async {
+    final GoogleMapController controller = await _googleMapsController.future;
+    final int index =
+        ref.watch(homePropertiesProvider).allApartments.indexOf(selectedAppt);
+
+    // Animate map
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(selectedAppt.latitude, selectedAppt.longitude),
+          zoom: 15,
+        ),
+      ),
+    );
+
+    setState(() {
+      _selectedApartmentId = selectedAppt.projectId;
+      controller.showMarkerInfoWindow(MarkerId(selectedAppt.projectId));
+    });
+    Future.delayed(const Duration(milliseconds: 800), () {
+      carouselController.animateToPage(index,
+          duration: const Duration(milliseconds: 800), curve: Curves.easeInOut);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchLocationUpdate();
-      final apartments = ref.read(homePropertiesProvider).allApartments;
-
+      apartments = ref.read(homePropertiesProvider).allApartments;
+      propertyLocations =
+          apartments.map((e) => e.projectLocation).toSet().toList();
       apartments.removeWhere(
           (element) => element.latitude == 0 && element.longitude == 0);
       apartments.removeWhere(
@@ -129,7 +168,21 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                       (e) => Marker(
                         markerId: MarkerId(e.projectId),
                         position: LatLng(e.latitude, e.longitude),
-                        infoWindow: InfoWindow(title: e.name),
+                        icon: BitmapDescriptor.defaultMarker,
+                        infoWindow: InfoWindow(
+                          title: e.name,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PropertyDetails(
+                                  apartment: e,
+                                  heroTag: "map-prop-${e.projectId}",
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                         onTap: () {
                           setState(() {
                             _selectedApartmentId = e.projectId;
@@ -146,16 +199,6 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                       ),
                     )
               },
-            ),
-          ),
-          Positioned(
-            top: 50,
-            left: 10,
-            child: IconButton.filled(
-              style:
-                  IconButton.styleFrom(backgroundColor: CustomColors.primary),
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.close),
             ),
           ),
           Positioned(
@@ -199,14 +242,112 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                   );
                 },
                 options: CarouselOptions(
-                  controller: carouselController,
-                  height: 180,
-                  viewportFraction: 0.8,
-                  enableInfiniteScroll: false,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.height,
-                  padEnds: false,
-                ),
+                    controller: carouselController,
+                    height: 180,
+                    viewportFraction: 0.8,
+                    enableInfiniteScroll: false,
+                    enlargeCenterPage: true,
+                    enlargeStrategy: CenterPageEnlargeStrategy.height,
+                    padEnds: false,
+                    showIndicator: false),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 50,
+            left: 10,
+            child: Container(
+              width: MediaQuery.of(context).size.width - 20,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          onTap: () {
+                            setState(() {
+                              showSearch = true;
+                            });
+                          },
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                          style: const TextStyle(fontSize: 14),
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.zero,
+                            hintText: 'Search locations...',
+                            hintStyle: const TextStyle(
+                              color: CustomColors.black50,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_searchController.text.trim().isNotEmpty && showSearch)
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight: 300,
+                        minHeight: 0,
+                      ),
+                      child: RawScrollbar(
+                        thumbColor: CustomColors.black50,
+                        thumbVisibility: true,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.only(top: 2),
+                          itemCount: apartments
+                              .map((e) => e.projectLocation)
+                              .where((element) => element
+                                  .toLowerCase()
+                                  .contains(_searchController.text
+                                      .trim()
+                                      .toLowerCase()))
+                              .toSet()
+                              .toList()
+                              .length,
+                          itemBuilder: (context, index) {
+                            String value = apartments
+                                .map((e) => e.projectLocation)
+                                .where((element) => element
+                                    .toLowerCase()
+                                    .contains(_searchController.text
+                                        .trim()
+                                        .toLowerCase()))
+                                .toSet()
+                                .toList()[index];
+                            return ListTile(
+                              title: Text(value),
+                              onTap: () {
+                                setState(() {
+                                  showSearch = false;
+                                  _searchController.text = value;
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  ApartmentModel selectedApartment =
+                                      getApartmentByLocation(value);
+                                  panToLocation(selectedApartment);
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

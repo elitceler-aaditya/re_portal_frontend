@@ -6,7 +6,8 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
   HomeDataNotifier() : super(HomeData());
 
   void setAllApartments(List<ApartmentModel> allApartments) {
-    state = state.copyWith(allApartments: allApartments);
+    final uniqueApartments = allApartments.toSet().toList();
+    state = state.copyWith(allApartments: uniqueApartments);
   }
 
   void setfilteredApartments(List<ApartmentModel> filteredApartments) {
@@ -22,15 +23,25 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
 
   void sortFilteredApartments(int sortBy) {
     if (sortBy == 0) {
-      state = state.copyWith(
-          filteredApartments: state.filteredApartments
-            ..sort((a, b) => a.budget.compareTo(b.budget)));
+      state = state.copyWith(filteredApartments: state.allApartments);
     } else if (sortBy == 1) {
       state = state.copyWith(
           filteredApartments: state.filteredApartments
             ..sort((a, b) => b.budget.compareTo(a.budget)));
-    } else {
-      state = state.copyWith(filteredApartments: state.allApartments);
+    } else if (sortBy == 2) {
+      state = state.copyWith(
+          filteredApartments: state.filteredApartments
+            ..sort((a, b) => a.budget.compareTo(b.budget)));
+    } else if (sortBy == 3) {
+      state = state.copyWith(
+          filteredApartments: state.filteredApartments
+            ..sort((a, b) =>
+                b.pricePerSquareFeetRate.compareTo(a.pricePerSquareFeetRate)));
+    } else if (sortBy == 4) {
+      state = state.copyWith(
+          filteredApartments: state.filteredApartments
+            ..sort((a, b) =>
+                a.pricePerSquareFeetRate.compareTo(b.pricePerSquareFeetRate)));
     }
   }
 
@@ -92,6 +103,36 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
               apartment.budget >= minBudget && apartment.budget <= maxBudget)
           .toList();
     }
+  }
+
+  List<ApartmentModel> getApartmentsByName(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      return state.allApartments;
+    }
+    return state.allApartments
+        .where((apartment) => apartment.name.toLowerCase().contains(searchTerm))
+        .toList();
+  }
+
+  List<ApartmentModel> getApartmentsByBuilderName(String builderName) {
+    if (builderName.isEmpty) {
+      return state.allApartments;
+    }
+    return state.allApartments
+        .where((apartment) =>
+            apartment.companyName.toLowerCase().contains(builderName))
+        .toList();
+  }
+
+  List<BuilderDataModel> getBuilderNames(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      return state.builderData.map((builder) => builder).toList();
+    }
+    return state.builderData
+        .where(
+            (builder) => builder.CompanyName.toLowerCase().contains(searchTerm))
+        .map((builder) => builder)
+        .toList();
   }
 }
 

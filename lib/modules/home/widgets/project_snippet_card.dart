@@ -26,7 +26,7 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
           MaterialPageRoute(
             builder: (context) => PropertyDetails(
               apartment: widget.apartment,
-              heroTag: "hero-${widget.apartment.projectId}",
+              heroTag: "ProjectSnippet-${widget.apartment.projectId}",
               nextApartment: widget.apartment,
             ),
           ),
@@ -44,7 +44,7 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
           children: [
             Positioned.fill(
               child: Hero(
-                tag: "hero-${widget.apartment.projectId}",
+                tag: "ProjectSnippet-${widget.apartment.projectId}",
                 child: Image.network(
                   widget.apartment.coverImage,
                   fit: BoxFit.cover,

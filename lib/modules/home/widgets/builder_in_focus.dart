@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -32,7 +33,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           child: const Padding(
-            padding: EdgeInsets.fromLTRB(8, 4, 8, 10),
+            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
             child: Row(
               children: [
                 Text(
@@ -58,17 +59,33 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
             ),
           ),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              const SizedBox(width: 10),
-              ...List.generate(
-                builders.length,
-                (index) => _builderCard(context, builders[index]),
+        FlutterCarousel.builder(
+          itemCount: builders.length,
+          itemBuilder: (context, index, realIndex) {
+            return _builderCard(context, builders[index]);
+          },
+          options: CarouselOptions(
+            height: 360,
+            viewportFraction: 0.8,
+            enlargeCenterPage: true,
+            autoPlay: false,
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enableInfiniteScroll: true,
+            initialPage: 0,
+            reverse: false,
+            scrollDirection: Axis.horizontal,
+            showIndicator: true,
+            floatingIndicator: false,
+            slideIndicator: const CircularSlideIndicator(
+              slideIndicatorOptions: SlideIndicatorOptions(
+                indicatorRadius: 4,
+                currentIndicatorColor: CustomColors.black,
+                indicatorBackgroundColor: CustomColors.black50,
+                itemSpacing: 16,
               ),
-              const SizedBox(width: 10),
-            ],
+            ),
           ),
         ),
       ],
@@ -78,8 +95,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
 
 Widget _builderCard(BuildContext context, BuilderDataModel builder) {
   return Container(
-    width: 330,
-    margin: const EdgeInsets.only(right: 10),
+    width: double.infinity,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: CustomColors.primary),
@@ -103,11 +119,17 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                backgroundColor: CustomColors.white.withOpacity(0.3),
-                radius: 24,
+              Container(
+                height: 48,
+                width: 48,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  color: CustomColors.white.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
                 child: Image.network(
                   builder.CompanyLogo,
+                  fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) =>
                       loadingProgress == null
                           ? child
@@ -141,6 +163,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        height: 1,
                         color: CustomColors.black10,
                       ),
                     ),
@@ -202,22 +225,24 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
             ],
           ),
         ),
-        SizedBox(
-          height: 250,
-          child: ListView.builder(
+        Expanded(
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            itemCount:
-                builder.projects.length, // Use the actual length of apartments
-            itemBuilder: (context, index) {
-              final apartments = builder.projects;
-              final nextIndex =
-                  (index + 1) % apartments.length; // Ensure circular access
-              return _builderInFocusCard(
-                context,
-                apartments[index],
-                apartments[nextIndex],
-              );
-            },
+            child: Row(
+              children: List.generate(
+                builder.projects.length,
+                (index) {
+                  final apartments = builder.projects;
+                  final nextIndex =
+                      (index + 1) % apartments.length; // Ensure circular access
+                  return _builderInFocusCard(
+                    context,
+                    apartments[index],
+                    apartments[nextIndex],
+                  );
+                },
+              ),
+            ),
           ),
         )
       ],
@@ -233,13 +258,14 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         MaterialPageRoute(
           builder: (context) => PropertyDetails(
             apartment: apartment,
-            heroTag: "builder-${apartment.projectId}",
+            heroTag: "builder-in-focus-${apartment.projectId}",
             nextApartment: nextApartment,
           ),
         ),
       );
     },
-    child: Padding(
+    child: Container(
+      height: double.infinity,
       padding: const EdgeInsets.fromLTRB(10, 2, 10, 14),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -247,11 +273,10 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
         children: [
           Expanded(
             child: Hero(
-              tag: "builder-${apartment.projectId}",
+              tag: "builder-in-focus-${apartment.projectId}",
               child: Container(
                 width: 200,
                 clipBehavior: Clip.hardEdge,
-                height: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -286,13 +311,23 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
               color: CustomColors.primary,
             ),
           ),
-          Text(
-            "@${apartment.projectLocation},Hyderabad",
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.normal,
-              color: CustomColors.black,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                size: 14,
+                color: CustomColors.primary,
+              ),
+              const SizedBox(width: 2),
+              Text(
+                "${apartment.projectLocation},Hyderabad",
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: CustomColors.black,
+                ),
+              ),
+            ],
           ),
         ],
       ),

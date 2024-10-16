@@ -3,18 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
-import 'package:re_portal_frontend/modules/home/screens/search_apartments.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
+import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
+import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
-import 'package:re_portal_frontend/modules/home/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
+import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/new_properties_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:re_portal_frontend/riverpod/location_homes.dart';
+import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -39,6 +44,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
   bool loading = true;
+
+  List<Map<String, dynamic>> categoryOptions = [
+    {
+      'title': 'Affordable Homes',
+      'filter': FiltersModel(affordableHomes: true),
+    },
+    {
+      'title': 'Large Living Spaces',
+      'filter': FiltersModel(largeLivingSpaces: true),
+    },
+    {
+      'title': 'Sustainable Living Homes',
+      'filter': FiltersModel(sustainableLivingHomes: true),
+    },
+    {
+      'title': '2.5 BHK Homes',
+      'filter': FiltersModel(twopointfiveBHKHomes: true),
+    },
+    {
+      'title': 'Large Balconies',
+      'filter': FiltersModel(largeBalconies: true),
+    },
+    {
+      'title': 'Sky Villa Habitat',
+      'filter': FiltersModel(skyVillaHabitat: true),
+    },
+    {
+      'title': 'Standalone Buildings',
+      'filter': FiltersModel(standAloneBuildings: true),
+    },
+    {
+      'title': 'Skyscrapers',
+      'filter': FiltersModel(skyScrapers: true),
+    },
+  ];
+
+  void getLocationHomes(double lat, double long) async {
+    debugPrint("-----------------getting location homes");
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/user/getPopularLocalities";
+    Uri uri = Uri.parse(url).replace(queryParameters: {
+      "latitude": lat.toString(),
+      "longitude": long.toString(),
+    });
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        debugPrint("-----------------responseData: $responseData");
+
+        ref
+            .read(locationHomesProvider.notifier)
+            .setLocationHomesData(responseData);
+      } else {
+        throw Exception('Error ${response.statusCode}: ${response.body}');
+      }
+    } catch (error, stackTrace) {
+      debugPrint("error: $error");
+      debugPrint("stackTrace: $stackTrace");
+    }
+  }
 
   String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
@@ -144,11 +211,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
         const Padding(
-          padding: EdgeInsets.only(left: 10, bottom: 8),
+          padding: EdgeInsets.only(left: 4, bottom: 8, top: 10),
           child: Text(
-            "Selected Properties",
+            "Select Properties",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -156,25 +222,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         PropertyStackCard(
+            cardWidth: MediaQuery.of(context).size.width * 0.9,
             apartments: ref.watch(homePropertiesProvider).selectedProperties),
         const Padding(
-          padding: EdgeInsets.all(10),
+          padding: EdgeInsets.fromLTRB(4, 16, 0, 8),
           child: Text(
-            "Editor’s Choice",
+            "Editor's Choice",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        EditorsChoiceCard(
-            apartments: ref.watch(homePropertiesProvider).editorsChoice),
-        const NewPropertiesSection(
-          title: "New Projects",
+        if (mounted)
+          EditorsChoiceCard(
+              apartments: ref.watch(homePropertiesProvider).editorsChoice),
+        const NewLaunchSection(
+          title: "New launches",
         ),
-        BuilderInFocus(
-            builderData: ref.watch(homePropertiesProvider).builderData),
-        const LifestyleProperties(),
+        if (mounted)
+          BuilderInFocus(
+              builderData: ref.watch(homePropertiesProvider).builderData),
+        if (mounted) const LifestyleProperties(),
         const ReadyToMovein(),
         const SizedBox(height: 20),
       ],
@@ -184,8 +253,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(filtersProvider.notifier).clearBuilderName();
       if (ref.watch(homePropertiesProvider).allApartments.isEmpty) {
         getApartments();
+      }
+      if (ref.watch(locationHomesProvider) == null) {
+        getLocationHomes(17.463, 78.286);
       }
     });
     super.initState();
@@ -202,7 +275,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //appbar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 40, bottom: 4),
+              padding: const EdgeInsets.only(top: 36),
               decoration: const BoxDecoration(
                 color: CustomColors.primary,
               ),
@@ -231,7 +304,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //top search bar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              padding: const EdgeInsets.all(2),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -240,9 +313,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(20),
                 ),
               ),
               child: Column(
@@ -256,7 +326,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           .isNotEmpty) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const SearchApartment(),
+                            builder: (context) => const GlobalSearch(),
                           ),
                         );
                       } else {
@@ -276,7 +346,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
+                              ref.read(searchBarProvider).isNotEmpty
+                                  ? ref.read(searchBarProvider)
+                                  : "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -287,11 +359,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              //   Navigator.of(context).push(
-                              //     MaterialPageRoute(
-                              //       builder: (context) => const VideoScreen(),
-                              //     ),
-                              //   );
+                              upSlideTransition(
+                                  context, const UserLocationProperties());
                             },
                             child: Padding(
                               padding:
@@ -309,14 +378,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             onPressed: () {
-                              if (!loading) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const SearchApartment(
-                                        openFilters: true),
-                                  ),
-                                );
-                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SearchApartmentResults(
+                                          openFilters: true),
+                                ),
+                              );
                             },
                             icon: SvgPicture.asset("assets/icons/filter.svg"),
                             label: const Text(
@@ -332,7 +400,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
 
                   Container(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 2),
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -382,7 +450,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const SearchApartment(
+                                                    const SearchApartmentResults(
                                                         openFilters: true),
                                               ),
                                             );
@@ -429,12 +497,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+
+            //category options
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Row(
+                  children: List.generate(
+                    categoryOptions.length,
+                    (index) => GestureDetector(
+                      onTap: () {
+                        ref.read(searchBarProvider.notifier).setSearchTerm(
+                              categoryOptions[index]['title'],
+                            );
+                        ref.read(filtersProvider.notifier).setAllFilters(
+                              categoryOptions[index]['filter'],
+                            );
+
+                        rightSlideTransition(
+                            context, const SearchApartmentResults());
+                      },
+                      child: Container(
+                        height: 80,
+                        width: 150,
+                        margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          image: DecorationImage(
+                            image: AssetImage(
+                              "assets/images/category-${index + 1}.jpg",
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: double.infinity,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    CustomColors.black.withOpacity(0.1),
+                                    CustomColors.black.withOpacity(0.8),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                categoryOptions[index]['title'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: CustomColors.white,
+                                  shadows: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.white.withOpacity(0.5),
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
 
             //Best deals
             if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
               BestDealsSection(
-                height: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width + 50,
               ),
             const SizedBox(height: 10),
 

@@ -62,7 +62,7 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.fromLTRB(8, 4, 8, 10),
+            padding: EdgeInsets.fromLTRB(2, 4, 8, 10),
             child: Text(
               "Similar Properties",
               style: TextStyle(
@@ -73,23 +73,20 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
             ),
           ),
           SizedBox(
-              height: 150,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 10),
-                    ...List.generate(
-                      ref.watch(similarPropertiesProvider).length,
-                      (index) => _adsCard(
-                        context,
-                        ref.watch(similarPropertiesProvider)[index],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
+            height: 150,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  ref.watch(similarPropertiesProvider).length,
+                  (index) => _adsCard(
+                    context,
+                    ref.watch(similarPropertiesProvider)[index],
+                  ),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -112,7 +109,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => PropertyDetails(
           apartment: apartment,
-          heroTag: "ad-${apartment.apartmentID}",
+          heroTag: "ads-${apartment.apartmentID}",
         ),
       ));
     },

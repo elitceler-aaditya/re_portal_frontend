@@ -166,9 +166,9 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
 
   formatBudget(int budget) {
     if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(2)} Lac.";
+      return "₹${(budget / 100000).toStringAsFixed(2)} Lac";
     } else {
-      return "${(budget / 10000000).toStringAsFixed(2)} Cr";
+      return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
     }
   }
 
@@ -186,7 +186,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.58,
+        childAspectRatio: 0.6,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
@@ -199,7 +199,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                 builder: (context) => PropertyDetails(
                   apartment: widget.sortedApartments[index],
                   heroTag:
-                      "property-${widget.sortedApartments[index].projectId}",
+                      "property-grid-card-${widget.sortedApartments[index].projectId}",
                 ),
               ),
             );
@@ -227,7 +227,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                     children: [
                       Hero(
                         tag:
-                            "property-${widget.sortedApartments[index].projectId}",
+                            "grid-card-${widget.sortedApartments[index].projectId}",
                         child: Container(
                           height: 180,
                           decoration: BoxDecoration(
@@ -361,7 +361,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                             ),
                             children: [
                               const TextSpan(
-                                text: "Cost: ",
+                                text: "Price: ",
                                 style: TextStyle(
                                   color: CustomColors.black75,
                                   fontWeight: FontWeight.normal,
@@ -371,6 +371,32 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                               TextSpan(
                                 text: formatBudget(
                                     widget.sortedApartments[index].budget),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black, // Default text color
+                            ),
+                            children: [
+                              const TextSpan(
+                                text: "Cost/sq.ft: ",
+                                style: TextStyle(
+                                  color: CustomColors.black75,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    "₹${widget.sortedApartments[index].pricePerSquareFeetRate}",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,

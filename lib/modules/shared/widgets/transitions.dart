@@ -34,8 +34,9 @@ void rightSlideTransition(
 
 void upSlideTransition(
   BuildContext context,
-  Widget page,
-) {
+  Widget page, {
+  Function(dynamic value)? onComplete,
+}) {
   Navigator.push(
     context,
     PageRouteBuilder(
@@ -56,7 +57,11 @@ void upSlideTransition(
       },
       transitionDuration: const Duration(milliseconds: 500),
     ),
-  );
+  ).then((value) {
+    if (onComplete != null) {
+      onComplete(value);
+    }
+  });
 }
 
 void fadeTransition(

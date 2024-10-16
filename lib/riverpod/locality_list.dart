@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final localityListProvider = StateNotifierProvider<LocalityListNotifier, List<dynamic>>((ref) {
+final localityListProvider =
+    StateNotifierProvider<LocalityListNotifier, List<dynamic>>((ref) {
   return LocalityListNotifier();
 });
 
@@ -22,6 +23,14 @@ class LocalityListNotifier extends StateNotifier<List<dynamic>> {
   void clearLocalities() {
     state = [];
   }
+
+  List<dynamic> searchLocality(
+      String searchTerm, List<dynamic> selectedLocalities) {
+    return state
+        .where((locality) =>
+            locality.toLowerCase().contains(searchTerm.toLowerCase()))
+        .where((locality) => !selectedLocalities.contains(locality))
+        .take(20)
+        .toList();
+  }
 }
-
-

@@ -25,11 +25,12 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
     await getTemporaryDirectory().then((tempDir) async {
       SharedPreferences.getInstance().then((sharedref) {
         String token = sharedref.getString('token') ?? '';
-        final userData = JwtToken.payload(token);
-
-        ref
-            .read(userProvider.notifier)
-            .setUser(User.fromJson({...userData, 'token': token}));
+        if (token.isNotEmpty) {
+          final userData = JwtToken.payload(token);
+          ref
+              .read(userProvider.notifier)
+              .setUser(User.fromJson({...userData, 'token': token}));
+        }
       });
     });
   }
@@ -78,13 +79,13 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 2),
         child: Column(
           children: [
             PropertiesTiles(
               title: 'Commercial',
               description: 'Discover top commercial properties nearby',
-              image: 'assets/images/tile_bg1.png',
+              image: 'assets/images/tile_bg1.jpg',
               onTap: () {
                 ref
                     .read(homePropertiesProvider.notifier)
@@ -98,7 +99,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             PropertiesTiles(
               title: 'Villas',
               description: 'Luxurious villas and upscale properties',
-              image: 'assets/images/tile_bg2.png',
+              image: 'assets/images/tile_bg2.jpg',
               onTap: () {
                 ref
                     .read(homePropertiesProvider.notifier)
@@ -112,7 +113,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             PropertiesTiles(
               title: 'Apartments',
               description: 'Luxury living in stunning apartments.',
-              image: 'assets/images/tile_bg3.png',
+              image: 'assets/images/tile_bg3.jpg',
               onTap: () {
                 ref
                     .read(homePropertiesProvider.notifier)
@@ -126,7 +127,7 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             PropertiesTiles(
               title: 'Plots',
               description: 'Your dream sanctuary on prime plots.',
-              image: 'assets/images/tile_bg4.png',
+              image: 'assets/images/tile_bg4.jpg',
               onTap: () {
                 ref
                     .read(homePropertiesProvider.notifier)

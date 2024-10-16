@@ -22,10 +22,10 @@ class PropertiesTiles extends StatelessWidget {
         child: Container(
           height: 160,
           width: double.infinity,
-          margin: const EdgeInsets.only(bottom: 10),
+          margin: const EdgeInsets.only(bottom: 4),
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(10),
             color: Colors.black,
             image: DecorationImage(
               opacity: 0.6,

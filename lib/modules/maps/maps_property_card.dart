@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -50,19 +51,22 @@ class MapsPropertyCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: double.infinity,
-                    width: 110,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        apartment.coverImage,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(Icons.error),
-                          );
-                        },
+                  Hero(
+                    tag: "map-prop-${apartment.projectId}",
+                    child: SizedBox(
+                      height: double.infinity,
+                      width: 110,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          apartment.coverImage,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(Icons.error),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -159,22 +163,41 @@ class MapsPropertyCard extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 4),
+                        SizedBox(
+                          width: 90,
+                          height: 32,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: CustomColors.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PropertyDetails(
+                                    apartment: apartment,
+                                    heroTag: "map-prop-${apartment.projectId}",
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'View more',
+                              style: TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                apartment.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.normal,
-                ),
               ),
             ),
           ],

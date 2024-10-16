@@ -4,29 +4,35 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jwt_io/jwt_io.dart';
 import 'package:pinput/pinput.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_types.dart';
+import 'package:re_portal_frontend/modules/shared/models/user.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OTPScreen extends StatefulWidget {
+class OTPScreen extends ConsumerStatefulWidget {
   final String otpSentTo;
   final String orderId;
   final Function()? resend;
+  final Widget? redirectTo;
   const OTPScreen({
     super.key,
     required this.otpSentTo,
     required this.orderId,
     this.resend,
+    this.redirectTo,
   });
 
   @override
-  State<OTPScreen> createState() => _OTPScreenState();
+  ConsumerState<OTPScreen> createState() => _OTPScreenState();
 }
 
-class _OTPScreenState extends State<OTPScreen> {
+class _OTPScreenState extends ConsumerState<OTPScreen> {
   bool _isLoading = false;
   final TextEditingController _otpController = TextEditingController();
 
@@ -58,13 +64,23 @@ class _OTPScreenState extends State<OTPScreen> {
           await SharedPreferences.getInstance().then((sharedPref) {
             sharedPref.setString('token', responseData['token']);
             sharedPref.setString('refreshToken', responseData['refreshToken']);
+            if (responseData['token'].isNotEmpty) {
+              final userData = JwtToken.payload(responseData['token']);
+              ref.read(userProvider.notifier).setUser(
+                  User.fromJson({...userData, 'token': responseData['token']}));
+            }
 
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const PropertyTypesScreen()),
-              (route) => false,
-            );
+            if (widget.redirectTo == null) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const PropertyTypesScreen()),
+                (route) => false,
+              );
+            } else {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            }
           });
         } else {
           throw Exception('Failed to verify OTP');

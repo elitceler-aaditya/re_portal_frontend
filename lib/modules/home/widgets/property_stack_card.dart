@@ -6,10 +6,16 @@ import 'package:shimmer/shimmer.dart';
 
 class PropertyStackCard extends StatelessWidget {
   final List<ApartmentModel> apartments;
+  final double cardWidth;
+  final double cardHeight;
+  final bool showCompanyName;
 
   const PropertyStackCard({
     super.key,
     required this.apartments,
+    required this.cardWidth,
+    this.showCompanyName = false,
+    this.cardHeight = 200,
   });
   String formatBudget(double budget) {
     //return budget in k format or lakh and cr format
@@ -25,7 +31,7 @@ class PropertyStackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 180,
+      height: cardHeight,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -37,7 +43,7 @@ class PropertyStackCard extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
-                    heroTag: "property-${apartments[index].projectId}",
+                    heroTag: "property-stack-${apartments[index].projectId}",
                     nextApartment: index + 1 < apartments.length
                         ? apartments[index + 1]
                         : apartments.first,
@@ -46,8 +52,9 @@ class PropertyStackCard extends StatelessWidget {
               );
             },
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              margin: const EdgeInsets.symmetric(horizontal: 6),
+              width: cardWidth,
+              height: cardHeight,
+              margin: const EdgeInsets.only(right: 10, left: 2),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -56,9 +63,9 @@ class PropertyStackCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Hero(
-                    tag: "property-${apartments[index].projectId}",
+                    tag: "property-stack-${apartments[index].projectId}",
                     child: SizedBox(
-                      height: 180,
+                      height: cardHeight,
                       width: double.infinity,
                       child: Image.network(
                         apartments[index].coverImage,
@@ -70,7 +77,7 @@ class PropertyStackCard extends StatelessWidget {
                                     baseColor: CustomColors.black75,
                                     highlightColor: CustomColors.black25,
                                     child: Container(
-                                      height: 180,
+                                      height: cardHeight,
                                       width: MediaQuery.of(context).size.width *
                                           0.8,
                                       decoration: BoxDecoration(
@@ -83,7 +90,7 @@ class PropertyStackCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    height: 180,
+                    height: cardHeight,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
@@ -101,27 +108,40 @@ class PropertyStackCard extends StatelessWidget {
                     bottom: 0,
                     left: 0,
                     child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
+                      width: cardWidth,
                       padding: const EdgeInsets.all(8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             apartments[index].name,
-                            maxLines: 1,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
+                              height: 1,
                               color: CustomColors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          if (showCompanyName)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                "by ${apartments[index].companyName}",
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
                           Row(
                             children: [
                               const Icon(
                                 Icons.location_on,
                                 size: 12,
-                                color: CustomColors.white,
+                                color: CustomColors.primary,
                               ),
                               const SizedBox(width: 2),
                               Text(

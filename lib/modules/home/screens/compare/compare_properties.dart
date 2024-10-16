@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
@@ -12,7 +13,8 @@ import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:http/http.dart' as http;
 
 class CompareProperties extends ConsumerStatefulWidget {
-  const CompareProperties({super.key});
+  final bool isPop;
+  const CompareProperties({super.key, this.isPop = false});
 
   @override
   ConsumerState<CompareProperties> createState() => _ComparePropertiesState();
@@ -21,6 +23,8 @@ class CompareProperties extends ConsumerStatefulWidget {
 class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   bool _isFixedColumnVisible = true;
   bool _isLoading = true;
+  final ScrollController _horizontalController = ScrollController();
+
   List<ComparePropertyData> _comparedProperties = [];
 
   void getPropertyData() async {
@@ -82,14 +86,26 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getPropertyData();
     });
+    _horizontalController.addListener(() {
+      if (_horizontalController.position.pixels <= 0) {
+        setState(() {
+          _isFixedColumnVisible = true;
+        });
+      } else {
+        setState(() {
+          _isFixedColumnVisible = false;
+        });
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
     List<ApartmentModel> comparedProperties =
         ref.watch(comparePropertyProvider);
     return PopScope(
-      canPop: false,
+      canPop: widget.isPop,
       onPopInvokedWithResult: (didPop, results) {
         if (!didPop) ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
@@ -98,29 +114,15 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+              if (widget.isPop) {
+                Navigator.pop(context);
+              } else {
+                ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+              }
             },
             icon: const Icon(Icons.arrow_back),
           ),
           backgroundColor: CustomColors.primary10,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isFixedColumnVisible = !_isFixedColumnVisible;
-                });
-              },
-              icon: _isFixedColumnVisible
-                  ? const Icon(
-                      Icons.visibility,
-                      color: CustomColors.primary,
-                    )
-                  : const Icon(
-                      Icons.visibility_off,
-                      color: CustomColors.primary,
-                    ),
-            ),
-          ],
         ),
         body: comparedProperties.length < 2
             ? const SafeArea(
@@ -152,22 +154,75 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: FixedColumnDataTable(
-                              comparedProperties: comparedProperties,
-                              isFixedColumnVisible: _isFixedColumnVisible,
-                              comparedPropertyData: _comparedProperties,
+                : Stack(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: FixedColumnDataTable(
+                                comparedProperties: comparedProperties,
+                                isFixedColumnVisible: _isFixedColumnVisible,
+                                comparedPropertyData: _comparedProperties,
+                                horizontalController: _horizontalController,
+                                onHideFixedColumn: () {
+                                  setState(() {
+                                    _isFixedColumnVisible =
+                                        !_isFixedColumnVisible;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isFixedColumnVisible = !_isFixedColumnVisible;
+                            });
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: _isFixedColumnVisible ? 100 : 24,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: CustomColors.black.withOpacity(0.5),
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(10),
+                                bottomRight: Radius.circular(10),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _isFixedColumnVisible
+                                      ? Icons.keyboard_arrow_left
+                                      : Icons.keyboard_arrow_right,
+                                  color: CustomColors.white,
+                                ),
+                                if (_isFixedColumnVisible)
+                                  const Text(
+                                    "Hide",
+                                    style: TextStyle(
+                                      color: CustomColors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
       ),
     );
