@@ -10,8 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:jwt_io/jwt_io.dart';
-import 'package:pinput/pinput.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
@@ -23,15 +21,12 @@ import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
-import 'package:re_portal_frontend/modules/shared/models/user.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -61,7 +56,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _enquiryDetails = TextEditingController();
   ApartmentDetailsResponse _projectDetails = const ApartmentDetailsResponse();
   OverlayEntry? _overlayEntry;
-  bool _isOverlayVisible = false;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
   final GlobalKey nextPropertyButtonKey =
       GlobalKey(debugLabel: 'next-property-button');
@@ -704,19 +698,23 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: CustomColors.white,
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: CustomColors.black.withOpacity(0.3),
-                    blurRadius: 10,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
               ),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10, bottom: 6),
+                    child: Text(
+                      "Project Details",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.black,
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 60,
                     child: Row(
@@ -726,6 +724,18 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             decoration: BoxDecoration(
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                const BoxShadow(
+                                  color: CustomColors.white,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 0),
+                                ),
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -752,6 +762,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             decoration: BoxDecoration(
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -778,6 +795,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             decoration: BoxDecoration(
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -811,6 +835,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             decoration: BoxDecoration(
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -839,6 +870,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             decoration: BoxDecoration(
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -865,6 +903,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             decoration: BoxDecoration(
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.1),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -2309,15 +2354,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     );
 
     Overlay.of(context).insert(_overlayEntry!);
-    setState(() {
-      _isOverlayVisible = true;
-    });
   }
 
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    _isOverlayVisible = false;
   }
 
   Widget _buildOption(Widget icon, String text, VoidCallback onTap) {

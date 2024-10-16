@@ -88,6 +88,8 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                           ? Image.network(
                               widget.apartment.coverImage,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const SizedBox.shrink(),
                               loadingBuilder: (context, child,
                                       loadingProgress) =>
                                   loadingProgress == null

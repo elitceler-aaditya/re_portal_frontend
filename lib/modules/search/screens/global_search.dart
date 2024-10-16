@@ -13,6 +13,7 @@ import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
 import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/riverpod/search_bar.dart';
 
 class GlobalSearch extends ConsumerStatefulWidget {
   const GlobalSearch({super.key});
@@ -32,10 +33,6 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
     "loction",
     "builder name",
   ];
-
-  void _filterApartments(String searchTerm) {
-    setState(() {});
-  }
 
   void getLocalitiesList() async {
     String baseUrl = dotenv.get('BASE_URL');
@@ -138,6 +135,15 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                     controller: _searchController,
                     autofocus: true,
                     onChanged: (value) => setState(() {}),
+                    onSubmitted: (value) {
+                      ref.read(searchBarProvider.notifier).setSearchTerm(value);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SearchApartmentResults(),
+                        ),
+                      );
+                    },
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
@@ -277,34 +283,24 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
                                       onTap: () {
+                                        final localityProvider = ref.read(
+                                            localityListProvider.notifier);
+                                        final searchedLocality =
+                                            localityProvider.searchLocality(
+                                          _searchController.text.trim(),
+                                          localities,
+                                        )[index];
+
                                         setState(() {
-                                          if (!localities.contains(ref
-                                              .read(
-                                                  localityListProvider.notifier)
-                                              .searchLocality(
-                                                  _searchController.text.trim(),
-                                                  localities)[index])) {
-                                            if (localities.length >= 4) {
-                                              errorSnackBar(context,
-                                                  "You can only select 4 localities");
-                                            } else {
-                                              localities.add(ref
-                                                  .read(localityListProvider
-                                                      .notifier)
-                                                  .searchLocality(
-                                                      _searchController.text
-                                                          .trim(),
-                                                      localities)[index]);
-                                              _searchController.clear();
-                                            }
+                                          if (localities
+                                              .contains(searchedLocality)) {
+                                            localities.remove(searchedLocality);
+                                          } else if (localities.length < 4) {
+                                            localities.add(searchedLocality);
+                                            _searchController.clear();
                                           } else {
-                                            localities.remove(ref
-                                                .read(localityListProvider
-                                                    .notifier)
-                                                .searchLocality(
-                                                    _searchController.text
-                                                        .trim(),
-                                                    localities)[index]);
+                                            errorSnackBar(context,
+                                                "You can only select 4 localities");
                                           }
                                         });
                                       },
@@ -378,9 +374,10 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                           ),
                         ),
                         SizedBox(
-                          height: 150,
+                          height: 200,
                           child: PropertyStackCard(
-                            cardWidth: MediaQuery.of(context).size.width * 0.7,
+                            cardWidth: MediaQuery.of(context).size.width * 0.45,
+                            cardHeight: 200,
                             apartments: ref
                                 .watch(homePropertiesProvider.notifier)
                                 .getApartmentsByName(

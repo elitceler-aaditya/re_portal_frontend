@@ -19,6 +19,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
+import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -46,20 +47,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   List<Map<String, dynamic>> categoryOptions = [
     {
-      'title': 'Budget properties',
-      'filter': {'maxBudget': '10000000'},
+      'title': 'Affordable Homes',
+      'filter': FiltersModel(affordableHomes: true),
     },
     {
-      'title': 'Standalone properties',
-      'filter': {'projectType': 'Standalone'},
+      'title': 'Large Living Spaces',
+      'filter': FiltersModel(largeLivingSpaces: true),
     },
     {
-      'title': 'Family apartments',
-      'filter': {'BHKType': '3BHK'},
+      'title': 'Sustainable Living Homes',
+      'filter': FiltersModel(sustainableLivingHomes: true),
     },
     {
-      'title': 'Apartments in Tellapur',
-      'filter': {'projectLocation': 'Tellapur'},
+      'title': '2.5 BHK Homes',
+      'filter': FiltersModel(twopointfiveBHKHomes: true),
+    },
+    {
+      'title': 'Large Balconies',
+      'filter': FiltersModel(largeBalconies: true),
+    },
+    {
+      'title': 'Sky Villa Habitat',
+      'filter': FiltersModel(skyVillaHabitat: true),
+    },
+    {
+      'title': 'Standalone Buildings',
+      'filter': FiltersModel(standAloneBuildings: true),
+    },
+    {
+      'title': 'Skyscrapers',
+      'filter': FiltersModel(skyScrapers: true),
     },
   ];
 
@@ -329,7 +346,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
+                              ref.read(searchBarProvider).isNotEmpty
+                                  ? ref.read(searchBarProvider)
+                                  : "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -489,9 +508,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     categoryOptions.length,
                     (index) => GestureDetector(
                       onTap: () {
+                        ref.read(searchBarProvider.notifier).setSearchTerm(
+                              categoryOptions[index]['title'],
+                            );
                         ref.read(filtersProvider.notifier).setAllFilters(
-                            FiltersModel()
-                                .fromJson(categoryOptions[index]['filter']));
+                              categoryOptions[index]['filter'],
+                            );
 
                         rightSlideTransition(
                             context, const SearchApartmentResults());
@@ -502,20 +524,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3),
-                          gradient: const LinearGradient(
-                            colors: [
-                              CustomColors.secondary50,
-                              CustomColors.secondary,
-                            ],
+                          image: DecorationImage(
+                            image: AssetImage(
+                              "assets/images/category-${index + 1}.jpg",
+                            ),
+                            fit: BoxFit.cover,
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
-                          categoryOptions[index]['title'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: CustomColors.white,
-                          ),
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: double.infinity,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    CustomColors.black.withOpacity(0.1),
+                                    CustomColors.black.withOpacity(0.8),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                categoryOptions[index]['title'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: CustomColors.white,
+                                  shadows: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.white.withOpacity(0.5),
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

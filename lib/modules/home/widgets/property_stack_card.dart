@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 class PropertyStackCard extends StatelessWidget {
   final List<ApartmentModel> apartments;
   final double cardWidth;
+  final double cardHeight;
   final bool showCompanyName;
 
   const PropertyStackCard({
@@ -14,6 +15,7 @@ class PropertyStackCard extends StatelessWidget {
     required this.apartments,
     required this.cardWidth,
     this.showCompanyName = false,
+    this.cardHeight = 200,
   });
   String formatBudget(double budget) {
     //return budget in k format or lakh and cr format
@@ -29,7 +31,7 @@ class PropertyStackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: cardHeight,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -51,6 +53,7 @@ class PropertyStackCard extends StatelessWidget {
             },
             child: Container(
               width: cardWidth,
+              height: cardHeight,
               margin: const EdgeInsets.only(right: 10, left: 2),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
@@ -62,7 +65,7 @@ class PropertyStackCard extends StatelessWidget {
                   Hero(
                     tag: "property-stack-${apartments[index].projectId}",
                     child: SizedBox(
-                      height: 200,
+                      height: cardHeight,
                       width: double.infinity,
                       child: Image.network(
                         apartments[index].coverImage,
@@ -74,7 +77,7 @@ class PropertyStackCard extends StatelessWidget {
                                     baseColor: CustomColors.black75,
                                     highlightColor: CustomColors.black25,
                                     child: Container(
-                                      height: 200,
+                                      height: cardHeight,
                                       width: MediaQuery.of(context).size.width *
                                           0.8,
                                       decoration: BoxDecoration(
@@ -87,7 +90,7 @@ class PropertyStackCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    height: 200,
+                    height: cardHeight,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
@@ -112,7 +115,7 @@ class PropertyStackCard extends StatelessWidget {
                         children: [
                           Text(
                             apartments[index].name,
-                            maxLines: 2,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               height: 1,

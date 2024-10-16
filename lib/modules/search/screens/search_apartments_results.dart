@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
+import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/budget_homes.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
@@ -24,6 +25,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
+import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -557,7 +559,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const GlobalSearch(),
+                        ),
+                      );
                     },
                     child: Container(
                       color: CustomColors.primary,
@@ -573,20 +579,23 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           children: [
                             const Icon(Icons.search),
                             const SizedBox(width: 4),
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 500),
-                              child: Text(
-                                'Search by ${searchOptions[searchOptionsIndex]}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.start,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: CustomColors.black50,
+                            Expanded(
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 500),
+                                child: Text(
+                                  ref.read(searchBarProvider).isNotEmpty
+                                      ? ref.read(searchBarProvider)
+                                      : 'Search by ${searchOptions[searchOptionsIndex]}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: CustomColors.black50,
+                                  ),
                                 ),
                               ),
                             ),
-                            const Spacer(),
                             GestureDetector(
                               onTap: () {
                                 upSlideTransition(
