@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
-import 'package:re_portal_frontend/modules/home/models/gallery_image_model.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class PhotoScrollingGallery extends StatefulWidget {
-  final List<GalleryImageModel> images;
+  final List<String> allImages;
+  final List<String> labels;
+  final List<double> breakPoints;
+  final int galleryIndex;
   final String image;
 
   const PhotoScrollingGallery({
     super.key,
-    required this.images,
-    this.image = '',
+    required this.allImages,
+    required this.labels,
+    required this.breakPoints,
+    required this.galleryIndex,
+    required this.image,
   });
 
   @override
@@ -18,62 +23,149 @@ class PhotoScrollingGallery extends StatefulWidget {
 }
 
 class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
-  late PageController _pageController;
-  int _currentIndex = 0;
+  int galleryIndex = 0;
+  PageController? galleryController;
 
   @override
   void initState() {
     super.initState();
-    _currentIndex =
-        widget.images.indexWhere((element) => element.imageUrl == widget.image);
-    _currentIndex = _currentIndex != -1 ? _currentIndex : 0;
-    _pageController = PageController(initialPage: _currentIndex);
+    galleryIndex = widget.galleryIndex;
+    galleryController =
+        PageController(initialPage: widget.allImages.indexOf(widget.image));
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    galleryController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("----image: ${widget.image}");
-    debugPrint("----images: ${widget.images}");
+    debugPrint("--------images: ${widget.allImages}");
+    debugPrint("--------labels: ${widget.labels}");
+    debugPrint("--------breakpoints: ${widget.breakPoints}");
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          widget.images[_currentIndex].title,
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      body: PhotoViewGallery.builder(
-        pageController: _pageController,
-        scrollPhysics: const BouncingScrollPhysics(),
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        backgroundDecoration: const BoxDecoration(color: Colors.black),
-        builder: (BuildContext context, int index) {
-          return PhotoViewGalleryPageOptions(
-            imageProvider: NetworkImage(widget.images[index].imageUrl),
-            minScale: PhotoViewComputedScale.contained,
-            maxScale: PhotoViewComputedScale.covered * 2,
-          );
-        },
-        itemCount: widget.images.length,
-        loadingBuilder: (context, event) => Center(
-          child: CircularProgressIndicator(
-            value: event == null
-                ? 0
-                : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
+      backgroundColor: CustomColors.black,
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: galleryController,
+            itemCount: widget.allImages.length,
+            itemBuilder: (context, imageIndex) {
+              return PhotoView(
+                imageProvider: NetworkImage(
+                  widget.allImages[imageIndex].trim(),
+                ),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.covered * 4,
+                initialScale: PhotoViewComputedScale.contained,
+                backgroundDecoration:
+                    const BoxDecoration(color: CustomColors.black),
+                loadingBuilder: (context, event) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+                filterQuality: FilterQuality.high,
+                heroAttributes:
+                    PhotoViewHeroAttributes(tag: "image_$imageIndex"),
+                gestureDetectorBehavior: HitTestBehavior.opaque,
+              );
+            },
           ),
-        ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context).padding.top + 60,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                left: 0,
+                right: 10,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+              ),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: CustomColors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 70,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    ...List.generate(
+                      widget.labels.length,
+                      (index) => widget.labels[index].isEmpty
+                          ? const SizedBox()
+                          : Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: galleryIndex == index
+                                      ? CustomColors.primary20
+                                      : Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  side: BorderSide(
+                                    color: CustomColors.white.withOpacity(0.2),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    galleryIndex = index;
+                                  });
+                                  galleryController?.animateTo(
+                                    index == 0
+                                        ? 0
+                                        : MediaQuery.of(context).size.width *
+                                            widget.breakPoints[index],
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                                child: Text(
+                                  widget.labels[index],
+                                  style: TextStyle(
+                                    color: galleryIndex == index
+                                        ? CustomColors.primary
+                                        : CustomColors.black50,
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

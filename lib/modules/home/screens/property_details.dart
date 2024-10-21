@@ -11,7 +11,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
-import 'package:re_portal_frontend/modules/home/models/gallery_image_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
@@ -57,7 +56,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
   ApartmentDetailsResponse _projectDetails = const ApartmentDetailsResponse();
-  List<GalleryImageModel> _photoViewImages = [];
   OverlayEntry? _overlayEntry;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
   final GlobalKey nextPropertyButtonKey =
@@ -924,17 +922,24 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              _photoViewImages = _projectDetails.projectImages
-                                  .expand((image) => image.images
-                                      .map((imageUrl) => GalleryImageModel(
-                                            imageUrl: imageUrl,
-                                            title: image.title,
-                                          )))
-                                  .toList();
+                              final List<String> allImgs = [];
+                              List<double> breakpoints = [];
+                              double cumulativeSum = 0;
+                              for (var gal in _projectDetails.projectImages) {
+                                allImgs.addAll(gal.images);
+                                cumulativeSum += gal.images.length;
+                                breakpoints.add(cumulativeSum);
+                              }
+
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => PhotoScrollingGallery(
-                                    images: _photoViewImages,
+                                    allImages: allImgs,
+                                    labels: _projectDetails.projectImages
+                                        .map((gal) => gal.title)
+                                        .toList(),
+                                    galleryIndex: galleryIndex,
+                                    breakPoints: breakpoints,
                                     image: _projectDetails
                                         .projectImages[galleryIndex]
                                         .images[index],
@@ -1099,24 +1104,28 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        _photoViewImages =
-                            _projectDetails.unitPlanConfigFilesFormatted
-                                .expand(
-                                  (config) => config.unitPlanConfigFiles.map(
-                                    (imageUrl) => GalleryImageModel(
-                                      imageUrl: imageUrl,
-                                      title: config.bHKType,
-                                    ),
-                                  ),
-                                )
-                                .toList();
+                        final List<String> allImgs = [];
+                        List<double> breakpoints = [];
+                        double cumulativeSum = 0;
+                        for (var gal
+                            in _projectDetails.unitPlanConfigFilesFormatted) {
+                          allImgs.addAll(gal.unitPlanConfigFiles);
+                          cumulativeSum += gal.unitPlanConfigFiles.length;
+                          breakpoints.add(cumulativeSum);
+                        }
+
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => PhotoScrollingGallery(
-                              images: _photoViewImages,
+                              allImages: allImgs,
+                              labels: _projectDetails
+                                  .unitPlanConfigFilesFormatted
+                                  .map((gal) => gal.bHKType)
+                                  .toList(),
+                              galleryIndex: galleryIndex,
+                              breakPoints: breakpoints,
                               image: _projectDetails
-                                  .unitPlanConfigFilesFormatted[configIndex]
-                                  .unitPlanConfigFiles[index],
+                                  .projectImages[galleryIndex].images[index],
                             ),
                           ),
                         );
@@ -1746,17 +1755,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   heroAppbar(double h) {
     return GestureDetector(
       onTap: () {
+        final List<String> allImgs = widget.apartment.projectGallery;
+        List<double> breakpoints = [];
+
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PhotoScrollingGallery(
-              images: widget.apartment.projectGallery
-                  .map(
-                    (image) => GalleryImageModel(
-                      imageUrl: image,
-                      title: 'Gallery',
-                    ),
-                  )
-                  .toList(),
+              allImages: allImgs,
+              labels: const [],
+              galleryIndex: galleryIndex,
+              breakPoints: breakpoints,
+              image: _projectDetails.projectImages[galleryIndex].images[0],
             ),
           ),
         );
@@ -1802,17 +1811,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ],
                 child: GestureDetector(
                   onTap: () {
+                    final List<String> allImgs =
+                        widget.apartment.projectGallery;
+                    List<double> breakpoints = [];
+
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => PhotoScrollingGallery(
-                          images: widget.apartment.projectGallery
-                              .map(
-                                (image) => GalleryImageModel(
-                                  imageUrl: image,
-                                  title: 'Gallery',
-                                ),
-                              )
-                              .toList(),
+                          allImages: allImgs,
+                          labels: const [],
+                          galleryIndex: galleryIndex,
+                          breakPoints: breakpoints,
                           image: widget.apartment.projectGallery[index],
                         ),
                       ),
@@ -2085,17 +2094,18 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 if (_highlights.isNotEmpty)
                   GestureDetector(
                     onTap: () {
+                      final List<String> allImgs =
+                          widget.apartment.projectGallery;
+                      List<double> breakpoints = [];
+
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => PhotoScrollingGallery(
-                            images: widget.apartment.projectGallery
-                                .map(
-                                  (image) => GalleryImageModel(
-                                    imageUrl: image,
-                                    title: 'Gallery',
-                                  ),
-                                )
-                                .toList(),
+                            allImages: allImgs,
+                            labels: const [],
+                            galleryIndex: galleryIndex,
+                            breakPoints: breakpoints,
+                            image: widget.apartment.projectGallery[0],
                           ),
                         ),
                       );
