@@ -17,7 +17,7 @@ class LifestyleProperties extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
+          padding: EdgeInsets.fromLTRB(8, 20, 8, 8),
           child: Text(
             "Lifestyle Properties",
             style: TextStyle(

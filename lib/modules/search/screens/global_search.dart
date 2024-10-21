@@ -1,11 +1,11 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
-import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
+import 'package:re_portal_frontend/modules/search/widgets/search_apartment.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
@@ -14,6 +14,7 @@ import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/riverpod/search_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalSearch extends ConsumerStatefulWidget {
   const GlobalSearch({super.key});
@@ -24,15 +25,7 @@ class GlobalSearch extends ConsumerStatefulWidget {
 
 class _GlobalSearchState extends ConsumerState<GlobalSearch> {
   final TextEditingController _searchController = TextEditingController();
-  int _currentHintIndex = 0;
-
   List<String> localities = [];
-
-  List<String> searchOptions = [
-    "project",
-    "loction",
-    "builder name",
-  ];
 
   void getLocalitiesList() async {
     String baseUrl = dotenv.get('BASE_URL');
@@ -65,11 +58,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
         getLocalitiesList();
       }
       localities = ref.read(filtersProvider).selectedLocalities;
-    });
-    Timer.periodic(const Duration(milliseconds: 5000), (timer) {
-      setState(() {
-        _currentHintIndex = (_currentHintIndex + 1) % searchOptions.length;
-      });
+      ref.read(filtersProvider.notifier).clearAllFilters();
     });
   }
 
@@ -148,7 +137,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 16),
-                      hintText: 'Search ${searchOptions[_currentHintIndex]}...',
+                      hintText: 'Search from +1000 projects...',
                       hintStyle: const TextStyle(
                         color: CustomColors.black50,
                       ),
@@ -181,6 +170,76 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(width: double.infinity),
+                  if (_searchController.text.isEmpty && localities.isEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FutureBuilder<List<String>>(
+                          future: SharedPreferences.getInstance().then(
+                              (prefs) =>
+                                  prefs.getStringList('searchHistory') ?? []),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox.shrink();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return const SizedBox.shrink();
+                            } else {
+                              final limitedSearchHistory =
+                                  snapshot.data!.take(5).toList();
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.fromLTRB(4, 10, 4, 4),
+                                    child: Text(
+                                      "Recent Searches",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: CustomColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                  ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: limitedSearchHistory.length,
+                                    itemBuilder: (context, index) {
+                                      final searchTerm =
+                                          limitedSearchHistory[index];
+                                      return ListTile(
+                                        leading: const Icon(Icons.history),
+                                        title: Text(searchTerm),
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateSelectedLocalities(
+                                                  [searchTerm]);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SearchApartmentResults(),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   if (ref
                           .read(localityListProvider.notifier)
                           .searchLocality(
@@ -228,43 +287,28 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                               ),
                             ),
                           ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.zero,
-                          itemCount: localities.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  localities.removeAt(index);
-                                });
+                        if (localities.isNotEmpty)
+                          SizedBox(
+                            height: 40,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: localities.length,
+                              itemBuilder: (context, index) {
+                                return CustomListChip(
+                                  text: localities[index],
+                                  onTap: () {
+                                    setState(() {
+                                      localities.removeAt(index);
+                                    });
+                                  },
+                                );
                               },
-                              child: Container(
-                                margin: const EdgeInsets.only(bottom: 4),
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.primary20,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(localities[index]),
-                                    const Icon(
-                                      Icons.close,
-                                      size: 18,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                            ),
+                          ),
                         if (ref
-                            .read(localityListProvider.notifier)
+                            .watch(localityListProvider.notifier)
                             .searchLocality(
                                 _searchController.text.trim(), localities)
                             .isNotEmpty)
@@ -282,7 +326,32 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                       .length,
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
+                                        // Add the locality to the search history in SharedPreferences
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        List<String> searchHistory =
+                                            prefs.getStringList(
+                                                    'searchHistory') ??
+                                                [];
+                                        final localityToAdd = ref
+                                            .read(localityListProvider.notifier)
+                                            .searchLocality(
+                                              _searchController.text.trim(),
+                                              localities,
+                                            )[index];
+                                        if (!searchHistory
+                                            .contains(localityToAdd)) {
+                                          searchHistory.insert(0,
+                                              localityToAdd); // Add to the beginning of the list
+                                          searchHistory = searchHistory
+                                              .take(10)
+                                              .toList(); // Keep only the 10 most recent
+                                          await prefs.setStringList(
+                                              'searchHistory', searchHistory);
+                                        }
+
                                         final localityProvider = ref.read(
                                             localityListProvider.notifier);
                                         final searchedLocality =
@@ -292,16 +361,23 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                         )[index];
 
                                         setState(() {
-                                          if (localities
+                                          final modifiableLocalities =
+                                              List<String>.from(localities);
+                                          if (modifiableLocalities
                                               .contains(searchedLocality)) {
-                                            localities.remove(searchedLocality);
-                                          } else if (localities.length < 4) {
-                                            localities.add(searchedLocality);
+                                            modifiableLocalities
+                                                .remove(searchedLocality);
+                                          } else if (modifiableLocalities
+                                                  .length <
+                                              4) {
+                                            modifiableLocalities
+                                                .add(searchedLocality);
                                             _searchController.clear();
                                           } else {
                                             errorSnackBar(context,
                                                 "You can only select 4 localities");
                                           }
+                                          localities = modifiableLocalities;
                                         });
                                       },
                                       child: Container(
@@ -365,7 +441,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         const Padding(
                           padding: EdgeInsets.fromLTRB(4, 14, 4, 4),
                           child: Text(
-                            "Search by property name",
+                            "Search by project name",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -374,14 +450,21 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                           ),
                         ),
                         SizedBox(
-                          height: 200,
-                          child: PropertyStackCard(
-                            cardWidth: MediaQuery.of(context).size.width * 0.45,
-                            cardHeight: 200,
-                            apartments: ref
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: ref
                                 .watch(homePropertiesProvider.notifier)
                                 .getApartmentsByName(
-                                    _searchController.text.trim()),
+                                    _searchController.text.trim())
+                                .length,
+                            itemBuilder: (context, index) =>
+                                SearchApartmentCard(
+                              apartment: ref
+                                  .watch(homePropertiesProvider.notifier)
+                                  .getApartmentsByName(
+                                      _searchController.text.trim())[index],
+                            ),
                           ),
                         ),
                       ],
@@ -397,7 +480,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         const Padding(
                           padding: EdgeInsets.fromLTRB(4, 14, 4, 4),
                           child: Text(
-                            "Search by builder's name",
+                            "Search by builder name",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

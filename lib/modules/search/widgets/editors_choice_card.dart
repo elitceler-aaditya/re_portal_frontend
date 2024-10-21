@@ -45,8 +45,8 @@ class EditorsChoiceCard extends StatelessWidget {
               );
             },
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              margin: const EdgeInsets.only(right: 10, left: 2),
+              width: MediaQuery.of(context).size.width * 0.85,
+              margin: const EdgeInsets.only(right: 14, left: 2),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,

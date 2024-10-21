@@ -11,14 +11,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
+import 'package:re_portal_frontend/modules/home/models/gallery_image_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
+import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
-import 'package:re_portal_frontend/modules/search/widgets/photo_gallery.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/search/widgets/photo_scrolling_gallery.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -55,12 +57,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
   ApartmentDetailsResponse _projectDetails = const ApartmentDetailsResponse();
+  List<GalleryImageModel> _photoViewImages = [];
   OverlayEntry? _overlayEntry;
   final GlobalKey contactButtonKey = GlobalKey(debugLabel: 'contact-button');
   final GlobalKey nextPropertyButtonKey =
       GlobalKey(debugLabel: 'next-property-button');
   List<Map<String, dynamic>> _highlights = [];
-  final List _images = [];
   int timerIndex = 0;
   int galleryIndex = 0;
   int configIndex = 0;
@@ -69,6 +71,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   bool openOptions = false;
   ScrollController galleryController = ScrollController();
   ScrollController configController = ScrollController();
+  List<Map<String, dynamic>> projectDetailsList = [];
 
   Future<void> sendEnquiry(BuildContext context) async {
     final url = Uri.parse("${dotenv.env['BASE_URL']}/user/newLeadGeneration");
@@ -123,12 +126,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       errorSnackBar(context, 'An unexpected error occurred');
       debugPrint("Unexpected error: $e");
     }
-  }
-
-  void errorSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
   }
 
   enquirySuccessBottomSheet() {
@@ -314,46 +311,42 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   }
 
   highlightsOption(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 10,
-              color: CustomColors.white,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 12,
+            color: CustomColors.white,
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              color: CustomColors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            color: CustomColors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  sqftArea({double area = 1, double budget = 1}) {
-    //rate per sqft
-    int rate = budget ~/ area;
-    // appropriate commas
-    String rateWithCommas = rate.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
-    return "$rateWithCommas/sq.ft";
-  }
+  // _formatBudget(double budget) {
+  //   if (budget < 10000000) {
+  //     return "₹${(budget / 100000).toStringAsFixed(1)} Lac";
+  //   } else {
+  //     return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
+  //   }
+  // }
 
-  formatBudget(double budget) {
-    if (budget < 10000000) {
-      return "₹${(budget / 100000).toStringAsFixed(1)} Lac";
+  _formatArea(int area) {
+    if (area < 1000) {
+      return "${area.toString()} sq.ft";
     } else {
-      return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
+      return "${(area / 1000).toStringAsFixed(1)}k sq.ft";
     }
   }
 
@@ -607,12 +600,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => LoginScreen(
-                                          redirectTo: PropertyDetails(
-                                            apartment: widget.apartment,
-                                            heroTag: 'propertyDetails',
-                                            nextApartment: widget.nextApartment,
-                                          ),
+                                        builder: (context) => const LoginScreen(
+                                          goBack: true,
                                         ),
                                       ),
                                     );
@@ -705,7 +694,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 10, bottom: 6),
+                    padding: EdgeInsets.only(left: 4, bottom: 6),
                     child: Text(
                       "Project Details",
                       style: TextStyle(
@@ -715,225 +704,59 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 60,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                const BoxShadow(
-                                  color: CustomColors.white,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 0),
-                                ),
-                                BoxShadow(
-                                  color: CustomColors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Project size",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  "${_projectDetails.projectDetails.projectSize} sq.ft",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CustomColors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Floors",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  _projectDetails.projectDetails.noOfFloors,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CustomColors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Open Space",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  _projectDetails.projectDetails.totalOpenSpace,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                  GridView.builder(
+                    padding: EdgeInsets.zero,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.8,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  SizedBox(
-                    height: 60,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: projectDetailsList.length,
+                    itemBuilder: (context, index) {
+                      final detail = projectDetailsList[index];
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: CustomColors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            const BoxShadow(
                               color: CustomColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CustomColors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "RERA verified",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  _projectDetails.projectDetails.reraID.isEmpty
-                                      ? "No"
-                                      : "Yes",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            BoxShadow(
+                              color: CustomColors.black.withOpacity(0.1),
+                              blurRadius: 5,
+                              offset: const Offset(0, 2),
                             ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CustomColors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              detail["title"],
+                              style: const TextStyle(fontSize: 12),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Avl. Units",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  _projectDetails.projectDetails.noOfFlats,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              detail["value"].toString(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(width: 5),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: CustomColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CustomColors.black.withOpacity(0.1),
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Configurations",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                Text(
-                                  _projectDetails
-                                      .unitPlanConfigFilesFormatted.length
-                                      .toString(),
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -1016,11 +839,20 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
+                              _photoViewImages = _projectDetails.projectImages
+                                  .expand((image) => image.images
+                                      .map((imageUrl) => GalleryImageModel(
+                                            imageUrl: imageUrl,
+                                            title: image.title,
+                                          )))
+                                  .toList();
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => PhotoGallery(
-                                    images: _projectDetails
-                                        .projectImages[galleryIndex].images,
+                                  builder: (context) => PhotoScrollingGallery(
+                                    images: _photoViewImages,
+                                    image: _projectDetails
+                                        .projectImages[galleryIndex]
+                                        .images[index],
                                   ),
                                 ),
                               );
@@ -1028,16 +860,23 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             child: Container(
                               width: 320,
                               padding: const EdgeInsets.only(right: 10),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
+                              child: Container(
+                                clipBehavior: Clip.hardEdge,
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black10,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
                                 child: Image.network(
-                                  _projectDetails.projectImages[galleryIndex]
-                                      .images[index],
+                                  _projectDetails
+                                      .projectImages[galleryIndex].images[index]
+                                      .trim(),
                                   key: GlobalKey(
                                     debugLabel:
                                         "${_projectDetails.projectImages[galleryIndex].title}-$index",
                                   ),
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
                                   loadingBuilder: (context, child,
                                           loadingProgress) =>
                                       loadingProgress == null
@@ -1159,12 +998,22 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
+                        _photoViewImages = _projectDetails
+                            .unitPlanConfigFilesFormatted
+                            .expand((config) => config.unitPlanConfigFiles
+                                .map((imageUrl) => GalleryImageModel(
+                                      imageUrl: imageUrl,
+                                      title:
+                                          "${config.bHKType} - ${config.sizeInSqft} sqft - ${config.facing} Facing",
+                                    )))
+                            .toList();
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => PhotoGallery(
-                              images: _projectDetails
+                            builder: (context) => PhotoScrollingGallery(
+                              images: _photoViewImages,
+                              image: _projectDetails
                                   .unitPlanConfigFilesFormatted[configIndex]
-                                  .unitPlanConfigFiles,
+                                  .unitPlanConfigFiles[index],
                             ),
                           ),
                         );
@@ -1591,12 +1440,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginScreen(
-                              redirectTo: PropertyDetails(
-                                apartment: widget.apartment,
-                                heroTag: 'propertyDetails',
-                                nextApartment: widget.nextApartment,
-                              ),
+                            builder: (context) => const LoginScreen(
+                              goBack: true,
                             ),
                           ),
                         );
@@ -1678,12 +1523,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginScreen(
-                              redirectTo: PropertyDetails(
-                                apartment: widget.apartment,
-                                heroTag: 'propertyDetails',
-                                nextApartment: widget.nextApartment,
-                              ),
+                            builder: (context) => const LoginScreen(
+                              goBack: true,
                             ),
                           ),
                         );
@@ -1730,12 +1571,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => LoginScreen(
-                                          redirectTo: PropertyDetails(
-                                            apartment: widget.apartment,
-                                            heroTag: 'propertyDetails',
-                                            nextApartment: widget.nextApartment,
-                                          ),
+                                        builder: (context) => const LoginScreen(
+                                          goBack: true,
                                         ),
                                       ),
                                     );
@@ -1764,12 +1601,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoginScreen(
-                          redirectTo: PropertyDetails(
-                            apartment: widget.apartment,
-                            heroTag: 'propertyDetails',
-                            nextApartment: widget.nextApartment,
-                          ),
+                        builder: (context) => const LoginScreen(
+                          goBack: true,
                         ),
                       ),
                     );
@@ -1808,8 +1641,20 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   heroAppbar(double h) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PhotoGallery(images: _images)));
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PhotoScrollingGallery(
+              images: widget.apartment.projectGallery
+                  .map(
+                    (image) => GalleryImageModel(
+                      imageUrl: image,
+                      title: 'Gallery',
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        );
       },
       child: Stack(
         children: [
@@ -1827,6 +1672,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ? Image.network(
                           widget.apartment.coverImage,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.error),
                         )
                       : null,
                 ),
@@ -1834,11 +1681,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
           ),
 
-          if (_images.isNotEmpty && _timer != null)
+          if (widget.apartment.projectGallery.isNotEmpty && _timer != null)
             ...List.generate(
-              _images.length,
+              widget.apartment.projectGallery.length,
               (index) => Animate(
-                target: _timer!.tick % _images.length == index ? 1 : 0,
+                target: _timer!.tick % widget.apartment.projectGallery.length ==
+                        index
+                    ? 1
+                    : 0,
                 effects: const [
                   FadeEffect(
                     duration: Duration(milliseconds: 500),
@@ -1847,8 +1697,21 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ],
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PhotoGallery(images: _images)));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PhotoScrollingGallery(
+                          images: widget.apartment.projectGallery
+                              .map(
+                                (image) => GalleryImageModel(
+                                  imageUrl: image,
+                                  title: 'Gallery',
+                                ),
+                              )
+                              .toList(),
+                          image: widget.apartment.projectGallery[index],
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     height: h + 32,
@@ -1857,8 +1720,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       color: CustomColors.black25,
                     ),
                     child: Image.network(
-                      _images[index],
+                      widget.apartment.projectGallery[index],
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.error),
                       loadingBuilder: (context, child, loadingProgress) =>
                           loadingProgress == null
                               ? child
@@ -1934,120 +1799,168 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             if (openOptions)
                               Row(
                                 children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      ref
-                                              .watch(savedPropertiesProvider)
-                                              .contains(widget.apartment)
-                                          ? Icons.favorite
-                                          : Icons.favorite_outline,
-                                      color: ref
-                                              .watch(savedPropertiesProvider)
-                                              .contains(widget.apartment)
-                                          ? CustomColors.primary
-                                          : CustomColors.white,
+                                  const SizedBox(width: 4),
+                                  SizedBox(
+                                    height: 36,
+                                    width: 36,
+                                    child: IconButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      icon: Icon(
+                                        ref
+                                                .watch(savedPropertiesProvider)
+                                                .contains(widget.apartment)
+                                            ? Icons.favorite
+                                            : Icons.favorite_outline,
+                                        size: 20,
+                                        color: ref
+                                                .watch(savedPropertiesProvider)
+                                                .contains(widget.apartment)
+                                            ? CustomColors.primary
+                                            : CustomColors.white,
+                                      ),
+                                      onPressed: () {
+                                        ref
+                                                .read(savedPropertiesProvider)
+                                                .contains(widget.apartment)
+                                            ? {
+                                                errorSnackBar(context,
+                                                    'Property removed from favourites'),
+                                                ref
+                                                    .read(
+                                                        savedPropertiesProvider
+                                                            .notifier)
+                                                    .removeApartment(
+                                                        widget.apartment)
+                                              }
+                                            : {
+                                                successSnackBar(
+                                                  context,
+                                                  'Property added to favourites',
+                                                  action: SnackBarAction(
+                                                    backgroundColor:
+                                                        CustomColors.white
+                                                            .withOpacity(0.25),
+                                                    textColor:
+                                                        CustomColors.white,
+                                                    label: 'View',
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .push(
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const SavedProperties(
+                                                            isPop: true,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                ref
+                                                    .read(
+                                                        savedPropertiesProvider
+                                                            .notifier)
+                                                    .addApartment(
+                                                        widget.apartment)
+                                              };
+                                        setState(() {
+                                          openOptions = false;
+                                        });
+                                      },
                                     ),
-                                    onPressed: () {
-                                      ref
-                                              .read(savedPropertiesProvider)
-                                              .contains(widget.apartment)
-                                          ? {
-                                              errorSnackBar(context,
-                                                  'Property removed from favourites'),
-                                              ref
-                                                  .read(savedPropertiesProvider
-                                                      .notifier)
-                                                  .removeApartment(
-                                                      widget.apartment)
-                                            }
-                                          : {
-                                              successSnackBar(context,
-                                                  'Property added to favourites'),
-                                              ref
-                                                  .read(savedPropertiesProvider
-                                                      .notifier)
-                                                  .addApartment(
-                                                      widget.apartment)
-                                            };
-                                      setState(() {
-                                        openOptions = false;
-                                      });
-                                    },
                                   ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.share,
-                                      color: CustomColors.white,
+                                  SizedBox(
+                                    height: 36,
+                                    width: 36,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.share,
+                                        color: CustomColors.white,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        // Implement share functionality
+                                      },
                                     ),
-                                    onPressed: () {
-                                      // Implement share functionality
-                                    },
                                   ),
-                                  IconButton(
-                                    icon: !ref
+                                  SizedBox(
+                                    height: 36,
+                                    width: 36,
+                                    child: IconButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      icon: !ref
+                                              .watch(comparePropertyProvider)
+                                              .contains(widget.apartment)
+                                          ? SvgPicture.asset(
+                                              "assets/icons/compare_active.svg",
+                                              color: Colors.white,
+                                              height: 16,
+                                              width: 16,
+                                            )
+                                          : const Icon(
+                                              Icons.close,
+                                              color: CustomColors.primary,
+                                            ),
+                                      onPressed: () {
+                                        if (!ref
                                             .watch(comparePropertyProvider)
-                                            .contains(widget.apartment)
-                                        ? SvgPicture.asset(
-                                            "assets/icons/compare_active.svg",
-                                            color: Colors.white,
-                                            height: 20,
-                                            width: 20,
-                                          )
-                                        : const Icon(
-                                            Icons.close,
-                                            color: CustomColors.primary,
-                                          ),
-                                    onPressed: () {
-                                      if (!ref
-                                          .watch(comparePropertyProvider)
-                                          .contains(widget.apartment)) {
-                                        if (ref
-                                                .read(comparePropertyProvider)
-                                                .length >=
-                                            4) {
-                                          errorSnackBar(context,
-                                              "You can compare up to 4 properties");
+                                            .contains(widget.apartment)) {
+                                          if (ref
+                                                  .read(comparePropertyProvider)
+                                                  .length >=
+                                              4) {
+                                            errorSnackBar(context,
+                                                "You can compare up to 4 properties");
+                                          } else {
+                                            ref
+                                                .read(comparePropertyProvider
+                                                    .notifier)
+                                                .addApartment(widget.apartment);
+                                            successSnackBar(
+                                              context,
+                                              'property added',
+                                              action: SnackBarAction(
+                                                backgroundColor: CustomColors
+                                                    .white
+                                                    .withOpacity(0.25),
+                                                textColor: CustomColors.white,
+                                                label: 'Compare',
+                                                onPressed: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const CompareProperties(
+                                                        isPop: true,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          }
                                         } else {
                                           ref
                                               .read(comparePropertyProvider
                                                   .notifier)
-                                              .addApartment(widget.apartment);
-                                          successSnackBar(
-                                            context,
-                                            'property added',
-                                            action: SnackBarAction(
-                                              backgroundColor: CustomColors
-                                                  .white
-                                                  .withOpacity(0.25),
-                                              textColor: CustomColors.white,
-                                              label: 'Compare',
-                                              onPressed: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const CompareProperties(
-                                                      isPop: true,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          );
+                                              .removeApartment(
+                                                  widget.apartment);
                                         }
-                                      } else {
-                                        ref
-                                            .read(comparePropertyProvider
-                                                .notifier)
-                                            .removeApartment(widget.apartment);
-                                      }
-                                      setState(() {
-                                        openOptions = false;
-                                      });
-                                    },
+                                        setState(() {
+                                          openOptions = false;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
                             IconButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   openOptions = !openOptions;
@@ -2067,15 +1980,27 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 if (_highlights.isNotEmpty)
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => PhotoGallery(images: _images)));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PhotoScrollingGallery(
+                            images: widget.apartment.projectGallery
+                                .map(
+                                  (image) => GalleryImageModel(
+                                    imageUrl: image,
+                                    title: 'Gallery',
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      );
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 10, bottom: 16),
+                          padding: const EdgeInsets.only(left: 10, bottom: 24),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2153,23 +2078,38 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
-                                  vertical: 10,
+                                  vertical: 20,
                                 ),
                                 width: MediaQuery.of(context).size.width * 0.4,
                                 decoration: BoxDecoration(
-                                  color: CustomColors.black.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: CustomColors.black.withOpacity(0.7),
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(10),
+                                    bottomRight: Radius.circular(10),
+                                  ),
                                 ),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ...List.generate(
                                       _highlights.length,
-                                      (index) => highlightsOption(
-                                        _highlights[index]["title"],
-                                        _highlights[index]["value"],
-                                      ),
+                                      (index) => _highlights[index]["value"] !=
+                                              null
+                                          ? Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: index !=
+                                                        _highlights.length - 1
+                                                    ? 16
+                                                    : 0,
+                                              ),
+                                              child: highlightsOption(
+                                                _highlights[index]["title"],
+                                                _highlights[index]["value"]
+                                                    .toString(),
+                                              ),
+                                            )
+                                          : const SizedBox.shrink(),
                                     ),
                                   ],
                                 ),
@@ -2185,7 +2125,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   width: 30,
                                   height: 50,
                                   decoration: BoxDecoration(
-                                    color: CustomColors.black.withOpacity(0.5),
+                                    color: CustomColors.black.withOpacity(0.7),
                                     borderRadius: const BorderRadius.only(
                                       topRight: Radius.circular(10),
                                       bottomRight: Radius.circular(10),
@@ -2269,12 +2209,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LoginScreen(
-                                  redirectTo: PropertyDetails(
-                                    apartment: widget.apartment,
-                                    heroTag: 'propertyDetails',
-                                    nextApartment: widget.nextApartment,
-                                  ),
+                                builder: (context) => const LoginScreen(
+                                  goBack: true,
                                 ),
                               ),
                             );
@@ -2303,12 +2239,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginScreen(
-                                redirectTo: PropertyDetails(
-                                  apartment: widget.apartment,
-                                  heroTag: 'propertyDetails',
-                                  nextApartment: widget.nextApartment,
-                                ),
+                              builder: (context) => const LoginScreen(
+                                goBack: true,
                               ),
                             ),
                           );
@@ -2329,12 +2261,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginScreen(
-                                redirectTo: PropertyDetails(
-                                  apartment: widget.apartment,
-                                  heroTag: 'propertyDetails',
-                                  nextApartment: widget.nextApartment,
-                                ),
+                              builder: (context) => const LoginScreen(
+                                goBack: true,
                               ),
                             ),
                           );
@@ -2392,51 +2320,111 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           _projectDetails =
               ApartmentDetailsResponse.fromJson(jsonDecode(response.body));
 
-          //put all images in list
-          _projectDetails.projectImages
-              .map((image) => _images.addAll(image.images))
-              .toList();
+          _highlights = [];
 
-          _highlights = [
-            {
+          if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+            _highlights.add({
               "title": "Configurations",
-              "value": _projectDetails.unitPlanConfigFilesFormatted.isEmpty
-                  ? "Not specified"
-                  : "${_projectDetails.unitPlanConfigFilesFormatted.length} BHK"
-            },
-            {
+              "value": _projectDetails.unitPlanConfigFilesFormatted.length
+            });
+            projectDetailsList.add({
+              "title": "Configurations",
+              "value": _projectDetails.unitPlanConfigFilesFormatted.length
+            });
+          }
+
+          if (_projectDetails.projectDetails.noOfFloors.isNotEmpty) {
+            _highlights.add({
               "title": "No. of Floors",
               "value": _projectDetails.projectDetails.noOfFloors
-            },
-            {
+            });
+            projectDetailsList.add({
+              "title": "No. of Floors",
+              "value": _projectDetails.projectDetails.noOfFloors
+            });
+          }
+
+          if (_projectDetails.projectDetails.noOfFlats.isNotEmpty) {
+            _highlights.add({
               "title": "No. of Flats",
               "value": _projectDetails.projectDetails.noOfFlats
-            },
-            {
+            });
+            projectDetailsList.add({
+              "title": "No. of Flats",
+              "value": _projectDetails.projectDetails.noOfFlats
+            });
+          }
+
+          if (_projectDetails.projectDetails.projectLaunchedDate.isNotEmpty) {
+            _highlights.add({
               "title": "Launch Date",
               "value": DateFormat("MMM yyyy").format(DateTime.parse(
                   _projectDetails.projectDetails.projectLaunchedDate
                       .substring(0, 10)))
-            },
-            // {
-            //   "title": "Possession Date",
-            //   "value": DateFormat("MMM yyyy").format(DateTime.parse(
-            //       _projectDetails.projectDetails.projectPossession
-            //           .substring(0, 10)))
-            // },
-            {
+            });
+            projectDetailsList.add({
+              "title": "Launch Date",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectLaunchedDate
+                      .substring(0, 10)))
+            });
+          }
+
+          if (_projectDetails.projectDetails.clubhousesize.isNotEmpty) {
+            _highlights.add({
               "title": "Club House Size",
-              "value":
-                  int.tryParse(_projectDetails.projectDetails.clubhousesize) !=
-                          null
-                      ? '${_projectDetails.projectDetails.clubhousesize} Sq.ft'
-                      : _projectDetails.projectDetails.clubhousesize
-            },
-            {
+              "value": int.tryParse(
+                          _projectDetails.projectDetails.clubhousesize) !=
+                      null
+                  ? _formatArea(
+                      (int.parse(_projectDetails.projectDetails.clubhousesize)))
+                  : _projectDetails.projectDetails.clubhousesize
+            });
+            projectDetailsList.add({
+              "title": "Club House Size",
+              "value": int.tryParse(
+                          _projectDetails.projectDetails.clubhousesize) !=
+                      null
+                  ? _formatArea(
+                      (int.parse(_projectDetails.projectDetails.clubhousesize)))
+                  : _projectDetails.projectDetails.clubhousesize
+            });
+          }
+
+          if (_projectDetails.projectDetails.totalOpenSpace.isNotEmpty) {
+            _highlights.add({
               "title": "Open Space",
-              "value": "${_projectDetails.projectDetails.totalOpenSpace} Sq.ft"
-            },
-          ];
+              "value": _projectDetails.projectDetails.totalOpenSpace
+            });
+            projectDetailsList.add({
+              "title": "Open Space",
+              "value": _projectDetails.projectDetails.totalOpenSpace
+            });
+          }
+          if (_projectDetails.projectDetails.reraID.isNotEmpty) {
+            projectDetailsList.add({"title": "RERA Approved", "value": "Yes"});
+          }
+
+          if (_projectDetails.projectDetails.constructionType.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Construction",
+              "value": _projectDetails.projectDetails.constructionType
+            });
+          }
+          if (_projectDetails.projectDetails.noOfTowers.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "No. of Towers",
+              "value": _projectDetails.projectDetails.noOfTowers
+            });
+          }
+          if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Possession",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectPossession
+                      .substring(0, 10))),
+            });
+          }
         });
       }
     });
@@ -2448,7 +2436,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     _nameController.text = ref.read(userProvider).name;
     _mobileController.text = ref.read(userProvider).phoneNumber;
     _emailController.text = ref.read(userProvider).email;
-
+    _enquiryDetails.text =
+        'Hi, I am interested in ${widget.apartment.name}. I want to know more about the project.';
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (timerIndex == 1) {
         _showKeyHighlights = false;

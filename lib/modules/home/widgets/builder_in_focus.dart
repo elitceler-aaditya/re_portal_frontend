@@ -33,7 +33,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           child: const Padding(
-            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
+            padding: EdgeInsets.fromLTRB(8, 20, 8, 8),
             child: Row(
               children: [
                 Text(

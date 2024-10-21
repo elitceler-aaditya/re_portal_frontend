@@ -17,7 +17,7 @@ class NewLaunchSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(4, 16, 16, 8),
+          padding: const EdgeInsets.fromLTRB(4, 20, 16, 8),
           child: Text(
             title,
             style: const TextStyle(
@@ -48,7 +48,7 @@ class NewLaunchSection extends ConsumerWidget {
                   height: 300,
                   width: 200,
                   clipBehavior: Clip.hardEdge,
-                  margin: const EdgeInsets.fromLTRB(2, 0, 10, 8),
+                  margin: const EdgeInsets.fromLTRB(2, 0, 16, 8),
                   decoration: BoxDecoration(
                     color: const Color(0XFFFAF5E6),
                     borderRadius: BorderRadius.circular(12),

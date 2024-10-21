@@ -100,7 +100,7 @@ class _PropertState extends ConsumerState<PropertyList> {
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   SizedBox(
                     height: 36,

@@ -7,6 +7,8 @@ import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
+import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
+import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -169,6 +171,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     subtitle: 'Logout from the app',
                     icon: Icons.logout,
                     onTap: () async {
+                      ref
+                          .read(comparePropertyProvider.notifier)
+                          .clearApartments();
+                      ref
+                          .read(savedPropertiesProvider.notifier)
+                          .clearApartments();
+
                       ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
                       ref.read(userProvider.notifier).clearUser();
                       SharedPreferences.getInstance().then((sharedPref) {

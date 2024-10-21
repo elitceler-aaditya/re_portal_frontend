@@ -19,13 +19,13 @@ class OTPScreen extends ConsumerStatefulWidget {
   final String otpSentTo;
   final String orderId;
   final Function()? resend;
-  final Widget? redirectTo;
+  final bool goBack;
   const OTPScreen({
     super.key,
     required this.otpSentTo,
     required this.orderId,
     this.resend,
-    this.redirectTo,
+    this.goBack = false,
   });
 
   @override
@@ -70,7 +70,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                   User.fromJson({...userData, 'token': responseData['token']}));
             }
 
-            if (widget.redirectTo == null) {
+            if (!widget.goBack) {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(

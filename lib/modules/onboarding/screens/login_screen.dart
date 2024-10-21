@@ -15,8 +15,8 @@ import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
-  final Widget? redirectTo;
-  const LoginScreen({super.key, this.redirectTo});
+  final bool goBack;
+  const LoginScreen({super.key, this.goBack = false});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => OTPScreen(
-                  redirectTo: widget.redirectTo,
+                  goBack: widget.goBack,
                   otpSentTo: _phoneController.text.trim(),
                   orderId: responseData['data']['orderId'],
                   resend: () => _sendOTP(true),
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) => OTPScreen(
-                  redirectTo: widget.redirectTo,
+                  goBack: widget.goBack,
                   otpSentTo: _phoneController.text.trim(),
                   orderId: responseData['data']['orderId'],
                   resend: () => _sendOTP(true),

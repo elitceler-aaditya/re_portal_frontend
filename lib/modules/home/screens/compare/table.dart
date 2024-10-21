@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
-import 'package:re_portal_frontend/modules/home/screens/main_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -548,8 +547,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
           ),
       (ComparePropertyData d) => TextButton.icon(
             style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-            ),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                backgroundColor: CustomColors.primary),
             onPressed: () {
               if (ref.read(userProvider).token.isEmpty) {
                 errorSnackBar(context, 'Please login first');
@@ -557,7 +556,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LoginScreen(
-                      redirectTo: MainScreen(),
+                      goBack: true,
                     ),
                   ),
                 );
@@ -573,10 +572,13 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             },
             icon: const Icon(
               Icons.phone,
-              color: CustomColors.primary,
+              color: CustomColors.white,
               size: 16,
             ),
-            label: const Text('Contact'),
+            label: const Text(
+              'Contact',
+              style: TextStyle(color: CustomColors.white),
+            ),
           ),
       (ComparePropertyData d) => TextButton.icon(
             style: TextButton.styleFrom(

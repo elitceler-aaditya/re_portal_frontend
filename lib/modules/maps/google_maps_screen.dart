@@ -213,43 +213,43 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                 itemBuilder: (context, index, realIndex) {
                   final apartment =
                       ref.watch(homePropertiesProvider).allApartments[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: MapsPropertyCard(
-                      apartment: apartment,
-                      apartmentDetails: widget.apartmentDetails,
-                      onTap: () {
-                        _googleMapsController.future.then((controller) {
-                          controller
-                              .animateCamera(
-                            CameraUpdate.newCameraPosition(
-                              CameraPosition(
-                                target: LatLng(
-                                    apartment.latitude, apartment.longitude),
-                                zoom: 14,
-                              ),
-                            ),
-                          )
-                              .then((_) {
-                            setState(() =>
-                                _selectedApartmentId = apartment.projectId);
-                            controller.showMarkerInfoWindow(
-                                MarkerId(apartment.projectId));
-                          });
-                        });
-                      },
-                    ),
+                  return MapsPropertyCard(
+                    apartment: apartment,
+                    apartmentDetails: widget.apartmentDetails,
                   );
                 },
                 options: CarouselOptions(
-                    controller: carouselController,
-                    height: 180,
-                    viewportFraction: 0.8,
-                    enableInfiniteScroll: false,
-                    enlargeCenterPage: true,
-                    enlargeStrategy: CenterPageEnlargeStrategy.height,
-                    padEnds: false,
-                    showIndicator: false),
+                  controller: carouselController,
+                  height: 180,
+                  viewportFraction: 0.9,
+                  enableInfiniteScroll: false,
+                  enlargeCenterPage: true,
+                  enlargeStrategy: CenterPageEnlargeStrategy.height,
+                  padEnds: false,
+                  showIndicator: false,
+                  onPageChanged: (index, reason) {
+                    final apartment =
+                        ref.watch(homePropertiesProvider).allApartments[index];
+                    _googleMapsController.future.then((controller) {
+                      controller
+                          .animateCamera(
+                        CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            target:
+                                LatLng(apartment.latitude, apartment.longitude),
+                            zoom: 14,
+                          ),
+                        ),
+                      )
+                          .then((_) {
+                        setState(
+                            () => _selectedApartmentId = apartment.projectId);
+                        controller.showMarkerInfoWindow(
+                            MarkerId(apartment.projectId));
+                      });
+                    });
+                  },
+                ),
               ),
             ),
           ),

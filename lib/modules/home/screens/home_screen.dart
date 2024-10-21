@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
+import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
-import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
@@ -44,39 +46,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
   bool loading = true;
+  final List<String> _searchOptions = [
+    'apartments',
+    'builders',
+    'locations',
+  ];
 
   List<Map<String, dynamic>> categoryOptions = [
     {
       'title': 'Affordable Homes',
-      'filter': FiltersModel(affordableHomes: true),
+      'filter': FiltersModel(affordableHomes: 'true'),
     },
     {
       'title': 'Large Living Spaces',
-      'filter': FiltersModel(largeLivingSpaces: true),
+      'filter': FiltersModel(largeLivingSpaces: 'true'),
     },
     {
       'title': 'Sustainable Living Homes',
-      'filter': FiltersModel(sustainableLivingHomes: true),
+      'filter': FiltersModel(sustainableLivingHomes: 'true'),
     },
     {
       'title': '2.5 BHK Homes',
-      'filter': FiltersModel(twopointfiveBHKHomes: true),
+      'filter': FiltersModel(twopointfiveBHKHomes: 'true'),
     },
     {
       'title': 'Large Balconies',
-      'filter': FiltersModel(largeBalconies: true),
+      'filter': FiltersModel(largeBalconies: 'true'),
     },
     {
       'title': 'Sky Villa Habitat',
-      'filter': FiltersModel(skyVillaHabitat: true),
+      'filter': FiltersModel(skyVillaHabitat: 'true'),
     },
     {
       'title': 'Standalone Buildings',
-      'filter': FiltersModel(standAloneBuildings: true),
+      'filter': FiltersModel(standAloneBuildings: 'true'),
     },
     {
       'title': 'Skyscrapers',
-      'filter': FiltersModel(skyScrapers: true),
+      'filter': FiltersModel(skyScrapers: 'true'),
     },
   ];
 
@@ -99,9 +106,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
+        getLocationHomes(17.4699, 78.2236);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
+      getLocationHomes(17.4699, 78.2236);
+
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
     }
@@ -222,10 +232,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         PropertyStackCard(
-            cardWidth: MediaQuery.of(context).size.width * 0.9,
+            cardWidth: MediaQuery.of(context).size.width * 0.85,
             apartments: ref.watch(homePropertiesProvider).selectedProperties),
         const Padding(
-          padding: EdgeInsets.fromLTRB(4, 16, 0, 8),
+          padding: EdgeInsets.fromLTRB(4, 20, 0, 8),
           child: Text(
             "Editor's Choice",
             style: TextStyle(
@@ -344,23 +354,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         children: [
                           const Icon(Icons.search),
                           const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              ref.read(searchBarProvider).isNotEmpty
-                                  ? ref.read(searchBarProvider)
-                                  : "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: CustomColors.black50,
-                              ),
-                            ),
-                          ),
+                          const SelfContainedAnimatedTextSwitcher(),
+                          const Spacer(),
                           GestureDetector(
                             onTap: () {
                               upSlideTransition(
-                                  context, const UserLocationProperties());
+                                context,
+                                const UserLocationProperties(),
+                              );
                             },
                             child: Padding(
                               padding:
@@ -398,102 +399,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   ),
-
-                  Container(
-                    padding: const EdgeInsets.only(top: 2),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          CustomColors.primary,
-                          Color(0xFFCE4F32),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20),
-                      ),
-                    ),
-                    child: ref.watch(filtersProvider).selectedLocalities.isEmpty
-                        ? const SizedBox(
-                            width: double.infinity,
-                          )
-                        : SizedBox(
-                            width: double.infinity,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  "Selected localities",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        height: 32,
-                                        child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor:
-                                                CustomColors.secondary,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const SearchApartmentResults(
-                                                        openFilters: true),
-                                              ),
-                                            );
-                                          },
-                                          child: const Text(
-                                            "+ Add more",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: CustomColors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      ...ref
-                                          .watch(filtersProvider)
-                                          .selectedLocalities
-                                          .map((locality) {
-                                        return CustomListChip(
-                                          text: locality,
-                                          isSelected: true,
-                                          onTap: () {
-                                            List<String> localities = ref
-                                                .watch(filtersProvider)
-                                                .selectedLocalities;
-                                            localities.remove(locality);
-                                            setState(() {
-                                              ref
-                                                  .read(
-                                                      filtersProvider.notifier)
-                                                  .updateSelectedLocalities(
-                                                      localities);
-                                              // getFilteredApartments();
-                                            });
-                                          },
-                                        );
-                                      }),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                  ),
                 ],
               ),
             ),
@@ -523,7 +428,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         width: 150,
                         margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(6),
                           image: DecorationImage(
                             image: AssetImage(
                               "assets/images/category-${index + 1}.jpg",
@@ -538,18 +443,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               height: double.infinity,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(3),
+                                borderRadius: BorderRadius.circular(6),
                                 gradient: LinearGradient(
                                   colors: [
-                                    CustomColors.black.withOpacity(0.1),
-                                    CustomColors.black.withOpacity(0.8),
+                                    CustomColors.black.withOpacity(0),
+                                    CustomColors.black.withOpacity(0.77),
                                   ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                 ),
                               ),
                             ),
-                            Center(
+                            Positioned(
+                              bottom: 6,
+                              left: 0,
+                              right: 0,
                               child: Text(
                                 categoryOptions[index]['title'],
                                 textAlign: TextAlign.center,

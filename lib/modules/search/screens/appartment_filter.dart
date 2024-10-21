@@ -25,6 +25,7 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   bool _loading = false;
   int? appartmentType;
   List<String> selectedConfigurations = [];
+
   double _minBudget = 0;
   double _maxBudget = 1;
   double _budgetSliderMin = 1;
@@ -40,13 +41,48 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     "Semi-gated",
     "Fully-gated",
   ];
+
   List<String> configurationList = [
     "1 BHK",
     "2 BHK",
     "3 BHK",
     "4 BHK",
-    "4+ BHK"
+    "5 BHK",
+    "5+ BHK",
   ];
+
+  List<String> typeList = [
+    "New Project",
+    "Ready To Move",
+    "Under Construction",
+  ];
+
+  List saleTypeList = [
+    {
+      'label': "New sale",
+      'filter': FiltersModel(newSaleType: 'true'),
+    },
+    {
+      'label': "Resale",
+      'filter': FiltersModel(resaleType: 'true'),
+    },
+  ];
+
+  List postedByList = [
+    {
+      'label': "Posted By Builder",
+      'filter': FiltersModel(postedByBuilder: 'true'),
+    },
+    {
+      'label': "Posted By Owner",
+      'filter': FiltersModel(postedByOwner: 'true'),
+    },
+    {
+      'label': "Posted By Agent",
+      'filter': FiltersModel(postedByAgent: 'true'),
+    },
+  ];
+
   List<String> basicAmenities = [
     'Parking',
     'Gym',
@@ -77,6 +113,14 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
             maxBudget: _budgetSliderMax,
             minFlatSize: _flatSizeSliderMin,
             maxFlatSize: _flatSizeSliderMax,
+            newProject: ref.watch(filtersProvider).newProject,
+            readyToMove: ref.watch(filtersProvider).readyToMove,
+            underConstruction: ref.watch(filtersProvider).underConstruction,
+            newSaleType: ref.watch(filtersProvider).newSaleType,
+            resaleType: ref.watch(filtersProvider).resaleType,
+            postedByBuilder: ref.watch(filtersProvider).postedByBuilder,
+            postedByOwner: ref.watch(filtersProvider).postedByOwner,
+            postedByAgent: ref.watch(filtersProvider).postedByAgent,
           ),
         );
 
@@ -114,6 +158,31 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
         params['BHKType'] = selectedConfigurations
             .map((config) => config.replaceAll(" ", ""))
             .join(',');
+      }
+
+      if (ref.watch(filtersProvider).newProject == 'true') {
+        params['newProject'] = 'true';
+      }
+      if (ref.watch(filtersProvider).readyToMove == 'true') {
+        params['readyToMove'] = 'true';
+      }
+      if (ref.watch(filtersProvider).underConstruction == 'true') {
+        params['underConstruction'] = 'true';
+      }
+      if (ref.watch(filtersProvider).newSaleType == 'true') {
+        params['newSaleType'] = 'true';
+      }
+      if (ref.watch(filtersProvider).resaleType == 'true') {
+        params['resaleType'] = 'true';
+      }
+      if (ref.watch(filtersProvider).postedByBuilder == 'true') {
+        params['postedByBuilder'] = 'true';
+      }
+      if (ref.watch(filtersProvider).postedByOwner == 'true') {
+        params['postedByOwner'] = 'true';
+      }
+      if (ref.watch(filtersProvider).postedByAgent == 'true') {
+        params['postedByAgent'] = 'true';
       }
 
       debugPrint("-----------params: $params");
@@ -570,10 +639,10 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                       const SizedBox(height: 6),
 
                       SizedBox(
-                        height: 30,
+                        height: 36,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: 5,
+                          itemCount: configurationList.length,
                           itemBuilder: (context, index) {
                             return CustomRadioButton(
                               text: configurationList[index],
@@ -583,11 +652,11 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                 setState(() {
                                   if (selectedConfigurations
                                       .contains(configurationList[index])) {
-                                    selectedConfigurations.clear();
+                                    selectedConfigurations = [];
                                   } else {
-                                    selectedConfigurations.clear();
-                                    selectedConfigurations
-                                        .add(configurationList[index]);
+                                    selectedConfigurations = [
+                                      configurationList[index]
+                                    ];
                                   }
                                 });
                               },
@@ -600,6 +669,230 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         color: CustomColors.secondary,
                         height: 30,
                       ),
+                      const Text(
+                        "Type",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: typeList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: typeList[index],
+                              isSelected:
+                                  ref.watch(filtersProvider).newProject ==
+                                              'true' &&
+                                          index == 0 ||
+                                      ref.watch(filtersProvider).readyToMove ==
+                                              'true' &&
+                                          index == 1 ||
+                                      ref
+                                                  .watch(filtersProvider)
+                                                  .underConstruction ==
+                                              'true' &&
+                                          index == 2,
+                              onTap: () {
+                                setState(() {
+                                  switch (index) {
+                                    case 0:
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateNewProject(ref
+                                                      .watch(filtersProvider)
+                                                      .newProject ==
+                                                  'true'
+                                              ? 'false'
+                                              : 'true');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateReadyToMove('false');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateUnderConstruction('false');
+                                      break;
+                                    case 1:
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateReadyToMove(ref
+                                                      .watch(filtersProvider)
+                                                      .readyToMove ==
+                                                  'true'
+                                              ? 'false'
+                                              : 'true');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateNewProject('false');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateUnderConstruction('false');
+                                      break;
+                                    case 2:
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateUnderConstruction(ref
+                                                      .watch(filtersProvider)
+                                                      .underConstruction ==
+                                                  'true'
+                                              ? 'false'
+                                              : 'true');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateNewProject('false');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateReadyToMove('false');
+                                      break;
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+                      const Text(
+                        "Posted By",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: postedByList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: postedByList[index]['label'],
+                              isSelected: (index == 0 &&
+                                      ref
+                                              .watch(filtersProvider)
+                                              .postedByBuilder ==
+                                          'true') ||
+                                  (index == 1 &&
+                                      ref
+                                              .watch(filtersProvider)
+                                              .postedByOwner ==
+                                          'true') ||
+                                  (index == 2 &&
+                                      ref
+                                              .watch(filtersProvider)
+                                              .postedByAgent ==
+                                          'true'),
+                              onTap: () {
+                                setState(() {
+                                  if (index == 0) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updatePostedByBuilder(ref
+                                                    .watch(filtersProvider)
+                                                    .postedByBuilder ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  } else if (index == 1) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updatePostedByOwner(ref
+                                                    .watch(filtersProvider)
+                                                    .postedByOwner ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  } else if (index == 2) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updatePostedByAgent(ref
+                                                    .watch(filtersProvider)
+                                                    .postedByAgent ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+
+                      const Text(
+                        "Sale Type",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: saleTypeList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: saleTypeList[index]['label'],
+                              isSelected: (index == 0 &&
+                                      ref.watch(filtersProvider).newSaleType ==
+                                          'true') ||
+                                  (index == 1 &&
+                                      ref.watch(filtersProvider).resaleType ==
+                                          'true'),
+                              onTap: () {
+                                setState(() {
+                                  if (index == 0) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateNewSaleType(ref
+                                                    .watch(filtersProvider)
+                                                    .newSaleType ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  } else if (index == 1) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateResaleType(ref
+                                                    .watch(filtersProvider)
+                                                    .resaleType ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+
                       const Text(
                         "Budget",
                         style: TextStyle(

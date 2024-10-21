@@ -29,6 +29,7 @@ class _UserLocationPropertiesState
   LatLng? currentLocation;
   LocationHomesData? userLocationHomesData;
   bool permissionDenied = false;
+  bool defaultLocation = false;
 
   fetchLocationUpdate() async {
     bool serviceEnabled;
@@ -85,23 +86,24 @@ class _UserLocationPropertiesState
       final response = await http.get(uri);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
+        if (responseData.isNotEmpty) {}
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
+
         setState(() {
           userLocationHomesData = LocationHomesData.fromJson(responseData);
         });
       } else {
+        defaultLocation = true;
+        getLocationHomes(17.4699, 78.2236);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
-      userLocationHomesData = const LocationHomesData(
-        area: '',
-        searchedLocation: '',
-        projects: [],
-      );
-      debugPrint("error: $error");
-      debugPrint("stackTrace: $stackTrace");
+      defaultLocation = true;
+      getLocationHomes(17.4699, 78.2236);
+      debugPrint("----location error: $error");
+      debugPrint("----location stackTrace: $stackTrace");
     }
   }
 
@@ -243,7 +245,8 @@ class _UserLocationPropertiesState
                                         ),
                                       ),
                                     ),
-                                    if (userLocationHomesData != null)
+                                    if (userLocationHomesData != null &&
+                                        !defaultLocation)
                                       Positioned(
                                         bottom: 10,
                                         right: 10,
@@ -257,7 +260,7 @@ class _UserLocationPropertiesState
                                         ),
                                       ),
                                   ],
-                                )
+                                ),
                               ],
                             ),
                     ),
@@ -326,12 +329,59 @@ class _UserLocationPropertiesState
                           ),
                         )
                       : SingleChildScrollView(
-                          child: PropertyList(
-                            apartments: userLocationHomesData!.projects
-                                .map((e) => e.projects)
-                                .toList()
-                                .expand((x) => x)
-                                .toList(),
+                          child: Column(
+                            children: [
+                              if (defaultLocation)
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 16, horizontal: 12),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        CustomColors.primary.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: CustomColors.primary
+                                            .withOpacity(0.3)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.info_outline,
+                                          color: CustomColors.primary),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: RichText(
+                                          text: const TextSpan(
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: CustomColors.black),
+                                            children: [
+                                              TextSpan(
+                                                text:
+                                                    "Showing default properties. ",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                    "No properties found in your area. You can still explore other great options!",
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              PropertyList(
+                                apartments: userLocationHomesData!.projects
+                                    .map((e) => e.projects)
+                                    .toList()
+                                    .expand((x) => x)
+                                    .toList(),
+                              ),
+                            ],
                           ),
                         ),
             ),

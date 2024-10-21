@@ -17,6 +17,7 @@ class PropertyStackCard extends StatelessWidget {
     this.showCompanyName = false,
     this.cardHeight = 200,
   });
+
   String formatBudget(double budget) {
     //return budget in k format or lakh and cr format
     if (budget < 100000) {
@@ -54,7 +55,7 @@ class PropertyStackCard extends StatelessWidget {
             child: Container(
               width: cardWidth,
               height: cardHeight,
-              margin: const EdgeInsets.only(right: 10, left: 2),
+              margin: const EdgeInsets.only(right: 16, left: 2),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,

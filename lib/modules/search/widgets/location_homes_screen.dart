@@ -33,14 +33,16 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         debugPrint("-----------------responseData: $responseData");
-
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
+        getLocationHomes(17.4699, 78.2236);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
+      getLocationHomes(17.4699, 78.2236);
+
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
     }
@@ -69,7 +71,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
                   child: RichText(
                     text: TextSpan(
                       style: const TextStyle(

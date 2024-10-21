@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
+import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
@@ -130,19 +131,45 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     child: IconButton(
                       onPressed: () {
                         ref
-                                .read(savedPropertiesProvider)
-                                .contains(widget.apartment)
-                            ? ref
-                                .read(savedPropertiesProvider.notifier)
-                                .removeApartment(widget.apartment)
-                            : ref
-                                .read(savedPropertiesProvider.notifier)
-                                .addApartment(widget.apartment);
+                                .watch(savedPropertiesProvider.notifier)
+                                .containsApartment(widget.apartment)
+                            ? {
+                                ref
+                                    .read(savedPropertiesProvider.notifier)
+                                    .removeApartment(widget.apartment),
+                                errorSnackBar(context, 'property removed')
+                              }
+                            : {
+                                ref
+                                    .read(savedPropertiesProvider.notifier)
+                                    .addApartment(widget.apartment),
+                                successSnackBar(
+                                  context,
+                                  'property saved',
+                                  action: SnackBarAction(
+                                    backgroundColor:
+                                        CustomColors.white.withOpacity(0.25),
+                                    textColor: CustomColors.white,
+                                    label: 'View',
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SavedProperties(
+                                            isPop: true,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                              };
+                        setState(() {});
                       },
                       icon: Icon(
                         ref
-                                .watch(savedPropertiesProvider)
-                                .contains(widget.apartment)
+                                .watch(savedPropertiesProvider.notifier)
+                                .containsApartment(widget.apartment)
                             ? Icons.favorite
                             : Icons.favorite_border,
                         color: CustomColors.white,
@@ -384,8 +411,8 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                       : SvgPicture.asset(
                                           "assets/icons/compare_active.svg",
                                           color: CustomColors.primary,
-                                          height: 20,
-                                          width: 20,
+                                          height: 24,
+                                          width: 24,
                                         ),
                                 ),
                               ),

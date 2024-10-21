@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
@@ -98,7 +97,6 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +208,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                                 ),
                                 if (_isFixedColumnVisible)
                                   const Text(
-                                    "Hide",
+                                    "Specs",
                                     style: TextStyle(
                                       color: CustomColors.white,
                                       fontSize: 14,
