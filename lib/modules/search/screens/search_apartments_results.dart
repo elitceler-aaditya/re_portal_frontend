@@ -44,7 +44,6 @@ class SearchApartmentResults extends ConsumerStatefulWidget {
 }
 
 class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
-  final TextEditingController _searchController = TextEditingController();
   List<ApartmentModel> allApartments = [];
   List<ApartmentModel> snippets = [];
   List<String> videoLinks = [];
@@ -108,6 +107,16 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
       _removeOverlay();
     } else {
       _showOverlay(context, apartment, globalKey);
+    }
+  }
+
+  String formatBudget(int budget) {
+    if (budget < 100000) {
+      return "₹${(budget / 1000).toStringAsFixed(00)}K";
+    } else if (budget < 10000000) {
+      return "₹${(budget / 100000).toStringAsFixed(1)}L";
+    } else {
+      return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
     }
   }
 
@@ -420,12 +429,18 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
 
   Future<void> getFilteredApartments({
     Map<String, dynamic> params = const {},
+    bool useDefaultParams = false,
   }) async {
-    debugPrint("-----------------params: $params");
+    Map<String, dynamic> defaultParams = ref.watch(filtersProvider).toJson();
+    defaultParams['page'] = "1";
+
+    debugPrint(
+        "-----------------params: ${useDefaultParams ? defaultParams : params}");
     try {
       String baseUrl = dotenv.get('BASE_URL');
       String url = "$baseUrl/project/filterApartmentsNew";
-      Uri uri = Uri.parse(url).replace(queryParameters: params);
+      Uri uri = Uri.parse(url)
+          .replace(queryParameters: useDefaultParams ? defaultParams : params);
 
       final response = await http.get(
         uri,
@@ -438,6 +453,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         List responseBody = responseData['projects'] ?? [];
         if (mounted) {
+          debugPrint("-----------------responseData: $responseData");
           ref
               .read(filtersProvider.notifier)
               .updateTotalCount(responseData['totalCount']);
@@ -512,7 +528,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     if (_isOverlayVisible) {
       _overlayEntry?.remove();
       _overlayEntry = null;
@@ -555,15 +570,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                       color: CustomColors.white,
                     ),
                   ),
-                  if (_searchController.text.trim().isNotEmpty)
-                    Text(
-                      '"${_searchController.text.trim()}"',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: CustomColors.white,
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -652,8 +658,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: (_searchController.text.trim().isNotEmpty ||
-                      ref.watch(filtersProvider).selectedLocalities.isNotEmpty)
+              child: ref.watch(filtersProvider).toJson().isNotEmpty
                   ? Container(
                       padding: const EdgeInsets.fromLTRB(2, 0, 0, 2),
                       width: double.infinity,
@@ -662,7 +667,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
-                            "Selected localities",
+                            "Selected Filters",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -696,70 +701,278 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                 ...ref
                                     .watch(filtersProvider)
                                     .selectedLocalities
-                                    .map((locality) {
-                                  return CustomListChip(
-                                    text: locality,
-                                    isSelected: true,
+                                    .map(
+                                      (loc) => CustomListChip(
+                                        text: loc,
+                                        onTap: () {
+                                          List<String> localities = ref
+                                              .read(filtersProvider)
+                                              .selectedLocalities;
+                                          localities.remove(loc);
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateSelectedLocalities(
+                                                  localities);
+                                          getFilteredApartments(
+                                              useDefaultParams: true);
+                                        },
+                                      ),
+                                    ),
+                                if (ref
+                                    .watch(filtersProvider)
+                                    .apartmentType
+                                    .isNotEmpty)
+                                  CustomListChip(
+                                    text: ref
+                                        .watch(filtersProvider)
+                                        .apartmentType,
                                     onTap: () {
-                                      List<String> localities = ref
-                                          .watch(filtersProvider)
-                                          .selectedLocalities;
-                                      localities.remove(locality);
-                                      displayAds = true;
-                                      setState(() {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateSelectedLocalities(
-                                                localities);
-
-                                        Map<String, dynamic> params =
-                                            ref.watch(filtersProvider).toJson();
-                                        params['page'] = "1";
-                                        getFilteredApartments(params: params);
-                                      });
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(
+                                            ref
+                                                .read(filtersProvider)
+                                                .copyWith(apartmentType: ''),
+                                          );
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
                                     },
-                                  );
-                                }),
-                                if (_searchController.text.trim().isNotEmpty)
-                                  ...ref
-                                      .read(localityListProvider)
-                                      .where((locality) => locality
-                                          .toLowerCase()
-                                          .contains(_searchController.text
-                                              .toLowerCase()))
-                                      .where((locality) => !ref
-                                          .watch(filtersProvider)
-                                          .selectedLocalities
-                                          .contains(locality))
-                                      .map((locality) {
-                                    return CustomListChip(
-                                      text: locality,
-                                      isSelected: false,
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateSelectedLocalities(
-                                                [locality]);
-                                        getFilteredApartments(params: {
-                                          'page': "1",
-                                          "projectLocation": locality
-                                        }).then((value) {
-                                          _searchController.clear();
-                                          FocusScope.of(context).unfocus();
-                                          Future.delayed(
-                                              const Duration(milliseconds: 500),
-                                              () {
-                                            _masterScrollController.animateTo(
-                                              400,
-                                              duration: const Duration(
-                                                  milliseconds: 500),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          });
-                                        });
-                                      },
-                                    );
-                                  }),
+                                  ),
+                                ...ref.watch(filtersProvider).amenities.map(
+                                      (amenity) => CustomListChip(
+                                        text: amenity,
+                                        onTap: () {
+                                          List<String> updatedAmenities =
+                                              List.from(ref
+                                                  .read(filtersProvider)
+                                                  .amenities);
+                                          updatedAmenities.remove(amenity);
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(
+                                                ref
+                                                    .read(filtersProvider)
+                                                    .copyWith(
+                                                        amenities:
+                                                            updatedAmenities),
+                                              );
+                                          getFilteredApartments(
+                                              useDefaultParams: true);
+                                        },
+                                      ),
+                                    ),
+                                ...ref
+                                    .watch(filtersProvider)
+                                    .selectedConfigurations
+                                    .map(
+                                      (config) => CustomListChip(
+                                        text: config,
+                                        onTap: () {
+                                          List<String> updatedConfigs =
+                                              List.from(ref
+                                                  .read(filtersProvider)
+                                                  .selectedConfigurations);
+                                          updatedConfigs.remove(config);
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(
+                                                ref
+                                                    .read(filtersProvider)
+                                                    .copyWith(
+                                                        selectedConfigurations:
+                                                            updatedConfigs),
+                                              );
+                                          getFilteredApartments(
+                                              useDefaultParams: true);
+                                        },
+                                      ),
+                                    ),
+                                if (ref.watch(filtersProvider).minBudget != 0)
+                                  CustomListChip(
+                                    text:
+                                        "Budget (min): ${formatBudget(ref.watch(filtersProvider).minBudget.toInt())}",
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateMinBudget(0);
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).maxBudget != 0)
+                                  CustomListChip(
+                                    text:
+                                        "Budget (max): ${formatBudget(ref.watch(filtersProvider).maxBudget.toInt())}",
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateMaxBudget(0);
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).minFlatSize != 0)
+                                  CustomListChip(
+                                    text:
+                                        "Flat Size (min): ${(ref.watch(filtersProvider).minFlatSize / 100).round() * 100} sq.ft.",
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateMinFlatSize(0);
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).maxFlatSize != 0)
+                                  CustomListChip(
+                                    text:
+                                        "Flat Size (max): ${((ref.watch(filtersProvider).maxFlatSize / 100).round() * 100).toInt()} sq.ft.",
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateMaxFlatSize(0);
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).newProject ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'New Project',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(newProject: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).readyToMove ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Ready to Move',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(readyToMove: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .underConstruction ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Under Construction',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(underConstruction: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .postedByBuilder ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Posted by Builder',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(postedByBuilder: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).postedByOwner ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Posted by Owner',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(postedByOwner: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).postedByAgent ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Posted by Agent',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(postedByAgent: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).newSaleType ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'New Sale',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(newSaleType: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).resaleType ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Resale',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(resaleType: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                GestureDetector(
+                                  onTap: () {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .clearAllFilters();
+                                    getFilteredApartments(
+                                        useDefaultParams: true);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    alignment: Alignment.center,
+                                    height: 32,
+                                    child: const Text(
+                                      "clear",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: CustomColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -1122,9 +1335,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                   const Padding(
                                     padding: EdgeInsets.fromLTRB(4, 10, 16, 0),
                                     child: Text(
-                                      "Explore Locations",
+                                      "Explore projects in other locations",
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -1151,13 +1364,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                           localityListProvider)[
                                                       index]
                                                 ]);
-                                                Map<String, dynamic> params =
-                                                    ref
-                                                        .watch(filtersProvider)
-                                                        .toJson();
-                                                params['page'] = "1";
+
                                                 getFilteredApartments(
-                                                    params: params);
+                                                    useDefaultParams: true);
                                                 Future.delayed(
                                                     const Duration(
                                                         milliseconds: 500), () {
@@ -1248,7 +1457,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                         child: Text(
                           "Categories",
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1285,9 +1494,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                   Future.delayed(
                                       const Duration(milliseconds: 500), () {
                                     getFilteredApartments(
-                                      params:
-                                          ref.read(filtersProvider).toJson(),
-                                    );
+                                        useDefaultParams: true);
                                   });
 
                                   _masterScrollController.animateTo(

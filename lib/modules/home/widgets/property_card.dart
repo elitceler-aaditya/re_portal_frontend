@@ -70,13 +70,13 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
         child: Column(
           children: [
             SizedBox(
-              height: 180,
+              height: 150,
               child: Stack(
                 children: [
                   Hero(
                     tag: "property-listcard-${widget.apartment.projectId}",
                     child: Container(
-                      height: 180,
+                      height: 150,
                       width: double.infinity,
                       clipBehavior: Clip.hardEdge,
                       decoration: const BoxDecoration(
@@ -109,7 +109,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     ),
                   ),
                   Container(
-                    height: 180,
+                    height: 150,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [

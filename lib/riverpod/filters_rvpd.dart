@@ -246,17 +246,17 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = state.copyWith(selectedLocalities: localities);
   }
 
-  void updateApartmentType(String type) {
-    state = state.copyWith(apartmentType: type);
-  }
+  // void updateApartmentType(String type) {
+  //   state = state.copyWith(apartmentType: type);
+  // }
 
-  void updateAmenities(List<String> amenities) {
-    state = state.copyWith(amenities: amenities);
-  }
+  // void updateAmenities(List<String> amenities) {
+  //   state = state.copyWith(amenities: amenities);
+  // }
 
-  void updateSelectedConfigurations(List<String> configurations) {
-    state = state.copyWith(selectedConfigurations: configurations);
-  }
+  // void updateSelectedConfigurations(List<String> configurations) {
+  //   state = state.copyWith(selectedConfigurations: configurations);
+  // }
 
   void updateMinBudget(double budget) {
     state = state.copyWith(minBudget: budget);
@@ -350,10 +350,10 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = state.copyWith(postedByAgent: value);
   }
 
-  //clear all filters
   void clearAllFilters() {
     state = FiltersModel();
   }
+
 }
 
 // Define the provider

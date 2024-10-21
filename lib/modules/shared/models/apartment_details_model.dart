@@ -56,6 +56,7 @@ class ProjectDetails with _$ProjectDetails {
     @Default('') String amenities,
     @Default('') String clubHouseAmenities,
     @Default('') String outdoorAmenities,
+    @Default([]) List<String> projectHighlightsPoints,
     @Default(Builder()) Builder builder,
     @Default([]) List<Institution> educationalInstitutions,
     @Default([]) List<Institution> hospitals,

@@ -488,6 +488,8 @@ mixin _$ProjectDetails {
   String get amenities => throw _privateConstructorUsedError;
   String get clubHouseAmenities => throw _privateConstructorUsedError;
   String get outdoorAmenities => throw _privateConstructorUsedError;
+  List<String> get projectHighlightsPoints =>
+      throw _privateConstructorUsedError;
   Builder get builder => throw _privateConstructorUsedError;
   List<Institution> get educationalInstitutions =>
       throw _privateConstructorUsedError;
@@ -538,6 +540,7 @@ abstract class $ProjectDetailsCopyWith<$Res> {
       String amenities,
       String clubHouseAmenities,
       String outdoorAmenities,
+      List<String> projectHighlightsPoints,
       Builder builder,
       List<Institution> educationalInstitutions,
       List<Institution> hospitals,
@@ -588,6 +591,7 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? amenities = null,
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
+    Object? projectHighlightsPoints = null,
     Object? builder = null,
     Object? educationalInstitutions = null,
     Object? hospitals = null,
@@ -699,6 +703,10 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
           ? _value.outdoorAmenities
           : outdoorAmenities // ignore: cast_nullable_to_non_nullable
               as String,
+      projectHighlightsPoints: null == projectHighlightsPoints
+          ? _value.projectHighlightsPoints
+          : projectHighlightsPoints // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       builder: null == builder
           ? _value.builder
           : builder // ignore: cast_nullable_to_non_nullable
@@ -768,6 +776,7 @@ abstract class _$$ProjectDetailsImplCopyWith<$Res>
       String amenities,
       String clubHouseAmenities,
       String outdoorAmenities,
+      List<String> projectHighlightsPoints,
       Builder builder,
       List<Institution> educationalInstitutions,
       List<Institution> hospitals,
@@ -817,6 +826,7 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
     Object? amenities = null,
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
+    Object? projectHighlightsPoints = null,
     Object? builder = null,
     Object? educationalInstitutions = null,
     Object? hospitals = null,
@@ -928,6 +938,10 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value.outdoorAmenities
           : outdoorAmenities // ignore: cast_nullable_to_non_nullable
               as String,
+      projectHighlightsPoints: null == projectHighlightsPoints
+          ? _value._projectHighlightsPoints
+          : projectHighlightsPoints // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       builder: null == builder
           ? _value.builder
           : builder // ignore: cast_nullable_to_non_nullable
@@ -982,12 +996,14 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       this.amenities = '',
       this.clubHouseAmenities = '',
       this.outdoorAmenities = '',
+      final List<String> projectHighlightsPoints = const [],
       this.builder = const Builder(),
       final List<Institution> educationalInstitutions = const [],
       final List<Institution> hospitals = const [],
       final List<Institution> offices = const [],
       final List<Institution> connectivity = const []})
-      : _educationalInstitutions = educationalInstitutions,
+      : _projectHighlightsPoints = projectHighlightsPoints,
+        _educationalInstitutions = educationalInstitutions,
         _hospitals = hospitals,
         _offices = offices,
         _connectivity = connectivity;
@@ -1073,6 +1089,16 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   @override
   @JsonKey()
   final String outdoorAmenities;
+  final List<String> _projectHighlightsPoints;
+  @override
+  @JsonKey()
+  List<String> get projectHighlightsPoints {
+    if (_projectHighlightsPoints is EqualUnmodifiableListView)
+      return _projectHighlightsPoints;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_projectHighlightsPoints);
+  }
+
   @override
   @JsonKey()
   final Builder builder;
@@ -1115,7 +1141,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
 
   @override
   String toString() {
-    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity)';
+    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity)';
   }
 
   @override
@@ -1173,6 +1199,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
                 other.clubHouseAmenities == clubHouseAmenities) &&
             (identical(other.outdoorAmenities, outdoorAmenities) ||
                 other.outdoorAmenities == outdoorAmenities) &&
+            const DeepCollectionEquality().equals(
+                other._projectHighlightsPoints, _projectHighlightsPoints) &&
             (identical(other.builder, builder) || other.builder == builder) &&
             const DeepCollectionEquality().equals(
                 other._educationalInstitutions, _educationalInstitutions) &&
@@ -1213,6 +1241,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
         amenities,
         clubHouseAmenities,
         outdoorAmenities,
+        const DeepCollectionEquality().hash(_projectHighlightsPoints),
         builder,
         const DeepCollectionEquality().hash(_educationalInstitutions),
         const DeepCollectionEquality().hash(_hospitals),
@@ -1265,6 +1294,7 @@ abstract class _ProjectDetails implements ProjectDetails {
       final String amenities,
       final String clubHouseAmenities,
       final String outdoorAmenities,
+      final List<String> projectHighlightsPoints,
       final Builder builder,
       final List<Institution> educationalInstitutions,
       final List<Institution> hospitals,
@@ -1326,6 +1356,8 @@ abstract class _ProjectDetails implements ProjectDetails {
   String get clubHouseAmenities;
   @override
   String get outdoorAmenities;
+  @override
+  List<String> get projectHighlightsPoints;
   @override
   Builder get builder;
   @override

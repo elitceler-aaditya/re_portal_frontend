@@ -504,11 +504,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     children: [
                       Expanded(
                         child: Container(
-                          height: 80,
+                          height: 90,
                           width: double.infinity,
+                          clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
-                            color: CustomColors.white,
+                            color: CustomColors.black25,
                             borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: CustomColors.black25,
+                            ),
                           ),
                           child: Stack(
                             children: [
@@ -558,7 +562,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   });
                                 },
                                 child: Container(
-                                  height: 150,
+                                  height: 160,
+                                  clipBehavior: Clip.hardEdge,
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     color:
@@ -683,6 +688,82 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
+            if (_projectDetails
+                .projectDetails.projectHighlightsPoints.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: "Why ",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: widget.apartment.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: _projectDetails
+                          .projectDetails.projectHighlightsPoints
+                          .map((point) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.check,
+                                size: 20,
+                                color: CustomColors.green,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  point,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    )
+                  ],
+                ),
+              ),
             Container(
               margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
               padding: const EdgeInsets.all(10),
@@ -785,8 +866,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(
+                      child: Row(children: [
+                        const SizedBox(width: 4),
+                        ...List.generate(
                           _projectDetails.projectImages.length,
                           (index) => _projectDetails
                                   .projectImages[index].images.isEmpty
@@ -800,6 +882,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                           : Colors.transparent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      side: const BorderSide(
+                                        color: CustomColors.primary20,
                                       ),
                                     ),
                                     onPressed: () {
@@ -825,7 +910,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ),
                                 ),
                         ),
-                      ),
+                      ]),
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
@@ -859,7 +944,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             },
                             child: Container(
                               width: 320,
-                              padding: const EdgeInsets.only(right: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6),
                               child: Container(
                                 clipBehavior: Clip.hardEdge,
                                 decoration: BoxDecoration(
@@ -952,6 +1038,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                           borderRadius:
                                               BorderRadius.circular(8),
                                         ),
+                                        side: const BorderSide(
+                                          color: CustomColors.primary20,
+                                        ),
                                       ),
                                       onPressed: () {
                                         setState(() {
@@ -980,6 +1069,18 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           ),
                         ),
                       ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "${_projectDetails.unitPlanConfigFilesFormatted[configIndex].facing} facing  |  ${_projectDetails.unitPlanConfigFilesFormatted[configIndex].sizeInSqft} sq.ft",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: CustomColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -998,15 +1099,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () {
-                        _photoViewImages = _projectDetails
-                            .unitPlanConfigFilesFormatted
-                            .expand((config) => config.unitPlanConfigFiles
-                                .map((imageUrl) => GalleryImageModel(
+                        _photoViewImages =
+                            _projectDetails.unitPlanConfigFilesFormatted
+                                .expand(
+                                  (config) => config.unitPlanConfigFiles.map(
+                                    (imageUrl) => GalleryImageModel(
                                       imageUrl: imageUrl,
-                                      title:
-                                          "${config.bHKType} - ${config.sizeInSqft} sqft - ${config.facing} Facing",
-                                    )))
-                            .toList();
+                                      title: config.bHKType,
+                                    ),
+                                  ),
+                                )
+                                .toList();
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => PhotoScrollingGallery(
@@ -1020,7 +1123,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       },
                       child: Container(
                         width: 320,
-                        padding: const EdgeInsets.only(right: 10, left: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 4),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: Image.network(
@@ -1087,6 +1191,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(width: 4),
                         Column(
                           children: [
                             const Text(

@@ -35,7 +35,7 @@ class _SelfContainedAnimatedTextSwitcherState
 
   void _startAnimation() {
     _controller.forward(from: 0.0).then((_) {
-      Future.delayed(_switchDuration + _animationDuration, () {
+      Future.delayed(_switchDuration - _animationDuration, () {
         if (mounted) {
           setState(() {
             _currentIndex = (_currentIndex + 1) % _searchOptions.length;

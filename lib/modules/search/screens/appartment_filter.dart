@@ -34,7 +34,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   double _maxFlatSize = 1;
   double _flatSizeSliderMin = 1;
   double _flatSizeSliderMax = 1;
-  List<String> localities = [];
   List<String> amenities = [];
   List<String> apartmentTypeList = [
     "Standalone",
@@ -101,18 +100,20 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
       TextEditingController();
 
   updateFilters() {
-    ref.watch(filtersProvider.notifier).setAllFilters(
+    ref.watch(filtersProvider.notifier).updateFilters(
           FiltersModel(
-            selectedLocalities: localities,
+            selectedLocalities: ref.watch(filtersProvider).selectedLocalities,
             apartmentType: appartmentType == null
                 ? ''
                 : apartmentTypeList[appartmentType!],
             amenities: amenities,
             selectedConfigurations: selectedConfigurations,
-            minBudget: _budgetSliderMin,
-            maxBudget: _budgetSliderMax,
-            minFlatSize: _flatSizeSliderMin,
-            maxFlatSize: _flatSizeSliderMax,
+            minBudget: _minBudget != _budgetSliderMin ? _budgetSliderMin : 0,
+            maxBudget: _maxBudget != _budgetSliderMax ? _budgetSliderMax : 0,
+            minFlatSize:
+                _minFlatSize != _flatSizeSliderMin ? _flatSizeSliderMin : 0,
+            maxFlatSize:
+                _maxFlatSize != _flatSizeSliderMax ? _flatSizeSliderMax : 0,
             newProject: ref.watch(filtersProvider).newProject,
             readyToMove: ref.watch(filtersProvider).readyToMove,
             underConstruction: ref.watch(filtersProvider).underConstruction,
@@ -134,18 +135,18 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     });
     try {
       Map<String, dynamic> params = {
-        'minBudget': _minBudget == _budgetSliderMin
-            ? '0'
-            : _budgetSliderMin.toStringAsFixed(0),
-        'maxBudget': _maxBudget == _budgetSliderMax
-            ? '99999999'
-            : _budgetSliderMax.toStringAsFixed(0),
+        if (_minBudget != _budgetSliderMin)
+          'minBudget': _budgetSliderMin.toStringAsFixed(0),
+
+        if (_maxBudget != _budgetSliderMax)
+          'maxBudget': _budgetSliderMax.toStringAsFixed(0),
         // 'minFlatSize': _flatSizeSliderMin.toStringAsFixed(0),
         // 'maxFlatSize': _flatSizeSliderMax.toStringAsFixed(0),
       };
 
-      if (localities.isNotEmpty) {
-        params['projectLocation'] = localities.join(',');
+      if (ref.watch(filtersProvider).selectedLocalities.isNotEmpty) {
+        params['projectLocation'] =
+            ref.watch(filtersProvider).selectedLocalities.join(',');
       }
       if (amenities.isNotEmpty) {
         params['amenities'] = amenities.join(',');
@@ -235,9 +236,9 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     } else if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(0)}K";
     } else if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(0)}L";
+      return "${(budget / 100000).toStringAsFixed(2)}L";
     } else {
-      return "${(budget / 10000000).toStringAsFixed(0)}Cr";
+      return "${(budget / 10000000).toStringAsFixed(2)}Cr";
     }
   }
 
@@ -267,7 +268,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
         .map((e) => double.parse(e.flatSize.toString()))
         .reduce((value, element) => value > element ? value : element);
 
-    localities = ref.watch(filtersProvider).selectedLocalities;
     int index = apartmentTypeList.indexWhere(
         (element) => element == ref.watch(filtersProvider).apartmentType);
     if (index != -1) {
@@ -414,19 +414,31 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            ...localities.take(4).map(
+                            ...ref
+                                .watch(filtersProvider)
+                                .selectedLocalities
+                                .take(4)
+                                .map(
                                   (e) => CustomListChip(
                                     text: e,
                                     isSelected: true,
                                     onTap: () {
-                                      setState(() {
-                                        localities.remove(e);
-                                      });
+                                      final List<String> loc = ref
+                                          .watch(filtersProvider)
+                                          .selectedLocalities;
+                                      loc.remove(e);
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateSelectedLocalities(loc);
                                     },
                                   ),
                                 ),
                             if (_localitySearchController.text.isNotEmpty &&
-                                localities.length < 4)
+                                ref
+                                        .watch(filtersProvider)
+                                        .selectedLocalities
+                                        .length <
+                                    4)
                               ...ref
                                   .watch(localityListProvider)
                                   .toSet()
@@ -434,16 +446,35 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                       _localitySearchController.text
                                           .trim()
                                           .toLowerCase()))
-                                  .where((e) => !localities.contains(e))
-                                  .take(4 - localities.length)
+                                  .where((e) => !ref
+                                      .watch(filtersProvider)
+                                      .selectedLocalities
+                                      .contains(e))
+                                  .take(4 -
+                                      ref
+                                          .watch(filtersProvider)
+                                          .selectedLocalities
+                                          .length)
                                   .map(
                                     (e) => CustomListChip(
                                       text: e,
                                       isSelected: false,
                                       onTap: () {
                                         setState(() {
-                                          if (localities.length < 4) {
-                                            localities.add(e);
+                                          if (ref
+                                                  .watch(filtersProvider)
+                                                  .selectedLocalities
+                                                  .length <
+                                              4) {
+                                            List<String> loc = ref
+                                                .watch(filtersProvider)
+                                                .selectedLocalities
+                                                .toList();
+                                            loc.add(e);
+                                            ref
+                                                .read(filtersProvider.notifier)
+                                                .updateSelectedLocalities(loc);
+
                                             _localitySearchController.clear();
                                           }
                                         });
@@ -933,8 +964,8 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                             '₹${formatBudget(_budgetSliderMin)}',
                             '₹${formatBudget(_budgetSliderMax)}',
                           ),
-                          values: RangeValues(_budgetSliderMin,
-                              _budgetSliderMax), // Update the values to use _budgetSliderMin and _budgetSliderMax
+                          values:
+                              RangeValues(_budgetSliderMin, _budgetSliderMax),
                           onChanged: (RangeValues values) {
                             setState(() {
                               _budgetSliderMin = values.start;
