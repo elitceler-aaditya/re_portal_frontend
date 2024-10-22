@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/search/widgets/search_apartment.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -574,6 +575,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         ),
                       ],
                     ),
+                  const RecentlyViewedSection(hideFirstProperty: true),
                   const SizedBox(height: 10)
                 ],
               ),

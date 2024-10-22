@@ -6,8 +6,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
+import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
+import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/budget_homes.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
@@ -27,6 +29,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
+import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
 import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -595,23 +598,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     children: [
                       const Icon(Icons.search),
                       const SizedBox(width: 4),
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 500),
-                          child: Text(
-                            ref.read(searchBarProvider).isNotEmpty
-                                ? ref.read(searchBarProvider)
-                                : 'Search by ${searchOptions[searchOptionsIndex]}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: CustomColors.black50,
-                            ),
-                          ),
-                        ),
-                      ),
+                      const Expanded(
+                          child: SelfContainedAnimatedTextSwitcher()),
                       GestureDetector(
                         onTap: () {
                           upSlideTransition(
@@ -947,6 +935,133 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                           .updateFilters(ref
                                               .read(filtersProvider)
                                               .copyWith(resaleType: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .affordableHomes ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Affordable Homes',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(affordableHomes: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .largeLivingSpaces ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Large Living Space',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(largeLivingSpaces: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .sustainableLivingHomes ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Sustainable',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(
+                                                  sustainableLivingHomes: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .twopointfiveBHKHomes ==
+                                    'true')
+                                  CustomListChip(
+                                    text: '2.5 BHK',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(
+                                                  twopointfiveBHKHomes: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).largeBalconies ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Large Balcony',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(largeBalconies: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .skyVillaHabitat ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Sky Villa Habitat',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(skyVillaHabitat: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .standAloneBuildings ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Standalone Buildings',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(
+                                                  standAloneBuildings: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).skyScrapers ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Skyscrapers',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(skyScrapers: ''));
                                       getFilteredApartments(
                                           useDefaultParams: true);
                                     },
@@ -1567,6 +1682,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           ),
                         ),
                       ),
+                      if (ref.watch(recentlyViewedProvider).isNotEmpty)
+                        const RecentlyViewedSection(),
                     ],
                   ),
             const SizedBox(height: 10),

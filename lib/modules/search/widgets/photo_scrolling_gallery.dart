@@ -6,6 +6,7 @@ class PhotoScrollingGallery extends StatefulWidget {
   final List<String> allImages;
   final List<String> labels;
   final List<double> breakPoints;
+  final List<String>? extraDetails;
   final int galleryIndex;
   final String image;
 
@@ -15,6 +16,7 @@ class PhotoScrollingGallery extends StatefulWidget {
     required this.labels,
     required this.breakPoints,
     required this.galleryIndex,
+    this.extraDetails,
     required this.image,
   });
 
@@ -31,7 +33,15 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
     super.initState();
     galleryIndex = widget.galleryIndex;
     galleryController =
-        PageController(initialPage: widget.allImages.indexOf(widget.image));
+        PageController(initialPage: widget.allImages.indexOf(widget.image))
+          ..addListener(() {
+            setState(() {
+              galleryIndex = widget.breakPoints.indexWhere((breakpoint) =>
+                  (galleryController?.page?.toDouble() ?? 0) <= breakpoint);
+            });
+            debugPrint(
+                "--------galleryIndex: ${galleryController?.page?.toDouble()}");
+          });
   }
 
   @override
@@ -42,9 +52,9 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("--------images: ${widget.allImages}");
-    debugPrint("--------labels: ${widget.labels}");
-    debugPrint("--------breakpoints: ${widget.breakPoints}");
+    // debugPrint("--------images: ${widget.allImages}");
+    // debugPrint("--------labels: ${widget.labels}");
+    // debugPrint("--------breakpoints: ${widget.breakPoints}");-*
     return Scaffold(
       backgroundColor: CustomColors.black,
       body: Stack(
@@ -111,58 +121,82 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
             top: MediaQuery.of(context).padding.top + 70,
             left: 0,
             right: 0,
-            child: Container(
-              height: 50,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    ...List.generate(
-                      widget.labels.length,
-                      (index) => widget.labels[index].isEmpty
-                          ? const SizedBox()
-                          : Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: galleryIndex == index
-                                      ? CustomColors.primary20
-                                      : Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  side: BorderSide(
-                                    color: CustomColors.white.withOpacity(0.2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 50,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        ...List.generate(
+                          widget.labels.length,
+                          (index) => widget.labels[index].isEmpty
+                              ? const SizedBox()
+                              : Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: galleryIndex == index
+                                          ? CustomColors.primary20
+                                          : Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      side: BorderSide(
+                                        color:
+                                            CustomColors.white.withOpacity(0.2),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        galleryIndex = index;
+                                      });
+                                      galleryController?.animateTo(
+                                        index == 0
+                                            ? 0
+                                            : MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                (widget.breakPoints[index - 1] +
+                                                    1),
+                                        duration:
+                                            const Duration(milliseconds: 500),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    },
+                                    child: Text(
+                                      widget.labels[index],
+                                      style: TextStyle(
+                                        color: galleryIndex == index
+                                            ? CustomColors.primary
+                                            : CustomColors.black50,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    galleryIndex = index;
-                                  });
-                                  galleryController?.animateTo(
-                                    index == 0
-                                        ? 0
-                                        : MediaQuery.of(context).size.width *
-                                            widget.breakPoints[index],
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                child: Text(
-                                  widget.labels[index],
-                                  style: TextStyle(
-                                    color: galleryIndex == index
-                                        ? CustomColors.primary
-                                        : CustomColors.black50,
-                                  ),
-                                ),
-                              ),
-                            ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                if (widget.extraDetails != null &&
+                    widget.extraDetails!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 8),
+                    child: Text(
+                      widget.extraDetails![galleryIndex],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: CustomColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+              ],
             ),
           )
         ],

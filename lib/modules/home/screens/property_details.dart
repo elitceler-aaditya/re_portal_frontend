@@ -15,6 +15,7 @@ import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
 import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
@@ -26,6 +27,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
+import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
@@ -1122,10 +1124,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   .unitPlanConfigFilesFormatted
                                   .map((gal) => gal.bHKType)
                                   .toList(),
-                              galleryIndex: galleryIndex,
+                              galleryIndex: 0,
                               breakPoints: breakpoints,
                               image: _projectDetails
                                   .projectImages[galleryIndex].images[index],
+                              extraDetails: _projectDetails
+                                  .unitPlanConfigFilesFormatted
+                                  .map((e) =>
+                                      "${e.facing} facing  |  ${e.sizeInSqft} sq.ft")
+                                  .toList(),
                             ),
                           ),
                         );
@@ -1745,6 +1752,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
             if (mounted) const AdsSection(),
             const LocationHomes(),
+            if (ref.watch(recentlyViewedProvider).length > 1)
+              const RecentlyViewedSection(hideFirstProperty: true),
             const SizedBox(height: 10),
           ],
         ),
@@ -2561,7 +2570,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
         timerIndex++;
       });
     });
-
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.read(recentlyViewedProvider.notifier).addApartment(widget.apartment);
+    });
     super.initState();
   }
 
