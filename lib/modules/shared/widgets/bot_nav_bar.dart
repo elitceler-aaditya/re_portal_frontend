@@ -45,10 +45,12 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 0
                     ? SvgPicture.asset(
-                        'assets/icons/home_active.svg',
+                        'assets/icons/home.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/home.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),
@@ -64,10 +66,12 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 1
                     ? SvgPicture.asset(
-                        'assets/icons/compare_active.svg',
+                        'assets/icons/compare.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/compare.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),
@@ -83,10 +87,12 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 2
                     ? SvgPicture.asset(
-                        'assets/icons/like_active.svg',
+                        'assets/icons/like.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/like.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),
@@ -102,10 +108,12 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 3
                     ? SvgPicture.asset(
-                        'assets/icons/person_active.svg',
+                        'assets/icons/person.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/person.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),

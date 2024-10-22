@@ -850,7 +850,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 6),
                       child: Text(
                         "Project Gallery",
                         style: TextStyle(
@@ -1005,7 +1005,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     const Text(
                       "Configurations",
                       style: TextStyle(
@@ -1187,7 +1187,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 children: [
                   const SizedBox(height: 16),
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2),
+                    padding: EdgeInsets.symmetric(horizontal: 6),
                     child: Text(
                       "Amenities",
                       style: TextStyle(
@@ -1370,7 +1370,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 children: [
                   const SizedBox(height: 16),
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 2),
+                    padding: EdgeInsets.symmetric(horizontal: 6),
                     child: Text(
                       "Key Highlights ",
                       style: TextStyle(
@@ -1554,6 +1554,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  const SizedBox(width: 6),
                   GestureDetector(
                     onTap: () {
                       if (ref.read(userProvider).token.isEmpty) {
@@ -1713,7 +1714,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             const SizedBox(height: 4),
-            SizedBox(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
@@ -1737,7 +1739,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
                 icon: const Icon(Icons.phone),

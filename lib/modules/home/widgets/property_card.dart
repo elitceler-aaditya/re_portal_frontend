@@ -113,8 +113,8 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          CustomColors.secondary.withOpacity(0),
-                          CustomColors.secondary.withOpacity(0.8),
+                          CustomColors.black.withOpacity(0),
+                          CustomColors.black.withOpacity(0.8),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -201,7 +201,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               const Icon(
                                 Icons.location_on,
                                 size: 14,
-                                color: CustomColors.primary,
+                                color: CustomColors.primary20,
                               ),
                               const SizedBox(width: 2),
                               Text(

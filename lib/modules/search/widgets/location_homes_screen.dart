@@ -118,6 +118,9 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                                 backgroundColor: selectedlocation == index
                                     ? CustomColors.primary
                                     : Colors.transparent,
+                                side: const BorderSide(
+                                  color: CustomColors.primary50,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),

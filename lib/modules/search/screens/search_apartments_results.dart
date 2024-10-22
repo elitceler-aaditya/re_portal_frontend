@@ -640,7 +640,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                 gradient: LinearGradient(
                   colors: [
                     CustomColors.primary,
-                    Color(0xFFCE4F32),
+                    CustomColors.primary10,
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -659,6 +659,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: CustomColors.white,
                             ),
                           ),
                           SingleChildScrollView(

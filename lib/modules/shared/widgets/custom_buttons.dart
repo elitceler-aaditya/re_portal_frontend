@@ -6,13 +6,16 @@ class CustomPrimaryButton extends StatelessWidget {
   final String title;
   final Widget? btnIcon;
   final Color? btnColor;
+  final Color? btnTextColor;
+
   final void Function()? onTap;
   const CustomPrimaryButton({
     super.key,
     required this.title,
     this.btnIcon,
     this.onTap,
-    this.btnColor = CustomColors.primary,
+    this.btnColor = CustomColors.primary10,
+    this.btnTextColor = CustomColors.primary,
   });
 
   @override
@@ -37,10 +40,10 @@ class CustomPrimaryButton extends StatelessWidget {
             if (btnIcon != null) const SizedBox(width: 8),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
-                color: CustomColors.white,
+                color: btnTextColor,
               ),
             ),
           ],

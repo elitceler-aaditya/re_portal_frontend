@@ -124,7 +124,7 @@ class MapsPropertyCard extends StatelessWidget {
                           children: [
                             const Icon(
                               Icons.location_on_rounded,
-                              color: CustomColors.primary,
+                                  color: CustomColors.primary20,
                               size: 14,
                             ),
                             const SizedBox(width: 4),

@@ -93,6 +93,8 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
                               backgroundColor: selectedBudget == index
                                   ? CustomColors.primary
                                   : Colors.transparent,
+                              side:
+                                  const BorderSide(color: CustomColors.black50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

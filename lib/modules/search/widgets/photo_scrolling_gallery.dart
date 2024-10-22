@@ -39,8 +39,6 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
               galleryIndex = widget.breakPoints.indexWhere((breakpoint) =>
                   (galleryController?.page?.toDouble() ?? 0) <= breakpoint);
             });
-            debugPrint(
-                "--------galleryIndex: ${galleryController?.page?.toDouble()}");
           });
   }
 
@@ -52,9 +50,6 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint("--------images: ${widget.allImages}");
-    // debugPrint("--------labels: ${widget.labels}");
-    // debugPrint("--------breakpoints: ${widget.breakPoints}");-*
     return Scaffold(
       backgroundColor: CustomColors.black,
       body: Stack(
@@ -141,14 +136,14 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
                                   child: TextButton(
                                     style: TextButton.styleFrom(
                                       backgroundColor: galleryIndex == index
-                                          ? CustomColors.primary20
+                                          ? CustomColors.white.withOpacity(0.4)
                                           : Colors.transparent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       side: BorderSide(
-                                        color:
-                                            CustomColors.white.withOpacity(0.2),
+                                        color: CustomColors.white
+                                            .withOpacity(0.15),
                                       ),
                                     ),
                                     onPressed: () {
@@ -172,7 +167,7 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
                                       widget.labels[index],
                                       style: TextStyle(
                                         color: galleryIndex == index
-                                            ? CustomColors.primary
+                                            ? CustomColors.white
                                             : CustomColors.black50,
                                       ),
                                     ),

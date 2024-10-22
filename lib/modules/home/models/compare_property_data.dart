@@ -9,6 +9,7 @@ class ComparePropertyData with _$ComparePropertyData {
     @Default("") String name,
     @Default("") String projectType,
     @Default(0) int flatSizes,
+    @Default("") String projectLocation,
     @Default("") String projectStatus,
     @Default(false) bool rERAApproval,
     @Default("") String projectSize,
@@ -19,8 +20,9 @@ class ComparePropertyData with _$ComparePropertyData {
     @Default("") String pricePerSquareFeetRate,
     @Default("") String clubhousesize,
     @Default("") String totalOpenSpace,
+    @Default("") String constructionType,
     @Default(0) int budget,
-    @Default(BuilderContact(CompanyPhone: "")) BuilderContact builder,
+    @Default(BuilderContact()) BuilderContact builder,
   }) = _ComparePropertyData;
 
   factory ComparePropertyData.fromJson(Map<String, dynamic> json) =>
@@ -41,6 +43,7 @@ class UnitPlanConfig with _$UnitPlanConfig {
 class BuilderContact with _$BuilderContact {
   const factory BuilderContact({
     @Default("") String CompanyPhone,
+    @Default("") String CompanyName,
   }) = _BuilderContact;
 
   factory BuilderContact.fromJson(Map<String, dynamic> json) =>

@@ -116,7 +116,7 @@ class EditorsChoiceCard extends StatelessWidget {
                               const Icon(
                                 Icons.location_on,
                                 size: 14,
-                                color: CustomColors.primary,
+                                  color: CustomColors.primary20,
                               ),
                               const SizedBox(width: 2),
                               Text(

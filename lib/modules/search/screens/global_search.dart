@@ -103,7 +103,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
               gradient: LinearGradient(
                 colors: [
                   CustomColors.primary,
-                  Color(0xFFCE4F32),
+                  CustomColors.primary10,
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -157,7 +157,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.white,
+                        color: CustomColors.primary,
                       ),
                     ),
                   ),
@@ -586,6 +586,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
               padding: const EdgeInsets.all(10),
               child: CustomPrimaryButton(
                 title: 'Apply',
+                btnColor: CustomColors.primary,
+                btnTextColor: CustomColors.white,
                 btnIcon: const Icon(
                   Icons.check,
                   color: CustomColors.white,

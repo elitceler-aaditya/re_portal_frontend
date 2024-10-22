@@ -88,7 +88,7 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
                         const Icon(
                           Icons.location_on,
                           size: 16,
-                          color: CustomColors.primary,
+                                  color: CustomColors.primary20,
                         ),
                         const SizedBox(width: 2),
                         Text(

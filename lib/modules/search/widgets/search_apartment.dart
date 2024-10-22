@@ -93,7 +93,7 @@ class _SearchApartmentCardState extends State<SearchApartmentCard> {
                       const Icon(
                         Icons.location_on,
                         size: 12,
-                        color: CustomColors.primary,
+                        color: CustomColors.primary20,
                       ),
                       const SizedBox(width: 2),
                       Text(

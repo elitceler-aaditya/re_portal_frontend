@@ -90,6 +90,7 @@ flutter:
     - .env
     - assets/images/
     - assets/icons/
+    - fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -97,20 +98,43 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
   fonts:
-    - family: "eudoxus"
+    - family: PlusJakartaSans
       fonts:
-        - asset: fonts/EudoxusSans-ExtraLight.ttf
-          weight: 200
-        - asset: fonts/EudoxusSans-Light.ttf
-          weight: 300
-        - asset: fonts/EudoxusSans-Regular.ttf
-          weight: 400
-        - asset: fonts/EudoxusSans-Medium.ttf
-          weight: 500
-        - asset: fonts/EudoxusSans-Bold.ttf
+        - asset: fonts/PlusJakartaSans-Bold.ttf
+          weight: 700
+        - asset: fonts/PlusJakartaSans-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: fonts/PlusJakartaSans-ExtraBold.ttf
           weight: 800
-        - asset: fonts/EudoxusSans-ExtraBold.ttf
-          weight: 900
+        - asset: fonts/PlusJakartaSans-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: fonts/PlusJakartaSans-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
+        - asset: fonts/PlusJakartaSans-Italic.ttf
+          style: italic
+        - asset: fonts/PlusJakartaSans-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: fonts/PlusJakartaSans-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: fonts/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: fonts/PlusJakartaSans-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: fonts/PlusJakartaSans-ExtraLight.ttf
+          weight: 200
+        - asset: fonts/PlusJakartaSans-Light.ttf
+          weight: 300
+        - asset: fonts/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: fonts/PlusJakartaSans-Regular.ttf
+          weight: 400
+          
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

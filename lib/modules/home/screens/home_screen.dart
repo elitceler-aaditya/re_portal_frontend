@@ -319,7 +319,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 gradient: LinearGradient(
                   colors: [
                     CustomColors.primary,
-                    Color(0xFFCE4F32),
+                    CustomColors.primary10,
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,

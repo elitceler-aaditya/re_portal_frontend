@@ -46,6 +46,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                   "Best Deals",
                   style: TextStyle(
                     fontSize: 16,
+                    fontFamily: "PlusJakartaSans",
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -139,7 +140,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                                 const Icon(
                                   Icons.location_on,
                                   size: 16,
-                                  color: CustomColors.primary,
+                                  color: CustomColors.primary20,
                                 ),
                                 const SizedBox(width: 2),
                                 Text(

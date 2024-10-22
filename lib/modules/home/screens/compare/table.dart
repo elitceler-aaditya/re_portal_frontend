@@ -41,19 +41,22 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
   final _enquiryDetails = TextEditingController();
 
   List attributes = [
-    'Name',
-    'Type',
-    'Flat size',
-    'Approval',
-    'Project size',
-    'Configuration',
-    'Floors',
+    'Project Name',
+    'Builder Name',
+    'Project Type',
+    'Location',
+    'Approvals',
+    'Project Size',
+    'No of Units',
+    'No of Floors',
+    'No of Towers',
+    'Open space',
+    'Configurations',
+    'Flat Sizes',
     'Possession',
-    'Base price',
-    'Club size',
-    'Open area',
-    'Cost',
-    'Favourite',
+    'Club House',
+    'Base Price',
+    'Construction',
     '',
     '',
   ];
@@ -397,18 +400,18 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   : Column(
                       children: [
                         Container(
-                          height: 79,
+                          height: 77,
                           width: double.infinity,
                           color: CustomColors.white,
                         ),
                         ...List.generate(
                           attributes.length,
                           (index) => Container(
-                            height: 36,
+                            height: 38,
                             width: double.infinity,
                             color: index % 2 == 0
                                 ? CustomColors.white
-                                : CustomColors.primary10,
+                                : CustomColors.black.withOpacity(0.05),
                             alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -434,8 +437,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                     dividerThickness: 0,
                     headingRowHeight: 115,
                     columnSpacing: 16,
-                    dataRowMinHeight: 36,
-                    dataRowMaxHeight: 36,
+                    dataRowMinHeight: 38,
+                    dataRowMaxHeight: 38,
                     columns: _buildScrollableColumns(),
                     rows: _buildScrollableRows(),
                   ),
@@ -488,21 +491,59 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
   List<DataRow> _buildScrollableRows() {
     final propertyFields = [
+      (ComparePropertyData d) => Text(d.builder.CompanyName),
       (ComparePropertyData d) => Text(d.projectType),
-      (ComparePropertyData d) => Text("${d.flatSizes} sq.ft"),
+      (ComparePropertyData d) => Text(d.projectLocation),
       (ComparePropertyData d) =>
           Text(d.rERAApproval ? 'RERA approved' : 'Not approved'),
       (ComparePropertyData d) => Text("${d.projectSize} sq.ft"),
+      (ComparePropertyData d) => Text("${d.noOfTowers} units"),
+      (ComparePropertyData d) => Text("${d.noOfFloors} floors"),
+      (ComparePropertyData d) => Text("${d.noOfTowers} towers"),
+      (ComparePropertyData d) => Text(d.totalOpenSpace),
       (ComparePropertyData d) =>
           Text(d.unitPlanConfigs.map((e) => e.BHKType).join(', ')),
-      (ComparePropertyData d) => Text("${d.noOfFloors} floors"),
+      (ComparePropertyData d) => Text("${d.flatSizes} sq.ft"),
       (ComparePropertyData d) => Text(d.projectPossession.isEmpty
           ? ''
           : d.projectPossession.substring(0, 10)),
-      (ComparePropertyData d) => Text("₹${d.pricePerSquareFeetRate}/sq.ft"),
       (ComparePropertyData d) => Text("${d.clubhousesize} sq.ft"),
-      (ComparePropertyData d) => Text(d.totalOpenSpace),
       (ComparePropertyData d) => Text(formatBudget(d.budget)),
+      (ComparePropertyData d) => Text(d.constructionType),
+      (ComparePropertyData d) => SizedBox(
+            height: 30,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  side: const BorderSide(color: CustomColors.primary),
+                  backgroundColor: CustomColors.primary10),
+              onPressed: () {
+                if (ref.read(userProvider).token.isEmpty) {
+                  errorSnackBar(context, 'Please login first');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(
+                        goBack: true,
+                      ),
+                    ),
+                  );
+                } else {
+                  _toggleOverlay(
+                    context,
+                    _globalKeys[_comparedPropertyData.indexOf(d)],
+                    widget.comparedProperties
+                        .where((e) => e.name == d.name)
+                        .first,
+                  );
+                }
+              },
+              child: const Text(
+                'Contact',
+                style: TextStyle(color: CustomColors.primary, fontSize: 12),
+              ),
+            ),
+          ),
       (ComparePropertyData d) => TextButton.icon(
             key: _globalKeys[_comparedPropertyData.indexOf(d)],
             style: TextButton.styleFrom(
@@ -536,48 +577,16 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                 ? const Icon(
                     Icons.favorite,
                     color: CustomColors.primary,
-                    size: 20,
+                    size: 18,
                   )
                 : const Icon(
                     Icons.favorite_outline,
                     color: CustomColors.primary,
-                    size: 20,
+                    size: 18,
                   ),
-            label: const Text('Favourite'),
-          ),
-      (ComparePropertyData d) => TextButton.icon(
-            style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                backgroundColor: CustomColors.primary),
-            onPressed: () {
-              if (ref.read(userProvider).token.isEmpty) {
-                errorSnackBar(context, 'Please login first');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(
-                      goBack: true,
-                    ),
-                  ),
-                );
-              } else {
-                _toggleOverlay(
-                  context,
-                  _globalKeys[_comparedPropertyData.indexOf(d)],
-                  widget.comparedProperties
-                      .where((e) => e.name == d.name)
-                      .first,
-                );
-              }
-            },
-            icon: const Icon(
-              Icons.phone,
-              color: CustomColors.white,
-              size: 16,
-            ),
             label: const Text(
-              'Contact',
-              style: TextStyle(color: CustomColors.white),
+              'Favourite',
+              style: TextStyle(fontSize: 12),
             ),
           ),
       (ComparePropertyData d) => TextButton.icon(
@@ -597,16 +606,21 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             icon: const Icon(
               Icons.close,
               color: CustomColors.primary,
-              size: 20,
+              size: 18,
             ),
-            label: const Text('Remove'),
+            label: const Text(
+              'Remove',
+              style: TextStyle(fontSize: 12),
+            ),
           ),
     ];
 
     return List.generate(propertyFields.length, (index) {
       return DataRow(
         color: WidgetStateProperty.all(
-          index % 2 == 0 ? CustomColors.primary10 : CustomColors.white,
+          index % 2 == 0
+              ? CustomColors.black.withOpacity(0.05)
+              : CustomColors.white,
         ),
         cells: List.generate(_comparedPropertyData.length, (dataIndex) {
           return DataCell(

@@ -153,6 +153,7 @@ class _GetStartedState extends State<GetStarted> {
                           'Discover your Dream property',
                           style: TextStyle(
                             fontSize: 20,
+                            fontFamily: "PlusJakartaSans",
                             fontWeight: FontWeight.w500,
                             color: CustomColors.primary,
                           ),
@@ -163,6 +164,7 @@ class _GetStartedState extends State<GetStarted> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
+                            fontFamily: "PlusJakartaSans",
                             fontWeight: FontWeight.normal,
                             color: CustomColors.black75,
                           ),
@@ -176,6 +178,8 @@ class _GetStartedState extends State<GetStarted> {
                         onTap: () {
                           upSlideTransition(context, const SignupScreen());
                         },
+                        btnColor: CustomColors.primary,
+                        btnTextColor: CustomColors.white,
                       ),
                     ),
                     RichText(

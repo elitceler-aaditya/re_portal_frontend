@@ -138,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextSpan(
                       text: 'Re',
                       style: TextStyle(
-                        color: CustomColors.primary,
+                        color: CustomColors.primary50,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
                       ),
@@ -238,6 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           onTap: () {
                                             _sendOTP(false);
                                           },
+                                          btnColor: CustomColors.primary20,
                                         ),
                                       const SizedBox(height: 24),
                                       Row(

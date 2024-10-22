@@ -229,7 +229,7 @@ class _SignupScreenState extends State<SignupScreen> {
               TextSpan(
                 text: 'Re',
                 style: TextStyle(
-                  color: CustomColors.primary,
+                  color: CustomColors.primary50,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -381,7 +381,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             if (!_isLoading)
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 28),
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: CustomPrimaryButton(
                                   title: 'Signup',
                                   onTap: () {
@@ -394,6 +394,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       _signupUser();
                                     }
                                   },
+                                  btnColor: CustomColors.primary10,
                                 ),
                               ),
                             const SizedBox(height: 20),
