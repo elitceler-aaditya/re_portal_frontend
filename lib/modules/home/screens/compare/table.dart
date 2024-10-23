@@ -61,7 +61,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
     '',
   ];
 
-  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
+  Widget _buildOption(
+      Widget icon, String text, VoidCallback onTap, Color? color) {
     return InkWell(
       onTap: () {
         _removeOverlay();
@@ -73,7 +74,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
           children: [
             icon,
             const SizedBox(width: 12),
-            Text(text),
+            Text(text, style: TextStyle(color: color)),
           ],
         ),
       ),
@@ -94,8 +95,29 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
   void _showOverlay(
       BuildContext context, RenderBox renderBox, ApartmentModel apartment) {
+    final Size size = renderBox.size;
     final Offset position = renderBox.localToGlobal(Offset.zero);
     final Size screenSize = MediaQuery.of(context).size;
+
+    // Calculate the menu dimensions
+    const double menuWidth = 220.0;
+    const double menuHeight = 150.0;
+
+    // Calculate the best position for the menu
+    double left = position.dx - menuWidth + size.width;
+    double top = position.dy + size.height;
+
+    // Adjust horizontal position if it goes off-screen
+    if (left < 0) {
+      left = 0;
+    } else if (left + menuWidth > screenSize.width) {
+      left = screenSize.width - menuWidth;
+    }
+
+    // Adjust vertical position if it goes off-screen
+    if (top + menuHeight > screenSize.height) {
+      top = position.dy - menuHeight;
+    }
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
@@ -109,16 +131,16 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             ),
           ),
           Positioned(
-            left: _calculateLeftPosition(position.dx, screenSize.width),
-            top: _calculateTopPosition(position.dy, screenSize.height),
+            left: left,
+            top: top,
             child: Material(
               color: Colors.transparent,
               child: Container(
-                width: 220,
+                width: menuWidth,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -129,10 +151,10 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildOption(
-                      SvgPicture.asset("assets/icons/phone.svg"),
+                      SvgPicture.asset("assets/icons/phone.svg",
+                          color: CustomColors.blue),
                       'Call now',
                       () {
                         if (ref.read(userProvider).token.isNotEmpty) {
@@ -144,12 +166,16 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                           });
                         }
                       },
+                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
                         height: 20,
                         width: 20,
-                        child: SvgPicture.asset("assets/icons/whatsapp.svg"),
+                        child: SvgPicture.asset(
+                          "assets/icons/whatsapp.svg",
+                          color: CustomColors.green,
+                        ),
                       ),
                       'Chat on Whatsapp',
                       () {
@@ -163,6 +189,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                           });
                         }
                       },
+                      const Color(0XFF30D14E),
                     ),
                     _buildOption(
                       SizedBox(
@@ -176,6 +203,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                         enquiryFormPopup();
                         _removeOverlay();
                       },
+                      CustomColors.secondary,
                     ),
                   ],
                 ),
@@ -514,9 +542,10 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             height: 30,
             child: TextButton(
               style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  side: const BorderSide(color: CustomColors.primary),
-                  backgroundColor: CustomColors.primary10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                side: const BorderSide(color: CustomColors.primary),
+                backgroundColor: CustomColors.primary10,
+              ),
               onPressed: () {
                 if (ref.read(userProvider).token.isEmpty) {
                   errorSnackBar(context, 'Please login first');
@@ -529,12 +558,15 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                     ),
                   );
                 } else {
-                  _toggleOverlay(
+                  final RenderBox renderBox =
+                      _globalKeys[_comparedPropertyData.indexOf(d)]
+                          .currentContext!
+                          .findRenderObject() as RenderBox;
+                  _showOverlay(
                     context,
-                    _globalKeys[_comparedPropertyData.indexOf(d)],
+                    renderBox,
                     widget.comparedProperties
-                        .where((e) => e.name == d.name)
-                        .first,
+                        .firstWhere((e) => e.name == d.name),
                   );
                 }
               },
