@@ -12,54 +12,62 @@ class LifestyleProperties extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lifestyleProperties =
         ref.watch(homePropertiesProvider).lifestyleProjects;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(8, 20, 8, 8),
-          child: Text(
-            "Lifestyle Properties",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+    return Container(
+      decoration: BoxDecoration(
+        color: CustomColors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+            child: Text(
+              "Lifestyle Properties",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        SizedBox(
-          height: 250,
-          child: FlutterCarousel.builder(
-            itemCount: lifestyleProperties.length,
-            itemBuilder: (context, index, realIndex) {
-              return LifestyleProjectCard(
-                  lifestyleProperty: lifestyleProperties[index]);
-            },
-            options: CarouselOptions(
-              height: 250,
-              viewportFraction: 1,
-              enlargeCenterPage: true,
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 5),
-              autoPlayAnimationDuration: const Duration(milliseconds: 1000),
-              autoPlayCurve: Curves.fastOutSlowIn,
-              enableInfiniteScroll: true,
-              initialPage: 0,
-              reverse: false,
-              scrollDirection: Axis.horizontal,
-              showIndicator: true,
-              floatingIndicator: false,
-              slideIndicator: const CircularSlideIndicator(
-                slideIndicatorOptions: SlideIndicatorOptions(
-                  indicatorRadius: 4,
-                  currentIndicatorColor: CustomColors.black,
-                  indicatorBackgroundColor: CustomColors.black50,
-                  itemSpacing: 16,
+          SizedBox(
+            height: 250,
+            child: FlutterCarousel.builder(
+              itemCount: lifestyleProperties.length,
+              itemBuilder: (context, index, realIndex) {
+                return LifestyleProjectCard(
+                    lifestyleProperty: lifestyleProperties[index]);
+              },
+              options: CarouselOptions(
+                height: 250,
+                viewportFraction: 1,
+                enlargeCenterPage: true,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 5),
+                autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enableInfiniteScroll: true,
+                initialPage: 0,
+                reverse: false,
+                scrollDirection: Axis.horizontal,
+                showIndicator: true,
+                floatingIndicator: false,
+                slideIndicator: const CircularSlideIndicator(
+                  slideIndicatorOptions: SlideIndicatorOptions(
+                    indicatorRadius: 4,
+                    currentIndicatorColor: CustomColors.black,
+                    indicatorBackgroundColor: CustomColors.black50,
+                    itemSpacing: 16,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

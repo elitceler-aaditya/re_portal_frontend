@@ -201,7 +201,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               const Icon(
                                 Icons.location_on,
                                 size: 14,
-                                color: CustomColors.primary20,
+                                color: CustomColors.primary,
                               ),
                               const SizedBox(width: 2),
                               Text(
@@ -423,7 +423,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               width: 40,
                               child: IconButton.filled(
                                 style: IconButton.styleFrom(
-                                  backgroundColor: CustomColors.secondary,
+                                  backgroundColor: CustomColors.blue,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),

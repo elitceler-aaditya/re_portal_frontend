@@ -123,7 +123,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     }
   }
 
-  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
+  Widget _buildOption(
+      Widget icon, String text, VoidCallback onTap, Color? color) {
     return InkWell(
       onTap: () {
         _removeOverlay();
@@ -135,7 +136,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
           children: [
             icon,
             const SizedBox(width: 12),
-            Text(text),
+            Text(text, style: TextStyle(color: color)),
           ],
         ),
       ),
@@ -192,7 +193,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildOption(
-                      SvgPicture.asset("assets/icons/phone.svg"),
+                      SvgPicture.asset("assets/icons/phone.svg",
+                          color: CustomColors.blue),
                       'Call now',
                       () {
                         launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
@@ -200,30 +202,38 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           (value) => _removeOverlay(),
                         );
                       },
+                      CustomColors.blue,
                     ),
                     _buildOption(
-                        SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: SvgPicture.asset(
-                              "assets/icons/whatsapp.svg",
-                            )),
-                        'Chat on Whatsapp', () {
-                      launchUrl(Uri.parse(
-                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
-                          .then(
-                        (value) => _removeOverlay(),
-                      );
-                    }),
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: SvgPicture.asset(
+                          "assets/icons/whatsapp.svg",
+                          color: CustomColors.green,
+                        ),
+                      ),
+                      'Chat on Whatsapp',
+                      () {
+                        launchUrl(Uri.parse(
+                                'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                            .then(
+                          (value) => _removeOverlay(),
+                        );
+                      },
+                      const Color(0XFF30D14E),
+                    ),
                     _buildOption(
-                        SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: SvgPicture.asset(
-                              "assets/icons/phone_incoming.svg",
-                            )),
-                        'Request call back',
-                        () => _removeOverlay()),
+                      SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: SvgPicture.asset(
+                            "assets/icons/phone_incoming.svg",
+                          )),
+                      'Request call back',
+                      () => _removeOverlay(),
+                      CustomColors.secondary,
+                    ),
                   ],
                 ),
               ),
@@ -543,6 +553,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.black10,
       key: _scaffoldMessengerKey,
       body: SingleChildScrollView(
         controller: _masterScrollController,
@@ -598,8 +609,15 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     children: [
                       const Icon(Icons.search),
                       const SizedBox(width: 4),
-                      const Expanded(
-                          child: SelfContainedAnimatedTextSwitcher()),
+                      const Text(
+                        "Search for ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SelfContainedAnimatedTextSwitcher(),
+                      const Spacer(),
                       GestureDetector(
                         onTap: () {
                           upSlideTransition(
@@ -640,7 +658,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                 gradient: LinearGradient(
                   colors: [
                     CustomColors.primary,
-                    CustomColors.primary10,
+                    CustomColors.primary50,
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -1129,564 +1147,609 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                       },
                     ),
                   )
-                : Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 36,
-                          width: 80,
-                          child: TextButton.icon(
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              backgroundColor: CustomColors.primary10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              side: const BorderSide(
-                                color: CustomColors.primary,
-                              ),
-                            ),
-                            onPressed: () {
-                              _showSortBottomSheet(context);
-                            },
-                            icon: const Icon(
-                              Icons.filter_list,
-                              size: 20,
-                              color: CustomColors.primary,
-                            ),
-                            label: const Text(
-                              "Sort",
-                              style: TextStyle(
-                                color: CustomColors.primary,
-                              ),
-                            ),
+                : ref.watch(homePropertiesProvider).filteredApartments.isEmpty
+                    ? SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: const Center(
+                          child: Text(
+                            "No results found\nPlease try again with different filters",
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isListview = !isListview;
-                            });
-                          },
-                          icon: isListview
-                              ? const Icon(
-                                  Icons.grid_view_outlined,
-                                  size: 28,
-                                )
-                              : const Icon(
-                                  Icons.list,
-                                  size: 28,
-                                ),
-                        )
-                      ],
-                    ),
-                  ),
-            ref.watch(homePropertiesProvider).filteredApartments.isEmpty
-                ? SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    child: const Center(
-                      child: Text(
-                        "No results found\nPlease try again with different filters",
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        child: !isListview
-                            ? PropertyGridView(
-                                sortedApartments: ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments,
-                                globalKeys: _globalKeys,
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                itemCount: ref
-                                            .watch(homePropertiesProvider)
-                                            .filteredApartments
-                                            .length >
-                                        4
-                                    ? ref
-                                            .watch(homePropertiesProvider)
-                                            .filteredApartments
-                                            .length +
-                                        1
-                                    : ref
-                                        .watch(homePropertiesProvider)
-                                        .filteredApartments
-                                        .length,
-                                itemBuilder: (context, index) {
-                                  if (displayAds) {
-                                    if (index % 5 == 4) {
-                                      List<Widget> widgetList = [
-                                        const ProjectSnippets(),
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text(
-                                                "New Launches",
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            EditorsChoiceCard(
-                                                apartments: ref
-                                                    .watch(
-                                                        homePropertiesProvider)
-                                                    .newProjects),
-                                          ],
-                                        ),
-                                        const BudgetHomes(),
-                                        const LocationHomes(),
-                                        const ReadyToMovein(),
-                                        const UltraLuxuryHomes(),
-                                        const NewLaunchSection(
-                                            title: "Editor's Choice"),
-                                      ];
-                                      int adsIndex = index ~/ 5;
-                                      return widgetList[
-                                          adsIndex % widgetList.length];
-                                    }
-                                  }
-                                  {
-                                    int listIndex = index - (index ~/ 5);
-
-                                    return PropertyCard(
-                                      apartment: ref
-                                          .watch(homePropertiesProvider)
-                                          .filteredApartments[listIndex],
-                                      nextApartment: ref
-                                              .watch(homePropertiesProvider)
-                                              .filteredApartments
-                                              .isNotEmpty
-                                          ? ref
-                                              .watch(homePropertiesProvider)
-                                              .filteredApartments
-                                              .first
-                                          : null,
-                                      isCompare: true,
-                                      onCallPress: (context) {
-                                        if (ref
-                                            .watch(userProvider)
-                                            .token
-                                            .isEmpty) {
-                                          errorSnackBar(
-                                              context, 'Please login first');
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const LoginScreen(
-                                                goBack: true,
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          _toggleOverlay(
-                                              context,
-                                              ref
-                                                  .watch(homePropertiesProvider)
-                                                  .filteredApartments[listIndex],
-                                              _globalKeys[listIndex]);
-                                        }
-                                      },
-                                      globalKey: _globalKeys[listIndex],
-                                    );
-                                  }
-                                },
-                              ),
-                      ),
-                      if (!isEndReached)
-                        VisibilityDetector(
-                          key: const Key('load-more-detector'),
-                          onVisibilityChanged: (visibilityInfo) {
-                            if (visibilityInfo.visibleFraction > 0) {
-                              Map<String, dynamic> params =
-                                  ref.watch(filtersProvider).toJson();
-                              params['page'] = (currentPage + 1).toString();
-                              getMoreProjects(params: params);
-                            }
-                          },
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
-                                  child: Shimmer.fromColors(
-                                    baseColor: Colors.grey[300]!,
-                                    highlightColor: Colors.grey[100]!,
-                                    child: Container(
-                                      height: 150,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              if (!isListview)
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0),
-                                    child: Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      child: Container(
-                                        height: 150,
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          color: CustomColors.white,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                      if (displayAds &&
-                          (ref.watch(filtersProvider).totalCount ==
-                                  ref
-                                      .watch(homePropertiesProvider)
-                                      .filteredApartments
-                                      .length ||
-                              isEndReached))
-                        Column(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 10),
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                5)
-                              const ProjectSnippets(),
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                9)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 36,
+                                  width: 80,
+                                  child: TextButton.icon(
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor: CustomColors.primary10,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      side: const BorderSide(
+                                        color: CustomColors.primary,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _showSortBottomSheet(context);
+                                    },
+                                    icon: const Icon(
+                                      Icons.filter_list,
+                                      size: 20,
+                                      color: CustomColors.primary,
+                                    ),
+                                    label: const Text(
+                                      "Sort",
+                                      style: TextStyle(
+                                        color: CustomColors.primary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isListview = !isListview;
+                                    });
+                                  },
+                                  icon: isListview
+                                      ? const Icon(
+                                          Icons.grid_view_outlined,
+                                          size: 28,
+                                        )
+                                      : const Icon(
+                                          Icons.list,
+                                          size: 28,
+                                        ),
+                                )
+                              ],
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2),
+                              child: !isListview
+                                  ? PropertyGridView(
+                                      sortedApartments: ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments,
+                                      globalKeys: _globalKeys,
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.zero,
+                                      itemCount: ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments
+                                                  .length >
+                                              4
+                                          ? ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments
+                                                  .length +
+                                              1
+                                          : ref
+                                              .watch(homePropertiesProvider)
+                                              .filteredApartments
+                                              .length,
+                                      itemBuilder: (context, index) {
+                                        if (displayAds) {
+                                          if (index % 5 == 4) {
+                                            List<Widget> widgetList = [
+                                              const ProjectSnippets(),
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.all(10),
+                                                    child: Text(
+                                                      "New Launches",
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  EditorsChoiceCard(
+                                                      apartments: ref
+                                                          .watch(
+                                                              homePropertiesProvider)
+                                                          .newProjects),
+                                                ],
+                                              ),
+                                              const BudgetHomes(),
+                                              const LocationHomes(),
+                                              const ReadyToMovein(),
+                                              const UltraLuxuryHomes(),
+                                              const NewLaunchSection(
+                                                  title: "Editor's Choice"),
+                                            ];
+                                            int adsIndex = index ~/ 5;
+                                            return widgetList[
+                                                adsIndex % widgetList.length];
+                                          }
+                                        }
+                                        {
+                                          int listIndex = index - (index ~/ 5);
+
+                                          return PropertyCard(
+                                            apartment: ref
+                                                .watch(homePropertiesProvider)
+                                                .filteredApartments[listIndex],
+                                            nextApartment: ref
+                                                    .watch(
+                                                        homePropertiesProvider)
+                                                    .filteredApartments
+                                                    .isNotEmpty
+                                                ? ref
+                                                    .watch(
+                                                        homePropertiesProvider)
+                                                    .filteredApartments
+                                                    .first
+                                                : null,
+                                            isCompare: true,
+                                            onCallPress: (context) {
+                                              if (ref
+                                                  .watch(userProvider)
+                                                  .token
+                                                  .isEmpty) {
+                                                errorSnackBar(context,
+                                                    'Please login first');
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LoginScreen(
+                                                      goBack: true,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                _toggleOverlay(
+                                                    context,
+                                                    ref
+                                                            .watch(
+                                                                homePropertiesProvider)
+                                                            .filteredApartments[
+                                                        listIndex],
+                                                    _globalKeys[listIndex]);
+                                              }
+                                            },
+                                            globalKey: _globalKeys[listIndex],
+                                          );
+                                        }
+                                      },
+                                    ),
+                            ),
+                            if (!isEndReached)
+                              VisibilityDetector(
+                                key: const Key('load-more-detector'),
+                                onVisibilityChanged: (visibilityInfo) {
+                                  if (visibilityInfo.visibleFraction > 0) {
+                                    Map<String, dynamic> params =
+                                        ref.watch(filtersProvider).toJson();
+                                    params['page'] =
+                                        (currentPage + 1).toString();
+                                    getMoreProjects(params: params);
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Shimmer.fromColors(
+                                          baseColor: Colors.grey[300]!,
+                                          highlightColor: Colors.grey[100]!,
+                                          child: Container(
+                                            height: 150,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if (!isListview)
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 16.0),
+                                          child: Shimmer.fromColors(
+                                            baseColor: Colors.grey[300]!,
+                                            highlightColor: Colors.grey[100]!,
+                                            child: Container(
+                                              height: 150,
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            if (displayAds &&
+                                (ref.watch(filtersProvider).totalCount ==
+                                        ref
+                                            .watch(homePropertiesProvider)
+                                            .filteredApartments
+                                            .length ||
+                                    isEndReached))
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      "New Launches",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  EditorsChoiceCard(
-                                      apartments: ref
+                                  if (ref
                                           .watch(homePropertiesProvider)
-                                          .newProjects),
-                                ],
-                              ),
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                13)
-                              const BudgetHomes(),
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                17)
-                              const LocationHomes(),
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                21)
-                              const ReadyToMovein(),
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                25)
-                              const UltraLuxuryHomes(),
-                            if (ref
-                                    .watch(homePropertiesProvider)
-                                    .filteredApartments
-                                    .length <=
-                                29)
-                              const NewLaunchSection(title: "Editor's Choice"),
-                            SizedBox(
-                              height: 120,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.fromLTRB(4, 10, 16, 0),
-                                    child: Text(
-                                      "Explore projects in other locations",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                          .filteredApartments
+                                          .length <=
+                                      5)
+                                    const ProjectSnippets(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <=
+                                      9)
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text(
+                                            "New Launches",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        EditorsChoiceCard(
+                                            apartments: ref
+                                                .watch(homePropertiesProvider)
+                                                .newProjects),
+                                      ],
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: [
-                                          const SizedBox(width: 2),
-                                          ...List.generate(
-                                            ref
-                                                .watch(localityListProvider)
-                                                .length,
-                                            (index) => GestureDetector(
-                                              onTap: () {
-                                                //add locality to filters
-                                                ref
-                                                    .read(filtersProvider
-                                                        .notifier)
-                                                    .updateSelectedLocalities([
-                                                  ref.watch(
-                                                          localityListProvider)[
-                                                      index]
-                                                ]);
-
-                                                getFilteredApartments(
-                                                    useDefaultParams: true);
-                                                Future.delayed(
-                                                    const Duration(
-                                                        milliseconds: 500), () {
-                                                  _masterScrollController
-                                                      .animateTo(
-                                                    0,
-                                                    duration: const Duration(
-                                                        milliseconds: 500),
-                                                    curve: Curves.easeInOut,
-                                                  );
-                                                });
-                                              },
-                                              child: Container(
-                                                height: double.infinity,
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.4,
-                                                clipBehavior: Clip.hardEdge,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  gradient:
-                                                      const LinearGradient(
-                                                    colors: [
-                                                      CustomColors.black50,
-                                                      CustomColors.black75
-                                                    ],
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                  ),
-                                                ),
-                                                margin: const EdgeInsets.only(
-                                                    right: 10),
-                                                child: Stack(
-                                                  children: [
-                                                    Positioned.fill(
-                                                      child: Image.asset(
-                                                          "assets/images/locations_bg.jpg",
-                                                          fit: BoxFit.cover),
-                                                    ),
-                                                    Positioned.fill(
-                                                      child: Container(
-                                                        color: CustomColors
-                                                            .black
-                                                            .withOpacity(0.6),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      child: Text(
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <=
+                                      13)
+                                    const BudgetHomes(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <=
+                                      17)
+                                    const LocationHomes(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <=
+                                      21)
+                                    const ReadyToMovein(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <=
+                                      25)
+                                    const UltraLuxuryHomes(),
+                                  if (ref
+                                          .watch(homePropertiesProvider)
+                                          .filteredApartments
+                                          .length <=
+                                      29)
+                                    const NewLaunchSection(
+                                        title: "Editor's Choice"),
+                                  SizedBox(
+                                    height: 120,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(4, 10, 16, 0),
+                                          child: Text(
+                                            "Explore projects in other locations",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Expanded(
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Row(
+                                              children: [
+                                                const SizedBox(width: 2),
+                                                ...List.generate(
+                                                  ref
+                                                      .watch(
+                                                          localityListProvider)
+                                                      .length,
+                                                  (index) => GestureDetector(
+                                                    onTap: () {
+                                                      //add locality to filters
+                                                      ref
+                                                          .read(filtersProvider
+                                                              .notifier)
+                                                          .updateSelectedLocalities([
                                                         ref.watch(
                                                                 localityListProvider)[
-                                                            index],
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: const TextStyle(
-                                                            color: CustomColors
-                                                                .white,
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
+                                                            index]
+                                                      ]);
+
+                                                      getFilteredApartments(
+                                                          useDefaultParams:
+                                                              true);
+                                                      Future.delayed(
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500), () {
+                                                        _masterScrollController
+                                                            .animateTo(
+                                                          0,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                          curve:
+                                                              Curves.easeInOut,
+                                                        );
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      height: double.infinity,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.4,
+                                                      clipBehavior:
+                                                          Clip.hardEdge,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        gradient:
+                                                            const LinearGradient(
+                                                          colors: [
+                                                            CustomColors
+                                                                .black50,
+                                                            CustomColors.black75
+                                                          ],
+                                                          begin:
+                                                              Alignment.topLeft,
+                                                          end: Alignment
+                                                              .bottomRight,
+                                                        ),
                                                       ),
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              right: 10),
+                                                      child: Stack(
+                                                        children: [
+                                                          Positioned.fill(
+                                                            child: Image.asset(
+                                                                "assets/images/locations_bg.jpg",
+                                                                fit: BoxFit
+                                                                    .cover),
+                                                          ),
+                                                          Positioned.fill(
+                                                            child: Container(
+                                                              color: CustomColors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.6),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8),
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: Text(
+                                                              ref.watch(
+                                                                      localityListProvider)[
+                                                                  index],
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: const TextStyle(
+                                                                  color:
+                                                                      CustomColors
+                                                                          .white,
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(4, 16, 16, 8),
+                              child: Text(
+                                "Categories",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ), //category options
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
+                                child: Row(
+                                  children: List.generate(
+                                    categoryOptions.length,
+                                    (index) => GestureDetector(
+                                      onTap: () {
+                                        displayAds = false;
+                                        ref
+                                            .read(searchBarProvider.notifier)
+                                            .setSearchTerm(
+                                              categoryOptions[index]['title'],
+                                            );
+                                        List<String> location = ref
+                                            .read(filtersProvider)
+                                            .selectedLocalities;
+                                        ref
+                                            .read(filtersProvider.notifier)
+                                            .setAllFilters(
+                                              categoryOptions[index]['filter'],
+                                            );
+
+                                        ref
+                                            .read(filtersProvider.notifier)
+                                            .updateSelectedLocalities(location);
+                                        loading = true;
+
+                                        Future.delayed(
+                                            const Duration(milliseconds: 500),
+                                            () {
+                                          getFilteredApartments(
+                                              useDefaultParams: true);
+                                        });
+
+                                        _masterScrollController.animateTo(
+                                          0,
+                                          duration:
+                                              const Duration(milliseconds: 500),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 80,
+                                        clipBehavior: Clip.hardEdge,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.4,
+                                        margin: const EdgeInsets.fromLTRB(
+                                            0, 0, 10, 0),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                              "assets/images/category-${index + 1}.jpg",
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              height: double.infinity,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(3),
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    CustomColors.black
+                                                        .withOpacity(0),
+                                                    CustomColors.black
+                                                        .withOpacity(0.77),
+                                                  ],
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              bottom: 6,
+                                              left: 6,
+                                              right: 6,
+                                              child: Text(
+                                                categoryOptions[index]['title'],
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: CustomColors.white,
+                                                  shadows: [
+                                                    BoxShadow(
+                                                      color: CustomColors.white
+                                                          .withOpacity(0.5),
+                                                      blurRadius: 3,
+                                                      offset:
+                                                          const Offset(0, 0),
                                                     ),
                                                   ],
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(4, 16, 16, 8),
-                        child: Text(
-                          "Categories",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ), //category options
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2),
-                          child: Row(
-                            children: List.generate(
-                              categoryOptions.length,
-                              (index) => GestureDetector(
-                                onTap: () {
-                                  displayAds = false;
-                                  ref
-                                      .read(searchBarProvider.notifier)
-                                      .setSearchTerm(
-                                        categoryOptions[index]['title'],
-                                      );
-                                  List<String> location = ref
-                                      .read(filtersProvider)
-                                      .selectedLocalities;
-                                  ref
-                                      .read(filtersProvider.notifier)
-                                      .setAllFilters(
-                                        categoryOptions[index]['filter'],
-                                      );
-
-                                  ref
-                                      .read(filtersProvider.notifier)
-                                      .updateSelectedLocalities(location);
-                                  loading = true;
-
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500), () {
-                                    getFilteredApartments(
-                                        useDefaultParams: true);
-                                  });
-
-                                  _masterScrollController.animateTo(
-                                    0,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                                child: Container(
-                                  height: 80,
-                                  clipBehavior: Clip.hardEdge,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  margin:
-                                      const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        "assets/images/category-${index + 1}.jpg",
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        height: double.infinity,
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              CustomColors.black.withOpacity(0),
-                                              CustomColors.black
-                                                  .withOpacity(0.77),
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                          ),
+                                          ],
                                         ),
                                       ),
-                                      Positioned(
-                                        bottom: 6,
-                                        left: 6,
-                                        right: 6,
-                                        child: Text(
-                                          categoryOptions[index]['title'],
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: CustomColors.white,
-                                            shadows: [
-                                              BoxShadow(
-                                                color: CustomColors.white
-                                                    .withOpacity(0.5),
-                                                blurRadius: 3,
-                                                offset: const Offset(0, 0),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                            if (ref.watch(recentlyViewedProvider).isNotEmpty)
+                              const RecentlyViewedSection(),
+                          ],
                         ),
                       ),
-                      if (ref.watch(recentlyViewedProvider).isNotEmpty)
-                        const RecentlyViewedSection(),
-                    ],
-                  ),
             const SizedBox(height: 10),
           ],
         ),

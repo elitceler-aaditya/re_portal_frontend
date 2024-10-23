@@ -229,7 +229,7 @@ class _SignupScreenState extends State<SignupScreen> {
               TextSpan(
                 text: 'Re',
                 style: TextStyle(
-                  color: CustomColors.primary50,
+                  color: CustomColors.primary,
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -394,7 +394,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       _signupUser();
                                     }
                                   },
-                                  btnColor: CustomColors.primary10,
+                                  btnColor: CustomColors.primary,
+                                  btnTextColor: CustomColors.white,
                                 ),
                               ),
                             const SizedBox(height: 20),

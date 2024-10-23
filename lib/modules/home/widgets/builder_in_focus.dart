@@ -25,70 +25,63 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
 
   @override
   Widget build(BuildContext context) {
-    // return SizedBox(height: 300, child: Text(builders.length.toString()));
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: const Padding(
-            padding: EdgeInsets.fromLTRB(8, 20, 8, 8),
-            child: Row(
-              children: [
-                Text(
-                  "Builders in Focus",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Container(
+      decoration: BoxDecoration(
+        color: CustomColors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: const Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+              child: Text(
+                "Builders in Focus",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                Spacer(),
-                Text(
-                  "Scroll for more>",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        FlutterCarousel.builder(
-          itemCount: builders.length,
-          itemBuilder: (context, index, realIndex) {
-            return _builderCard(context, builders[index]);
-          },
-          options: CarouselOptions(
-            height: 360,
-            viewportFraction: 0.8,
-            enlargeCenterPage: true,
-            autoPlay: false,
-            autoPlayInterval: const Duration(seconds: 5),
-            autoPlayAnimationDuration: const Duration(milliseconds: 1000),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enableInfiniteScroll: true,
-            initialPage: 0,
-            reverse: false,
-            scrollDirection: Axis.horizontal,
-            showIndicator: true,
-            floatingIndicator: false,
-            slideIndicator: const CircularSlideIndicator(
-              slideIndicatorOptions: SlideIndicatorOptions(
-                indicatorRadius: 4,
-                currentIndicatorColor: CustomColors.black,
-                indicatorBackgroundColor: CustomColors.black50,
-                itemSpacing: 16,
               ),
             ),
           ),
-        ),
-      ],
+          FlutterCarousel.builder(
+            itemCount: builders.length,
+            itemBuilder: (context, index, realIndex) {
+              return _builderCard(context, builders[index]);
+            },
+            options: CarouselOptions(
+              height: 360,
+              viewportFraction: 0.8,
+              enlargeCenterPage: true,
+              autoPlay: false,
+              autoPlayInterval: const Duration(seconds: 5),
+              autoPlayAnimationDuration: const Duration(milliseconds: 1000),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enableInfiniteScroll: true,
+              initialPage: 0,
+              reverse: false,
+              scrollDirection: Axis.horizontal,
+              showIndicator: true,
+              floatingIndicator: false,
+              slideIndicator: const CircularSlideIndicator(
+                slideIndicatorOptions: SlideIndicatorOptions(
+                  indicatorRadius: 4,
+                  currentIndicatorColor: CustomColors.black,
+                  indicatorBackgroundColor: CustomColors.black50,
+                  itemSpacing: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -316,7 +309,7 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
               const Icon(
                 Icons.location_on,
                 size: 14,
-                                  color: CustomColors.primary20,
+                color: CustomColors.primary,
               ),
               const SizedBox(width: 2),
               Text(

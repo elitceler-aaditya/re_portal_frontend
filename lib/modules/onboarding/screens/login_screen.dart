@@ -238,7 +238,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           onTap: () {
                                             _sendOTP(false);
                                           },
-                                          btnColor: CustomColors.primary20,
+                                          btnColor: CustomColors.primary,
+                                          btnTextColor: CustomColors.white,
                                         ),
                                       const SizedBox(height: 24),
                                       Row(

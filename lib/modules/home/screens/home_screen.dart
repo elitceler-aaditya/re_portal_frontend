@@ -221,32 +221,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 4, bottom: 8, top: 10),
-          child: Text(
-            "Select Properties",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          margin: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 4, bottom: 8),
+                child: Text(
+                  "Select Properties",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              PropertyStackCard(
+                  cardWidth: MediaQuery.of(context).size.width * 0.85,
+                  apartments:
+                      ref.watch(homePropertiesProvider).selectedProperties),
+            ],
           ),
         ),
-        PropertyStackCard(
-            cardWidth: MediaQuery.of(context).size.width * 0.85,
-            apartments: ref.watch(homePropertiesProvider).selectedProperties),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(4, 20, 0, 8),
-          child: Text(
-            "Editor's Choice",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          margin: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(4, 0, 0, 8),
+                child: Text(
+                  "Editor's Choice",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (mounted)
+                EditorsChoiceCard(
+                  apartments: ref.watch(homePropertiesProvider).editorsChoice,
+                ),
+            ],
           ),
         ),
-        if (mounted)
-          EditorsChoiceCard(
-              apartments: ref.watch(homePropertiesProvider).editorsChoice),
         const NewLaunchSection(
           title: "New launches",
         ),
@@ -277,6 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.black10,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -314,20 +344,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //top search bar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(2),
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    CustomColors.primary,
-                    CustomColors.primary10,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                color: CustomColors.primary,
               ),
               child: Column(
                 children: [
-                  //search bar
                   GestureDetector(
                     onTap: () {
                       if (ref
@@ -345,6 +366,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                     child: Container(
                       height: 50,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         color: CustomColors.white,
@@ -354,6 +376,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         children: [
                           const Icon(Icons.search),
                           const SizedBox(width: 4),
+                          const Text(
+                            "Search for ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
                           const SelfContainedAnimatedTextSwitcher(),
                           const Spacer(),
                           GestureDetector(
@@ -383,7 +412,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       const SearchApartmentResults(
-                                          openFilters: true),
+                                    openFilters: true,
+                                  ),
                                 ),
                               );
                             },
@@ -399,15 +429,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 6),
                 ],
               ),
             ),
-
             //category options
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
+            Container(
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              margin: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Row(
                   children: List.generate(
                     categoryOptions.length,
@@ -426,7 +461,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Container(
                         height: 80,
                         width: 150,
-                        margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
+                        margin: const EdgeInsets.only(left: 6),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(6),
                           image: DecorationImage(

@@ -114,7 +114,7 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
                                 const Icon(
                                   Icons.location_on,
                                   size: 14,
-                                  color: CustomColors.primary20,
+                                  color: CustomColors.primary,
                                 ),
                                 Text(
                                   ref

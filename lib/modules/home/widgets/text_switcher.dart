@@ -41,8 +41,8 @@ class _SelfContainedAnimatedTextSwitcherState
       transitionBuilder: (Widget child, Animation<double> animation) {
         return SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0.0, 0.5), // Slide from bottom
-            end: const Offset(0.0, 0.0), // To center
+            begin: const Offset(0.0, 0.5),
+            end: const Offset(0.0, 0.0),
           ).animate(animation),
           child: FadeTransition(
             opacity: animation,
@@ -51,7 +51,7 @@ class _SelfContainedAnimatedTextSwitcherState
         );
       },
       child: Text(
-        "Search for ${_searchOptions[_currentIndex]}",
+        _searchOptions[_currentIndex],
         key: ValueKey<String>(_searchOptions[_currentIndex]),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
