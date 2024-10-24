@@ -13,18 +13,18 @@ class NewLaunchSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final apartments = ref.watch(homePropertiesProvider).newProjects;
     return Container(
-        decoration: BoxDecoration(
-          color: CustomColors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        margin: const EdgeInsets.only(top: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      decoration: BoxDecoration(
+        color: CustomColors.white,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 16, 8),
+            padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
             child: Text(
               title,
               style: const TextStyle(
@@ -55,7 +55,7 @@ class NewLaunchSection extends ConsumerWidget {
                     height: 300,
                     width: 200,
                     clipBehavior: Clip.hardEdge,
-                    margin: const EdgeInsets.fromLTRB(2, 0, 16, 8),
+                    margin: const EdgeInsets.fromLTRB(10, 0, 0, 8),
                     decoration: BoxDecoration(
                       color: const Color(0XFFFAF5E6),
                       borderRadius: BorderRadius.circular(12),
@@ -168,16 +168,19 @@ class NewLaunchSection extends ConsumerWidget {
                                         Container(
                                           height: 80,
                                           width: 80,
+                                          clipBehavior: Clip.hardEdge,
                                           decoration: BoxDecoration(
                                             color: CustomColors.black10
                                                 .withOpacity(0.1),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             border: Border.all(
                                               color: CustomColors.black10,
                                             ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: CustomColors.black10
-                                                    .withOpacity(0.5),
+                                                color: CustomColors.black
+                                                    .withOpacity(0.2),
                                                 blurRadius: 5,
                                                 offset: const Offset(0, 1),
                                               ),

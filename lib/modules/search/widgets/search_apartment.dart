@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SearchApartmentCard extends StatefulWidget {
+class SearchApartmentCard extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
   const SearchApartmentCard({
     super.key,
@@ -11,14 +14,22 @@ class SearchApartmentCard extends StatefulWidget {
   });
 
   @override
-  State<SearchApartmentCard> createState() => _SearchApartmentCardState();
+  ConsumerState<SearchApartmentCard> createState() =>
+      _SearchApartmentCardState();
 }
 
-class _SearchApartmentCardState extends State<SearchApartmentCard> {
+class _SearchApartmentCardState extends ConsumerState<SearchApartmentCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        List<String> searchHistory =
+            prefs.getStringList('searchHistory_projects') ?? [];
+        searchHistory.remove(widget.apartment.name);
+        searchHistory.insert(0, widget.apartment.name);
+        searchHistory = searchHistory.take(5).toList();
+        await prefs.setStringList('searchHistory_projects', searchHistory);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -32,7 +43,7 @@ class _SearchApartmentCardState extends State<SearchApartmentCard> {
       child: Container(
         width: 120,
         height: 100,
-        margin: const EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(left: 8),
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           color: CustomColors.secondary,

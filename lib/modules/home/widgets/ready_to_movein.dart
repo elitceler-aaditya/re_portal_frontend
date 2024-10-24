@@ -11,6 +11,16 @@ class ReadyToMovein extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    String formatBudget(int budget) {
+      if (budget < 100000) {
+        return "₹${(budget / 1000).toStringAsFixed(00)}K";
+      } else if (budget < 10000000) {
+        return "₹${(budget / 100000).toStringAsFixed(1)}L";
+      } else {
+        return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
+      }
+    }
+
     final apartments = ref.watch(homePropertiesProvider).readyToMoveIn;
     if (apartments.isEmpty) {
       return const SizedBox.shrink();
@@ -18,10 +28,10 @@ class ReadyToMovein extends ConsumerWidget {
       return Container(
         decoration: BoxDecoration(
           color: CustomColors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(6),
         ),
         margin: const EdgeInsets.only(top: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +65,7 @@ class ReadyToMovein extends ConsumerWidget {
                       );
                     },
                     child: Container(
-                      margin: const EdgeInsets.only(right: 10, left: 2),
+                      margin: const EdgeInsets.only(left: 10),
                       height: double.infinity,
                       width: MediaQuery.of(context).size.width * 0.8,
                       clipBehavior: Clip.hardEdge,
@@ -145,7 +155,7 @@ class ReadyToMovein extends ConsumerWidget {
                                           ),
                                           const SizedBox(width: 2),
                                           Text(
-                                            apartments[index].projectLocation,
+                                            "${apartments[index].projectLocation} • ${formatBudget(apartments[index].budget)}",
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(

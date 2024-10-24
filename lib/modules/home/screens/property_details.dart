@@ -12,6 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
+import 'package:re_portal_frontend/modules/home/screens/brochure_video_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
@@ -269,7 +270,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           Expanded(
             child: Text(
               title,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 12,
@@ -328,14 +329,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       ],
     );
   }
-
-  // _formatBudget(double budget) {
-  //   if (budget < 10000000) {
-  //     return "₹${(budget / 100000).toStringAsFixed(1)} Lac";
-  //   } else {
-  //     return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
-  //   }
-  // }
 
   _formatArea(int area) {
     if (area < 1000) {
@@ -491,10 +484,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 10),
+              padding: const EdgeInsets.fromLTRB(2, 20, 2, 6),
               child: Column(
                 children: [
-                  // const SizedBox(height: 10),
                   Row(
                     children: [
                       Expanded(
@@ -503,35 +495,47 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           width: double.infinity,
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
-                            color: CustomColors.black25,
-                            borderRadius: BorderRadius.circular(10),
+                            color: CustomColors.white,
+                            borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: CustomColors.black25,
+                              color: CustomColors.white,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: CustomColors.black.withOpacity(0.2),
+                                offset: const Offset(1, 1),
+                                blurRadius: 10,
+                              ),
+                            ],
                           ),
                           child: Stack(
                             children: [
-                              GoogleMap(
-                                zoomControlsEnabled: false,
-                                mapToolbarEnabled: false,
-                                initialCameraPosition: CameraPosition(
-                                  target: LatLng(widget.apartment.latitude,
-                                      widget.apartment.longitude),
-                                  zoom: 10,
-                                ),
-                                markers: {
-                                  Marker(
-                                    markerId:
-                                        MarkerId(widget.apartment.projectId),
-                                    position: LatLng(widget.apartment.latitude,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: GoogleMap(
+                                  zoomControlsEnabled: false,
+                                  mapToolbarEnabled: false,
+                                  initialCameraPosition: CameraPosition(
+                                    target: LatLng(widget.apartment.latitude,
                                         widget.apartment.longitude),
-                                    icon: BitmapDescriptor.defaultMarkerWithHue(
-                                        2),
-                                    infoWindow: InfoWindow(
-                                      title: widget.apartment.name,
-                                    ),
+                                    zoom: 10,
                                   ),
-                                },
+                                  markers: {
+                                    Marker(
+                                      markerId:
+                                          MarkerId(widget.apartment.projectId),
+                                      position: LatLng(
+                                          widget.apartment.latitude,
+                                          widget.apartment.longitude),
+                                      icon:
+                                          BitmapDescriptor.defaultMarkerWithHue(
+                                              2),
+                                      infoWindow: InfoWindow(
+                                        title: widget.apartment.name,
+                                      ),
+                                    ),
+                                  },
+                                ),
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -635,7 +639,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             if (widget.apartment.description.isNotEmpty)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                margin: const EdgeInsets.only(top: 10),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
@@ -643,9 +647,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: CustomColors.black.withOpacity(0.3),
+                      color: CustomColors.black.withOpacity(0.2),
                       blurRadius: 10,
-                      spreadRadius: 1,
+                      spreadRadius: 0,
                       offset: const Offset(0, 0),
                     ),
                   ],
@@ -687,7 +691,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 .projectDetails.projectHighlightsPoints.isNotEmpty)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+                margin: const EdgeInsets.only(top: 16),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
@@ -695,9 +699,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: CustomColors.black.withOpacity(0.3),
+                      color: CustomColors.black.withOpacity(0.2),
                       blurRadius: 10,
-                      spreadRadius: 1,
+                      spreadRadius: 0,
                       offset: const Offset(0, 0),
                     ),
                   ],
@@ -760,10 +764,20 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ),
               ),
             Container(
-              margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
-              padding: const EdgeInsets.all(10),
+              width: double.infinity,
+              margin: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
+                color: CustomColors.white,
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: CustomColors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -838,14 +852,28 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             if (_projectDetails.projectImages.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         "Project Gallery",
                         style: TextStyle(
@@ -857,15 +885,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(children: [
-                        const SizedBox(width: 4),
-                        ...List.generate(
+                      child: Row(
+                        children: List.generate(
                           _projectDetails.projectImages.length,
                           (index) => _projectDetails
                                   .projectImages[index].images.isEmpty
                               ? const SizedBox()
                               : Padding(
-                                  padding: const EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.only(left: 8),
                                   child: TextButton(
                                     style: TextButton.styleFrom(
                                       backgroundColor: galleryIndex == index
@@ -901,7 +928,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ),
                                 ),
                         ),
-                      ]),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
@@ -990,19 +1017,35 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 ),
               ),
             if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 6),
-                    const Text(
-                      "Configurations",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: CustomColors.black,
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: Text(
+                        "Configurations",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
+                        ),
                       ),
                     ),
                     if (_projectDetails.unitPlanConfigFilesFormatted
@@ -1021,8 +1064,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     .isEmpty
                                 ? const SizedBox()
                                 : Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 10, left: 2),
+                                    padding: const EdgeInsets.only(left: 8),
                                     child: TextButton(
                                       style: TextButton.styleFrom(
                                         backgroundColor: configIndex == index
@@ -1074,306 +1116,149 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
+                    ),
+                    if (_projectDetails.projectImages.isNotEmpty)
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          controller: configController,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _projectDetails
+                              .unitPlanConfigFilesFormatted[configIndex]
+                              .unitPlanConfigFiles
+                              .length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                final List<String> allImgs = [];
+                                List<double> breakpoints = [];
+                                double cumulativeSum = 0;
+                                for (var gal in _projectDetails
+                                    .unitPlanConfigFilesFormatted) {
+                                  allImgs.addAll(gal.unitPlanConfigFiles);
+                                  cumulativeSum +=
+                                      gal.unitPlanConfigFiles.length;
+                                  breakpoints.add(cumulativeSum);
+                                }
+
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => PhotoScrollingGallery(
+                                      allImages: allImgs,
+                                      labels: _projectDetails
+                                          .unitPlanConfigFilesFormatted
+                                          .map((gal) => gal.bHKType)
+                                          .toList(),
+                                      galleryIndex: 0,
+                                      breakPoints: breakpoints,
+                                      image: _projectDetails
+                                          .projectImages[galleryIndex]
+                                          .images[index],
+                                      extraDetails: _projectDetails
+                                          .unitPlanConfigFilesFormatted
+                                          .map((e) =>
+                                              "${e.facing} facing  |  ${e.sizeInSqft} sq.ft")
+                                          .toList(),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 320,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 4),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.network(
+                                    _projectDetails
+                                        .unitPlanConfigFilesFormatted[
+                                            configIndex]
+                                        .unitPlanConfigFiles[index],
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child,
+                                            loadingProgress) =>
+                                        loadingProgress == null
+                                            ? child
+                                            : Shimmer.fromColors(
+                                                baseColor: CustomColors.black25,
+                                                highlightColor:
+                                                    CustomColors.black50,
+                                                child: Container(
+                                                  height: 200,
+                                                  width: 320,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                ),
+                                              ),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Center(
+                                      child: Text(
+                                        "Error loading image",
+                                        style: TextStyle(
+                                          color: CustomColors.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                   ],
                 ),
               ),
             const SizedBox(height: 10),
-            if (_projectDetails.projectImages.isNotEmpty)
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  controller: configController,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _projectDetails
-                      .unitPlanConfigFilesFormatted[configIndex]
-                      .unitPlanConfigFiles
-                      .length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        final List<String> allImgs = [];
-                        List<double> breakpoints = [];
-                        double cumulativeSum = 0;
-                        for (var gal
-                            in _projectDetails.unitPlanConfigFilesFormatted) {
-                          allImgs.addAll(gal.unitPlanConfigFiles);
-                          cumulativeSum += gal.unitPlanConfigFiles.length;
-                          breakpoints.add(cumulativeSum);
-                        }
-
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => PhotoScrollingGallery(
-                              allImages: allImgs,
-                              labels: _projectDetails
-                                  .unitPlanConfigFilesFormatted
-                                  .map((gal) => gal.bHKType)
-                                  .toList(),
-                              galleryIndex: 0,
-                              breakPoints: breakpoints,
-                              image: _projectDetails
-                                  .projectImages[galleryIndex].images[index],
-                              extraDetails: _projectDetails
-                                  .unitPlanConfigFilesFormatted
-                                  .map((e) =>
-                                      "${e.facing} facing  |  ${e.sizeInSqft} sq.ft")
-                                  .toList(),
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 320,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 4),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            _projectDetails
-                                .unitPlanConfigFilesFormatted[configIndex]
-                                .unitPlanConfigFiles[index],
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) =>
-                                loadingProgress == null
-                                    ? child
-                                    : Shimmer.fromColors(
-                                        baseColor: CustomColors.black25,
-                                        highlightColor: CustomColors.black50,
-                                        child: Container(
-                                          height: 200,
-                                          width: 320,
-                                          decoration: BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                          ),
-                                        ),
-                                      ),
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Center(
-                              child: Text(
-                                "Error loading image",
-                                style: TextStyle(
-                                  color: CustomColors.red,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
             if (_projectDetails.projectDetails.amenities.isNotEmpty)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6),
-                    child: Text(
-                      "Amenities",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: CustomColors.black,
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        "Amenities",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
+                        ),
                       ),
                     ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(width: 4),
-                        Column(
-                          children: [
-                            const Text(
-                              "General Amenities",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: CustomColors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 150,
-                              margin: const EdgeInsets.only(right: 10, left: 2),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width - 50,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: CustomColors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.2),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: SingleChildScrollView(
-                                child: Wrap(
-                                  direction: Axis.horizontal,
-                                  children: List.generate(
-                                    _projectDetails.projectDetails.amenities
-                                        .split(",")
-                                        .length,
-                                    (index) => CustomChip(
-                                      text: _projectDetails
-                                          .projectDetails.amenities
-                                          .split(",")[index],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            const Text(
-                              "Clubhouse Amenities",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: CustomColors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 150,
-                              margin: const EdgeInsets.only(right: 10),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width - 50,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: CustomColors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: SingleChildScrollView(
-                                child: Wrap(
-                                  direction: Axis.horizontal,
-                                  children: List.generate(
-                                    _projectDetails
-                                        .projectDetails.clubHouseAmenities
-                                        .split(",")
-                                        .length,
-                                    (index) => CustomChip(
-                                      text: _projectDetails
-                                          .projectDetails.clubHouseAmenities
-                                          .split(",")[index],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            const Text(
-                              "Outdoor Amenities",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal,
-                                color: CustomColors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              height: 150,
-                              margin: const EdgeInsets.only(right: 10),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width - 50,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: CustomColors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: SingleChildScrollView(
-                                child: Wrap(
-                                  direction: Axis.horizontal,
-                                  children: List.generate(
-                                    _projectDetails
-                                        .projectDetails.outdoorAmenities
-                                        .split(",")
-                                        .length,
-                                    (index) => CustomChip(
-                                      text: _projectDetails
-                                          .projectDetails.outdoorAmenities
-                                          .split(",")[index],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            if (_projectDetails.projectDetails.hospitals.isNotEmpty &&
-                _projectDetails.projectDetails.offices.isNotEmpty &&
-                _projectDetails.projectDetails.connectivity.isNotEmpty)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 6),
-                    child: Text(
-                      "Key Highlights ",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: CustomColors.black,
-                      ),
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(width: 10),
-                        if (_projectDetails.projectDetails.hospitals.isNotEmpty)
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(width: 4),
                           Column(
                             children: [
                               const Text(
-                                "Hospitals",
+                                "General Amenities",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -1383,8 +1268,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               const SizedBox(height: 8),
                               Container(
                                 height: 150,
-                                margin: const EdgeInsets.only(right: 10),
-                                clipBehavior: Clip.hardEdge,
+                                margin:
+                                    const EdgeInsets.only(right: 10, left: 2),
                                 constraints: BoxConstraints(
                                   maxWidth:
                                       MediaQuery.of(context).size.width - 50,
@@ -1395,22 +1280,25 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   boxShadow: [
                                     BoxShadow(
                                       color:
-                                          CustomColors.black.withOpacity(0.3),
+                                          CustomColors.black.withOpacity(0.2),
                                       blurRadius: 10,
                                       offset: const Offset(0, 0),
                                     ),
                                   ],
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Column(
-                                  children: List.generate(
-                                    _projectDetails
-                                        .projectDetails.hospitals.length,
-                                    (index) => _keyHighlights(
-                                      _projectDetails
-                                          .projectDetails.hospitals[index].name,
-                                      _projectDetails
-                                          .projectDetails.hospitals[index].dist,
+                                child: SingleChildScrollView(
+                                  child: Wrap(
+                                    direction: Axis.horizontal,
+                                    children: List.generate(
+                                      _projectDetails.projectDetails.amenities
+                                          .split(",")
+                                          .length,
+                                      (index) => CustomChip(
+                                        text: _projectDetails
+                                            .projectDetails.amenities
+                                            .split(",")[index],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1418,62 +1306,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               const SizedBox(height: 10),
                             ],
                           ),
-                        if (_projectDetails.projectDetails.offices.isNotEmpty)
                           Column(
                             children: [
                               const Text(
-                                "Offices",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: CustomColors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                height: 150,
-                                margin: const EdgeInsets.only(right: 10),
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width - 50,
-                                ),
-                                padding:
-                                    const EdgeInsets.fromLTRB(10, 6, 10, 0),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.black.withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 0),
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    children: List.generate(
-                                      _projectDetails
-                                          .projectDetails.offices.length,
-                                      (index) => _keyHighlights(
-                                        _projectDetails
-                                            .projectDetails.offices[index].name,
-                                        _projectDetails
-                                            .projectDetails.offices[index].dist,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        if (_projectDetails
-                            .projectDetails.connectivity.isNotEmpty)
-                          Column(
-                            children: [
-                              const Text(
-                                "Connectivity",
+                                "Clubhouse Amenities",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -1502,15 +1338,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: SingleChildScrollView(
-                                  child: Column(
+                                  child: Wrap(
+                                    direction: Axis.horizontal,
                                     children: List.generate(
                                       _projectDetails
-                                          .projectDetails.connectivity.length,
-                                      (index) => _keyHighlights(
-                                        _projectDetails.projectDetails
-                                            .connectivity[index].name,
-                                        _projectDetails.projectDetails
-                                            .connectivity[index].dist,
+                                          .projectDetails.clubHouseAmenities
+                                          .split(",")
+                                          .length,
+                                      (index) => CustomChip(
+                                        text: _projectDetails
+                                            .projectDetails.clubHouseAmenities
+                                            .split(",")[index],
                                       ),
                                     ),
                                   ),
@@ -1518,211 +1356,261 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               ),
                             ],
                           ),
-                        // const SizedBox(width: 10),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            const Divider(
-              height: 20,
-              color: CustomColors.black50,
-            ),
-            const SizedBox(width: 6),
-            GestureDetector(
-              onTap: () {
-                if (ref.read(userProvider).token.isEmpty) {
-                  errorSnackBar(context, 'Please login first');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(
-                        goBack: true,
-                      ),
-                    ),
-                  );
-                } else {
-                  enquiryFormPopup();
-                }
-              },
-              child: Container(
-                height: 140,
-                width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                decoration: BoxDecoration(
-                  color: CustomColors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(10),
-                  image: const DecorationImage(
-                    image: AssetImage("assets/images/brochure_cover.jpg"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 140,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.transparent,
-                            CustomColors.black.withOpacity(0.8),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    const Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Text(
-                        "Brochure",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: CustomColors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: CustomColors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        child: const Text(
-                          "Download",
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: CustomColors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: () {
-                if (ref.read(userProvider).token.isEmpty) {
-                  errorSnackBar(context, 'Please login first');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(
-                        goBack: true,
-                      ),
-                    ),
-                  );
-                } else {
-                  enquiryFormPopup();
-                }
-              },
-              child: Container(
-                height: 140,
-                width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                decoration: BoxDecoration(
-                  color: CustomColors.black.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(10),
-                  image: const DecorationImage(
-                    image: AssetImage("assets/images/walkthrough.jpg"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 140,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: CustomColors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      bottom: 0,
-                      right: 0,
-                      child: Center(
-                        child: IconButton.filled(
-                          style: IconButton.styleFrom(
-                            backgroundColor:
-                                CustomColors.black.withOpacity(0.5),
-                          ),
-                          onPressed: () {
-                            if (ref.read(userProvider).token.isEmpty) {
-                              errorSnackBar(context, 'Please login first');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginScreen(
-                                    goBack: true,
+                          Column(
+                            children: [
+                              const Text(
+                                "Outdoor Amenities",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: CustomColors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                height: 150,
+                                margin: const EdgeInsets.only(right: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: CustomColors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: SingleChildScrollView(
+                                  child: Wrap(
+                                    direction: Axis.horizontal,
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.outdoorAmenities
+                                          .split(",")
+                                          .length,
+                                      (index) => CustomChip(
+                                        text: _projectDetails
+                                            .projectDetails.outdoorAmenities
+                                            .split(",")[index],
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              );
-                            } else {
-                              enquiryFormPopup();
-                            }
-                          },
-                          icon: const Icon(Icons.play_arrow),
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  if (ref.read(userProvider).token.isEmpty) {
-                    errorSnackBar(context, 'Please login first');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(
-                          goBack: true,
+            if (_projectDetails.projectDetails.hospitals.isNotEmpty &&
+                _projectDetails.projectDetails.offices.isNotEmpty &&
+                _projectDetails.projectDetails.connectivity.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        "Key Highlights",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
                         ),
                       ),
-                    );
-                  } else {
-                    enquiryFormPopup();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: CustomColors.primary,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                ),
-                icon: const Icon(Icons.phone),
-                label: const Text(
-                  'Contact Builder',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(width: 10),
+                          if (_projectDetails
+                              .projectDetails.hospitals.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Hospitals",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  clipBehavior: Clip.hardEdge,
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.hospitals.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .hospitals[index].name,
+                                        _projectDetails.projectDetails
+                                            .hospitals[index].dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          if (_projectDetails.projectDetails.offices.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Offices",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 6, 10, 0),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: List.generate(
+                                        _projectDetails
+                                            .projectDetails.offices.length,
+                                        (index) => _keyHighlights(
+                                          _projectDetails.projectDetails
+                                              .offices[index].name,
+                                          _projectDetails.projectDetails
+                                              .offices[index].dist,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          if (_projectDetails
+                              .projectDetails.connectivity.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Connectivity",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: List.generate(
+                                        _projectDetails
+                                            .projectDetails.connectivity.length,
+                                        (index) => _keyHighlights(
+                                          _projectDetails.projectDetails
+                                              .connectivity[index].name,
+                                          _projectDetails.projectDetails
+                                              .connectivity[index].dist,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          // const SizedBox(width: 10),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+            BrochureVideoSection(sendEnquiry: () => sendEnquiry(context)),
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
@@ -1994,8 +1882,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                           ? SvgPicture.asset(
                                               "assets/icons/compare_active.svg",
                                               color: Colors.white,
-                                              height: 16,
-                                              width: 16,
+                                              height: 22,
+                                              width: 22,
                                             )
                                           : const Icon(
                                               Icons.close,
@@ -2292,7 +2180,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildOption(
-                      SvgPicture.asset("assets/icons/phone.svg"),
+                      SvgPicture.asset(
+                        "assets/icons/phone.svg",
+                        color: CustomColors.blue,
+                      ),
                       'Call now',
                       () {
                         if (ref.read(userProvider).token.isNotEmpty) {
@@ -2318,12 +2209,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           }
                         }
                       },
+                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
                         height: 20,
                         width: 20,
-                        child: SvgPicture.asset("assets/icons/whatsapp.svg"),
+                        child: SvgPicture.asset(
+                          "assets/icons/whatsapp.svg",
+                          color: CustomColors.green,
+                        ),
                       ),
                       'Chat on Whatsapp',
                       () {
@@ -2343,6 +2238,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           );
                         }
                       },
+                      CustomColors.green,
                     ),
                     _buildOption(
                       SizedBox(
@@ -2368,6 +2264,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           _removeOverlay();
                         }
                       },
+                      CustomColors.secondary,
                     ),
                   ],
                 ),
@@ -2386,7 +2283,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     _overlayEntry = null;
   }
 
-  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
+  Widget _buildOption(
+      Widget icon, String text, VoidCallback onTap, Color color) {
     return InkWell(
       onTap: () {
         _removeOverlay();
@@ -2398,7 +2296,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           children: [
             icon,
             const SizedBox(width: 12),
-            Text(text),
+            Text(
+              text,
+              style: TextStyle(color: color),
+            ),
           ],
         ),
       ),
@@ -2563,7 +2464,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
-      // backgroundColor: CustomColors.white,
+      backgroundColor: CustomColors.black10,
       // floatingActionButton: Column(
       //   mainAxisAlignment: MainAxisAlignment.center,
       //   crossAxisAlignment: CrossAxisAlignment.center,

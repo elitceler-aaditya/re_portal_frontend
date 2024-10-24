@@ -33,10 +33,9 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
     return Container(
       decoration: BoxDecoration(
         color: CustomColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
       ),
-      margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +43,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
           if (!widget.showTitle) const SizedBox(height: 10),
           if (widget.showTitle)
             const Padding(
-              padding: EdgeInsets.only(left: 4, bottom: 8),
+              padding: EdgeInsets.only(left: 8, bottom: 8),
               child: Text(
                 "Best Deals",
                 style: TextStyle(
@@ -138,6 +137,16 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          Text(
+                            "By ${ref.watch(homePropertiesProvider).bestDeals[index].companyName}",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
                           Row(
                             children: [
                               const Icon(
@@ -147,10 +156,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                ref
-                                    .watch(homePropertiesProvider)
-                                    .bestDeals[index]
-                                    .projectLocation,
+                                "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configuration.join(",")}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 14,
@@ -159,9 +165,25 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
+                          // const Text(
+                          //   "Available in",
+                          //   style: const TextStyle(
+                          //     color: CustomColors.white,
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.w500,
+                          //   ),
+                          // ),
+                          // Text(
+                          //   ,
+                          //   style: const TextStyle(
+                          //     color: CustomColors.white,
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.w500,
+                          //   ),
+                          // ),
+                          const SizedBox(height: 4),
                           Text(
-                            "₹${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].budget)} onwards",
+                            "Price starts from ₹${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].budget)}",
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 12,

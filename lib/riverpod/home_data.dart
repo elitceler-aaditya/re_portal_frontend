@@ -110,7 +110,8 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
       return state.allApartments;
     }
     return state.allApartments
-        .where((apartment) => apartment.name.toLowerCase().contains(searchTerm))
+        .where((apartment) =>
+            apartment.name.toLowerCase().contains(searchTerm.toLowerCase()))
         .toList();
   }
 
@@ -119,8 +120,9 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
       return state.allApartments;
     }
     return state.allApartments
-        .where((apartment) =>
-            apartment.companyName.toLowerCase().contains(builderName))
+        .where((apartment) => apartment.companyName
+            .toLowerCase()
+            .contains(builderName.toLowerCase()))
         .toList();
   }
 
@@ -129,8 +131,8 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
       return state.builderData.map((builder) => builder).toList();
     }
     return state.builderData
-        .where(
-            (builder) => builder.CompanyName.toLowerCase().contains(searchTerm))
+        .where((builder) => builder.CompanyName.toLowerCase()
+            .contains(searchTerm.toLowerCase()))
         .map((builder) => builder)
         .toList();
   }

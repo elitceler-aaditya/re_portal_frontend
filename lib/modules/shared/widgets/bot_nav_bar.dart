@@ -63,7 +63,7 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
               child: Container(
                 height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 18),
+                padding: const EdgeInsets.symmetric(vertical: 17),
                 child: ref.watch(navBarIndexProvider) == 1
                     ? SvgPicture.asset(
                         'assets/icons/compare.svg',

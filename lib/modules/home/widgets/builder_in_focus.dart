@@ -28,10 +28,10 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
     return Container(
       decoration: BoxDecoration(
         color: CustomColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
       ),
       margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +297,9 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
           ),
           const SizedBox(height: 4),
           Text(
-            apartment.name,
+            apartment.name.length > 25
+                ? '${apartment.name.substring(0, 22)}...'
+                : apartment.name,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

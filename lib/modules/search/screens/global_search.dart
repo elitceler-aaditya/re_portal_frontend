@@ -14,6 +14,7 @@ import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
 import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
 import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -98,17 +99,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
           ),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(2),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  CustomColors.primary,
-                  CustomColors.primary10,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+            padding: const EdgeInsets.all(8),
+            color: CustomColors.primary,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +130,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 16),
-                      hintText: 'Search from +1000 projects...',
+                      hintText: 'Search from 1000+ projects...',
                       hintStyle: const TextStyle(
                         color: CustomColors.black50,
                       ),
@@ -171,14 +163,28 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(width: double.infinity),
-                  if (_searchController.text.isEmpty && localities.isEmpty)
+                  if (_searchController.text.isEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(8, 10, 4, 4),
+                          child: Text(
+                            "Recent Searches",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColors.primary,
+                            ),
+                          ),
+                        ),
+                        //localities
                         FutureBuilder<List<String>>(
                           future: SharedPreferences.getInstance().then(
                               (prefs) =>
-                                  prefs.getStringList('searchHistory') ?? []),
+                                  prefs.getStringList(
+                                      'searchHistory_location') ??
+                                  []),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -190,22 +196,11 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                               return const SizedBox.shrink();
                             } else {
                               final limitedSearchHistory =
-                                  snapshot.data!.take(5).toList();
+                                  snapshot.data!.take(8).toList();
                               return Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Padding(
-                                    padding: EdgeInsets.fromLTRB(4, 10, 4, 4),
-                                    child: Text(
-                                      "Recent Searches",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: CustomColors.primary,
-                                      ),
-                                    ),
-                                  ),
                                   ListView.builder(
                                     padding: EdgeInsets.zero,
                                     shrinkWrap: true,
@@ -216,6 +211,10 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                       final searchTerm =
                                           limitedSearchHistory[index];
                                       return ListTile(
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 16, right: 6),
+                                        tileColor: CustomColors.black
+                                            .withOpacity(0.05),
                                         leading: const Icon(Icons.history),
                                         title: Text(searchTerm),
                                         onTap: () {
@@ -231,6 +230,180 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                             ),
                                           );
                                         },
+                                        trailing: IconButton(
+                                          onPressed: () async {
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            final searchHistory =
+                                                prefs.getStringList(
+                                                        'searchHistory_location') ??
+                                                    [];
+                                            searchHistory.remove(searchTerm);
+                                            await prefs.setStringList(
+                                                'searchHistory_location',
+                                                searchHistory);
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(
+                                            Icons.close,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+
+                        //projects
+                        FutureBuilder<List<String>>(
+                          future: SharedPreferences.getInstance().then(
+                              (prefs) =>
+                                  prefs.getStringList(
+                                      'searchHistory_projects') ??
+                                  []),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox.shrink();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return const SizedBox.shrink();
+                            } else {
+                              final limitedSearchHistory =
+                                  snapshot.data!.take(8).toSet().toList();
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: limitedSearchHistory.length,
+                                    itemBuilder: (context, index) {
+                                      final searchTerm =
+                                          limitedSearchHistory[index];
+                                      return ListTile(
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 16, right: 6),
+                                        tileColor: CustomColors.black
+                                            .withOpacity(0.05),
+                                        leading:
+                                            const Icon(Icons.location_city),
+                                        title: Text(searchTerm),
+                                        onTap: () {
+                                          setState(() {
+                                            _searchController.text = searchTerm;
+                                          });
+                                        },
+                                        trailing: IconButton(
+                                          onPressed: () async {
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            final searchHistory =
+                                                prefs.getStringList(
+                                                        'searchHistory_projects') ??
+                                                    [];
+                                            searchHistory.remove(searchTerm);
+                                            await prefs.setStringList(
+                                                'searchHistory_projects',
+                                                searchHistory);
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(
+                                            Icons.close,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+                        //Builder
+                        FutureBuilder<List<String>>(
+                          future: SharedPreferences.getInstance().then(
+                              (prefs) =>
+                                  prefs
+                                      .getStringList('searchHistory_builder') ??
+                                  []),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox.shrink();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return const SizedBox.shrink();
+                            } else {
+                              final limitedSearchHistory =
+                                  snapshot.data!.take(8).toList();
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: limitedSearchHistory.length,
+                                    itemBuilder: (context, index) {
+                                      final searchTerm =
+                                          limitedSearchHistory[index];
+                                      return ListTile(
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 16, right: 6),
+                                        tileColor: CustomColors.black
+                                            .withOpacity(0.05),
+                                        leading: const Icon(
+                                            Icons.real_estate_agent_outlined),
+                                        title: Text(searchTerm),
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateBuilderName(searchTerm);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SearchApartmentResults(),
+                                            ),
+                                          );
+                                        },
+                                        trailing: IconButton(
+                                          onPressed: () async {
+                                            final prefs =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            final searchHistory =
+                                                prefs.getStringList(
+                                                        'searchHistory_builder') ??
+                                                    [];
+                                            searchHistory.remove(searchTerm);
+                                            await prefs.setStringList(
+                                                'searchHistory_builder',
+                                                searchHistory);
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(
+                                            Icons.close,
+                                            size: 20,
+                                          ),
+                                        ),
                                       );
                                     },
                                   ),
@@ -334,7 +507,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                                 .getInstance();
                                         List<String> searchHistory =
                                             prefs.getStringList(
-                                                    'searchHistory') ??
+                                                    'searchHistory_location') ??
                                                 [];
                                         final localityToAdd = ref
                                             .read(localityListProvider.notifier)
@@ -350,7 +523,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                               .take(10)
                                               .toList(); // Keep only the 10 most recent
                                           await prefs.setStringList(
-                                              'searchHistory', searchHistory);
+                                              'searchHistory_location',
+                                              searchHistory);
                                         }
 
                                         final localityProvider = ref.read(
@@ -440,7 +614,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.fromLTRB(4, 14, 4, 4),
+                          padding: EdgeInsets.fromLTRB(8, 14, 4, 4),
                           child: Text(
                             "Search by project name",
                             style: TextStyle(
@@ -479,7 +653,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.fromLTRB(4, 14, 4, 4),
+                          padding: EdgeInsets.fromLTRB(8, 14, 4, 4),
                           child: Text(
                             "Search by builder name",
                             style: TextStyle(
@@ -499,7 +673,27 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                       _searchController.text.trim())
                                   .length,
                               (index) => GestureDetector(
-                                onTap: () {
+                                onTap: () async {
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  List<String> searchHistory =
+                                      prefs.getStringList(
+                                              'searchHistory_builder') ??
+                                          [];
+                                  searchHistory.insert(
+                                      0,
+                                      ref
+                                          .watch(
+                                              homePropertiesProvider.notifier)
+                                          .getBuilderNames(_searchController
+                                              .text
+                                              .trim())[index]
+                                          .CompanyName);
+                                  searchHistory =
+                                      searchHistory.take(5).toList();
+                                  await prefs.setStringList(
+                                      'searchHistory_builder', searchHistory);
+
                                   ref
                                       .read(filtersProvider.notifier)
                                       .updateBuilderName(ref
@@ -520,7 +714,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                 child: Container(
                                   height: 80,
                                   width: 140,
-                                  margin: const EdgeInsets.only(right: 10),
+                                  margin: const EdgeInsets.only(left: 10),
                                   decoration: BoxDecoration(
                                     color: CustomColors.black,
                                     borderRadius: BorderRadius.circular(10),
@@ -575,7 +769,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         ),
                       ],
                     ),
-                  const RecentlyViewedSection(hideFirstProperty: true),
+                  if (ref.watch(recentlyViewedProvider).isNotEmpty)
+                    const RecentlyViewedSection(),
                   const SizedBox(height: 10)
                 ],
               ),

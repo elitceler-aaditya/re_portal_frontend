@@ -224,16 +224,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Container(
           decoration: BoxDecoration(
             color: CustomColors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(6),
           ),
           margin: const EdgeInsets.only(top: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: EdgeInsets.only(left: 4, bottom: 8),
+                padding: EdgeInsets.only(left: 8, bottom: 8),
                 child: Text(
                   "Select Properties",
                   style: TextStyle(
@@ -243,6 +243,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               PropertyStackCard(
+                  cardHeight: 280,
                   cardWidth: MediaQuery.of(context).size.width * 0.85,
                   apartments:
                       ref.watch(homePropertiesProvider).selectedProperties),
@@ -252,15 +253,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Container(
           decoration: BoxDecoration(
             color: CustomColors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(6),
           ),
           margin: const EdgeInsets.only(top: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: EdgeInsets.fromLTRB(4, 0, 0, 8),
+                padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
                 child: Text(
                   "Editor's Choice",
                   style: TextStyle(
@@ -437,10 +438,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Container(
               decoration: BoxDecoration(
                 color: CustomColors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(6),
               ),
-              margin: const EdgeInsets.only(top: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(

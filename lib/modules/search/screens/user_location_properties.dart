@@ -194,7 +194,7 @@ class _UserLocationPropertiesState
                                         zoomControlsEnabled: false,
                                         mapToolbarEnabled: false,
                                         initialCameraPosition: CameraPosition(
-                                          target: currentLocation!,
+                                          target: currentLocation,
                                           zoom: 12,
                                         ),
                                         markers: {
