@@ -23,6 +23,7 @@ mixin _$ComparePropertyData {
   String get name => throw _privateConstructorUsedError;
   String get projectType => throw _privateConstructorUsedError;
   int get flatSizes => throw _privateConstructorUsedError;
+  String get projectLocation => throw _privateConstructorUsedError;
   String get projectStatus => throw _privateConstructorUsedError;
   bool get rERAApproval => throw _privateConstructorUsedError;
   String get projectSize => throw _privateConstructorUsedError;
@@ -34,6 +35,7 @@ mixin _$ComparePropertyData {
   String get pricePerSquareFeetRate => throw _privateConstructorUsedError;
   String get clubhousesize => throw _privateConstructorUsedError;
   String get totalOpenSpace => throw _privateConstructorUsedError;
+  String get constructionType => throw _privateConstructorUsedError;
   int get budget => throw _privateConstructorUsedError;
   BuilderContact get builder => throw _privateConstructorUsedError;
 
@@ -57,6 +59,7 @@ abstract class $ComparePropertyDataCopyWith<$Res> {
       {String name,
       String projectType,
       int flatSizes,
+      String projectLocation,
       String projectStatus,
       bool rERAApproval,
       String projectSize,
@@ -67,6 +70,7 @@ abstract class $ComparePropertyDataCopyWith<$Res> {
       String pricePerSquareFeetRate,
       String clubhousesize,
       String totalOpenSpace,
+      String constructionType,
       int budget,
       BuilderContact builder});
 
@@ -91,6 +95,7 @@ class _$ComparePropertyDataCopyWithImpl<$Res, $Val extends ComparePropertyData>
     Object? name = null,
     Object? projectType = null,
     Object? flatSizes = null,
+    Object? projectLocation = null,
     Object? projectStatus = null,
     Object? rERAApproval = null,
     Object? projectSize = null,
@@ -101,6 +106,7 @@ class _$ComparePropertyDataCopyWithImpl<$Res, $Val extends ComparePropertyData>
     Object? pricePerSquareFeetRate = null,
     Object? clubhousesize = null,
     Object? totalOpenSpace = null,
+    Object? constructionType = null,
     Object? budget = null,
     Object? builder = null,
   }) {
@@ -117,6 +123,10 @@ class _$ComparePropertyDataCopyWithImpl<$Res, $Val extends ComparePropertyData>
           ? _value.flatSizes
           : flatSizes // ignore: cast_nullable_to_non_nullable
               as int,
+      projectLocation: null == projectLocation
+          ? _value.projectLocation
+          : projectLocation // ignore: cast_nullable_to_non_nullable
+              as String,
       projectStatus: null == projectStatus
           ? _value.projectStatus
           : projectStatus // ignore: cast_nullable_to_non_nullable
@@ -157,6 +167,10 @@ class _$ComparePropertyDataCopyWithImpl<$Res, $Val extends ComparePropertyData>
           ? _value.totalOpenSpace
           : totalOpenSpace // ignore: cast_nullable_to_non_nullable
               as String,
+      constructionType: null == constructionType
+          ? _value.constructionType
+          : constructionType // ignore: cast_nullable_to_non_nullable
+              as String,
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
@@ -191,6 +205,7 @@ abstract class _$$ComparePropertyDataImplCopyWith<$Res>
       {String name,
       String projectType,
       int flatSizes,
+      String projectLocation,
       String projectStatus,
       bool rERAApproval,
       String projectSize,
@@ -201,6 +216,7 @@ abstract class _$$ComparePropertyDataImplCopyWith<$Res>
       String pricePerSquareFeetRate,
       String clubhousesize,
       String totalOpenSpace,
+      String constructionType,
       int budget,
       BuilderContact builder});
 
@@ -224,6 +240,7 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
     Object? name = null,
     Object? projectType = null,
     Object? flatSizes = null,
+    Object? projectLocation = null,
     Object? projectStatus = null,
     Object? rERAApproval = null,
     Object? projectSize = null,
@@ -234,6 +251,7 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
     Object? pricePerSquareFeetRate = null,
     Object? clubhousesize = null,
     Object? totalOpenSpace = null,
+    Object? constructionType = null,
     Object? budget = null,
     Object? builder = null,
   }) {
@@ -250,6 +268,10 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
           ? _value.flatSizes
           : flatSizes // ignore: cast_nullable_to_non_nullable
               as int,
+      projectLocation: null == projectLocation
+          ? _value.projectLocation
+          : projectLocation // ignore: cast_nullable_to_non_nullable
+              as String,
       projectStatus: null == projectStatus
           ? _value.projectStatus
           : projectStatus // ignore: cast_nullable_to_non_nullable
@@ -290,6 +312,10 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
           ? _value.totalOpenSpace
           : totalOpenSpace // ignore: cast_nullable_to_non_nullable
               as String,
+      constructionType: null == constructionType
+          ? _value.constructionType
+          : constructionType // ignore: cast_nullable_to_non_nullable
+              as String,
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
@@ -309,6 +335,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       {this.name = "",
       this.projectType = "",
       this.flatSizes = 0,
+      this.projectLocation = "",
       this.projectStatus = "",
       this.rERAApproval = false,
       this.projectSize = "",
@@ -319,8 +346,9 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       this.pricePerSquareFeetRate = "",
       this.clubhousesize = "",
       this.totalOpenSpace = "",
+      this.constructionType = "",
       this.budget = 0,
-      this.builder = const BuilderContact(CompanyPhone: "")})
+      this.builder = const BuilderContact()})
       : _unitPlanConfigs = unitPlanConfigs;
 
   factory _$ComparePropertyDataImpl.fromJson(Map<String, dynamic> json) =>
@@ -335,6 +363,9 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
   @override
   @JsonKey()
   final int flatSizes;
+  @override
+  @JsonKey()
+  final String projectLocation;
   @override
   @JsonKey()
   final String projectStatus;
@@ -373,6 +404,9 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
   final String totalOpenSpace;
   @override
   @JsonKey()
+  final String constructionType;
+  @override
+  @JsonKey()
   final int budget;
   @override
   @JsonKey()
@@ -380,7 +414,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
 
   @override
   String toString() {
-    return 'ComparePropertyData(name: $name, projectType: $projectType, flatSizes: $flatSizes, projectStatus: $projectStatus, rERAApproval: $rERAApproval, projectSize: $projectSize, noOfTowers: $noOfTowers, noOfFloors: $noOfFloors, unitPlanConfigs: $unitPlanConfigs, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, budget: $budget, builder: $builder)';
+    return 'ComparePropertyData(name: $name, projectType: $projectType, flatSizes: $flatSizes, projectLocation: $projectLocation, projectStatus: $projectStatus, rERAApproval: $rERAApproval, projectSize: $projectSize, noOfTowers: $noOfTowers, noOfFloors: $noOfFloors, unitPlanConfigs: $unitPlanConfigs, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, budget: $budget, builder: $builder)';
   }
 
   @override
@@ -393,6 +427,8 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
                 other.projectType == projectType) &&
             (identical(other.flatSizes, flatSizes) ||
                 other.flatSizes == flatSizes) &&
+            (identical(other.projectLocation, projectLocation) ||
+                other.projectLocation == projectLocation) &&
             (identical(other.projectStatus, projectStatus) ||
                 other.projectStatus == projectStatus) &&
             (identical(other.rERAApproval, rERAApproval) ||
@@ -413,6 +449,8 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
                 other.clubhousesize == clubhousesize) &&
             (identical(other.totalOpenSpace, totalOpenSpace) ||
                 other.totalOpenSpace == totalOpenSpace) &&
+            (identical(other.constructionType, constructionType) ||
+                other.constructionType == constructionType) &&
             (identical(other.budget, budget) || other.budget == budget) &&
             (identical(other.builder, builder) || other.builder == builder));
   }
@@ -424,6 +462,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       name,
       projectType,
       flatSizes,
+      projectLocation,
       projectStatus,
       rERAApproval,
       projectSize,
@@ -434,6 +473,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       pricePerSquareFeetRate,
       clubhousesize,
       totalOpenSpace,
+      constructionType,
       budget,
       builder);
 
@@ -459,6 +499,7 @@ abstract class _ComparePropertyData implements ComparePropertyData {
       {final String name,
       final String projectType,
       final int flatSizes,
+      final String projectLocation,
       final String projectStatus,
       final bool rERAApproval,
       final String projectSize,
@@ -469,6 +510,7 @@ abstract class _ComparePropertyData implements ComparePropertyData {
       final String pricePerSquareFeetRate,
       final String clubhousesize,
       final String totalOpenSpace,
+      final String constructionType,
       final int budget,
       final BuilderContact builder}) = _$ComparePropertyDataImpl;
 
@@ -481,6 +523,8 @@ abstract class _ComparePropertyData implements ComparePropertyData {
   String get projectType;
   @override
   int get flatSizes;
+  @override
+  String get projectLocation;
   @override
   String get projectStatus;
   @override
@@ -501,6 +545,8 @@ abstract class _ComparePropertyData implements ComparePropertyData {
   String get clubhousesize;
   @override
   String get totalOpenSpace;
+  @override
+  String get constructionType;
   @override
   int get budget;
   @override
@@ -672,6 +718,7 @@ BuilderContact _$BuilderContactFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$BuilderContact {
   String get CompanyPhone => throw _privateConstructorUsedError;
+  String get CompanyName => throw _privateConstructorUsedError;
 
   /// Serializes this BuilderContact to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -689,7 +736,7 @@ abstract class $BuilderContactCopyWith<$Res> {
           BuilderContact value, $Res Function(BuilderContact) then) =
       _$BuilderContactCopyWithImpl<$Res, BuilderContact>;
   @useResult
-  $Res call({String CompanyPhone});
+  $Res call({String CompanyPhone, String CompanyName});
 }
 
 /// @nodoc
@@ -708,11 +755,16 @@ class _$BuilderContactCopyWithImpl<$Res, $Val extends BuilderContact>
   @override
   $Res call({
     Object? CompanyPhone = null,
+    Object? CompanyName = null,
   }) {
     return _then(_value.copyWith(
       CompanyPhone: null == CompanyPhone
           ? _value.CompanyPhone
           : CompanyPhone // ignore: cast_nullable_to_non_nullable
+              as String,
+      CompanyName: null == CompanyName
+          ? _value.CompanyName
+          : CompanyName // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -726,7 +778,7 @@ abstract class _$$BuilderContactImplCopyWith<$Res>
       __$$BuilderContactImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String CompanyPhone});
+  $Res call({String CompanyPhone, String CompanyName});
 }
 
 /// @nodoc
@@ -743,11 +795,16 @@ class __$$BuilderContactImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? CompanyPhone = null,
+    Object? CompanyName = null,
   }) {
     return _then(_$BuilderContactImpl(
       CompanyPhone: null == CompanyPhone
           ? _value.CompanyPhone
           : CompanyPhone // ignore: cast_nullable_to_non_nullable
+              as String,
+      CompanyName: null == CompanyName
+          ? _value.CompanyName
+          : CompanyName // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -756,7 +813,7 @@ class __$$BuilderContactImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$BuilderContactImpl implements _BuilderContact {
-  const _$BuilderContactImpl({this.CompanyPhone = ""});
+  const _$BuilderContactImpl({this.CompanyPhone = "", this.CompanyName = ""});
 
   factory _$BuilderContactImpl.fromJson(Map<String, dynamic> json) =>
       _$$BuilderContactImplFromJson(json);
@@ -764,10 +821,13 @@ class _$BuilderContactImpl implements _BuilderContact {
   @override
   @JsonKey()
   final String CompanyPhone;
+  @override
+  @JsonKey()
+  final String CompanyName;
 
   @override
   String toString() {
-    return 'BuilderContact(CompanyPhone: $CompanyPhone)';
+    return 'BuilderContact(CompanyPhone: $CompanyPhone, CompanyName: $CompanyName)';
   }
 
   @override
@@ -776,12 +836,14 @@ class _$BuilderContactImpl implements _BuilderContact {
         (other.runtimeType == runtimeType &&
             other is _$BuilderContactImpl &&
             (identical(other.CompanyPhone, CompanyPhone) ||
-                other.CompanyPhone == CompanyPhone));
+                other.CompanyPhone == CompanyPhone) &&
+            (identical(other.CompanyName, CompanyName) ||
+                other.CompanyName == CompanyName));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, CompanyPhone);
+  int get hashCode => Object.hash(runtimeType, CompanyPhone, CompanyName);
 
   /// Create a copy of BuilderContact
   /// with the given fields replaced by the non-null parameter values.
@@ -801,14 +863,17 @@ class _$BuilderContactImpl implements _BuilderContact {
 }
 
 abstract class _BuilderContact implements BuilderContact {
-  const factory _BuilderContact({final String CompanyPhone}) =
-      _$BuilderContactImpl;
+  const factory _BuilderContact(
+      {final String CompanyPhone,
+      final String CompanyName}) = _$BuilderContactImpl;
 
   factory _BuilderContact.fromJson(Map<String, dynamic> json) =
       _$BuilderContactImpl.fromJson;
 
   @override
   String get CompanyPhone;
+  @override
+  String get CompanyName;
 
   /// Create a copy of BuilderContact
   /// with the given fields replaced by the non-null parameter values.

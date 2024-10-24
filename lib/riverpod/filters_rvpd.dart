@@ -12,14 +12,22 @@ class FiltersModel {
   final double maxFlatSize;
   final int totalCount;
   final String builderName;
-  final bool affordableHomes;
-  final bool largeLivingSpaces;
-  final bool sustainableLivingHomes;
-  final bool twopointfiveBHKHomes;
-  final bool largeBalconies;
-  final bool skyVillaHabitat;
-  final bool standAloneBuildings;
-  final bool skyScrapers;
+  final String affordableHomes;
+  final String largeLivingSpaces;
+  final String sustainableLivingHomes;
+  final String twopointfiveBHKHomes;
+  final String largeBalconies;
+  final String skyVillaHabitat;
+  final String standAloneBuildings;
+  final String skyScrapers;
+  final String readyToMove;
+  final String newProject;
+  final String underConstruction;
+  final String newSaleType;
+  final String resaleType;
+  final String postedByBuilder;
+  final String postedByOwner;
+  final String postedByAgent;
 
   FiltersModel({
     this.selectedLocalities = const [],
@@ -32,14 +40,22 @@ class FiltersModel {
     this.maxFlatSize = 0.0,
     this.totalCount = 0,
     this.builderName = '',
-    this.affordableHomes = false,
-    this.largeLivingSpaces = false,
-    this.sustainableLivingHomes = false,
-    this.twopointfiveBHKHomes = false,
-    this.largeBalconies = false,
-    this.skyVillaHabitat = false,
-    this.standAloneBuildings = false,
-    this.skyScrapers = false,
+    this.affordableHomes = 'false',
+    this.largeLivingSpaces = 'false',
+    this.sustainableLivingHomes = 'false',
+    this.twopointfiveBHKHomes = 'false',
+    this.largeBalconies = 'false',
+    this.skyVillaHabitat = 'false',
+    this.standAloneBuildings = 'false',
+    this.skyScrapers = 'false',
+    this.readyToMove = 'false',
+    this.newProject = 'false',
+    this.underConstruction = 'false',
+    this.newSaleType = 'false',
+    this.resaleType = 'false',
+    this.postedByBuilder = 'false',
+    this.postedByOwner = 'false',
+    this.postedByAgent = 'false',
   });
 
   FiltersModel copyWith({
@@ -53,14 +69,22 @@ class FiltersModel {
     double? maxFlatSize,
     int? totalCount,
     String? builderName,
-    bool? affordableHomes,
-    bool? largeLivingSpaces,
-    bool? sustainableLivingHomes,
-    bool? twopointfiveBHKHomes,
-    bool? largeBalconies,
-    bool? skyVillaHabitat,
-    bool? standAloneBuildings,
-    bool? skyScrapers,
+    String? affordableHomes,
+    String? largeLivingSpaces,
+    String? sustainableLivingHomes,
+    String? twopointfiveBHKHomes,
+    String? largeBalconies,
+    String? skyVillaHabitat,
+    String? standAloneBuildings,
+    String? skyScrapers,
+    String? readyToMove,
+    String? newProject,
+    String? underConstruction,
+    String? newSaleType,
+    String? resaleType,
+    String? postedByBuilder,
+    String? postedByOwner,
+    String? postedByAgent,
   }) {
     return FiltersModel(
       selectedLocalities: selectedLocalities ?? this.selectedLocalities,
@@ -83,6 +107,14 @@ class FiltersModel {
       skyVillaHabitat: skyVillaHabitat ?? this.skyVillaHabitat,
       standAloneBuildings: standAloneBuildings ?? this.standAloneBuildings,
       skyScrapers: skyScrapers ?? this.skyScrapers,
+      readyToMove: readyToMove ?? this.readyToMove,
+      newProject: newProject ?? this.newProject,
+      underConstruction: underConstruction ?? this.underConstruction,
+      newSaleType: newSaleType ?? this.newSaleType,
+      resaleType: resaleType ?? this.resaleType,
+      postedByBuilder: postedByBuilder ?? this.postedByBuilder,
+      postedByOwner: postedByOwner ?? this.postedByOwner,
+      postedByAgent: postedByAgent ?? this.postedByAgent,
     );
   }
 
@@ -107,14 +139,24 @@ class FiltersModel {
     if (builderName.isNotEmpty) {
       json['builderName'] = builderName;
     }
-    if (affordableHomes) json['affordableHomes'] = 'true';
-    if (largeLivingSpaces) json['largeLivingSpaces'] = 'true';
-    if (sustainableLivingHomes) json['sustainableLivingHomes'] = 'true';
-    if (twopointfiveBHKHomes) json['twopointfiveBHKHomes'] = 'true';
-    if (largeBalconies) json['largeBalconies'] = 'true';
-    if (skyVillaHabitat) json['skyVillaHabitat'] = 'true';
-    if (standAloneBuildings) json['standAloneBuildings'] = 'true';
-    if (skyScrapers) json['skyScrapers'] = 'true';
+    if (affordableHomes == 'true') json['affordableHomes'] = 'true';
+    if (largeLivingSpaces == 'true') json['largeLivingSpaces'] = 'true';
+    if (sustainableLivingHomes == 'true') {
+      json['sustainableLivingHomes'] = 'true';
+    }
+    if (twopointfiveBHKHomes == 'true') json['twopointfiveBHKHomes'] = 'true';
+    if (largeBalconies == 'true') json['largeBalconies'] = 'true';
+    if (skyVillaHabitat == 'true') json['skyVillaHabitat'] = 'true';
+    if (standAloneBuildings == 'true') json['standAloneBuildings'] = 'true';
+    if (skyScrapers == 'true') json['skyScrapers'] = 'true';
+    if (readyToMove == 'true') json['readyToMove'] = 'true';
+    if (newProject == 'true') json['newProject'] = 'true';
+    if (underConstruction == 'true') json['underConstruction'] = 'true';
+    if (newSaleType == 'true') json['newSaleType'] = 'true';
+    if (resaleType == 'true') json['resaleType'] = 'true';
+    if (postedByBuilder == 'true') json['postedByBuilder'] = 'true';
+    if (postedByOwner == 'true') json['postedByOwner'] = 'true';
+    if (postedByAgent == 'true') json['postedByAgent'] = 'true';
 
     return json;
   }
@@ -137,6 +179,14 @@ class FiltersModel {
       skyVillaHabitat: json['skyVillaHabitat'] ?? 'false',
       standAloneBuildings: json['standAloneBuildings'] ?? 'false',
       skyScrapers: json['skyScrapers'] ?? 'false',
+      readyToMove: json['readyToMove'] ?? 'false',
+      newProject: json['newProject'] ?? 'false',
+      underConstruction: json['underConstruction'] ?? 'false',
+      newSaleType: json['newSaleType'] ?? 'false',
+      resaleType: json['resaleType'] ?? 'false',
+      postedByBuilder: json['postedByBuilder'] ?? 'false',
+      postedByOwner: json['postedByOwner'] ?? 'false',
+      postedByAgent: json['postedByAgent'] ?? 'false',
     );
   }
 }
@@ -161,21 +211,52 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = filters;
   }
 
+  void updateFilters(FiltersModel filters) {
+    state = state.copyWith(
+      selectedLocalities: filters.selectedLocalities,
+      apartmentType: filters.apartmentType,
+      amenities: filters.amenities,
+      selectedConfigurations: filters.selectedConfigurations,
+      minBudget: filters.minBudget,
+      maxBudget: filters.maxBudget,
+      minFlatSize: filters.minFlatSize,
+      maxFlatSize: filters.maxFlatSize,
+      totalCount: filters.totalCount,
+      builderName: filters.builderName,
+      affordableHomes: filters.affordableHomes,
+      largeLivingSpaces: filters.largeLivingSpaces,
+      sustainableLivingHomes: filters.sustainableLivingHomes,
+      twopointfiveBHKHomes: filters.twopointfiveBHKHomes,
+      largeBalconies: filters.largeBalconies,
+      skyVillaHabitat: filters.skyVillaHabitat,
+      standAloneBuildings: filters.standAloneBuildings,
+      skyScrapers: filters.skyScrapers,
+      readyToMove: filters.readyToMove,
+      newProject: filters.newProject,
+      underConstruction: filters.underConstruction,
+      newSaleType: filters.newSaleType,
+      resaleType: filters.resaleType,
+      postedByBuilder: filters.postedByBuilder,
+      postedByOwner: filters.postedByOwner,
+      postedByAgent: filters.postedByAgent,
+    );
+  }
+
   void updateSelectedLocalities(List<String> localities) {
     state = state.copyWith(selectedLocalities: localities);
   }
 
-  void updateApartmentType(String type) {
-    state = state.copyWith(apartmentType: type);
-  }
+  // void updateApartmentType(String type) {
+  //   state = state.copyWith(apartmentType: type);
+  // }
 
-  void updateAmenities(List<String> amenities) {
-    state = state.copyWith(amenities: amenities);
-  }
+  // void updateAmenities(List<String> amenities) {
+  //   state = state.copyWith(amenities: amenities);
+  // }
 
-  void updateSelectedConfigurations(List<String> configurations) {
-    state = state.copyWith(selectedConfigurations: configurations);
-  }
+  // void updateSelectedConfigurations(List<String> configurations) {
+  //   state = state.copyWith(selectedConfigurations: configurations);
+  // }
 
   void updateMinBudget(double budget) {
     state = state.copyWith(minBudget: budget);
@@ -205,37 +286,74 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = state.copyWith(builderName: '');
   }
 
-  void updateAffordableHomes(bool value) {
+  void updateAffordableHomes(String value) {
     state = state.copyWith(affordableHomes: value);
   }
 
-  void updateLargeLivingSpaces(bool value) {
+  void updateLargeLivingSpaces(String value) {
     state = state.copyWith(largeLivingSpaces: value);
   }
 
-  void updateSustainableLivingHomes(bool value) {
+  void updateSustainableLivingHomes(String value) {
     state = state.copyWith(sustainableLivingHomes: value);
   }
 
-  void updateTwopointfiveBHKHomes(bool value) {
+  void updateTwopointfiveBHKHomes(String value) {
     state = state.copyWith(twopointfiveBHKHomes: value);
   }
 
-  void updateLargeBalconies(bool value) {
+  void updateLargeBalconies(String value) {
     state = state.copyWith(largeBalconies: value);
   }
 
-  void updateSkyVillaHabitat(bool value) {
+  void updateSkyVillaHabitat(String value) {
     state = state.copyWith(skyVillaHabitat: value);
   }
 
-  void updateStandAloneBuildings(bool value) {
+  void updateStandAloneBuildings(String value) {
     state = state.copyWith(standAloneBuildings: value);
   }
 
-  void updateSkyScrapers(bool value) {
+  void updateSkyScrapers(String value) {
     state = state.copyWith(skyScrapers: value);
   }
+
+  void updateReadyToMove(String value) {
+    state = state.copyWith(readyToMove: value);
+  }
+
+  void updateNewProject(String value) {
+    state = state.copyWith(newProject: value);
+  }
+
+  void updateUnderConstruction(String value) {
+    state = state.copyWith(underConstruction: value);
+  }
+
+  void updateNewSaleType(String value) {
+    state = state.copyWith(newSaleType: value);
+  }
+
+  void updateResaleType(String value) {
+    state = state.copyWith(resaleType: value);
+  }
+
+  void updatePostedByBuilder(String value) {
+    state = state.copyWith(postedByBuilder: value);
+  }
+
+  void updatePostedByOwner(String value) {
+    state = state.copyWith(postedByOwner: value);
+  }
+
+  void updatePostedByAgent(String value) {
+    state = state.copyWith(postedByAgent: value);
+  }
+
+  void clearAllFilters() {
+    state = FiltersModel();
+  }
+
 }
 
 // Define the provider

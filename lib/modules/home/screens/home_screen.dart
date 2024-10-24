@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
+import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
-import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
@@ -44,39 +46,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
   bool loading = true;
+  final List<String> _searchOptions = [
+    'apartments',
+    'builders',
+    'locations',
+  ];
 
   List<Map<String, dynamic>> categoryOptions = [
     {
       'title': 'Affordable Homes',
-      'filter': FiltersModel(affordableHomes: true),
+      'filter': FiltersModel(affordableHomes: 'true'),
     },
     {
       'title': 'Large Living Spaces',
-      'filter': FiltersModel(largeLivingSpaces: true),
+      'filter': FiltersModel(largeLivingSpaces: 'true'),
     },
     {
       'title': 'Sustainable Living Homes',
-      'filter': FiltersModel(sustainableLivingHomes: true),
+      'filter': FiltersModel(sustainableLivingHomes: 'true'),
     },
     {
       'title': '2.5 BHK Homes',
-      'filter': FiltersModel(twopointfiveBHKHomes: true),
+      'filter': FiltersModel(twopointfiveBHKHomes: 'true'),
     },
     {
       'title': 'Large Balconies',
-      'filter': FiltersModel(largeBalconies: true),
+      'filter': FiltersModel(largeBalconies: 'true'),
     },
     {
       'title': 'Sky Villa Habitat',
-      'filter': FiltersModel(skyVillaHabitat: true),
+      'filter': FiltersModel(skyVillaHabitat: 'true'),
     },
     {
       'title': 'Standalone Buildings',
-      'filter': FiltersModel(standAloneBuildings: true),
+      'filter': FiltersModel(standAloneBuildings: 'true'),
     },
     {
       'title': 'Skyscrapers',
-      'filter': FiltersModel(skyScrapers: true),
+      'filter': FiltersModel(skyScrapers: 'true'),
     },
   ];
 
@@ -99,9 +106,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
+        getLocationHomes(17.4699, 78.2236);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
+      getLocationHomes(17.4699, 78.2236);
+
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
     }
@@ -211,32 +221,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 4, bottom: 8, top: 10),
-          child: Text(
-            "Select Properties",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          margin: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 8, bottom: 8),
+                child: Text(
+                  "Select Properties",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              PropertyStackCard(
+                  cardHeight: 280,
+                  cardWidth: MediaQuery.of(context).size.width * 0.85,
+                  apartments:
+                      ref.watch(homePropertiesProvider).selectedProperties),
+            ],
           ),
         ),
-        PropertyStackCard(
-            cardWidth: MediaQuery.of(context).size.width * 0.9,
-            apartments: ref.watch(homePropertiesProvider).selectedProperties),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(4, 16, 0, 8),
-          child: Text(
-            "Editor's Choice",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          margin: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
+                child: Text(
+                  "Editor's Choice",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (mounted)
+                EditorsChoiceCard(
+                  apartments: ref.watch(homePropertiesProvider).editorsChoice,
+                ),
+            ],
           ),
         ),
-        if (mounted)
-          EditorsChoiceCard(
-              apartments: ref.watch(homePropertiesProvider).editorsChoice),
         const NewLaunchSection(
           title: "New launches",
         ),
@@ -267,6 +307,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CustomColors.black10,
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -304,20 +345,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //top search bar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(2),
               decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    CustomColors.primary,
-                    Color(0xFFCE4F32),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                color: CustomColors.primary,
               ),
               child: Column(
                 children: [
-                  //search bar
                   GestureDetector(
                     onTap: () {
                       if (ref
@@ -335,6 +367,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                     child: Container(
                       height: 50,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         color: CustomColors.white,
@@ -344,23 +377,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         children: [
                           const Icon(Icons.search),
                           const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              ref.read(searchBarProvider).isNotEmpty
-                                  ? ref.read(searchBarProvider)
-                                  : "Search for ${ref.watch(homePropertiesProvider).propertyType.toLowerCase()}",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: CustomColors.black50,
-                              ),
+                          const Text(
+                            "Search for ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
                             ),
                           ),
+                          const SelfContainedAnimatedTextSwitcher(),
+                          const Spacer(),
                           GestureDetector(
                             onTap: () {
                               upSlideTransition(
-                                  context, const UserLocationProperties());
+                                context,
+                                const UserLocationProperties(),
+                              );
                             },
                             child: Padding(
                               padding:
@@ -382,7 +413,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       const SearchApartmentResults(
-                                          openFilters: true),
+                                    openFilters: true,
+                                  ),
                                 ),
                               );
                             },
@@ -398,111 +430,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   ),
-
-                  Container(
-                    padding: const EdgeInsets.only(top: 2),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          CustomColors.primary,
-                          Color(0xFFCE4F32),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20),
-                      ),
-                    ),
-                    child: ref.watch(filtersProvider).selectedLocalities.isEmpty
-                        ? const SizedBox(
-                            width: double.infinity,
-                          )
-                        : SizedBox(
-                            width: double.infinity,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  "Selected localities",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        height: 32,
-                                        child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            backgroundColor:
-                                                CustomColors.secondary,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const SearchApartmentResults(
-                                                        openFilters: true),
-                                              ),
-                                            );
-                                          },
-                                          child: const Text(
-                                            "+ Add more",
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: CustomColors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      ...ref
-                                          .watch(filtersProvider)
-                                          .selectedLocalities
-                                          .map((locality) {
-                                        return CustomListChip(
-                                          text: locality,
-                                          isSelected: true,
-                                          onTap: () {
-                                            List<String> localities = ref
-                                                .watch(filtersProvider)
-                                                .selectedLocalities;
-                                            localities.remove(locality);
-                                            setState(() {
-                                              ref
-                                                  .read(
-                                                      filtersProvider.notifier)
-                                                  .updateSelectedLocalities(
-                                                      localities);
-                                              // getFilteredApartments();
-                                            });
-                                          },
-                                        );
-                                      }),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                  ),
+                  const SizedBox(height: 6),
                 ],
               ),
             ),
-
             //category options
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
+            Container(
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Row(
                   children: List.generate(
                     categoryOptions.length,
@@ -521,9 +461,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Container(
                         height: 80,
                         width: 150,
-                        margin: const EdgeInsets.fromLTRB(0, 8, 10, 0),
+                        margin: const EdgeInsets.only(left: 6),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(6),
                           image: DecorationImage(
                             image: AssetImage(
                               "assets/images/category-${index + 1}.jpg",
@@ -538,18 +478,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               height: double.infinity,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(3),
+                                borderRadius: BorderRadius.circular(6),
                                 gradient: LinearGradient(
                                   colors: [
-                                    CustomColors.black.withOpacity(0.1),
-                                    CustomColors.black.withOpacity(0.8),
+                                    CustomColors.black.withOpacity(0),
+                                    CustomColors.black.withOpacity(0.77),
                                   ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                 ),
                               ),
                             ),
-                            Center(
+                            Positioned(
+                              bottom: 6,
+                              left: 0,
+                              right: 0,
                               child: Text(
                                 categoryOptions[index]['title'],
                                 textAlign: TextAlign.center,

@@ -33,14 +33,16 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         debugPrint("-----------------responseData: $responseData");
-
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
+        getLocationHomes(17.4699, 78.2236);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
+      getLocationHomes(17.4699, 78.2236);
+
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
     }
@@ -59,120 +61,132 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
 
   @override
   Widget build(BuildContext context) {
-    return ref.watch(locationHomesProvider.notifier).getLocations().isEmpty
-        ? const SizedBox.shrink()
-        : Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: RichText(
-                    text: TextSpan(
+    if (ref.watch(locationHomesProvider.notifier).getLocations().isEmpty) {
+      return const SizedBox.shrink();
+    } else {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: CustomColors.white,
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: [
+            BoxShadow(
+              color: CustomColors.black.withOpacity(0.2),
+              blurRadius: 10,
+              spreadRadius: 0,
+              offset: const Offset(0, 0),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
+              child: RichText(
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.black,
+                  ),
+                  children: [
+                    const TextSpan(
+                        text: "Popular locations near  ",
+                        style: TextStyle(
+                          fontFamily: 'eudoxus',
+                        )),
+                    TextSpan(
+                      text: ref.watch(locationHomesProvider)!.searchedLocation,
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
+                        fontFamily: 'eudoxus',
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.primary,
                       ),
-                      children: [
-                        const TextSpan(
-                            text: "Popular locations near  ",
-                            style: TextStyle(
-                              fontFamily: 'eudoxus',
-                            )),
-                        TextSpan(
-                          text: ref
-                              .watch(locationHomesProvider)!
-                              .searchedLocation,
-                          style: const TextStyle(
-                            fontFamily: 'eudoxus',
-                            fontWeight: FontWeight.bold,
-                            color: CustomColors.primary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 40,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    ref
+                        .watch(locationHomesProvider.notifier)
+                        .getLocations()
+                        .length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: selectedlocation == index
+                              ? CustomColors.primary
+                              : Colors.transparent,
+                          side: const BorderSide(
+                            color: CustomColors.primary50,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 10),
-                        ...List.generate(
+                        onPressed: () {
+                          setState(() {
+                            selectedlocation = index;
+                            pageController.animateTo(
+                              0,
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut,
+                            );
+                          });
+                        },
+                        child: Text(
                           ref
                               .watch(locationHomesProvider.notifier)
-                              .getLocations()
-                              .length,
-                          (index) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: selectedlocation == index
-                                    ? CustomColors.primary
-                                    : Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  selectedlocation = index;
-                                  pageController.animateTo(
-                                    0,
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeInOut,
-                                  );
-                                });
-                              },
-                              child: Text(
-                                ref
-                                    .watch(locationHomesProvider.notifier)
-                                    .getLocations()[index],
-                                style: TextStyle(
-                                  color: selectedlocation == index
-                                      ? CustomColors.white
-                                      : CustomColors.primary,
-                                ),
-                              ),
-                            ),
+                              .getLocations()[index],
+                          style: TextStyle(
+                            color: selectedlocation == index
+                                ? CustomColors.white
+                                : CustomColors.primary,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  child: ref
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              child: ref
+                      .watch(locationHomesProvider.notifier)
+                      .getProjectByLocation(ref
+                          .watch(locationHomesProvider.notifier)
+                          .getLocations()[selectedlocation])!
+                      .projects
+                      .isEmpty
+                  ? Center(
+                      child: Text(
+                          "No apartments found in ${ref.watch(locationHomesProvider.notifier).getLocations()[selectedlocation]}"),
+                    )
+                  : PropertyStackCard(
+                      cardWidth: MediaQuery.of(context).size.width * 0.9,
+                      apartments: ref
                           .watch(locationHomesProvider.notifier)
                           .getProjectByLocation(ref
                               .watch(locationHomesProvider.notifier)
                               .getLocations()[selectedlocation])!
-                          .projects
-                          .isEmpty
-                      ? Center(
-                          child: Text(
-                              "No apartments found in ${ref.watch(locationHomesProvider.notifier).getLocations()[selectedlocation]}"),
-                        )
-                      : PropertyStackCard(
-                          cardWidth: MediaQuery.of(context).size.width * 0.9,
-                          apartments: ref
-                              .watch(locationHomesProvider.notifier)
-                              .getProjectByLocation(ref
-                                  .watch(locationHomesProvider.notifier)
-                                  .getLocations()[selectedlocation])!
-                              .projects,
-                        ),
-                ),
-              ],
+                          .projects,
+                    ),
             ),
-          );
+          ],
+        ),
+      );
+    }
   }
 }

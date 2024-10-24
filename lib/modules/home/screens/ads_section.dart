@@ -55,19 +55,33 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: CustomColors.white,
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: [
+          BoxShadow(
+            color: CustomColors.black.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 0,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.fromLTRB(2, 4, 8, 10),
+            padding: EdgeInsets.fromLTRB(8, 0, 8, 10),
             child: Text(
               "Similar Properties",
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
                 color: CustomColors.black,
               ),
             ),
@@ -115,7 +129,7 @@ Widget _adsCard(context, ApartmentModel apartment) {
     },
     child: Container(
       width: 260,
-      margin: const EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.only(left: 10),
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: CustomColors.white,

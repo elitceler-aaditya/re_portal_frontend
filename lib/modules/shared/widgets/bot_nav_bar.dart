@@ -15,7 +15,7 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      height: 60,
       decoration: BoxDecoration(
         color: CustomColors.white,
         boxShadow: [
@@ -26,8 +26,8 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
           ),
         ],
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(18),
+          topRight: Radius.circular(18),
         ),
       ),
       child: Row(
@@ -42,13 +42,15 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
               child: Container(
                 height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 0
                     ? SvgPicture.asset(
-                        'assets/icons/home_active.svg',
+                        'assets/icons/home.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/home.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),
@@ -61,13 +63,15 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
               child: Container(
                 height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 17),
                 child: ref.watch(navBarIndexProvider) == 1
                     ? SvgPicture.asset(
-                        'assets/icons/compare_active.svg',
+                        'assets/icons/compare.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/compare.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),
@@ -80,13 +84,15 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
               child: Container(
                 height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 2
                     ? SvgPicture.asset(
-                        'assets/icons/like_active.svg',
+                        'assets/icons/like.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/like.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),
@@ -99,13 +105,15 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
               child: Container(
                 height: 70,
                 color: CustomColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 child: ref.watch(navBarIndexProvider) == 3
                     ? SvgPicture.asset(
-                        'assets/icons/person_active.svg',
+                        'assets/icons/person.svg',
+                        color: CustomColors.primary,
                       )
                     : SvgPicture.asset(
                         'assets/icons/person.svg',
+                        color: CustomColors.primary50,
                       ),
               ),
             ),

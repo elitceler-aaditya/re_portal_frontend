@@ -11,17 +11,31 @@ successSnackBar(BuildContext context, String? message,
       backgroundColor: Colors.green,
       duration: const Duration(seconds: 2),
       action: action,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
     ),
   );
 }
 
-errorSnackBar(BuildContext context, String? message, {SnackBarAction? action}) {
+void errorSnackBar(BuildContext context, String? message,
+    {SnackBarAction? action}) {
   ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(message ?? ''),
+      content: Text(
+        message ?? '',
+        style: const TextStyle(color: Colors.white),
+      ),
       backgroundColor: CustomColors.red,
       action: action,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
     ),
   );
 }
@@ -31,7 +45,7 @@ markAsCompleteSnackBar(BuildContext context, String? message,
   ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(seconds: 2),
       content: Container(
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(vertical: 14),

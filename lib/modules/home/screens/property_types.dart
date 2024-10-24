@@ -82,20 +82,20 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 2),
         child: Column(
           children: [
-            PropertiesTiles(
-              title: 'Commercial',
-              description: 'Discover top commercial properties nearby',
-              image: 'assets/images/tile_bg1.jpg',
-              onTap: () {
-                ref
-                    .read(homePropertiesProvider.notifier)
-                    .setPropertyType(PropertyTypes.commercial);
-                rightSlideTransition(
-                  context,
-                  const MainScreen(),
-                );
-              },
-            ),
+            // PropertiesTiles(
+            //   title: 'Commercial',
+            //   description: 'Discover top commercial properties nearby',
+            //   image: 'assets/images/tile_bg1.jpg',
+            //   onTap: () {
+            //     ref
+            //         .read(homePropertiesProvider.notifier)
+            //         .setPropertyType(PropertyTypes.commercial);
+            //     rightSlideTransition(
+            //       context,
+            //       const MainScreen(),
+            //     );
+            //   },
+            // ),
             PropertiesTiles(
               title: 'Villas',
               description: 'Luxurious villas and upscale properties',

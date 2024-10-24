@@ -45,8 +45,8 @@ class EditorsChoiceCard extends StatelessWidget {
               );
             },
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              margin: const EdgeInsets.only(right: 10, left: 2),
+              width: MediaQuery.of(context).size.width * 0.85,
+              margin: const EdgeInsets.only(left: 10),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -121,6 +121,24 @@ class EditorsChoiceCard extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 apartments[index].projectLocation,
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.bed,
+                                size: 14,
+                                color: CustomColors.primary,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                apartments[index].configuration.join(", "),
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,

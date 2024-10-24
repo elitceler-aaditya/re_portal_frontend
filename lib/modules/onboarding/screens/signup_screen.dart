@@ -381,7 +381,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             if (!_isLoading)
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 28),
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 child: CustomPrimaryButton(
                                   title: 'Signup',
                                   onTap: () {
@@ -394,6 +394,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       _signupUser();
                                     }
                                   },
+                                  btnColor: CustomColors.primary,
+                                  btnTextColor: CustomColors.white,
                                 ),
                               ),
                             const SizedBox(height: 20),

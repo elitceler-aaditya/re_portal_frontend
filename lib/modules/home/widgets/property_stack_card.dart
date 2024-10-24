@@ -17,7 +17,8 @@ class PropertyStackCard extends StatelessWidget {
     this.showCompanyName = false,
     this.cardHeight = 200,
   });
-  String formatBudget(double budget) {
+
+  String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
     if (budget < 100000) {
       return "₹${(budget / 1000).toStringAsFixed(00)}K";
@@ -54,7 +55,7 @@ class PropertyStackCard extends StatelessWidget {
             child: Container(
               width: cardWidth,
               height: cardHeight,
-              margin: const EdgeInsets.only(right: 10, left: 2),
+              margin: const EdgeInsets.only(left: 8),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -124,6 +125,15 @@ class PropertyStackCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          Text(
+                            "By ${apartments[index].companyName}",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           if (showCompanyName)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 4),
@@ -145,7 +155,7 @@ class PropertyStackCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                apartments[index].projectLocation,
+                                "${apartments[index].projectLocation} • ${apartments[index].configuration.first} • ${formatBudget(apartments[index].budget)}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,

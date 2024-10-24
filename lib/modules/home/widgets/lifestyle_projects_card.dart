@@ -100,7 +100,7 @@ class LifestyleProjectCard extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 28,
-                    backgroundColor: CustomColors.primary50,
+                    backgroundColor: CustomColors.primary,
                   ),
                   const SizedBox(width: 10),
                   Expanded(

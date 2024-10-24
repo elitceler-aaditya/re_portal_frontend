@@ -7,12 +7,10 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 class MapsPropertyCard extends StatelessWidget {
   final ApartmentModel apartment;
   final ApartmentDetailsResponse apartmentDetails;
-  final Function()? onTap;
   const MapsPropertyCard({
     super.key,
     required this.apartment,
     required this.apartmentDetails,
-    this.onTap,
   });
 
   String formatBudget(int budget) {
@@ -28,10 +26,20 @@ class MapsPropertyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PropertyDetails(
+              apartment: apartment,
+              heroTag: "map-prop-${apartment.projectId}",
+            ),
+          ),
+        );
+      },
       child: Container(
         height: 180,
-        width: 280,
+        width: 290,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: CustomColors.white,

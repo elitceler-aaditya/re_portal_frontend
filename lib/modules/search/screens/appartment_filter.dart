@@ -25,6 +25,7 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   bool _loading = false;
   int? appartmentType;
   List<String> selectedConfigurations = [];
+
   double _minBudget = 0;
   double _maxBudget = 1;
   double _budgetSliderMin = 1;
@@ -33,20 +34,54 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   double _maxFlatSize = 1;
   double _flatSizeSliderMin = 1;
   double _flatSizeSliderMax = 1;
-  List<String> localities = [];
   List<String> amenities = [];
   List<String> apartmentTypeList = [
     "Standalone",
     "Semi-gated",
     "Fully-gated",
   ];
+
   List<String> configurationList = [
     "1 BHK",
     "2 BHK",
     "3 BHK",
     "4 BHK",
-    "4+ BHK"
+    "5 BHK",
+    "5+ BHK",
   ];
+
+  List<String> typeList = [
+    "New Project",
+    "Ready To Move",
+    "Under Construction",
+  ];
+
+  List saleTypeList = [
+    {
+      'label': "New sale",
+      'filter': FiltersModel(newSaleType: 'true'),
+    },
+    {
+      'label': "Resale",
+      'filter': FiltersModel(resaleType: 'true'),
+    },
+  ];
+
+  List postedByList = [
+    {
+      'label': "Posted By Builder",
+      'filter': FiltersModel(postedByBuilder: 'true'),
+    },
+    {
+      'label': "Posted By Owner",
+      'filter': FiltersModel(postedByOwner: 'true'),
+    },
+    {
+      'label': "Posted By Agent",
+      'filter': FiltersModel(postedByAgent: 'true'),
+    },
+  ];
+
   List<String> basicAmenities = [
     'Parking',
     'Gym',
@@ -65,18 +100,28 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
       TextEditingController();
 
   updateFilters() {
-    ref.watch(filtersProvider.notifier).setAllFilters(
+    ref.watch(filtersProvider.notifier).updateFilters(
           FiltersModel(
-            selectedLocalities: localities,
+            selectedLocalities: ref.watch(filtersProvider).selectedLocalities,
             apartmentType: appartmentType == null
                 ? ''
                 : apartmentTypeList[appartmentType!],
             amenities: amenities,
             selectedConfigurations: selectedConfigurations,
-            minBudget: _budgetSliderMin,
-            maxBudget: _budgetSliderMax,
-            minFlatSize: _flatSizeSliderMin,
-            maxFlatSize: _flatSizeSliderMax,
+            minBudget: _minBudget != _budgetSliderMin ? _budgetSliderMin : 0,
+            maxBudget: _maxBudget != _budgetSliderMax ? _budgetSliderMax : 0,
+            minFlatSize:
+                _minFlatSize != _flatSizeSliderMin ? _flatSizeSliderMin : 0,
+            maxFlatSize:
+                _maxFlatSize != _flatSizeSliderMax ? _flatSizeSliderMax : 0,
+            newProject: ref.watch(filtersProvider).newProject,
+            readyToMove: ref.watch(filtersProvider).readyToMove,
+            underConstruction: ref.watch(filtersProvider).underConstruction,
+            newSaleType: ref.watch(filtersProvider).newSaleType,
+            resaleType: ref.watch(filtersProvider).resaleType,
+            postedByBuilder: ref.watch(filtersProvider).postedByBuilder,
+            postedByOwner: ref.watch(filtersProvider).postedByOwner,
+            postedByAgent: ref.watch(filtersProvider).postedByAgent,
           ),
         );
 
@@ -90,18 +135,18 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     });
     try {
       Map<String, dynamic> params = {
-        'minBudget': _minBudget == _budgetSliderMin
-            ? '0'
-            : _budgetSliderMin.toStringAsFixed(0),
-        'maxBudget': _maxBudget == _budgetSliderMax
-            ? '99999999'
-            : _budgetSliderMax.toStringAsFixed(0),
+        if (_minBudget != _budgetSliderMin)
+          'minBudget': _budgetSliderMin.toStringAsFixed(0),
+
+        if (_maxBudget != _budgetSliderMax)
+          'maxBudget': _budgetSliderMax.toStringAsFixed(0),
         // 'minFlatSize': _flatSizeSliderMin.toStringAsFixed(0),
         // 'maxFlatSize': _flatSizeSliderMax.toStringAsFixed(0),
       };
 
-      if (localities.isNotEmpty) {
-        params['projectLocation'] = localities.join(',');
+      if (ref.watch(filtersProvider).selectedLocalities.isNotEmpty) {
+        params['projectLocation'] =
+            ref.watch(filtersProvider).selectedLocalities.join(',');
       }
       if (amenities.isNotEmpty) {
         params['amenities'] = amenities.join(',');
@@ -114,6 +159,31 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
         params['BHKType'] = selectedConfigurations
             .map((config) => config.replaceAll(" ", ""))
             .join(',');
+      }
+
+      if (ref.watch(filtersProvider).newProject == 'true') {
+        params['newProject'] = 'true';
+      }
+      if (ref.watch(filtersProvider).readyToMove == 'true') {
+        params['readyToMove'] = 'true';
+      }
+      if (ref.watch(filtersProvider).underConstruction == 'true') {
+        params['underConstruction'] = 'true';
+      }
+      if (ref.watch(filtersProvider).newSaleType == 'true') {
+        params['newSaleType'] = 'true';
+      }
+      if (ref.watch(filtersProvider).resaleType == 'true') {
+        params['resaleType'] = 'true';
+      }
+      if (ref.watch(filtersProvider).postedByBuilder == 'true') {
+        params['postedByBuilder'] = 'true';
+      }
+      if (ref.watch(filtersProvider).postedByOwner == 'true') {
+        params['postedByOwner'] = 'true';
+      }
+      if (ref.watch(filtersProvider).postedByAgent == 'true') {
+        params['postedByAgent'] = 'true';
       }
 
       debugPrint("-----------params: $params");
@@ -166,9 +236,9 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
     } else if (budget < 100000) {
       return "${(budget / 1000).toStringAsFixed(0)}K";
     } else if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(0)}L";
+      return "${(budget / 100000).toStringAsFixed(2)}L";
     } else {
-      return "${(budget / 10000000).toStringAsFixed(0)}Cr";
+      return "${(budget / 10000000).toStringAsFixed(2)}Cr";
     }
   }
 
@@ -198,7 +268,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
         .map((e) => double.parse(e.flatSize.toString()))
         .reduce((value, element) => value > element ? value : element);
 
-    localities = ref.watch(filtersProvider).selectedLocalities;
     int index = apartmentTypeList.indexWhere(
         (element) => element == ref.watch(filtersProvider).apartmentType);
     if (index != -1) {
@@ -345,19 +414,31 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            ...localities.take(4).map(
+                            ...ref
+                                .watch(filtersProvider)
+                                .selectedLocalities
+                                .take(4)
+                                .map(
                                   (e) => CustomListChip(
                                     text: e,
                                     isSelected: true,
                                     onTap: () {
-                                      setState(() {
-                                        localities.remove(e);
-                                      });
+                                      final List<String> loc = ref
+                                          .watch(filtersProvider)
+                                          .selectedLocalities;
+                                      loc.remove(e);
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateSelectedLocalities(loc);
                                     },
                                   ),
                                 ),
                             if (_localitySearchController.text.isNotEmpty &&
-                                localities.length < 4)
+                                ref
+                                        .watch(filtersProvider)
+                                        .selectedLocalities
+                                        .length <
+                                    4)
                               ...ref
                                   .watch(localityListProvider)
                                   .toSet()
@@ -365,16 +446,35 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                       _localitySearchController.text
                                           .trim()
                                           .toLowerCase()))
-                                  .where((e) => !localities.contains(e))
-                                  .take(4 - localities.length)
+                                  .where((e) => !ref
+                                      .watch(filtersProvider)
+                                      .selectedLocalities
+                                      .contains(e))
+                                  .take(4 -
+                                      ref
+                                          .watch(filtersProvider)
+                                          .selectedLocalities
+                                          .length)
                                   .map(
                                     (e) => CustomListChip(
                                       text: e,
                                       isSelected: false,
                                       onTap: () {
                                         setState(() {
-                                          if (localities.length < 4) {
-                                            localities.add(e);
+                                          if (ref
+                                                  .watch(filtersProvider)
+                                                  .selectedLocalities
+                                                  .length <
+                                              4) {
+                                            List<String> loc = ref
+                                                .watch(filtersProvider)
+                                                .selectedLocalities
+                                                .toList();
+                                            loc.add(e);
+                                            ref
+                                                .read(filtersProvider.notifier)
+                                                .updateSelectedLocalities(loc);
+
                                             _localitySearchController.clear();
                                           }
                                         });
@@ -570,10 +670,10 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                       const SizedBox(height: 6),
 
                       SizedBox(
-                        height: 30,
+                        height: 36,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: 5,
+                          itemCount: configurationList.length,
                           itemBuilder: (context, index) {
                             return CustomRadioButton(
                               text: configurationList[index],
@@ -583,11 +683,11 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                 setState(() {
                                   if (selectedConfigurations
                                       .contains(configurationList[index])) {
-                                    selectedConfigurations.clear();
+                                    selectedConfigurations = [];
                                   } else {
-                                    selectedConfigurations.clear();
-                                    selectedConfigurations
-                                        .add(configurationList[index]);
+                                    selectedConfigurations = [
+                                      configurationList[index]
+                                    ];
                                   }
                                 });
                               },
@@ -600,6 +700,230 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                         color: CustomColors.secondary,
                         height: 30,
                       ),
+                      const Text(
+                        "Type",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: typeList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: typeList[index],
+                              isSelected:
+                                  ref.watch(filtersProvider).newProject ==
+                                              'true' &&
+                                          index == 0 ||
+                                      ref.watch(filtersProvider).readyToMove ==
+                                              'true' &&
+                                          index == 1 ||
+                                      ref
+                                                  .watch(filtersProvider)
+                                                  .underConstruction ==
+                                              'true' &&
+                                          index == 2,
+                              onTap: () {
+                                setState(() {
+                                  switch (index) {
+                                    case 0:
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateNewProject(ref
+                                                      .watch(filtersProvider)
+                                                      .newProject ==
+                                                  'true'
+                                              ? 'false'
+                                              : 'true');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateReadyToMove('false');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateUnderConstruction('false');
+                                      break;
+                                    case 1:
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateReadyToMove(ref
+                                                      .watch(filtersProvider)
+                                                      .readyToMove ==
+                                                  'true'
+                                              ? 'false'
+                                              : 'true');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateNewProject('false');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateUnderConstruction('false');
+                                      break;
+                                    case 2:
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateUnderConstruction(ref
+                                                      .watch(filtersProvider)
+                                                      .underConstruction ==
+                                                  'true'
+                                              ? 'false'
+                                              : 'true');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateNewProject('false');
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateReadyToMove('false');
+                                      break;
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+                      const Text(
+                        "Posted By",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: postedByList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: postedByList[index]['label'],
+                              isSelected: (index == 0 &&
+                                      ref
+                                              .watch(filtersProvider)
+                                              .postedByBuilder ==
+                                          'true') ||
+                                  (index == 1 &&
+                                      ref
+                                              .watch(filtersProvider)
+                                              .postedByOwner ==
+                                          'true') ||
+                                  (index == 2 &&
+                                      ref
+                                              .watch(filtersProvider)
+                                              .postedByAgent ==
+                                          'true'),
+                              onTap: () {
+                                setState(() {
+                                  if (index == 0) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updatePostedByBuilder(ref
+                                                    .watch(filtersProvider)
+                                                    .postedByBuilder ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  } else if (index == 1) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updatePostedByOwner(ref
+                                                    .watch(filtersProvider)
+                                                    .postedByOwner ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  } else if (index == 2) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updatePostedByAgent(ref
+                                                    .watch(filtersProvider)
+                                                    .postedByAgent ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+
+                      const Text(
+                        "Sale Type",
+                        style: TextStyle(
+                          color: CustomColors.secondary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+
+                      SizedBox(
+                        height: 36,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: saleTypeList.length,
+                          itemBuilder: (context, index) {
+                            return CustomRadioButton(
+                              text: saleTypeList[index]['label'],
+                              isSelected: (index == 0 &&
+                                      ref.watch(filtersProvider).newSaleType ==
+                                          'true') ||
+                                  (index == 1 &&
+                                      ref.watch(filtersProvider).resaleType ==
+                                          'true'),
+                              onTap: () {
+                                setState(() {
+                                  if (index == 0) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateNewSaleType(ref
+                                                    .watch(filtersProvider)
+                                                    .newSaleType ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  } else if (index == 1) {
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateResaleType(ref
+                                                    .watch(filtersProvider)
+                                                    .resaleType ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                  }
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+
+                      const Divider(
+                        color: CustomColors.secondary,
+                        height: 30,
+                      ),
+
                       const Text(
                         "Budget",
                         style: TextStyle(
@@ -640,8 +964,8 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                             '₹${formatBudget(_budgetSliderMin)}',
                             '₹${formatBudget(_budgetSliderMax)}',
                           ),
-                          values: RangeValues(_budgetSliderMin,
-                              _budgetSliderMax), // Update the values to use _budgetSliderMin and _budgetSliderMax
+                          values:
+                              RangeValues(_budgetSliderMin, _budgetSliderMax),
                           onChanged: (RangeValues values) {
                             setState(() {
                               _budgetSliderMin = values.start;

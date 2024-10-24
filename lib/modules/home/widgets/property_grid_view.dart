@@ -38,7 +38,8 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
     }
   }
 
-  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
+  Widget _buildOption(
+      Widget icon, String text, VoidCallback onTap, Color color) {
     return InkWell(
       onTap: () {
         _removeOverlay();
@@ -50,7 +51,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
           children: [
             icon,
             const SizedBox(width: 12),
-            Text(text),
+            Text(text, style: TextStyle(color: color)),
           ],
         ),
       ),
@@ -109,7 +110,10 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildOption(
-                      SvgPicture.asset("assets/icons/phone.svg"),
+                      SvgPicture.asset(
+                        "assets/icons/phone.svg",
+                        color: CustomColors.blue,
+                      ),
                       'Call now',
                       () {
                         launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
@@ -117,30 +121,37 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           (value) => _removeOverlay(),
                         );
                       },
+                      CustomColors.blue,
                     ),
                     _buildOption(
-                        SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: SvgPicture.asset(
-                              "assets/icons/whatsapp.svg",
-                            )),
-                        'Chat on Whatsapp', () {
-                      launchUrl(Uri.parse(
-                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
-                          .then(
-                        (value) => _removeOverlay(),
-                      );
-                    }),
+                      SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: SvgPicture.asset(
+                            "assets/icons/whatsapp.svg",
+                            color: CustomColors.green,
+                          )),
+                      'Chat on Whatsapp',
+                      () {
+                        launchUrl(Uri.parse(
+                                'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                            .then(
+                          (value) => _removeOverlay(),
+                        );
+                      },
+                      CustomColors.green,
+                    ),
                     _buildOption(
-                        SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: SvgPicture.asset(
-                              "assets/icons/phone_incoming.svg",
-                            )),
-                        'Request call back',
-                        () => _removeOverlay()),
+                      SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: SvgPicture.asset(
+                            "assets/icons/phone_incoming.svg",
+                          )),
+                      'Request call back',
+                      () => _removeOverlay(),
+                      CustomColors.secondary,
+                    ),
                   ],
                 ),
               ),
@@ -159,9 +170,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {
-      _isOverlayVisible = false;
-    });
+    _isOverlayVisible = false;
   }
 
   formatBudget(int budget) {
@@ -176,6 +185,12 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
   void initState() {
     super.initState();
     _globalKeys = widget.globalKeys;
+  }
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
   }
 
   @override
@@ -477,7 +492,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                 width: 32,
                                 child: IconButton.filled(
                                   style: IconButton.styleFrom(
-                                    backgroundColor: CustomColors.secondary,
+                                    backgroundColor: CustomColors.blue,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),

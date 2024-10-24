@@ -6,7 +6,8 @@ import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 
 class SavedProperties extends ConsumerStatefulWidget {
-  const SavedProperties({super.key});
+  final bool isPop;
+  const SavedProperties({super.key, this.isPop = false});
 
   @override
   ConsumerState<SavedProperties> createState() => _ComparePropertiesState();
@@ -34,16 +35,28 @@ class _ComparePropertiesState extends ConsumerState<SavedProperties> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        ref.watch(navBarIndexProvider.notifier).setNavBarIndex(0);
+      canPop: widget.isPop,
+      onPopInvokedWithResult: (didPop, results) {
+        if (!didPop) ref.watch(navBarIndexProvider.notifier).setNavBarIndex(0);
       },
       child: PopScope(
-        canPop: false,
+        canPop: widget.isPop,
         onPopInvokedWithResult: (didPop, results) {
           if (!didPop) ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
         },
         child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                if (widget.isPop) {
+                  Navigator.of(context).pop();
+                } else {
+                  ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
+                }
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
+          ),
           body: ref.watch(savedPropertiesProvider).isEmpty
               ? const Center(
                   child: Column(

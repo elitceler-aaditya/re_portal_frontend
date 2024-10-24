@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         title: 'Reportal Tech',
         theme: ThemeData(
-          fontFamily: "eudoxus",
+          fontFamily: "PlusJakartaSans",
           colorScheme: ColorScheme.fromSeed(
             seedColor: CustomColors.primary,
           ),

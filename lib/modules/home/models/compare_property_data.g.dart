@@ -12,6 +12,7 @@ _$ComparePropertyDataImpl _$$ComparePropertyDataImplFromJson(
       name: json['name'] as String? ?? "",
       projectType: json['projectType'] as String? ?? "",
       flatSizes: (json['flatSizes'] as num?)?.toInt() ?? 0,
+      projectLocation: json['projectLocation'] as String? ?? "",
       projectStatus: json['projectStatus'] as String? ?? "",
       rERAApproval: json['rERAApproval'] as bool? ?? false,
       projectSize: json['projectSize'] as String? ?? "",
@@ -25,9 +26,10 @@ _$ComparePropertyDataImpl _$$ComparePropertyDataImplFromJson(
       pricePerSquareFeetRate: json['pricePerSquareFeetRate'] as String? ?? "",
       clubhousesize: json['clubhousesize'] as String? ?? "",
       totalOpenSpace: json['totalOpenSpace'] as String? ?? "",
+      constructionType: json['constructionType'] as String? ?? "",
       budget: (json['budget'] as num?)?.toInt() ?? 0,
       builder: json['builder'] == null
-          ? const BuilderContact(CompanyPhone: "")
+          ? const BuilderContact()
           : BuilderContact.fromJson(json['builder'] as Map<String, dynamic>),
     );
 
@@ -37,6 +39,7 @@ Map<String, dynamic> _$$ComparePropertyDataImplToJson(
       'name': instance.name,
       'projectType': instance.projectType,
       'flatSizes': instance.flatSizes,
+      'projectLocation': instance.projectLocation,
       'projectStatus': instance.projectStatus,
       'rERAApproval': instance.rERAApproval,
       'projectSize': instance.projectSize,
@@ -47,6 +50,7 @@ Map<String, dynamic> _$$ComparePropertyDataImplToJson(
       'pricePerSquareFeetRate': instance.pricePerSquareFeetRate,
       'clubhousesize': instance.clubhousesize,
       'totalOpenSpace': instance.totalOpenSpace,
+      'constructionType': instance.constructionType,
       'budget': instance.budget,
       'builder': instance.builder,
     };
@@ -65,10 +69,12 @@ Map<String, dynamic> _$$UnitPlanConfigImplToJson(
 _$BuilderContactImpl _$$BuilderContactImplFromJson(Map<String, dynamic> json) =>
     _$BuilderContactImpl(
       CompanyPhone: json['CompanyPhone'] as String? ?? "",
+      CompanyName: json['CompanyName'] as String? ?? "",
     );
 
 Map<String, dynamic> _$$BuilderContactImplToJson(
         _$BuilderContactImpl instance) =>
     <String, dynamic>{
       'CompanyPhone': instance.CompanyPhone,
+      'CompanyName': instance.CompanyName,
     };

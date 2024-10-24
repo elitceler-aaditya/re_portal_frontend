@@ -80,6 +80,11 @@ _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>
       amenities: json['amenities'] as String? ?? '',
       clubHouseAmenities: json['clubHouseAmenities'] as String? ?? '',
       outdoorAmenities: json['outdoorAmenities'] as String? ?? '',
+      projectHighlightsPoints:
+          (json['projectHighlightsPoints'] as List<dynamic>?)
+                  ?.map((e) => e as String)
+                  .toList() ??
+              const [],
       builder: json['builder'] == null
           ? const Builder()
           : Builder.fromJson(json['builder'] as Map<String, dynamic>),
@@ -131,6 +136,7 @@ Map<String, dynamic> _$$ProjectDetailsImplToJson(
       'amenities': instance.amenities,
       'clubHouseAmenities': instance.clubHouseAmenities,
       'outdoorAmenities': instance.outdoorAmenities,
+      'projectHighlightsPoints': instance.projectHighlightsPoints,
       'builder': instance.builder,
       'educationalInstitutions': instance.educationalInstitutions,
       'hospitals': instance.hospitals,

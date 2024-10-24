@@ -14,6 +14,10 @@ class SavedPropertiesNotifier extends StateNotifier<List<ApartmentModel>> {
         .toList();
   }
 
+  bool containsApartment(ApartmentModel apartment) {
+    return state.any((item) => item.projectId == apartment.projectId);
+  }
+
   void clearApartments() {
     state = [];
   }
