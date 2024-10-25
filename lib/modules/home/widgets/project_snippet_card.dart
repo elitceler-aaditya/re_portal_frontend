@@ -6,15 +6,17 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 class ProjectSnippetCard extends StatefulWidget {
   final ApartmentModel apartment;
   final String videoLink;
+  final bool leftPadding;
 
   const ProjectSnippetCard({
     super.key,
     required this.apartment,
     required this.videoLink,
+    this.leftPadding = true,
   });
 
   @override
-  _ProjectSnippetCardState createState() => _ProjectSnippetCardState();
+  State<ProjectSnippetCard> createState() => _ProjectSnippetCardState();
 }
 
 class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
@@ -35,7 +37,9 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
       child: Container(
         height: double.infinity,
         width: 180,
-        margin: const EdgeInsets.only(right: 8),
+        margin: EdgeInsets.only(
+            left: widget.leftPadding ? 10 : 0,
+            right: widget.leftPadding ? 0 : 10),
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -88,7 +92,7 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
                         const Icon(
                           Icons.location_on,
                           size: 16,
-                                  color: CustomColors.primary,
+                          color: CustomColors.primary,
                         ),
                         const SizedBox(width: 2),
                         Text(

@@ -17,6 +17,7 @@ class ApartmentModel with _$ApartmentModel {
     @Default(0) int pricePerSquareFeetRate,
     @Default(0.0) double latitude,
     @Default(0.0) double longitude,
+    @Default("") String projectPossession,
     @Default("") String coverImage,
     @Default([]) List<String> projectGallery,
     @Default([]) List<String> configuration,

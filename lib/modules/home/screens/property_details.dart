@@ -14,9 +14,12 @@ import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dar
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/brochure_video_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
+import 'package:re_portal_frontend/modules/home/screens/project_config_gallery.dart';
+import 'package:re_portal_frontend/modules/home/screens/project_details_gallery.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
+import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
@@ -28,8 +31,10 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
+import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -65,15 +70,46 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
       GlobalKey(debugLabel: 'next-property-button');
   List<Map<String, dynamic>> _highlights = [];
   int timerIndex = 0;
-  int galleryIndex = 0;
   int configIndex = 0;
   String displayImage = "";
   Timer? _timer;
-  bool openOptions = false;
-  ScrollController galleryController = ScrollController();
-  ScrollController configController = ScrollController();
+  bool openOptions = true;
   List<Map<String, dynamic>> projectDetailsList = [];
 
+  List<Map<String, dynamic>> categoryOptions = [
+    {
+      'title': 'Affordable Homes',
+      'filter': FiltersModel(affordableHomes: 'true'),
+    },
+    {
+      'title': 'Large Living Spaces',
+      'filter': FiltersModel(largeLivingSpaces: 'true'),
+    },
+    {
+      'title': 'Sustainable Living Homes',
+      'filter': FiltersModel(sustainableLivingHomes: 'true'),
+    },
+    {
+      'title': '2.5 BHK Homes',
+      'filter': FiltersModel(twopointfiveBHKHomes: 'true'),
+    },
+    {
+      'title': 'Large Balconies',
+      'filter': FiltersModel(largeBalconies: 'true'),
+    },
+    {
+      'title': 'Sky Villa Habitat',
+      'filter': FiltersModel(skyVillaHabitat: 'true'),
+    },
+    {
+      'title': 'Standalone Buildings',
+      'filter': FiltersModel(standAloneBuildings: 'true'),
+    },
+    {
+      'title': 'Skyscrapers',
+      'filter': FiltersModel(skyScrapers: 'true'),
+    },
+  ];
   Future<void> sendEnquiry(BuildContext context) async {
     final url = Uri.parse("${dotenv.env['BASE_URL']}/user/newLeadGeneration");
     final body = {
@@ -483,8 +519,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(2, 20, 2, 6),
+            Container(
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              margin: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               child: Column(
                 children: [
                   Row(
@@ -639,7 +680,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             if (widget.apartment.description.isNotEmpty)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 4),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
@@ -691,7 +732,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 .projectDetails.projectHighlightsPoints.isNotEmpty)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(top: 16),
+                margin: const EdgeInsets.only(top: 4),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
@@ -765,7 +806,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             Container(
               width: double.infinity,
-              margin: const EdgeInsets.only(top: 16),
+              margin: const EdgeInsets.only(top: 4),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -852,374 +893,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               ),
             ),
             if (_projectDetails.projectImages.isNotEmpty)
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 16),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: CustomColors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        "Project Gallery",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: CustomColors.black,
-                        ),
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: List.generate(
-                          _projectDetails.projectImages.length,
-                          (index) => _projectDetails
-                                  .projectImages[index].images.isEmpty
-                              ? const SizedBox()
-                              : Padding(
-                                  padding: const EdgeInsets.only(left: 8),
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: galleryIndex == index
-                                          ? CustomColors.primary20
-                                          : Colors.transparent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      side: const BorderSide(
-                                        color: CustomColors.primary20,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        galleryIndex = index;
-                                      });
-                                      galleryController.animateTo(
-                                        0,
-                                        duration:
-                                            const Duration(milliseconds: 300),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    },
-                                    child: Text(
-                                      _projectDetails
-                                          .projectImages[index].title,
-                                      style: TextStyle(
-                                        color: galleryIndex == index
-                                            ? CustomColors.primary
-                                            : CustomColors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        controller: galleryController,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _projectDetails
-                            .projectImages[galleryIndex].images.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              final List<String> allImgs = [];
-                              List<double> breakpoints = [];
-                              double cumulativeSum = 0;
-                              for (var gal in _projectDetails.projectImages) {
-                                allImgs.addAll(gal.images);
-                                cumulativeSum += gal.images.length;
-                                breakpoints.add(cumulativeSum);
-                              }
-
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => PhotoScrollingGallery(
-                                    allImages: allImgs,
-                                    labels: _projectDetails.projectImages
-                                        .map((gal) => gal.title)
-                                        .toList(),
-                                    galleryIndex: galleryIndex,
-                                    breakPoints: breakpoints,
-                                    image: _projectDetails
-                                        .projectImages[galleryIndex]
-                                        .images[index],
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: 320,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 6),
-                              child: Container(
-                                clipBehavior: Clip.hardEdge,
-                                decoration: BoxDecoration(
-                                  color: CustomColors.black10,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Image.network(
-                                  _projectDetails
-                                      .projectImages[galleryIndex].images[index]
-                                      .trim(),
-                                  key: GlobalKey(
-                                    debugLabel:
-                                        "${_projectDetails.projectImages[galleryIndex].title}-$index",
-                                  ),
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.error),
-                                  loadingBuilder: (context, child,
-                                          loadingProgress) =>
-                                      loadingProgress == null
-                                          ? child
-                                          : Shimmer.fromColors(
-                                              baseColor: CustomColors.black25,
-                                              highlightColor:
-                                                  CustomColors.black50,
-                                              child: Container(
-                                                height: 200,
-                                                width: 320,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black,
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                ),
-                                              ),
-                                            ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ProjectDetailsGallery(
+                  projectImages: _projectDetails.projectImages),
             if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty)
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 16),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  color: CustomColors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Text(
-                        "Configurations",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: CustomColors.black,
-                        ),
-                      ),
-                    ),
-                    if (_projectDetails.unitPlanConfigFilesFormatted
-                        .map((e) => e.bHKType)
-                        .isNotEmpty)
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: List.generate(
-                            _projectDetails.unitPlanConfigFilesFormatted
-                                .map((e) => e.bHKType)
-                                .length,
-                            (index) => _projectDetails
-                                    .unitPlanConfigFilesFormatted
-                                    .map((e) => e.bHKType)
-                                    .isEmpty
-                                ? const SizedBox()
-                                : Padding(
-                                    padding: const EdgeInsets.only(left: 8),
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: configIndex == index
-                                            ? CustomColors.primary20
-                                            : Colors.transparent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        side: const BorderSide(
-                                          color: CustomColors.primary20,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          configIndex = index;
-                                        });
-                                        configController.animateTo(
-                                          0,
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          curve: Curves.easeInOut,
-                                        );
-                                      },
-                                      child: Text(
-                                        _projectDetails
-                                            .unitPlanConfigFilesFormatted
-                                            .map((e) => e.bHKType)
-                                            .toList()[index],
-                                        style: TextStyle(
-                                          color: configIndex == index
-                                              ? CustomColors.primary
-                                              : CustomColors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${_projectDetails.unitPlanConfigFilesFormatted[configIndex].facing} facing  |  ${_projectDetails.unitPlanConfigFilesFormatted[configIndex].sizeInSqft} sq.ft",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: CustomColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    if (_projectDetails.projectImages.isNotEmpty)
-                      SizedBox(
-                        height: 200,
-                        child: ListView.builder(
-                          controller: configController,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _projectDetails
-                              .unitPlanConfigFilesFormatted[configIndex]
-                              .unitPlanConfigFiles
-                              .length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                final List<String> allImgs = [];
-                                List<double> breakpoints = [];
-                                double cumulativeSum = 0;
-                                for (var gal in _projectDetails
-                                    .unitPlanConfigFilesFormatted) {
-                                  allImgs.addAll(gal.unitPlanConfigFiles);
-                                  cumulativeSum +=
-                                      gal.unitPlanConfigFiles.length;
-                                  breakpoints.add(cumulativeSum);
-                                }
-
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PhotoScrollingGallery(
-                                      allImages: allImgs,
-                                      labels: _projectDetails
-                                          .unitPlanConfigFilesFormatted
-                                          .map((gal) => gal.bHKType)
-                                          .toList(),
-                                      galleryIndex: 0,
-                                      breakPoints: breakpoints,
-                                      image: _projectDetails
-                                          .projectImages[galleryIndex]
-                                          .images[index],
-                                      extraDetails: _projectDetails
-                                          .unitPlanConfigFilesFormatted
-                                          .map((e) =>
-                                              "${e.facing} facing  |  ${e.sizeInSqft} sq.ft")
-                                          .toList(),
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: 320,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 4),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.network(
-                                    _projectDetails
-                                        .unitPlanConfigFilesFormatted[
-                                            configIndex]
-                                        .unitPlanConfigFiles[index],
-                                    fit: BoxFit.cover,
-                                    loadingBuilder: (context, child,
-                                            loadingProgress) =>
-                                        loadingProgress == null
-                                            ? child
-                                            : Shimmer.fromColors(
-                                                baseColor: CustomColors.black25,
-                                                highlightColor:
-                                                    CustomColors.black50,
-                                                child: Container(
-                                                  height: 200,
-                                                  width: 320,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                ),
-                                              ),
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Center(
-                                      child: Text(
-                                        "Error loading image",
-                                        style: TextStyle(
-                                          color: CustomColors.red,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 10),
+              ProjectConfigGallery(
+                  unitPlanConfigFilesFormatted:
+                      _projectDetails.unitPlanConfigFilesFormatted),
             if (_projectDetails.projectDetails.amenities.isNotEmpty)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 4),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color: CustomColors.white,
@@ -1417,7 +1100,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 _projectDetails.projectDetails.connectivity.isNotEmpty)
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 4),
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color: CustomColors.white,
@@ -1614,6 +1297,90 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
+            //category options
+            Container(
+              decoration: BoxDecoration(
+                color: CustomColors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    categoryOptions.length,
+                    (index) => GestureDetector(
+                      onTap: () {
+                        ref.read(searchBarProvider.notifier).setSearchTerm(
+                              categoryOptions[index]['title'],
+                            );
+                        ref.read(filtersProvider.notifier).setAllFilters(
+                              categoryOptions[index]['filter'],
+                            );
+
+                        rightSlideTransition(
+                            context, const SearchApartmentResults());
+                      },
+                      child: Container(
+                        height: 80,
+                        width: 150,
+                        margin: const EdgeInsets.only(left: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          image: DecorationImage(
+                            image: AssetImage(
+                              "assets/images/category-${index + 1}.jpg",
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: double.infinity,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    CustomColors.black.withOpacity(0),
+                                    CustomColors.black.withOpacity(0.77),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 6,
+                              left: 0,
+                              right: 0,
+                              child: Text(
+                                categoryOptions[index]['title'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: CustomColors.white,
+                                  shadows: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.white.withOpacity(0.5),
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
             const LocationHomes(),
             const SizedBox(height: 10),
           ],
@@ -1633,9 +1400,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             builder: (context) => PhotoScrollingGallery(
               allImages: allImgs,
               labels: const [],
-              galleryIndex: galleryIndex,
+              galleryIndex: 0,
               breakPoints: breakpoints,
-              image: _projectDetails.projectImages[galleryIndex].images[0],
+              // image: _projectDetails.projectImages[0].images[0],
             ),
           ),
         );
@@ -1690,7 +1457,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         builder: (context) => PhotoScrollingGallery(
                           allImages: allImgs,
                           labels: const [],
-                          galleryIndex: galleryIndex,
+                          galleryIndex: index,
                           breakPoints: breakpoints,
                           image: widget.apartment.projectGallery[index],
                         ),
@@ -1973,7 +1740,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           builder: (context) => PhotoScrollingGallery(
                             allImages: allImgs,
                             labels: const [],
-                            galleryIndex: galleryIndex,
+                            galleryIndex: 0,
                             breakPoints: breakpoints,
                             image: widget.apartment.projectGallery[0],
                           ),
@@ -2153,15 +1920,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
           ),
           Positioned(
-            left: position.dx - 150,
-            bottom: MediaQuery.of(context).size.height - position.dy,
+            right: 0,
+            bottom: MediaQuery.of(context).size.height - position.dy - 10,
             child: Material(
               color: Colors.transparent,
               child: Container(
-                width: 220,
+                width: 210,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10),
                     bottomLeft: Radius.circular(10),
@@ -2290,7 +2057,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
         _removeOverlay();
         onTap();
       },
-      child: Padding(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(100),
+        ),
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Row(
           children: [
@@ -2328,6 +2100,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             projectDetailsList.add({
               "title": "Configurations",
               "value": _projectDetails.unitPlanConfigFilesFormatted.length
+            });
+          }
+          if (_projectDetails
+              .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Price/sq.ft",
+              "value": _formatArea(int.parse(
+                  _projectDetails.projectDetails.pricePerSquareFeetRate))
             });
           }
 
@@ -2436,9 +2216,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     _emailController.text = ref.read(userProvider).email;
     _enquiryDetails.text =
         'Hi, I am interested in ${widget.apartment.name}. I want to know more about the project.';
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (timerIndex == 1) {
         _showKeyHighlights = false;
+        openOptions = false;
       }
       setState(() {
         timerIndex++;
@@ -2452,9 +2234,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   @override
   void dispose() {
-    configController.dispose();
-    galleryController.dispose();
-
     _removeOverlay();
     _timer!.cancel();
     super.dispose();

@@ -9,6 +9,8 @@ class PropertyStackCard extends StatelessWidget {
   final double cardWidth;
   final double cardHeight;
   final bool showCompanyName;
+  final bool leftPadding;
+  final ScrollController? controller;
 
   const PropertyStackCard({
     super.key,
@@ -16,6 +18,8 @@ class PropertyStackCard extends StatelessWidget {
     required this.cardWidth,
     this.showCompanyName = false,
     this.cardHeight = 200,
+    this.leftPadding = true,
+    this.controller,
   });
 
   String formatBudget(int budget) {
@@ -34,6 +38,7 @@ class PropertyStackCard extends StatelessWidget {
     return SizedBox(
       height: cardHeight,
       child: ListView.builder(
+        controller: controller,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount: apartments.length,
@@ -55,7 +60,8 @@ class PropertyStackCard extends StatelessWidget {
             child: Container(
               width: cardWidth,
               height: cardHeight,
-              margin: const EdgeInsets.only(left: 8),
+              margin: EdgeInsets.only(
+                  left: leftPadding ? 8 : 0, right: leftPadding ? 0 : 8),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,

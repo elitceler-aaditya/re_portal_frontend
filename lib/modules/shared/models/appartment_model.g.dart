@@ -20,6 +20,7 @@ _$ApartmentModelImpl _$$ApartmentModelImplFromJson(Map<String, dynamic> json) =>
           (json['pricePerSquareFeetRate'] as num?)?.toInt() ?? 0,
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      projectPossession: json['projectPossession'] as String? ?? "",
       coverImage: json['coverImage'] as String? ?? "",
       projectGallery: (json['projectGallery'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -48,6 +49,7 @@ Map<String, dynamic> _$$ApartmentModelImplToJson(
       'pricePerSquareFeetRate': instance.pricePerSquareFeetRate,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'projectPossession': instance.projectPossession,
       'coverImage': instance.coverImage,
       'projectGallery': instance.projectGallery,
       'configuration': instance.configuration,

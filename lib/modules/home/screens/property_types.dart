@@ -79,8 +79,10 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // PropertiesTiles(
             //   title: 'Commercial',

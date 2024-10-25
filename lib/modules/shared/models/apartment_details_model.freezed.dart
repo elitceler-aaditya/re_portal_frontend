@@ -989,7 +989,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       this.projectType = '',
       this.projectLaunchedDate = '',
       this.projectPossession = '',
-      this.pricePerSquareFeetRate = '',
+      this.pricePerSquareFeetRate = '0',
       this.totalArea = '',
       this.landMark = '',
       this.nearByHighlights = '',

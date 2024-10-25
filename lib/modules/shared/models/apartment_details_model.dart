@@ -49,7 +49,7 @@ class ProjectDetails with _$ProjectDetails {
     @Default('') String projectType,
     @Default('') String projectLaunchedDate,
     @Default('') String projectPossession,
-    @Default('') String pricePerSquareFeetRate,
+    @Default('0') String pricePerSquareFeetRate,
     @Default('') String totalArea,
     @Default('') String landMark,
     @Default('') String nearByHighlights,

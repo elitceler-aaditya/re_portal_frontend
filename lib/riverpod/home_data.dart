@@ -34,14 +34,36 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
             ..sort((a, b) => a.budget.compareTo(b.budget)));
     } else if (sortBy == 3) {
       state = state.copyWith(
-          filteredApartments: state.filteredApartments
-            ..sort((a, b) =>
-                b.pricePerSquareFeetRate.compareTo(a.pricePerSquareFeetRate)));
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (a, b) =>
+                b.pricePerSquareFeetRate.compareTo(a.pricePerSquareFeetRate),
+          ),
+      );
     } else if (sortBy == 4) {
       state = state.copyWith(
-          filteredApartments: state.filteredApartments
-            ..sort((a, b) =>
-                a.pricePerSquareFeetRate.compareTo(b.pricePerSquareFeetRate)));
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (a, b) =>
+                a.pricePerSquareFeetRate.compareTo(b.pricePerSquareFeetRate),
+          ),
+      );
+    } else if (sortBy == 5) {
+      state = state.copyWith(
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (a, b) => DateTime.parse(a.projectPossession)
+                .compareTo(DateTime.parse(b.projectPossession)),
+          ),
+      );
+    } else if (sortBy == 6) {
+      state = state.copyWith(
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (b, a) => DateTime.parse(a.projectPossession)
+                .compareTo(DateTime.parse(b.projectPossession)),
+          ),
+      );
     }
   }
 

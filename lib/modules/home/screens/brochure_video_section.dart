@@ -6,7 +6,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 
 class BrochureVideoSection extends ConsumerStatefulWidget {
-  final Function sendEnquiry;
+  final Future<void> Function() sendEnquiry;
   const BrochureVideoSection({super.key, required this.sendEnquiry});
 
   @override
@@ -122,9 +122,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    widget.sendEnquiry(context);
-                                  },
+                                  onPressed: () => widget.sendEnquiry(),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,
                                     padding: const EdgeInsets.symmetric(
@@ -170,25 +168,25 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: CustomColors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: CustomColors.black.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 0,
-            offset: const Offset(0, 0),
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 4, bottom: 10),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.black.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 0,
+                offset: const Offset(0, 0),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
+          child: GestureDetector(
             onTap: () {
               if (ref.read(userProvider).token.isEmpty) {
                 errorSnackBar(context, 'Please login first');
@@ -207,7 +205,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
             child: Container(
               height: 140,
               width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               decoration: BoxDecoration(
                 color: CustomColors.black.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(10),
@@ -259,153 +257,174 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
-              if (ref.read(userProvider).token.isEmpty) {
-                errorSnackBar(context, 'Please login first');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(
-                      goBack: true,
-                    ),
-                  ),
-                );
-              } else {
-                enquiryFormPopup();
-              }
-            },
-            child: Container(
-              height: 140,
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
-              decoration: BoxDecoration(
-                color: CustomColors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage("assets/images/brochure_cover.jpg"),
-                  fit: BoxFit.cover,
-                ),
+        ),
+        const SizedBox(width: 10),
+        Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 4, bottom: 10),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.black.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 0,
+                offset: const Offset(0, 0),
               ),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 140,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.transparent,
-                          CustomColors.black.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  const Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Text(
-                      "Brochure",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: CustomColors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: CustomColors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: const Text(
-                        "Download",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: CustomColors.white,
-                          fontWeight: FontWeight.w500,
+            ],
+          ),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (ref.read(userProvider).token.isEmpty) {
+                    errorSnackBar(context, 'Please login first');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(
+                          goBack: true,
                         ),
                       ),
+                    );
+                  } else {
+                    enquiryFormPopup();
+                  }
+                },
+                child: Container(
+                  height: 140,
+                  width: double.infinity,
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+                  decoration: BoxDecoration(
+                    color: CustomColors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(10),
+                    image: const DecorationImage(
+                      image: AssetImage("assets/images/brochure_cover.jpg"),
+                      fit: BoxFit.cover,
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              gradient: LinearGradient(
-                colors: [
-                  CustomColors.primary,
-                  CustomColors.primary.withOpacity(0.7)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: CustomColors.primary.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                if (ref.read(userProvider).token.isEmpty) {
-                  errorSnackBar(context, 'Please login first');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(
-                        goBack: true,
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 140,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.transparent,
+                              CustomColors.black.withOpacity(0.8),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
+                      const Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Text(
+                          "Brochure",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: CustomColors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: CustomColors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          child: const Text(
+                            "Download",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: CustomColors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    colors: [
+                      CustomColors.primary,
+                      CustomColors.primary.withOpacity(0.7)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.primary.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                  );
-                } else {
-                  enquiryFormPopup();
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    if (ref.read(userProvider).token.isEmpty) {
+                      errorSnackBar(context, 'Please login first');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(
+                            goBack: true,
+                          ),
+                        ),
+                      );
+                    } else {
+                      enquiryFormPopup();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.phone,
+                    color: CustomColors.white,
+                  ),
+                  label: const Text(
+                    'Contact Builder',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CustomColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
-              icon: const Icon(
-                Icons.phone,
-                color: CustomColors.white,
-              ),
-              label: const Text(
-                'Contact Builder',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: CustomColors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

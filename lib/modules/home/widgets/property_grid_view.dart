@@ -45,7 +45,12 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
         _removeOverlay();
         onTap();
       },
-      child: Padding(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(100),
+        ),
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Row(
           children: [
@@ -82,16 +87,14 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
             ),
           ),
           Positioned(
-            left: index % 2 == 0
-                ? position.dx + size.width / 2
-                : position.dx - 200,
-            top: position.dy + size.height,
+            left: index % 2 == 0 ? 0 : position.dx - 150,
+            top: position.dy - size.height * 4.5,
             child: Material(
               color: Colors.transparent,
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(index % 2 == 0 ? 0 : 10),
                     bottomLeft: const Radius.circular(10),
@@ -107,7 +110,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildOption(
                       SvgPicture.asset(

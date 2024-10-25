@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
@@ -114,10 +115,28 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                       gradient: LinearGradient(
                         colors: [
                           CustomColors.black.withOpacity(0),
-                          CustomColors.black.withOpacity(0.8),
+                          CustomColors.black.withOpacity(0.3),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          CustomColors.black.withOpacity(1),
+                          CustomColors.black.withOpacity(0),
+                          CustomColors.black.withOpacity(1),
+                        ],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(10),
@@ -189,11 +208,21 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
+                              height: 1.2,
                               color: CustomColors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          Text(
+                            "By ${widget.apartment.companyName}",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +234,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                widget.apartment.projectLocation,
+                                "${widget.apartment.projectLocation} • Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(widget.apartment.projectPossession))}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
@@ -363,8 +392,8 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                           .read(
                                               comparePropertyProvider.notifier)
                                           .removeApartment(widget.apartment);
-                                      errorSnackBar(
-                                          context, 'property removed');
+                                      // errorSnackBar(
+                                      //     context, 'property removed');
                                     } else {
                                       if (ref
                                               .read(comparePropertyProvider)
@@ -374,29 +403,29 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                             .read(comparePropertyProvider
                                                 .notifier)
                                             .addApartment(widget.apartment);
-                                        successSnackBar(
-                                          context,
-                                          'property added',
-                                          action: SnackBarAction(
-                                            backgroundColor: CustomColors.white
-                                                .withOpacity(0.25),
-                                            textColor: CustomColors.white,
-                                            label: 'Compare',
-                                            onPressed: () {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const CompareProperties(
-                                                    isPop: true,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
+                                        // successSnackBar(
+                                        //   context,
+                                        //   'property added',
+                                        //   action: SnackBarAction(
+                                        //     backgroundColor: CustomColors.white
+                                        //         .withOpacity(0.25),
+                                        //     textColor: CustomColors.white,
+                                        //     label: 'Compare',
+                                        //     onPressed: () {
+                                        //       Navigator.of(context).push(
+                                        //         MaterialPageRoute(
+                                        //           builder: (context) =>
+                                        //               const CompareProperties(
+                                        //             isPop: true,
+                                        //           ),
+                                        //         ),
+                                        //       );
+                                        //     },
+                                        //   ),
+                                        // );
                                       } else {
-                                        errorSnackBar(context,
-                                            'You can only compare 4 properties');
+                                        // errorSnackBar(context,
+                                        //     'You can only compare 4 properties');
                                       }
                                     }
                                   },

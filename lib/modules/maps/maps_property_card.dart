@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class MapsPropertyCard extends StatelessWidget {
   final ApartmentModel apartment;
-  final ApartmentDetailsResponse apartmentDetails;
   const MapsPropertyCard({
     super.key,
     required this.apartment,
-    required this.apartmentDetails,
   });
 
   String formatBudget(int budget) {
@@ -38,7 +36,7 @@ class MapsPropertyCard extends StatelessWidget {
         );
       },
       child: Container(
-        height: 180,
+        height: 100,
         width: 290,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -87,7 +85,7 @@ class MapsPropertyCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             apartment.name,
-                            maxLines: 2,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               height: 1.1,
@@ -137,23 +135,55 @@ class MapsPropertyCard extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: 2),
                         Row(
                           children: [
                             const Icon(
-                              Icons.home_work_rounded,
+                              Icons.bed,
                               color: CustomColors.primary,
                               size: 14,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              apartmentDetails.projectDetails.projectType,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal,
+                            RichText(
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.black,
+                                ),
+                                children: [
+                                  ...apartment.configuration
+                                      .take(2)
+                                      .map((config) => TextSpan(
+                                            text: config +
+                                                (apartment.configuration
+                                                            .indexOf(config) <
+                                                        apartment.configuration
+                                                                .take(2)
+                                                                .length -
+                                                            1
+                                                    ? ', '
+                                                    : ''),
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          )),
+                                  if (apartment.configuration.length - 2 != 0)
+                                    TextSpan(
+                                      text:
+                                          ' +${apartment.configuration.length - 2} more',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 2),
                         Row(
                           children: [
                             const Icon(

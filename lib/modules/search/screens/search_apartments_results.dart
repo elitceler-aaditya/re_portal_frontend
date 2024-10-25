@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
+import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
 import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
@@ -26,6 +27,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
@@ -55,8 +57,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   OverlayEntry? _overlayEntry;
   bool _isOverlayVisible = false;
   bool isListview = true;
-  bool pricePerSqFt = false;
   bool displayAds = true;
+  bool showScrollUpButton = false;
   int currentPage = 1;
   final ScrollController _masterScrollController = ScrollController();
   Timer? _timer;
@@ -131,7 +133,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
         _removeOverlay();
         onTap();
       },
-      child: Padding(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(100),
+        ),
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Row(
           children: [
@@ -149,7 +156,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     GlobalKey contactButtonKey = globalKey;
     final RenderBox renderBox =
         contactButtonKey.currentContext!.findRenderObject() as RenderBox;
-    final Size size = renderBox.size;
     final Offset position = renderBox.localToGlobal(Offset.zero);
 
     _overlayEntry = OverlayEntry(
@@ -169,14 +175,14 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
             ),
           ),
           Positioned(
-            left: position.dx - 200,
-            top: position.dy + size.height,
+            left: position.dx - 150,
+            top: position.dy - 130,
             child: Material(
               color: Colors.transparent,
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(10),
                     bottomLeft: Radius.circular(10),
@@ -191,7 +197,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildOption(
                       SvgPicture.asset("assets/icons/phone.svg",
@@ -290,6 +296,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   void _showSortBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: CustomColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -315,7 +322,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ListTile(
                 title: const Text('Popularity'),
                 onTap: () {
-                  pricePerSqFt = false;
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -330,8 +336,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ListTile(
                 title: const Text('Price - low to high'),
                 onTap: () {
-                  pricePerSqFt = false;
-
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -346,8 +350,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ListTile(
                 title: const Text('Price - high to low'),
                 onTap: () {
-                  pricePerSqFt = false;
-
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -362,7 +364,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ListTile(
                 title: const Text('Price per sq.ft - high to low'),
                 onTap: () {
-                  pricePerSqFt = true;
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -377,7 +378,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ListTile(
                 title: const Text('Price per sq.ft - low to high'),
                 onTap: () {
-                  pricePerSqFt = true;
                   if (ref
                       .watch(homePropertiesProvider)
                       .filteredApartments
@@ -385,6 +385,34 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     ref
                         .read(homePropertiesProvider.notifier)
                         .sortFilteredApartments(4);
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Posession - earliest to furthest'),
+                onTap: () {
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(5);
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('Posession - furthest to earliest'),
+                onTap: () {
+                  if (ref
+                      .watch(homePropertiesProvider)
+                      .filteredApartments
+                      .isNotEmpty) {
+                    ref
+                        .read(homePropertiesProvider.notifier)
+                        .sortFilteredApartments(6);
                   }
                   Navigator.pop(context);
                 },
@@ -547,6 +575,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
       _overlayEntry?.remove();
       _overlayEntry = null;
       _timer?.cancel();
+      _masterScrollController.removeListener(() {});
     }
     _scaffoldMessengerKey.currentState?.clearSnackBars();
     super.dispose();
@@ -557,6 +586,54 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     return Scaffold(
       backgroundColor: CustomColors.black10,
       key: _scaffoldMessengerKey,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 64, width: 64),
+          if (ref.watch(comparePropertyProvider).isNotEmpty)
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                backgroundColor: CustomColors.green50,
+              ),
+              onPressed: () {
+                upSlideTransition(
+                    context, const CompareProperties(isPop: true));
+              },
+              icon: SvgPicture.asset(
+                "assets/icons/compare_active.svg",
+                color: CustomColors.black,
+              ),
+              label: Text(
+                "${ref.watch(comparePropertyProvider).length} properties",
+                style: const TextStyle(
+                  color: CustomColors.black,
+                ),
+              ),
+            ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            height: showScrollUpButton ? 50 : 0,
+            width: showScrollUpButton ? 50 : 0,
+            child: FloatingActionButton(
+              onPressed: () {
+                _masterScrollController
+                    .animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeIn,
+                )
+                    .then((value) {
+                  setState(() {
+                    showScrollUpButton = false;
+                  });
+                });
+              },
+              child: showScrollUpButton ? const Icon(Icons.arrow_upward) : null,
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         controller: _masterScrollController,
         child: Column(
@@ -1137,7 +1214,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     ),
             ),
             if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
-              const BestDealsSection(height: 200, showTitle: false),
+              const BestDealsSection(height: 250, showTitle: false),
             loading
                 ? SizedBox(
                     width: double.infinity,
@@ -1185,7 +1262,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            margin: const EdgeInsets.only(top: 16),
+                            margin: const EdgeInsets.only(top: 4),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 10),
                             child: Column(
@@ -1280,7 +1357,26 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                             if (displayAds) {
                                               if (index % 5 == 4) {
                                                 List<Widget> widgetList = [
-                                                  const ProjectSnippets(),
+                                                  VisibilityDetector(
+                                                    key: const Key(
+                                                        'project-snippets'),
+                                                    onVisibilityChanged:
+                                                        (visibilityInfo) {
+                                                      if (visibilityInfo
+                                                              .visibleFraction >
+                                                          0) {
+                                                        setState(() {
+                                                          showScrollUpButton =
+                                                              true;
+                                                        });
+                                                        debugPrint(
+                                                            'showScrollUpButton: $showScrollUpButton');
+                                                      }
+                                                    },
+                                                    child:
+                                                        const ProjectSnippets(
+                                                            leftPadding: false),
+                                                  ),
                                                   Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.start,
@@ -1298,10 +1394,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                       ),
                                                       const SizedBox(height: 8),
                                                       EditorsChoiceCard(
-                                                          apartments: ref
-                                                              .watch(
-                                                                  homePropertiesProvider)
-                                                              .newProjects),
+                                                        apartments: ref
+                                                            .watch(
+                                                                homePropertiesProvider)
+                                                            .newProjects,
+                                                        leftPadding: false,
+                                                      ),
                                                       const SizedBox(
                                                           height: 10),
                                                     ],
@@ -1309,7 +1407,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                   const BudgetHomes(),
                                                   const LocationHomes(),
                                                   const ReadyToMovein(),
-                                                  const UltraLuxuryHomes(),
+                                                  const UltraLuxuryHomes(
+                                                      leftPadding: false),
                                                   const NewLaunchSection(
                                                       title: "Editor's Choice"),
                                                 ];
@@ -1455,39 +1554,97 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                         .filteredApartments
                                         .length <=
                                     5)
-                                  const ProjectSnippets(),
+                                  Container(
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.only(top: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: CustomColors.white,
+                                      borderRadius: BorderRadius.circular(6),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: CustomColors.black
+                                              .withOpacity(0.2),
+                                          blurRadius: 10,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 0),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const ProjectSnippets(),
+                                  ),
                                 if (ref
                                         .watch(homePropertiesProvider)
                                         .filteredApartments
                                         .length <=
                                     9)
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Padding(
-                                        padding: EdgeInsets.all(10),
-                                        child: Text(
-                                          "New Launches",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                  Container(
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.only(top: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: CustomColors.white,
+                                      borderRadius: BorderRadius.circular(6),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: CustomColors.black
+                                              .withOpacity(0.2),
+                                          blurRadius: 10,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 0),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 10, bottom: 10),
+                                          child: Text(
+                                            "New Launches",
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      EditorsChoiceCard(
-                                          apartments: ref
-                                              .watch(homePropertiesProvider)
-                                              .newProjects),
-                                    ],
+                                        EditorsChoiceCard(
+                                            apartments: ref
+                                                .watch(homePropertiesProvider)
+                                                .newProjects),
+                                      ],
+                                    ),
                                   ),
                                 if (ref
                                         .watch(homePropertiesProvider)
                                         .filteredApartments
                                         .length <=
                                     13)
-                                  const BudgetHomes(),
+                                  Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.only(top: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: CustomColors.white,
+                                        borderRadius: BorderRadius.circular(6),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: CustomColors.black
+                                                .withOpacity(0.2),
+                                            blurRadius: 10,
+                                            spreadRadius: 0,
+                                            offset: const Offset(0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const BudgetHomes()),
                                 if (ref
                                         .watch(homePropertiesProvider)
                                         .filteredApartments
@@ -1522,7 +1679,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                               color: CustomColors.white,
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            margin: const EdgeInsets.only(top: 16),
+                            margin: const EdgeInsets.only(top: 4),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
                               vertical: 10,
@@ -1532,7 +1689,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  height: 100,
+                                  height: 370,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
@@ -1550,19 +1707,22 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                         ),
                                       ),
                                       const SizedBox(height: 4),
-                                      Expanded(
+                                      SizedBox(
+                                        height: 340,
+                                        width: double.infinity,
                                         child: SingleChildScrollView(
                                           scrollDirection: Axis.horizontal,
-                                          child: Row(
+                                          child: Wrap(
+                                            direction: Axis.vertical,
+                                            runSpacing: 6,
+                                            spacing: 6,
                                             children: [
-                                              const SizedBox(width: 2),
                                               ...List.generate(
                                                 ref
                                                     .watch(localityListProvider)
                                                     .length,
                                                 (index) => GestureDetector(
                                                   onTap: () {
-                                                    //add locality to filters
                                                     ref
                                                         .read(filtersProvider
                                                             .notifier)
@@ -1575,22 +1735,24 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                     getFilteredApartments(
                                                         useDefaultParams: true);
                                                     Future.delayed(
-                                                        const Duration(
-                                                            milliseconds: 500),
-                                                        () {
-                                                      _masterScrollController
-                                                          .animateTo(
-                                                        0,
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500),
-                                                        curve: Curves.easeInOut,
-                                                      );
-                                                    });
+                                                      const Duration(
+                                                          milliseconds: 500),
+                                                      () {
+                                                        _masterScrollController
+                                                            .animateTo(
+                                                          0,
+                                                          duration:
+                                                              const Duration(
+                                                                  milliseconds:
+                                                                      500),
+                                                          curve:
+                                                              Curves.easeInOut,
+                                                        );
+                                                      },
+                                                    );
                                                   },
                                                   child: Container(
-                                                    height: double.infinity,
+                                                    height: 80,
                                                     width:
                                                         MediaQuery.of(context)
                                                                 .size
@@ -1613,16 +1775,13 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                             .bottomRight,
                                                       ),
                                                     ),
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 10),
                                                     child: Stack(
                                                       children: [
                                                         Positioned.fill(
                                                           child: Image.asset(
-                                                              "assets/images/locations_bg.jpg",
-                                                              fit:
-                                                                  BoxFit.cover),
+                                                            "assets/images/locations_bg.jpg",
+                                                            fit: BoxFit.cover,
+                                                          ),
                                                         ),
                                                         Positioned.fill(
                                                           child: Container(
@@ -1644,14 +1803,16 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                                 index],
                                                             textAlign: TextAlign
                                                                 .center,
-                                                            style: const TextStyle(
-                                                                color:
-                                                                    CustomColors
-                                                                        .white,
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
+                                                            style:
+                                                                const TextStyle(
+                                                              color:
+                                                                  CustomColors
+                                                                      .white,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
                                                       ],
@@ -1659,7 +1820,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 10),
                                             ],
                                           ),
                                         ),

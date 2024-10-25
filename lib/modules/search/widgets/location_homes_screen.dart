@@ -17,7 +17,7 @@ class LocationHomes extends ConsumerStatefulWidget {
 
 class _LocationHomesState extends ConsumerState<LocationHomes> {
   int selectedlocation = 0;
-  PageController pageController = PageController();
+  ScrollController _scrollController = ScrollController();
 
   void getLocationHomes(double lat, double long) async {
     debugPrint("-----------------getting location homes");
@@ -66,7 +66,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
     } else {
       return Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(top: 16),
+        margin: const EdgeInsets.only(top: 4),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: CustomColors.white,
@@ -138,7 +138,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                         onPressed: () {
                           setState(() {
                             selectedlocation = index;
-                            pageController.animateTo(
+                            _scrollController.animateTo(
                               0,
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
@@ -175,6 +175,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                           "No apartments found in ${ref.watch(locationHomesProvider.notifier).getLocations()[selectedlocation]}"),
                     )
                   : PropertyStackCard(
+                      controller: _scrollController,
                       cardWidth: MediaQuery.of(context).size.width * 0.9,
                       apartments: ref
                           .watch(locationHomesProvider.notifier)

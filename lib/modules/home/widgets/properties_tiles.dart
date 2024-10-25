@@ -16,16 +16,17 @@ class PropertiesTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      height: 180,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 160,
+          height: double.infinity,
           width: double.infinity,
           margin: const EdgeInsets.only(bottom: 4),
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(20),
             color: Colors.black,
             image: DecorationImage(
               opacity: 0.6,

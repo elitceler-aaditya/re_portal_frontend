@@ -10,7 +10,9 @@ import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 class ProjectSnippets extends ConsumerStatefulWidget {
-  const ProjectSnippets({super.key});
+  final bool leftPadding;
+
+  const ProjectSnippets({super.key, this.leftPadding = true});
 
   @override
   ConsumerState<ProjectSnippets> createState() => _ProjectSnippetsState();
@@ -72,7 +74,7 @@ class _ProjectSnippetsState extends ConsumerState<ProjectSnippets> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.only(left: 4, top: 4),
+          padding: EdgeInsets.only(left: 8, top: 4),
           child: Text(
             "Project Snippets",
             style: TextStyle(
@@ -90,6 +92,7 @@ class _ProjectSnippetsState extends ConsumerState<ProjectSnippets> {
               children: List.generate(
                 apartments.length,
                 (index) => ProjectSnippetCard(
+                  leftPadding: widget.leftPadding,
                   apartment: apartments[index],
                   videoLink: videoLinks[index],
                 ),

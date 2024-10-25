@@ -73,7 +73,7 @@ _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>
       projectType: json['projectType'] as String? ?? '',
       projectLaunchedDate: json['projectLaunchedDate'] as String? ?? '',
       projectPossession: json['projectPossession'] as String? ?? '',
-      pricePerSquareFeetRate: json['pricePerSquareFeetRate'] as String? ?? '',
+      pricePerSquareFeetRate: json['pricePerSquareFeetRate'] as String? ?? '0',
       totalArea: json['totalArea'] as String? ?? '',
       landMark: json['landMark'] as String? ?? '',
       nearByHighlights: json['nearByHighlights'] as String? ?? '',

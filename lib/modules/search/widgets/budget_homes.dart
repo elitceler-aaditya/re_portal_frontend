@@ -68,7 +68,7 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.only(left: 10, bottom: 8),
                 child: Text(
                   "Budget Homes",
                   style: TextStyle(
@@ -86,14 +86,14 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
                       ...List.generate(
                         budgetCategories.length,
                         (index) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.only(left: 8),
                           child: TextButton(
                             style: TextButton.styleFrom(
                               backgroundColor: selectedBudget == index
                                   ? CustomColors.primary
                                   : Colors.transparent,
-                              side:
-                                  const BorderSide(color: CustomColors.black50),
+                              side: const BorderSide(
+                                  color: CustomColors.primary50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

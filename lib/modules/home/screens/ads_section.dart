@@ -57,7 +57,7 @@ class _AdsSectionState extends ConsumerState<AdsSection> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: CustomColors.white,

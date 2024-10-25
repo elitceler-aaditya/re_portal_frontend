@@ -68,7 +68,12 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
         _removeOverlay();
         onTap();
       },
-      child: Padding(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(100),
+        ),
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Row(
           children: [
@@ -116,7 +121,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
     // Adjust vertical position if it goes off-screen
     if (top + menuHeight > screenSize.height) {
-      top = position.dy - menuHeight;
+      top = position.dy - menuHeight - 10;
     }
 
     _overlayEntry = OverlayEntry(
@@ -139,7 +144,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                 width: menuWidth,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
@@ -407,6 +412,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
       _nameController.text = ref.read(userProvider).name;
       _mobileController.text = ref.read(userProvider).phoneNumber;
       _emailController.text = ref.read(userProvider).email;
+      _enquiryDetails.text =
+          'Hi. I am interested in your property. Please share more details on this project.';
     });
   }
 

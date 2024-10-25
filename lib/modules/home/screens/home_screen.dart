@@ -226,7 +226,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: CustomColors.white,
             borderRadius: BorderRadius.circular(6),
           ),
-          margin: const EdgeInsets.only(top: 16),
+          margin: const EdgeInsets.only(top: 4),
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -243,8 +243,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               PropertyStackCard(
-                  cardHeight: 280,
-                  cardWidth: MediaQuery.of(context).size.width * 0.85,
+                  cardHeight: 300,
+                  cardWidth: MediaQuery.of(context).size.width * 0.9,
                   apartments:
                       ref.watch(homePropertiesProvider).selectedProperties),
             ],
@@ -255,7 +255,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: CustomColors.white,
             borderRadius: BorderRadius.circular(6),
           ),
-          margin: const EdgeInsets.only(top: 16),
+          margin: const EdgeInsets.only(top: 4),
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -35,12 +35,12 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
         color: CustomColors.white,
         borderRadius: BorderRadius.circular(6),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!widget.showTitle) const SizedBox(height: 10),
+          if (widget.showTitle) const SizedBox(height: 10),
           if (widget.showTitle)
             const Padding(
               padding: EdgeInsets.only(left: 8, bottom: 8),
@@ -146,7 +146,6 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                             ),
                           ),
                           const SizedBox(height: 8),
-
                           Row(
                             children: [
                               const Icon(
@@ -156,7 +155,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configuration.join(",")}",
+                                "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configuration.take(2).join(", ")}${ref.watch(homePropertiesProvider).bestDeals[index].configuration.length > 2 ? ' +${ref.watch(homePropertiesProvider).bestDeals[index].configuration.length - 2} more' : ''}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 14,
@@ -165,22 +164,6 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                               ),
                             ],
                           ),
-                          // const Text(
-                          //   "Available in",
-                          //   style: const TextStyle(
-                          //     color: CustomColors.white,
-                          //     fontSize: 12,
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
-                          // Text(
-                          //   ,
-                          //   style: const TextStyle(
-                          //     color: CustomColors.white,
-                          //     fontSize: 12,
-                          //     fontWeight: FontWeight.w500,
-                          //   ),
-                          // ),
                           const SizedBox(height: 4),
                           Text(
                             "Price starts from ₹${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].budget)}",

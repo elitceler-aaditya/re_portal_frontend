@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
+import 'package:re_portal_frontend/modules/home/screens/home_Maps_screen.dart';
 import 'package:re_portal_frontend/modules/home/screens/home_screen.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
@@ -18,14 +19,19 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   final List<Widget> _screens = const [
     HomeScreen(),
     CompareProperties(),
+    HomeMapsScreen(),
     SavedProperties(),
     ProfileScreen(),
   ];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: _screens[ref.watch(navBarIndexProvider)],
       bottomNavigationBar: const CustomBottomNavBar(),
     );

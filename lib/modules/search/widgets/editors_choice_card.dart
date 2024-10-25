@@ -5,10 +5,12 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class EditorsChoiceCard extends StatelessWidget {
   final List<ApartmentModel> apartments;
+  final bool leftPadding;
 
   const EditorsChoiceCard({
     super.key,
     required this.apartments,
+    this.leftPadding = true,
   });
   String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
@@ -46,7 +48,8 @@ class EditorsChoiceCard extends StatelessWidget {
             },
             child: Container(
               width: MediaQuery.of(context).size.width * 0.85,
-              margin: const EdgeInsets.only(left: 10),
+              margin: EdgeInsets.only(
+                  left: leftPadding ? 10 : 0, right: leftPadding ? 0 : 10),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,

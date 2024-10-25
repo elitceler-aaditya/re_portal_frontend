@@ -8,7 +8,7 @@ class PhotoScrollingGallery extends StatefulWidget {
   final List<double> breakPoints;
   final List<String>? extraDetails;
   final int galleryIndex;
-  final String image;
+  final String? image;
 
   const PhotoScrollingGallery({
     super.key,
@@ -17,7 +17,7 @@ class PhotoScrollingGallery extends StatefulWidget {
     required this.breakPoints,
     required this.galleryIndex,
     this.extraDetails,
-    required this.image,
+    this.image,
   });
 
   @override
@@ -32,14 +32,24 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
   void initState() {
     super.initState();
     galleryIndex = widget.galleryIndex;
-    galleryController =
-        PageController(initialPage: widget.allImages.indexOf(widget.image))
-          ..addListener(() {
-            setState(() {
-              galleryIndex = widget.breakPoints.indexWhere((breakpoint) =>
-                  (galleryController?.page?.toDouble() ?? 0) <= breakpoint);
+    if (widget.image != null) {
+      galleryController =
+          PageController(initialPage: widget.allImages.indexOf(widget.image!))
+            ..addListener(() {
+              setState(() {
+                galleryIndex = widget.breakPoints.indexWhere((breakpoint) =>
+                    (galleryController?.page?.toDouble() ?? 0) <= breakpoint);
+              });
             });
+    } else {
+      galleryController = PageController()
+        ..addListener(() {
+          setState(() {
+            galleryIndex = widget.breakPoints.indexWhere((breakpoint) =>
+                (galleryController?.page?.toDouble() ?? 0) <= breakpoint);
           });
+        });
+    }
   }
 
   @override
@@ -117,7 +127,7 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
             left: 0,
             right: 0,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
@@ -180,8 +190,7 @@ class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
                 ),
                 if (widget.extraDetails != null &&
                     widget.extraDetails!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 8),
+                  Center(
                     child: Text(
                       widget.extraDetails![galleryIndex],
                       style: const TextStyle(

@@ -31,6 +31,7 @@ mixin _$ApartmentModel {
   int get pricePerSquareFeetRate => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  String get projectPossession => throw _privateConstructorUsedError;
   String get coverImage => throw _privateConstructorUsedError;
   List<String> get projectGallery => throw _privateConstructorUsedError;
   List<String> get configuration => throw _privateConstructorUsedError;
@@ -66,6 +67,7 @@ abstract class $ApartmentModelCopyWith<$Res> {
       int pricePerSquareFeetRate,
       double latitude,
       double longitude,
+      String projectPossession,
       String coverImage,
       List<String> projectGallery,
       List<String> configuration,
@@ -100,6 +102,7 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
     Object? pricePerSquareFeetRate = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? projectPossession = null,
     Object? coverImage = null,
     Object? projectGallery = null,
     Object? configuration = null,
@@ -152,6 +155,10 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      projectPossession: null == projectPossession
+          ? _value.projectPossession
+          : projectPossession // ignore: cast_nullable_to_non_nullable
+              as String,
       coverImage: null == coverImage
           ? _value.coverImage
           : coverImage // ignore: cast_nullable_to_non_nullable
@@ -200,6 +207,7 @@ abstract class _$$ApartmentModelImplCopyWith<$Res>
       int pricePerSquareFeetRate,
       double latitude,
       double longitude,
+      String projectPossession,
       String coverImage,
       List<String> projectGallery,
       List<String> configuration,
@@ -232,6 +240,7 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
     Object? pricePerSquareFeetRate = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? projectPossession = null,
     Object? coverImage = null,
     Object? projectGallery = null,
     Object? configuration = null,
@@ -284,6 +293,10 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      projectPossession: null == projectPossession
+          ? _value.projectPossession
+          : projectPossession // ignore: cast_nullable_to_non_nullable
+              as String,
       coverImage: null == coverImage
           ? _value.coverImage
           : coverImage // ignore: cast_nullable_to_non_nullable
@@ -327,6 +340,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
       this.pricePerSquareFeetRate = 0,
       this.latitude = 0.0,
       this.longitude = 0.0,
+      this.projectPossession = "",
       this.coverImage = "",
       final List<String> projectGallery = const [],
       final List<String> configuration = const [],
@@ -374,6 +388,9 @@ class _$ApartmentModelImpl implements _ApartmentModel {
   final double longitude;
   @override
   @JsonKey()
+  final String projectPossession;
+  @override
+  @JsonKey()
   final String coverImage;
   final List<String> _projectGallery;
   @override
@@ -405,7 +422,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
 
   @override
   String toString() {
-    return 'ApartmentModel(projectId: $projectId, builderID: $builderID, apartmentID: $apartmentID, companyPhone: $companyPhone, companyName: $companyName, name: $name, description: $description, projectLocation: $projectLocation, pricePerSquareFeetRate: $pricePerSquareFeetRate, latitude: $latitude, longitude: $longitude, coverImage: $coverImage, projectGallery: $projectGallery, configuration: $configuration, videoLink: $videoLink, flatSize: $flatSize, budget: $budget)';
+    return 'ApartmentModel(projectId: $projectId, builderID: $builderID, apartmentID: $apartmentID, companyPhone: $companyPhone, companyName: $companyName, name: $name, description: $description, projectLocation: $projectLocation, pricePerSquareFeetRate: $pricePerSquareFeetRate, latitude: $latitude, longitude: $longitude, projectPossession: $projectPossession, coverImage: $coverImage, projectGallery: $projectGallery, configuration: $configuration, videoLink: $videoLink, flatSize: $flatSize, budget: $budget)';
   }
 
   @override
@@ -434,6 +451,8 @@ class _$ApartmentModelImpl implements _ApartmentModel {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
+            (identical(other.projectPossession, projectPossession) ||
+                other.projectPossession == projectPossession) &&
             (identical(other.coverImage, coverImage) ||
                 other.coverImage == coverImage) &&
             const DeepCollectionEquality()
@@ -462,6 +481,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
       pricePerSquareFeetRate,
       latitude,
       longitude,
+      projectPossession,
       coverImage,
       const DeepCollectionEquality().hash(_projectGallery),
       const DeepCollectionEquality().hash(_configuration),
@@ -499,6 +519,7 @@ abstract class _ApartmentModel implements ApartmentModel {
       final int pricePerSquareFeetRate,
       final double latitude,
       final double longitude,
+      final String projectPossession,
       final String coverImage,
       final List<String> projectGallery,
       final List<String> configuration,
@@ -531,6 +552,8 @@ abstract class _ApartmentModel implements ApartmentModel {
   double get latitude;
   @override
   double get longitude;
+  @override
+  String get projectPossession;
   @override
   String get coverImage;
   @override

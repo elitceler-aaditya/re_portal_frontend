@@ -39,7 +39,7 @@ class LifestyleProjectCard extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.95,
         height: MediaQuery.of(context).size.width * 0.8,
         clipBehavior: Clip.hardEdge,
-        margin: const EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(left: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: CustomColors.black25),
