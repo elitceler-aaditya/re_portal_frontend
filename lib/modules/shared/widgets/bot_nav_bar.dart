@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
+import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
+import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 
 class CustomBottomNavBar extends ConsumerStatefulWidget {
   const CustomBottomNavBar({super.key});
@@ -79,15 +81,37 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 children: [
                   Container(
                     color: CustomColors.white,
-                    child: ref.watch(navBarIndexProvider) == 1
-                        ? SvgPicture.asset(
-                            'assets/icons/compare.svg',
-                            color: CustomColors.primary,
+                    child: ref.watch(comparePropertyProvider).isNotEmpty
+                        ? Badge(
+                            backgroundColor: ref.watch(navBarIndexProvider) == 1
+                                ? CustomColors.primary
+                                : CustomColors.primary50,
+                            label: Text(
+                              ref
+                                  .watch(comparePropertyProvider)
+                                  .length
+                                  .toString(),
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                            child: ref.watch(navBarIndexProvider) == 1
+                                ? SvgPicture.asset(
+                                    'assets/icons/compare.svg',
+                                    color: CustomColors.primary,
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/icons/compare.svg',
+                                    color: CustomColors.primary50,
+                                  ),
                           )
-                        : SvgPicture.asset(
-                            'assets/icons/compare.svg',
-                            color: CustomColors.primary50,
-                          ),
+                        : ref.watch(navBarIndexProvider) == 1
+                            ? SvgPicture.asset(
+                                'assets/icons/compare.svg',
+                                color: CustomColors.primary,
+                              )
+                            : SvgPicture.asset(
+                                'assets/icons/compare.svg',
+                                color: CustomColors.primary50,
+                              ),
                   ),
                   Text(
                     'Compare',
@@ -146,15 +170,41 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 children: [
                   Container(
                     color: CustomColors.white,
-                    child: ref.watch(navBarIndexProvider) == 3
-                        ? SvgPicture.asset(
-                            'assets/icons/like.svg',
-                            color: CustomColors.primary,
+                    child: ref.watch(savedPropertiesProvider).isNotEmpty
+                        ? Badge(
+                            backgroundColor: ref.watch(navBarIndexProvider) == 3
+                                ? CustomColors.primary
+                                : CustomColors.primary50,
+                            label: Text(
+                              ref
+                                  .watch(savedPropertiesProvider)
+                                  .length
+                                  .toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            child: ref.watch(navBarIndexProvider) == 3
+                                ? SvgPicture.asset(
+                                    'assets/icons/like.svg',
+                                    color: CustomColors.primary,
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/icons/like.svg',
+                                    color: CustomColors.primary50,
+                                  ),
                           )
-                        : SvgPicture.asset(
-                            'assets/icons/like.svg',
-                            color: CustomColors.primary50,
-                          ),
+                        : ref.watch(navBarIndexProvider) == 3
+                            ? SvgPicture.asset(
+                                'assets/icons/like.svg',
+                                color: CustomColors.primary,
+                              )
+                            : SvgPicture.asset(
+                                'assets/icons/like.svg',
+                                color: CustomColors.primary50,
+                              ),
                   ),
                   Text(
                     'Favourites',

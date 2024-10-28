@@ -610,9 +610,11 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                       onTap: () {
                                         setState(() {
                                           if (amenities.contains(e)) {
-                                            amenities.remove(e);
+                                            amenities = List.from(amenities)
+                                              ..remove(e);
                                           } else {
-                                            amenities.add(e);
+                                            amenities = List.from(amenities)
+                                              ..add(e);
                                           }
                                         });
                                         _amenitySearchController.clear();
@@ -642,9 +644,11 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                       onTap: () {
                                         setState(() {
                                           if (amenities.contains(e)) {
-                                            amenities.remove(e);
+                                            amenities = List.from(amenities)
+                                              ..remove(e);
                                           } else {
-                                            amenities.add(e);
+                                            amenities = List.from(amenities)
+                                              ..add(e);
                                           }
                                         });
                                         _amenitySearchController.clear();

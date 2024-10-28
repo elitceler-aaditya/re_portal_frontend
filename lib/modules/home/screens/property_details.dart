@@ -603,9 +603,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               TextButton.icon(
                                 key: contactButtonKey,
                                 style: IconButton.styleFrom(
-                                  backgroundColor: _overlayEntry != null
-                                      ? CustomColors.white
-                                      : CustomColors.primary,
+                                  backgroundColor: CustomColors.primary,
                                 ),
                                 onPressed: () {
                                   if (ref.read(userProvider).token.isEmpty) {
@@ -627,19 +625,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     setState(() {});
                                   }
                                 },
-                                icon: SvgPicture.asset(
-                                  "assets/icons/phone.svg",
-                                  color: _overlayEntry != null
-                                      ? CustomColors.primary
-                                      : CustomColors.white,
-                                ),
-                                label: Text(
+                                icon: SvgPicture.asset("assets/icons/phone.svg",
+                                    color: CustomColors.white),
+                                label: const Text(
                                   "Contact Builder",
-                                  style: TextStyle(
-                                    color: _overlayEntry != null
-                                        ? CustomColors.primary
-                                        : CustomColors.white,
-                                  ),
+                                  style: TextStyle(color: CustomColors.white),
                                 ),
                               ),
                             ],
@@ -660,14 +650,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -712,14 +694,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -881,21 +855,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      padding: EdgeInsets.only(left: 10),
                       child: Text(
                         "Amenities",
                         style: TextStyle(
@@ -907,163 +873,189 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(width: 4),
-                          Column(
-                            children: [
-                              const Text(
-                                "General Amenities",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: CustomColors.black,
-                                ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 160,
+                              margin: const EdgeInsets.only(left: 10),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 50,
                               ),
-                              const SizedBox(height: 8),
-                              Container(
-                                height: 150,
-                                margin:
-                                    const EdgeInsets.only(right: 10, left: 2),
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width - 50,
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.black.withOpacity(0.2),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 0),
-                                    ),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight,
+                                  colors: [
+                                    Color(0xFFFFCAB2),
+                                    Color(0xFFFFFFFF),
                                   ],
-                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: SingleChildScrollView(
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    children: List.generate(
-                                      _projectDetails.projectDetails.amenities
-                                          .split(",")
-                                          .length,
-                                      (index) => CustomChip(
-                                        text: _projectDetails
-                                            .projectDetails.amenities
-                                            .split(",")[index],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.2),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "General Amenities",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: CustomColors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Wrap(
+                                        direction: Axis.horizontal,
+                                        children: List.generate(
+                                          _projectDetails
+                                              .projectDetails.amenities
+                                              .split(",")
+                                              .length,
+                                          (index) => CustomChip(
+                                            text: _projectDetails
+                                                .projectDetails.amenities
+                                                .split(",")[index],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                              const SizedBox(height: 10),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const Text(
-                                "Clubhouse Amenities",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: CustomColors.black,
-                                ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              height: 160,
+                              margin: const EdgeInsets.only(left: 10),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 50,
                               ),
-                              const SizedBox(height: 8),
-                              Container(
-                                height: 150,
-                                margin: const EdgeInsets.only(right: 10),
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width - 50,
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.black.withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 0),
-                                    ),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight,
+                                  colors: [
+                                    Color(0xFFFFCAB2),
+                                    Color(0xFFFFFFFF),
                                   ],
-                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: SingleChildScrollView(
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    children: List.generate(
-                                      _projectDetails
-                                          .projectDetails.clubHouseAmenities
-                                          .split(",")
-                                          .length,
-                                      (index) => CustomChip(
-                                        text: _projectDetails
-                                            .projectDetails.clubHouseAmenities
-                                            .split(",")[index],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Clubhouse Amenities",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: CustomColors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Wrap(
+                                        direction: Axis.horizontal,
+                                        children: List.generate(
+                                          _projectDetails
+                                              .projectDetails.clubHouseAmenities
+                                              .split(",")
+                                              .length,
+                                          (index) => CustomChip(
+                                            text: _projectDetails.projectDetails
+                                                .clubHouseAmenities
+                                                .split(",")[index],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              const Text(
-                                "Outdoor Amenities",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: CustomColors.black,
-                                ),
+                            ),
+                            Container(
+                              height: 160,
+                              margin: const EdgeInsets.only(left: 10),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width - 50,
                               ),
-                              const SizedBox(height: 8),
-                              Container(
-                                height: 150,
-                                margin: const EdgeInsets.only(right: 10),
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width - 50,
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.black.withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 0),
-                                    ),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight,
+                                  colors: [
+                                    Color(0xFFFFCAB2),
+                                    Color(0xFFFFFFFF),
                                   ],
-                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: SingleChildScrollView(
-                                  child: Wrap(
-                                    direction: Axis.horizontal,
-                                    children: List.generate(
-                                      _projectDetails
-                                          .projectDetails.outdoorAmenities
-                                          .split(",")
-                                          .length,
-                                      (index) => CustomChip(
-                                        text: _projectDetails
-                                            .projectDetails.outdoorAmenities
-                                            .split(",")[index],
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Outdoor Amenities",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: CustomColors.black,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Wrap(
+                                        direction: Axis.horizontal,
+                                        children: List.generate(
+                                          _projectDetails
+                                              .projectDetails.outdoorAmenities
+                                              .split(",")
+                                              .length,
+                                          (index) => CustomChip(
+                                            text: _projectDetails
+                                                .projectDetails.outdoorAmenities
+                                                .split(",")[index],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -1079,14 +1071,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: CustomColors.black.withOpacity(0.2),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -1803,7 +1787,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             child: GestureDetector(
               onTap: _removeOverlay,
               child: Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.7),
               ),
             ),
           ),
@@ -1831,7 +1815,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildOption(
@@ -1864,7 +1849,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           }
                         }
                       },
-                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
@@ -1893,7 +1877,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           );
                         }
                       },
-                      CustomColors.green,
+                      delay: 100,
                     ),
                     _buildOption(
                       SizedBox(
@@ -1919,7 +1903,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           _removeOverlay();
                         }
                       },
-                      CustomColors.secondary,
+                      delay: 200,
                     ),
                   ],
                 ),
@@ -1939,28 +1923,45 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     setState(() {});
   }
 
-  Widget _buildOption(
-      Widget icon, String text, VoidCallback onTap, Color color) {
-    return InkWell(
-      onTap: () {
-        _removeOverlay();
-        onTap();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap,
+      {int delay = 0}) {
+    return Animate(
+      effects: [
+        FadeEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        SlideEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          begin: const Offset(0, 1),
+        ),
+      ],
+      child: InkWell(
+        onTap: () {
+          _removeOverlay();
+          onTap();
+        },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            icon,
-            const SizedBox(width: 12),
             Text(
               text,
-              style: TextStyle(color: color),
+              style: const TextStyle(color: Colors.white),
             ),
+            const SizedBox(width: 12),
+            Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child: icon),
           ],
         ),
       ),

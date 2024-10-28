@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:re_portal_frontend/modules/profile/screens/widgets/profile_textfields.dart';
+import 'package:re_portal_frontend/modules/profile/widgets/profile_textfields.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
 

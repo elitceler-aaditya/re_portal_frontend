@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
@@ -38,25 +39,45 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
     }
   }
 
-  Widget _buildOption(
-      Widget icon, String text, VoidCallback onTap, Color color) {
-    return InkWell(
-      onTap: () {
-        _removeOverlay();
-        onTap();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap,
+      {int delay = 0}) {
+    return Animate(
+      effects: [
+        FadeEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        SlideEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          begin: const Offset(0, 1),
+        ),
+      ],
+      child: InkWell(
+        onTap: () {
+          _removeOverlay();
+          onTap();
+        },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            icon,
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(width: 12),
-            Text(text, style: TextStyle(color: color)),
+            Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child: icon),
           ],
         ),
       ),
@@ -75,7 +96,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
         children: [
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.8),
             ),
           ),
           Positioned.fill(
@@ -88,7 +109,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
           ),
           Positioned(
             left: index % 2 == 0 ? 0 : position.dx - 150,
-            top: position.dy - size.height * 4.5,
+            top: position.dy - size.height * 5.5,
             child: Material(
               color: Colors.transparent,
               child: Container(
@@ -124,7 +145,6 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           (value) => _removeOverlay(),
                         );
                       },
-                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
@@ -142,7 +162,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           (value) => _removeOverlay(),
                         );
                       },
-                      CustomColors.green,
+                      delay: 100,
                     ),
                     _buildOption(
                       SizedBox(
@@ -153,7 +173,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           )),
                       'Request call back',
                       () => _removeOverlay(),
-                      CustomColors.secondary,
+                      delay: 200,
                     ),
                   ],
                 ),

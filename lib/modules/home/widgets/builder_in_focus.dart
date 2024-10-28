@@ -60,7 +60,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
               height: 360,
               viewportFraction: 0.85,
               enlargeCenterPage: true,
-              autoPlay: false,
+              autoPlay: true,
               padEnds: false,
               autoPlayInterval: const Duration(seconds: 5),
               autoPlayAnimationDuration: const Duration(milliseconds: 1000),

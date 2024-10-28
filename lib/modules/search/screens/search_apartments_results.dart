@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
@@ -33,7 +34,6 @@ import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
 import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
-import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
@@ -127,25 +127,45 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     }
   }
 
-  Widget _buildOption(
-      Widget icon, String text, VoidCallback onTap, Color? color) {
-    return InkWell(
-      onTap: () {
-        _removeOverlay();
-        onTap();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap,
+      {int delay = 0}) {
+    return Animate(
+      effects: [
+        FadeEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        SlideEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          begin: const Offset(0, 1),
+        ),
+      ],
+      child: InkWell(
+        onTap: () {
+          _removeOverlay();
+          onTap();
+        },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            icon,
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(width: 12),
-            Text(text, style: TextStyle(color: color)),
+            Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child: icon),
           ],
         ),
       ),
@@ -164,7 +184,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
         children: [
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.7),
             ),
           ),
           Positioned.fill(
@@ -177,7 +197,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
           ),
           Positioned(
             left: position.dx - 150,
-            top: position.dy - 130,
+            top: position.dy - 180,
             child: Material(
               color: Colors.transparent,
               child: Container(
@@ -210,7 +230,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           (value) => _removeOverlay(),
                         );
                       },
-                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
@@ -229,7 +248,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           (value) => _removeOverlay(),
                         );
                       },
-                      CustomColors.green,
+                      delay: 100,
                     ),
                     _buildOption(
                       SizedBox(
@@ -241,7 +260,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           )),
                       'Request call back',
                       () => _removeOverlay(),
-                      CustomColors.primary,
+                      delay: 200,
                     ),
                   ],
                 ),
@@ -461,6 +480,11 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
           debugPrint("Error: projects is not a List");
           allApartments = [];
         }
+      } else {
+        setState(() {
+          loading = false;
+          isEndReached = true;
+        });
       }
     }).onError((error, stackTrace) {
       debugPrint("error: $error");
@@ -577,6 +601,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
       _overlayEntry = null;
       _timer?.cancel();
       _masterScrollController.removeListener(() {});
+      _masterScrollController.dispose();
     }
     _scaffoldMessengerKey.currentState?.clearSnackBars();
     super.dispose();
@@ -595,7 +620,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
           if (ref.watch(comparePropertyProvider).isNotEmpty)
             TextButton.icon(
               style: TextButton.styleFrom(
-                backgroundColor: CustomColors.green50,
+                backgroundColor: CustomColors.green.withOpacity(0.7),
               ),
               onPressed: () {
                 upSlideTransition(
@@ -603,12 +628,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               },
               icon: SvgPicture.asset(
                 "assets/icons/compare_active.svg",
-                color: CustomColors.black,
+                color: CustomColors.white,
               ),
               label: Text(
                 "${ref.watch(comparePropertyProvider).length} properties",
                 style: const TextStyle(
-                  color: CustomColors.black,
+                  color: CustomColors.white,
                 ),
               ),
             ),
@@ -617,6 +642,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
             height: showScrollUpButton ? 50 : 0,
             width: showScrollUpButton ? 50 : 0,
             child: FloatingActionButton(
+              backgroundColor: CustomColors.primary.withOpacity(0.7),
               onPressed: () {
                 _masterScrollController
                     .animateTo(
@@ -634,6 +660,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   ? const Icon(
                       Icons.arrow_upward,
                       weight: 5,
+                      size: 30,
+                      color: CustomColors.white,
                     )
                   : null,
             ),
@@ -1220,7 +1248,17 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     ),
             ),
             if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
-              const BestDealsSection(height: 250, showTitle: false),
+              VisibilityDetector(
+                key: const Key('best-deals-detector'),
+                onVisibilityChanged: (visibilityInfo) {
+                  if (visibilityInfo.visibleFraction >= 0) {
+                    setState(() {
+                      showScrollUpButton = false;
+                    });
+                  }
+                },
+                child: const BestDealsSection(height: 250, showTitle: false),
+              ),
             loading
                 ? SizedBox(
                     width: double.infinity,
@@ -1406,8 +1444,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                             .newProjects,
                                                         leftPadding: false,
                                                       ),
-                                                      const SizedBox(
-                                                          height: 10),
                                                     ],
                                                   ),
                                                   const BudgetHomes(),
@@ -1489,56 +1525,21 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                             (currentPage + 1).toString();
                                         getMoreProjects(params: params);
                                       }
+
+                                      if (visibilityInfo.visibleFraction >= 0) {
+                                        setState(() {
+                                          showScrollUpButton = true;
+                                        });
+                                      }
                                     },
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 16.0),
-                                            child: Shimmer.fromColors(
-                                              baseColor: Colors.grey[300]!,
-                                              highlightColor: Colors.grey[100]!,
-                                              child: Container(
-                                                height: 150,
-                                                margin:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 16.0),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        if (!isListview)
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 16.0),
-                                              child: Shimmer.fromColors(
-                                                baseColor: Colors.grey[300]!,
-                                                highlightColor:
-                                                    Colors.grey[100]!,
-                                                child: Container(
-                                                  height: 150,
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16.0),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                                    child: Container(
+                                      height: 1,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
                                   ),
                               ],
@@ -1560,25 +1561,35 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                         .filteredApartments
                                         .length <=
                                     5)
-                                  Container(
-                                    width: double.infinity,
-                                    margin: const EdgeInsets.only(top: 4),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    decoration: BoxDecoration(
-                                      color: CustomColors.white,
-                                      borderRadius: BorderRadius.circular(6),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: CustomColors.black
-                                              .withOpacity(0.2),
-                                          blurRadius: 10,
-                                          spreadRadius: 0,
-                                          offset: const Offset(0, 0),
-                                        ),
-                                      ],
+                                  VisibilityDetector(
+                                    key: const Key('ads-detector'),
+                                    onVisibilityChanged: (visibilityInfo) {
+                                      if (visibilityInfo.visibleFraction >= 0) {
+                                        setState(() {
+                                          showScrollUpButton = true;
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.only(top: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: CustomColors.white,
+                                        borderRadius: BorderRadius.circular(6),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: CustomColors.black
+                                                .withOpacity(0.2),
+                                            blurRadius: 10,
+                                            spreadRadius: 0,
+                                            offset: const Offset(0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const ProjectSnippets(),
                                     ),
-                                    child: const ProjectSnippets(),
                                   ),
                                 if (ref
                                         .watch(homePropertiesProvider)
@@ -1634,7 +1645,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                     13)
                                   Container(
                                       width: double.infinity,
-                                      margin: const EdgeInsets.only(top: 16),
+                                      margin: const EdgeInsets.only(top: 4),
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 10),
                                       decoration: BoxDecoration(

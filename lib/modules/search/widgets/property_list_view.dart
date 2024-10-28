@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PropertyListView extends ConsumerStatefulWidget {
@@ -36,24 +38,45 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
     }
   }
 
-  Widget _buildOption(Widget icon, String text, VoidCallback onTap) {
-    return InkWell(
-      onTap: () {
-        _removeOverlay();
-        onTap();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap,
+      {int delay = 0}) {
+    return Animate(
+      effects: [
+        FadeEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        SlideEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          begin: const Offset(0, 1),
+        ),
+      ],
+      child: InkWell(
+        onTap: () {
+          _removeOverlay();
+          onTap();
+        },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            icon,
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(width: 12),
-            Text(text),
+            Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child: icon),
           ],
         ),
       ),
@@ -73,7 +96,7 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
         children: [
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.7),
             ),
           ),
           Positioned.fill(
@@ -85,8 +108,8 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
             ),
           ),
           Positioned(
-            left: position.dx - 200,
-            top: position.dy + size.height,
+            left: position.dx - 150,
+            top: position.dy - 180,
             child: Material(
               color: Colors.transparent,
               child: Container(
@@ -107,10 +130,14 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildOption(
-                      SvgPicture.asset("assets/icons/phone.svg"),
+                      SvgPicture.asset(
+                        "assets/icons/phone.svg",
+                        color: CustomColors.blue,
+                      ),
                       'Call now',
                       () {
                         launchUrl(Uri.parse("tel:${apartment.companyPhone}"))
@@ -120,28 +147,35 @@ class _PropertyListViewState extends ConsumerState<PropertyListView> {
                       },
                     ),
                     _buildOption(
-                        SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: SvgPicture.asset(
-                              "assets/icons/whatsapp.svg",
-                            )),
-                        'Chat on Whatsapp', () {
-                      launchUrl(Uri.parse(
-                              'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
-                          .then(
-                        (value) => _removeOverlay(),
-                      );
-                    }),
+                      SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: SvgPicture.asset(
+                            "assets/icons/whatsapp.svg",
+                            color: CustomColors.green,
+                          )),
+                      'Chat on Whatsapp',
+                      () {
+                        launchUrl(Uri.parse(
+                                'https://wa.me/+91${apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}'))
+                            .then(
+                          (value) => _removeOverlay(),
+                        );
+                      },
+                      delay: 100,
+                    ),
                     _buildOption(
-                        SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: SvgPicture.asset(
-                              "assets/icons/phone_incoming.svg",
-                            )),
-                        'Request call back',
-                        () => _removeOverlay()),
+                      SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: SvgPicture.asset(
+                            "assets/icons/phone_incoming.svg",
+                            color: CustomColors.primary,
+                          )),
+                      'Request call back',
+                      () => _removeOverlay(),
+                      delay: 200,
+                    ),
                   ],
                 ),
               ),

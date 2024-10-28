@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
+import 'package:re_portal_frontend/modules/search/models/search_result_model.dart';
 import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/search/widgets/search_apartment.dart';
@@ -31,28 +32,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
   List<String> recentSearchLocalities = [];
   List<String> recentSearchProjects = [];
   List<String> recentSearchBuilders = [];
-
-  void getLocalitiesList() async {
-    String baseUrl = dotenv.get('BASE_URL');
-    String url = "$baseUrl/user/getLocations";
-    Uri uri = Uri.parse(url);
-
-    try {
-      final response = await http.get(uri);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        List<dynamic> responseBody = responseData['data'];
-        List<String> localities =
-            responseBody.map((item) => item.toString()).toList();
-        ref.read(localityListProvider.notifier).setLocalities(localities);
-      } else {
-        throw Exception('Failed to load localities');
-      }
-    } catch (error, stackTrace) {
-      debugPrint("error: $error");
-      debugPrint("stackTrace: $stackTrace");
-    }
-  }
+  SearchResultModel searchResults =
+      SearchResultModel(projects: [], builders: [], locations: []);
 
   setRecentSearches() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -62,16 +43,41 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
     recentSearchBuilders = prefs.getStringList('searchHistory_builder') ?? [];
   }
 
+  Future<void> globalSearch(String searchTerm) async {
+    String baseUrl = dotenv.get('BASE_URL');
+    String url = "$baseUrl/project/globalSearchApartments";
+    Uri uri = Uri.parse(url);
+
+    try {
+      debugPrint("---------pinging: $uri");
+      final response = await http.get(
+        Uri.parse(
+            '$baseUrl/project/globalSearchApartments?searchTerm=$searchTerm'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        debugPrint("---------responseData: $responseData");
+        searchResults = SearchResultModel.fromJson(responseData);
+      } else {
+        throw Exception('${response.statusCode}: ${response.body}');
+      }
+    } catch (error) {
+      debugPrint("-------------error: $error");
+      // debugPrint("stackTrace: $stackTrace");
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(filtersProvider.notifier).clearBuilderName();
-      if (ref.watch(localityListProvider).isEmpty) {
-        getLocalitiesList();
-      }
-      localities = ref.read(filtersProvider).selectedLocalities;
       ref.read(filtersProvider.notifier).clearAllFilters();
+      localities = ref.read(filtersProvider).selectedLocalities;
       setRecentSearches();
     });
   }
@@ -136,7 +142,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                   child: TextField(
                     controller: _searchController,
                     autofocus: true,
-                    onChanged: (value) => setState(() {}),
+                    onChanged: (value) => globalSearch(value),
                     onSubmitted: (value) {
                       ref.read(searchBarProvider.notifier).setSearchTerm(value);
                       Navigator.push(
@@ -185,20 +191,10 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(width: double.infinity),
-                  if (ref
-                          .read(localityListProvider.notifier)
-                          .searchLocality(
-                              _searchController.text.trim(), localities)
-                          .isEmpty &&
-                      ref
-                          .watch(homePropertiesProvider.notifier)
-                          .getApartmentsByName(_searchController.text.trim())
-                          .isEmpty &&
-                      ref
-                          .watch(homePropertiesProvider.notifier)
-                          .getApartmentsByBuilderName(
-                              _searchController.text.trim())
-                          .isEmpty)
+                  if (_searchController.text.trim().isNotEmpty &&
+                      searchResults.builders.isEmpty &&
+                      searchResults.projects.isEmpty &&
+                      searchResults.locations.isEmpty)
                     Container(
                       height: 50,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -215,16 +211,12 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         ),
                       ),
                     ),
-                  // if (ref
-                  //     .read(localityListProvider.notifier)
-                  //     .searchLocality(_searchController.text.trim(), localities)
-                  //     .isNotEmpty)
-                  if (ref
-                          .watch(localityListProvider.notifier)
-                          .searchLocality(
-                              _searchController.text.trim(), localities)
-                          .isNotEmpty ||
-                      localities.isNotEmpty)
+                  if (_searchController.text.trim().isEmpty
+                      ? ref
+                          .watch(homePropertiesProvider.notifier)
+                          .getApartmentsByName(_searchController.text.trim())
+                          .isNotEmpty
+                      : searchResults.projects.isNotEmpty)
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -281,12 +273,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                     physics:
                                         const NeverScrollableScrollPhysics(),
                                     padding: EdgeInsets.zero,
-                                    itemCount: ref
-                                        .read(localityListProvider.notifier)
-                                        .searchLocality(
-                                            _searchController.text.trim(),
-                                            localities)
-                                        .length,
+                                    itemCount: searchResults.locations.length,
                                     itemBuilder: (context, index) {
                                       return GestureDetector(
                                         onTap: () async {
@@ -298,13 +285,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                               prefs.getStringList(
                                                       'searchHistory_location') ??
                                                   [];
-                                          final localityToAdd = ref
-                                              .read(
-                                                  localityListProvider.notifier)
-                                              .searchLocality(
-                                                _searchController.text.trim(),
-                                                localities,
-                                              )[index];
+                                          final localityToAdd =
+                                              searchResults.locations[index];
                                           if (!searchHistory
                                               .contains(localityToAdd)) {
                                             searchHistory.insert(0,
@@ -317,26 +299,18 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                                 searchHistory);
                                           }
 
-                                          final localityProvider = ref.read(
-                                              localityListProvider.notifier);
-                                          final searchedLocality =
-                                              localityProvider.searchLocality(
-                                            _searchController.text.trim(),
-                                            localities,
-                                          )[index];
-
                                           setState(() {
                                             final modifiableLocalities =
                                                 List<String>.from(localities);
                                             if (modifiableLocalities
-                                                .contains(searchedLocality)) {
+                                                .contains(localityToAdd)) {
                                               modifiableLocalities
-                                                  .remove(searchedLocality);
+                                                  .remove(localityToAdd);
                                             } else if (modifiableLocalities
                                                     .length <
                                                 4) {
                                               modifiableLocalities
-                                                  .add(searchedLocality);
+                                                  .add(localityToAdd);
                                               _searchController.clear();
                                             } else {
                                               errorSnackBar(context,
@@ -350,13 +324,9 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                               const EdgeInsets.only(bottom: 4),
                                           padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
-                                            color: localities.contains(ref
-                                                    .read(localityListProvider
-                                                        .notifier)
-                                                    .searchLocality(
-                                                        _searchController.text
-                                                            .trim(),
-                                                        localities)[index])
+                                            color: localities.contains(
+                                                    searchResults
+                                                        .locations[index])
                                                 ? CustomColors.primary20
                                                 : CustomColors.black10,
                                             borderRadius:
@@ -368,23 +338,12 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              Text(ref
-                                                  .read(localityListProvider
-                                                      .notifier)
-                                                  .searchLocality(
-                                                      _searchController.text
-                                                          .trim(),
-                                                      localities)[index]),
+                                              Text(searchResults
+                                                  .locations[index]),
                                               Icon(
-                                                localities.contains(ref
-                                                        .read(
-                                                            localityListProvider
-                                                                .notifier)
-                                                        .searchLocality(
-                                                            _searchController
-                                                                .text
-                                                                .trim(),
-                                                            localities)[index])
+                                                localities.contains(
+                                                        searchResults
+                                                            .locations[index])
                                                     ? Icons.check
                                                     : Icons.add,
                                                 size: 18,
@@ -518,11 +477,12 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         ],
                       ),
                     ),
-
-                  if (ref
-                      .watch(homePropertiesProvider.notifier)
-                      .getApartmentsByName(_searchController.text.trim())
-                      .isNotEmpty)
+                  if (_searchController.text.trim().isEmpty
+                      ? ref
+                          .watch(homePropertiesProvider.notifier)
+                          .getApartmentsByName(_searchController.text.trim())
+                          .isNotEmpty
+                      : searchResults.projects.isNotEmpty)
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
@@ -552,29 +512,43 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                           ),
                           SizedBox(
                             height: 100,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: ref
-                                  .watch(homePropertiesProvider.notifier)
-                                  .getApartmentsByName(
-                                      _searchController.text.trim())
-                                  .length,
-                              itemBuilder: (context, index) =>
-                                  SearchApartmentCard(
-                                apartment: ref
-                                    .watch(homePropertiesProvider.notifier)
-                                    .getApartmentsByName(
-                                        _searchController.text.trim())[index],
-                              ),
-                            ),
+                            child: _searchController.text.trim().isEmpty
+                                ? ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: ref
+                                        .watch(homePropertiesProvider.notifier)
+                                        .getApartmentsByName(
+                                            _searchController.text.trim())
+                                        .length,
+                                    itemBuilder: (context, index) =>
+                                        SearchApartmentCard(
+                                      apartment: ref
+                                          .watch(
+                                              homePropertiesProvider.notifier)
+                                          .getApartmentsByName(_searchController
+                                              .text
+                                              .trim())[index],
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: searchResults.projects.length,
+                                    itemBuilder: (context, index) =>
+                                        SearchApartmentCard(
+                                      apartment: searchResults.projects[index],
+                                    ),
+                                  ),
                           ),
                         ],
                       ),
                     ),
-                  if (ref
-                      .watch(homePropertiesProvider.notifier)
-                      .getApartmentsByBuilderName(_searchController.text.trim())
-                      .isNotEmpty)
+                  if (_searchController.text.trim().isEmpty
+                      ? ref
+                          .watch(homePropertiesProvider.notifier)
+                          .getApartmentsByBuilderName(
+                              _searchController.text.trim())
+                          .isNotEmpty
+                      : searchResults.builders.isNotEmpty)
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColors.white,
@@ -602,11 +576,12 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: List.generate(
-                                ref
-                                    .watch(homePropertiesProvider.notifier)
-                                    .getBuilderNames(
-                                        _searchController.text.trim())
-                                    .length,
+                                _searchController.text.trim().isEmpty
+                                    ? ref
+                                        .watch(homePropertiesProvider.notifier)
+                                        .getBuilderNames("")
+                                        .length
+                                    : searchResults.builders.length,
                                 (index) => GestureDetector(
                                   onTap: () async {
                                     SharedPreferences prefs =
@@ -615,11 +590,15 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                         prefs.getStringList(
                                                 'searchHistory_builder') ??
                                             [];
-                                    String companyName = ref
-                                        .watch(homePropertiesProvider.notifier)
-                                        .getBuilderNames(_searchController.text
-                                            .trim())[index]
-                                        .CompanyName;
+                                    String companyName = _searchController.text
+                                            .trim()
+                                            .isEmpty
+                                        ? ref
+                                            .watch(
+                                                homePropertiesProvider.notifier)
+                                            .getBuilderNames("")[index]
+                                            .CompanyName
+                                        : searchResults.builders[index].name;
 
                                     if (!searchHistory.contains(companyName)) {
                                       searchHistory.insert(0, companyName);
@@ -648,20 +627,35 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                     decoration: BoxDecoration(
                                       color: CustomColors.black,
                                       borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: NetworkImage(ref
-                                            .watch(
-                                                homePropertiesProvider.notifier)
-                                            .getBuilderNames(_searchController
-                                                .text
-                                                .trim())[index]
-                                            .CompanyLogo),
-                                        fit: BoxFit.cover,
-                                      ),
                                     ),
                                     alignment: Alignment.center,
                                     child: Stack(
                                       children: [
+                                        Positioned.fill(
+                                          child: Image.network(
+                                            _searchController.text
+                                                    .trim()
+                                                    .isEmpty
+                                                ? ref
+                                                    .watch(
+                                                        homePropertiesProvider
+                                                            .notifier)
+                                                    .getBuilderNames("")[index]
+                                                    .CompanyLogo
+                                                : searchResults
+                                                        .builders[index].logo ??
+                                                    "",
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stack) =>
+                                                    const SizedBox.shrink(),
+                                            loadingBuilder: (context, child,
+                                                    loadingProgress) =>
+                                                loadingProgress == null
+                                                    ? child
+                                                    : const SizedBox.shrink(),
+                                          ),
+                                        ),
                                         Container(
                                           decoration: BoxDecoration(
                                             color: CustomColors.black
@@ -674,13 +668,18 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                           padding: const EdgeInsets.all(4),
                                           child: Center(
                                             child: Text(
-                                              ref
-                                                  .watch(homePropertiesProvider
-                                                      .notifier)
-                                                  .getBuilderNames(
-                                                      _searchController.text
-                                                          .trim())[index]
-                                                  .CompanyName,
+                                              _searchController.text
+                                                      .trim()
+                                                      .isEmpty
+                                                  ? ref
+                                                      .watch(
+                                                          homePropertiesProvider
+                                                              .notifier)
+                                                      .getBuilderNames(
+                                                          "")[index]
+                                                      .CompanyName
+                                                  : searchResults
+                                                      .builders[index].name,
                                               textAlign: TextAlign.center,
                                               style: const TextStyle(
                                                 color: CustomColors.white,

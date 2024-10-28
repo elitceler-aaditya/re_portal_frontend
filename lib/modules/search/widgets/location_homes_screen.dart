@@ -17,7 +17,7 @@ class LocationHomes extends ConsumerStatefulWidget {
 
 class _LocationHomesState extends ConsumerState<LocationHomes> {
   int selectedlocation = 0;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   void getLocationHomes(double lat, double long) async {
     debugPrint("-----------------getting location homes");

@@ -3,13 +3,11 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class CustomChip extends StatelessWidget {
   final String text;
-  final bool isSelected;
   final Function()? onTap;
 
   const CustomChip({
     super.key,
     required this.text,
-    this.isSelected = false,
     this.onTap,
   });
 
@@ -21,17 +19,18 @@ class CustomChip extends StatelessWidget {
         margin: const EdgeInsets.all(4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? CustomColors.primary20 : CustomColors.primary10,
+          // color: isSelected ? CustomColors.primary20 : CustomColors.primary10,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isSelected ? CustomColors.primary : CustomColors.black25,
+            color: CustomColors.primary,
             width: 1,
           ),
         ),
         child: Text(
           text,
-          style: TextStyle(
-            color: isSelected ? CustomColors.primary : CustomColors.black,
+          style: const TextStyle(
+            color: CustomColors.primary,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),

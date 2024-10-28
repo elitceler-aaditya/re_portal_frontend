@@ -83,7 +83,9 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getPropertyData();
+      if (ref.watch(comparePropertyProvider).isNotEmpty) {
+        getPropertyData();
+      }
     });
     _horizontalController.addListener(() {
       if (_horizontalController.position.pixels <= 0) {

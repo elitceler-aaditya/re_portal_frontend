@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/profile/screens/contacted_properties.dart';
 import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
@@ -147,6 +148,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       title: 'Contacted Properties',
                       subtitle: 'Review your contacted properties',
                       icon: Icons.contact_page_outlined,
+                      onTap: () => rightSlideTransition(
+                        context,
+                        const ContactedProperties(),
+                      ),
                     ),
                     const Divider(
                       height: 20,

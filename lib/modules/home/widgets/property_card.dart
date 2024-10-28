@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -156,32 +155,32 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                 ref
                                     .read(savedPropertiesProvider.notifier)
                                     .removeApartment(widget.apartment),
-                                errorSnackBar(context, 'property removed')
+                                // errorSnackBar(context, 'property removed')
                               }
                             : {
                                 ref
                                     .read(savedPropertiesProvider.notifier)
                                     .addApartment(widget.apartment),
-                                successSnackBar(
-                                  context,
-                                  'property saved',
-                                  action: SnackBarAction(
-                                    backgroundColor:
-                                        CustomColors.white.withOpacity(0.25),
-                                    textColor: CustomColors.white,
-                                    label: 'View',
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SavedProperties(
-                                            isPop: true,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                )
+                                // successSnackBar(
+                                //   context,
+                                //   'property saved',
+                                //   action: SnackBarAction(
+                                //     backgroundColor:
+                                //         CustomColors.white.withOpacity(0.25),
+                                //     textColor: CustomColors.white,
+                                //     label: 'View',
+                                //     onPressed: () {
+                                //       Navigator.of(context).push(
+                                //         MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               const SavedProperties(
+                                //             isPop: true,
+                                //           ),
+                                //         ),
+                                //       );
+                                //     },
+                                //   ),
+                                // )
                               };
                         setState(() {});
                       },

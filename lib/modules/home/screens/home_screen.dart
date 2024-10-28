@@ -22,12 +22,12 @@ import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
-import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -47,11 +47,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
   bool loading = true;
-  final List<String> _searchOptions = [
-    'apartments',
-    'builders',
-    'locations',
-  ];
+  final ScrollController _masterScrollController = ScrollController();
+  bool showScrollUpButton = false;
 
   void getLocationHomes(double lat, double long) async {
     debugPrint("-----------------getting location homes");
@@ -226,13 +223,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
-                child: Text(
-                  "Editor's Choice",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+              VisibilityDetector(
+                key: const Key('editors-choice-detector'),
+                onVisibilityChanged: (visibilityInfo) {
+                  if (visibilityInfo.visibleFraction >= 0) {
+                    setState(() {
+                      showScrollUpButton = true;
+                    });
+                  }
+                },
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
+                  child: Text(
+                    "Editor's Choice",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -271,10 +278,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    _masterScrollController.dispose();
+    showScrollUpButton = false;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: showScrollUpButton
+          ? FloatingActionButton(
+              onPressed: () {
+                _masterScrollController
+                    .animateTo(0,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut)
+                    .then((v) {
+                  setState(() {
+                    showScrollUpButton = false;
+                  });
+                });
+              },
+              child: const Icon(Icons.arrow_upward),
+            )
+          : null,
       backgroundColor: CustomColors.black10,
       body: SingleChildScrollView(
+        controller: _masterScrollController,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +315,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               width: double.infinity,
               padding: const EdgeInsets.only(top: 36),
               decoration: const BoxDecoration(
-                color: CustomColors.primary,
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
+                  ],
+                ),
               ),
               child: Row(
                 children: [
@@ -294,15 +332,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                     icon: const Icon(
                       Icons.arrow_back,
-                      color: CustomColors.white,
+                      color: CustomColors.black,
                     ),
                   ),
-                  Text(
-                    ref.watch(homePropertiesProvider).propertyType,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: CustomColors.white,
+                  VisibilityDetector(
+                    key: const Key('property-type-detector'),
+                    onVisibilityChanged: (visibilityInfo) {
+                      if (visibilityInfo.visibleFraction >= 0) {
+                        setState(() {
+                          showScrollUpButton = false;
+                        });
+                      }
+                    },
+                    child: Text(
+                      ref.watch(homePropertiesProvider).propertyType,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: CustomColors.black,
+                      ),
                     ),
                   ),
                 ],
@@ -312,7 +360,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: CustomColors.primary,
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
+                  ],
+                ),
               ),
               child: Column(
                 children: [
