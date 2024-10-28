@@ -172,8 +172,8 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
       children: [
         Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(top: 4, bottom: 10),
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: CustomColors.white,
             borderRadius: BorderRadius.circular(10),
@@ -186,83 +186,101 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
               ),
             ],
           ),
-          child: GestureDetector(
-            onTap: () {
-              if (ref.read(userProvider).token.isEmpty) {
-                errorSnackBar(context, 'Please login first');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(
-                      goBack: true,
-                    ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 0, 8),
+                child: Text(
+                  "Video Walkthrough",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: CustomColors.black,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              } else {
-                enquiryFormPopup();
-              }
-            },
-            child: Container(
-              height: 140,
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              decoration: BoxDecoration(
-                color: CustomColors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage("assets/images/walkthrough.jpg"),
-                  fit: BoxFit.cover,
                 ),
               ),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 140,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: CustomColors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    child: Center(
-                      child: IconButton.filled(
-                        style: IconButton.styleFrom(
-                          backgroundColor: CustomColors.black.withOpacity(0.5),
+              GestureDetector(
+                onTap: () {
+                  if (ref.read(userProvider).token.isEmpty) {
+                    errorSnackBar(context, 'Please login first');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(
+                          goBack: true,
                         ),
-                        onPressed: () {
-                          if (ref.read(userProvider).token.isEmpty) {
-                            errorSnackBar(context, 'Please login first');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(
-                                  goBack: true,
-                                ),
-                              ),
-                            );
-                          } else {
-                            enquiryFormPopup();
-                          }
-                        },
-                        icon: const Icon(Icons.play_arrow),
                       ),
+                    );
+                  } else {
+                    enquiryFormPopup();
+                  }
+                },
+                child: Container(
+                  height: 150,
+                  width: double.infinity,
+                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  decoration: BoxDecoration(
+                    color: CustomColors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(10),
+                    image: const DecorationImage(
+                      image: AssetImage("assets/images/walkthrough.jpg"),
+                      fit: BoxFit.cover,
                     ),
                   ),
-                ],
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 140,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: CustomColors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        child: Center(
+                          child: IconButton.filled(
+                            style: IconButton.styleFrom(
+                              backgroundColor:
+                                  CustomColors.black.withOpacity(0.5),
+                            ),
+                            onPressed: () {
+                              if (ref.read(userProvider).token.isEmpty) {
+                                errorSnackBar(context, 'Please login first');
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(
+                                      goBack: true,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                enquiryFormPopup();
+                              }
+                            },
+                            icon: const Icon(Icons.play_arrow),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
         const SizedBox(width: 10),
         Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(top: 4, bottom: 10),
-          padding: const EdgeInsets.symmetric(vertical: 14),
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: CustomColors.white,
             borderRadius: BorderRadius.circular(10),

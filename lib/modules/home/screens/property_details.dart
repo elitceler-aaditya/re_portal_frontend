@@ -9,7 +9,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
 import 'package:re_portal_frontend/modules/builder/screens/builder_portfolio.dart';
 import 'package:re_portal_frontend/modules/home/screens/ads_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/brochure_video_section.dart';
@@ -17,13 +23,13 @@ import 'package:re_portal_frontend/modules/home/screens/compare/compare_properti
 import 'package:re_portal_frontend/modules/home/screens/project_config_gallery.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_details_gallery.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
+import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
-import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
-import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
-import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
+import 'package:re_portal_frontend/modules/search/widgets/location_homes_screen.dart';
 import 'package:re_portal_frontend/modules/search/widgets/photo_scrolling_gallery.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -31,15 +37,9 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
-import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
-import 'package:re_portal_frontend/riverpod/search_bar.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher_string.dart';
 
 class PropertyDetails extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
@@ -76,40 +76,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   bool openOptions = true;
   List<Map<String, dynamic>> projectDetailsList = [];
 
-  List<Map<String, dynamic>> categoryOptions = [
-    {
-      'title': 'Affordable Homes',
-      'filter': FiltersModel(affordableHomes: 'true'),
-    },
-    {
-      'title': 'Large Living Spaces',
-      'filter': FiltersModel(largeLivingSpaces: 'true'),
-    },
-    {
-      'title': 'Sustainable Living Homes',
-      'filter': FiltersModel(sustainableLivingHomes: 'true'),
-    },
-    {
-      'title': '2.5 BHK Homes',
-      'filter': FiltersModel(twopointfiveBHKHomes: 'true'),
-    },
-    {
-      'title': 'Large Balconies',
-      'filter': FiltersModel(largeBalconies: 'true'),
-    },
-    {
-      'title': 'Sky Villa Habitat',
-      'filter': FiltersModel(skyVillaHabitat: 'true'),
-    },
-    {
-      'title': 'Standalone Buildings',
-      'filter': FiltersModel(standAloneBuildings: 'true'),
-    },
-    {
-      'title': 'Skyscrapers',
-      'filter': FiltersModel(skyScrapers: 'true'),
-    },
-  ];
   Future<void> sendEnquiry(BuildContext context) async {
     final url = Uri.parse("${dotenv.env['BASE_URL']}/user/newLeadGeneration");
     final body = {
@@ -637,7 +603,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               TextButton.icon(
                                 key: contactButtonKey,
                                 style: IconButton.styleFrom(
-                                    backgroundColor: CustomColors.primary),
+                                  backgroundColor: _overlayEntry != null
+                                      ? CustomColors.white
+                                      : CustomColors.primary,
+                                ),
                                 onPressed: () {
                                   if (ref.read(userProvider).token.isEmpty) {
                                     errorSnackBar(
@@ -655,16 +624,21 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                         context,
                                         contactButtonKey.currentContext!
                                             .findRenderObject() as RenderBox);
+                                    setState(() {});
                                   }
                                 },
                                 icon: SvgPicture.asset(
                                   "assets/icons/phone.svg",
-                                  color: Colors.white,
+                                  color: _overlayEntry != null
+                                      ? CustomColors.primary
+                                      : CustomColors.white,
                                 ),
-                                label: const Text(
+                                label: Text(
                                   "Contact Builder",
                                   style: TextStyle(
-                                    color: CustomColors.white,
+                                    color: _overlayEntry != null
+                                        ? CustomColors.primary
+                                        : CustomColors.white,
                                   ),
                                 ),
                               ),
@@ -1298,89 +1272,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
             //category options
-            Container(
-              decoration: BoxDecoration(
-                color: CustomColors.white,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(
-                    categoryOptions.length,
-                    (index) => GestureDetector(
-                      onTap: () {
-                        ref.read(searchBarProvider.notifier).setSearchTerm(
-                              categoryOptions[index]['title'],
-                            );
-                        ref.read(filtersProvider.notifier).setAllFilters(
-                              categoryOptions[index]['filter'],
-                            );
-
-                        rightSlideTransition(
-                            context, const SearchApartmentResults());
-                      },
-                      child: Container(
-                        height: 80,
-                        width: 150,
-                        margin: const EdgeInsets.only(left: 6),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          image: DecorationImage(
-                            image: AssetImage(
-                              "assets/images/category-${index + 1}.jpg",
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: double.infinity,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    CustomColors.black.withOpacity(0),
-                                    CustomColors.black.withOpacity(0.77),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 6,
-                              left: 0,
-                              right: 0,
-                              child: Text(
-                                categoryOptions[index]['title'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: CustomColors.white,
-                                  shadows: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.white.withOpacity(0.5),
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            CategoryRow(
+              onTap: () =>
+                  rightSlideTransition(context, const SearchApartmentResults()),
             ),
-
             const LocationHomes(),
             const SizedBox(height: 10),
           ],
@@ -1616,9 +1511,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                                     .addApartment(
                                                         widget.apartment)
                                               };
-                                        setState(() {
-                                          openOptions = false;
-                                        });
                                       },
                                     ),
                                   ),
@@ -1700,9 +1592,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                               .removeApartment(
                                                   widget.apartment);
                                         }
-                                        setState(() {
-                                          openOptions = false;
-                                        });
                                       },
                                     ),
                                   ),
@@ -1907,7 +1796,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
   void _showOverlay(BuildContext context, RenderBox renderBox) {
     final Offset position = renderBox.localToGlobal(Offset.zero);
-
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
@@ -2048,6 +1936,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
+    setState(() {});
   }
 
   Widget _buildOption(

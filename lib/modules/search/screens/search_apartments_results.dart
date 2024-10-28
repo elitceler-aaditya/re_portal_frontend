@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
 import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
+import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
 import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
@@ -629,7 +630,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   });
                 });
               },
-              child: showScrollUpButton ? const Icon(Icons.arrow_upward) : null,
+              child: showScrollUpButton
+                  ? const Icon(
+                      Icons.arrow_upward,
+                      weight: 5,
+                    )
+                  : null,
             ),
           ),
         ],
@@ -747,7 +753,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ),
               child: ref.watch(filtersProvider).toJson().isNotEmpty
                   ? Container(
-                      padding: const EdgeInsets.fromLTRB(2, 0, 0, 2),
+                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 2),
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1363,7 +1369,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                     onVisibilityChanged:
                                                         (visibilityInfo) {
                                                       if (visibilityInfo
-                                                              .visibleFraction >
+                                                              .visibleFraction >=
                                                           0) {
                                                         setState(() {
                                                           showScrollUpButton =
@@ -1827,138 +1833,17 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                     ],
                                   ),
                                 ),
-
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(4, 16, 16, 8),
-                                  child: Text(
-                                    "Categories",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ), //category options
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 2),
-                                    child: Row(
-                                      children: List.generate(
-                                        categoryOptions.length,
-                                        (index) => GestureDetector(
-                                          onTap: () {
-                                            displayAds = false;
-                                            ref
-                                                .read(
-                                                    searchBarProvider.notifier)
-                                                .setSearchTerm(
-                                                  categoryOptions[index]
-                                                      ['title'],
-                                                );
-                                            List<String> location = ref
-                                                .read(filtersProvider)
-                                                .selectedLocalities;
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .setAllFilters(
-                                                  categoryOptions[index]
-                                                      ['filter'],
-                                                );
-
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .updateSelectedLocalities(
-                                                    location);
-                                            loading = true;
-
-                                            Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 500), () {
-                                              getFilteredApartments(
-                                                  useDefaultParams: true);
-                                            });
-
-                                            _masterScrollController.animateTo(
-                                              0,
-                                              duration: const Duration(
-                                                  milliseconds: 500),
-                                              curve: Curves.easeInOut,
-                                            );
-                                          },
-                                          child: Container(
-                                            height: 80,
-                                            clipBehavior: Clip.hardEdge,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.4,
-                                            margin: const EdgeInsets.fromLTRB(
-                                                0, 0, 10, 0),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                  "assets/images/category-${index + 1}.jpg",
-                                                ),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Stack(
-                                              children: [
-                                                Container(
-                                                  height: double.infinity,
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            3),
-                                                    gradient: LinearGradient(
-                                                      colors: [
-                                                        CustomColors.black
-                                                            .withOpacity(0),
-                                                        CustomColors.black
-                                                            .withOpacity(0.77),
-                                                      ],
-                                                      begin:
-                                                          Alignment.topCenter,
-                                                      end: Alignment
-                                                          .bottomCenter,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                  bottom: 6,
-                                                  left: 6,
-                                                  right: 6,
-                                                  child: Text(
-                                                    categoryOptions[index]
-                                                        ['title'],
-                                                    textAlign: TextAlign.center,
-                                                    style: TextStyle(
-                                                      color: CustomColors.white,
-                                                      shadows: [
-                                                        BoxShadow(
-                                                          color: CustomColors
-                                                              .white
-                                                              .withOpacity(0.5),
-                                                          blurRadius: 3,
-                                                          offset: const Offset(
-                                                              0, 0),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                CategoryRow(
+                                  onTap: () {
+                                    _masterScrollController.animateTo(
+                                      0,
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                    );
+                                    getFilteredApartments(
+                                        useDefaultParams: true);
+                                  },
                                 ),
                               ],
                             ),

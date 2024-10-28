@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MapsPropertyCard extends StatelessWidget {
   final ApartmentModel apartment;
+  final int index;
+  final int length;
   const MapsPropertyCard({
     super.key,
     required this.apartment,
+    required this.index,
+    required this.length,
   });
 
   String formatBudget(int budget) {
@@ -44,7 +48,7 @@ class MapsPropertyCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: CustomColors.black.withOpacity(0.1),
+              color: CustomColors.black.withOpacity(0.2),
               blurRadius: 10,
               spreadRadius: 1,
             ),
@@ -57,24 +61,63 @@ class MapsPropertyCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Hero(
-                    tag: "map-prop-${apartment.projectId}",
-                    child: SizedBox(
-                      height: double.infinity,
-                      width: 110,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          apartment.coverImage,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(Icons.error),
-                            );
-                          },
+                  Stack(
+                    children: [
+                      Hero(
+                        tag: "map-prop-${apartment.projectId}",
+                        child: SizedBox(
+                          height: double.infinity,
+                          width: 110,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              apartment.coverImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(
+                                  child: Icon(Icons.error),
+                                );
+                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Shimmer.fromColors(
+                                  baseColor: CustomColors.black25,
+                                  highlightColor: CustomColors.black50,
+                                  child: Container(
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Positioned(
+                        bottom: 4,
+                        right: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: CustomColors.black.withOpacity(0.7),
+                          ),
+                          child: Text(
+                            "${index + 1} / $length",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(width: 6),
                   Expanded(

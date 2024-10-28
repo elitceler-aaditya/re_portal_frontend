@@ -17,7 +17,7 @@ class LifestyleProperties extends ConsumerWidget {
         color: CustomColors.white,
         borderRadius: BorderRadius.circular(6),
       ),
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

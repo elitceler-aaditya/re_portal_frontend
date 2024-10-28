@@ -28,6 +28,9 @@ class GlobalSearch extends ConsumerStatefulWidget {
 class _GlobalSearchState extends ConsumerState<GlobalSearch> {
   final TextEditingController _searchController = TextEditingController();
   List<String> localities = [];
+  List<String> recentSearchLocalities = [];
+  List<String> recentSearchProjects = [];
+  List<String> recentSearchBuilders = [];
 
   void getLocalitiesList() async {
     String baseUrl = dotenv.get('BASE_URL');
@@ -51,6 +54,14 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
     }
   }
 
+  setRecentSearches() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    recentSearchLocalities =
+        prefs.getStringList('searchHistory_location') ?? [];
+    recentSearchProjects = prefs.getStringList('searchHistory_projects') ?? [];
+    recentSearchBuilders = prefs.getStringList('searchHistory_builder') ?? [];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +72,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
       }
       localities = ref.read(filtersProvider).selectedLocalities;
       ref.read(filtersProvider.notifier).clearAllFilters();
+      setRecentSearches();
     });
   }
 
@@ -151,13 +163,15 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                 ),
                 if (_searchController.text.trim().isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 4, bottom: 4),
+                    padding: const EdgeInsets.only(left: 10, top: 6, bottom: 0),
                     child: Text(
                       "Searching for - '${_searchController.text.trim()}'",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.primary,
+                        color: CustomColors.white,
                       ),
                     ),
                   ),
@@ -172,9 +186,45 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                 children: [
                   const SizedBox(width: double.infinity),
                   if (ref
-                      .read(localityListProvider.notifier)
-                      .searchLocality(_searchController.text.trim(), localities)
-                      .isNotEmpty)
+                          .read(localityListProvider.notifier)
+                          .searchLocality(
+                              _searchController.text.trim(), localities)
+                          .isEmpty &&
+                      ref
+                          .watch(homePropertiesProvider.notifier)
+                          .getApartmentsByName(_searchController.text.trim())
+                          .isEmpty &&
+                      ref
+                          .watch(homePropertiesProvider.notifier)
+                          .getApartmentsByBuilderName(
+                              _searchController.text.trim())
+                          .isEmpty)
+                    Container(
+                      height: 50,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Center(
+                        child: Text(
+                          "No results found for - '${_searchController.text.trim()}'",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: CustomColors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  // if (ref
+                  //     .read(localityListProvider.notifier)
+                  //     .searchLocality(_searchController.text.trim(), localities)
+                  //     .isNotEmpty)
+                  if (ref
+                          .watch(localityListProvider.notifier)
+                          .searchLocality(
+                              _searchController.text.trim(), localities)
+                          .isNotEmpty ||
+                      localities.isNotEmpty)
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -348,7 +398,10 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         ],
                       ),
                     ),
-                  if (_searchController.text.isEmpty)
+                  if (_searchController.text.trim().isEmpty &&
+                      (recentSearchLocalities.isNotEmpty ||
+                          recentSearchProjects.isNotEmpty ||
+                          recentSearchBuilders.isNotEmpty))
                     Container(
                       decoration: BoxDecoration(
                         color: CustomColors.white,
@@ -372,256 +425,100 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                           ),
 
                           //localities
-                          FutureBuilder<List<String>>(
-                            future: SharedPreferences.getInstance().then(
-                                (prefs) =>
-                                    prefs.getStringList(
-                                        'searchHistory_location') ??
-                                    []),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const SizedBox.shrink();
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (!snapshot.hasData ||
-                                  snapshot.data!.isEmpty) {
-                                return const SizedBox.shrink();
-                              } else {
-                                final limitedSearchHistory =
-                                    snapshot.data!.take(8).toList();
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: limitedSearchHistory.length,
-                                      itemBuilder: (context, index) {
-                                        final searchTerm =
-                                            limitedSearchHistory[index];
-                                        return ListTile(
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 16, right: 6),
-                                          leading: const Icon(Icons.history),
-                                          title: Text(searchTerm),
-                                          onTap: () {
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .updateSelectedLocalities(
-                                                    [searchTerm]);
-                                            setState(() {
-                                              localities =
-                                                  List<String>.from(localities)
-                                                    ..add(searchTerm);
-                                            });
-                                          },
-                                          trailing: IconButton(
-                                            onPressed: () async {
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
-                                              final searchHistory =
-                                                  prefs.getStringList(
-                                                          'searchHistory_location') ??
-                                                      [];
-                                              searchHistory.remove(searchTerm);
-                                              await prefs.setStringList(
-                                                  'searchHistory_location',
-                                                  searchHistory);
-                                              setState(() {});
-                                            },
-                                            icon: const Icon(
-                                              Icons.close,
-                                              size: 20,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
+                          ...List.generate(
+                            recentSearchLocalities.take(8).length,
+                            (index) => ListTile(
+                              contentPadding:
+                                  const EdgeInsets.only(left: 16, right: 6),
+                              leading: const Icon(Icons.history),
+                              title: Text(recentSearchLocalities[index]),
+                              onTap: () {
+                                ref
+                                    .read(filtersProvider.notifier)
+                                    .updateSelectedLocalities(
+                                        [recentSearchLocalities[index]]);
+                                setState(() {
+                                  localities = List<String>.from(localities)
+                                    ..add(recentSearchLocalities[index]);
+                                });
+                              },
+                              trailing: IconButton(
+                                onPressed: () async {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  recentSearchLocalities.removeAt(index);
+                                  await prefs.setStringList(
+                                      'searchHistory_location',
+                                      recentSearchLocalities);
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.close, size: 20),
+                              ),
+                            ),
                           ),
 
                           //projects
-                          FutureBuilder<List<String>>(
-                            future: SharedPreferences.getInstance().then(
-                                (prefs) =>
-                                    prefs.getStringList(
-                                        'searchHistory_projects') ??
-                                    []),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const SizedBox.shrink();
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (!snapshot.hasData ||
-                                  snapshot.data!.isEmpty) {
-                                return const SizedBox.shrink();
-                              } else {
-                                final limitedSearchHistory =
-                                    snapshot.data!.take(8).toSet().toList();
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: limitedSearchHistory.length,
-                                      itemBuilder: (context, index) {
-                                        final searchTerm =
-                                            limitedSearchHistory[index];
-                                        return ListTile(
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 16, right: 6),
-                                          leading:
-                                              const Icon(Icons.location_city),
-                                          title: Text(searchTerm),
-                                          onTap: () {
-                                            setState(() {
-                                              _searchController.text =
-                                                  searchTerm;
-                                            });
-                                          },
-                                          trailing: IconButton(
-                                            onPressed: () async {
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
-                                              final searchHistory =
-                                                  prefs.getStringList(
-                                                          'searchHistory_projects') ??
-                                                      [];
-                                              searchHistory.remove(searchTerm);
-                                              await prefs.setStringList(
-                                                  'searchHistory_projects',
-                                                  searchHistory);
-                                              setState(() {});
-                                            },
-                                            icon: const Icon(
-                                              Icons.close,
-                                              size: 20,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
+                          ...List.generate(
+                            recentSearchProjects.take(8).length,
+                            (index) => ListTile(
+                              contentPadding:
+                                  const EdgeInsets.only(left: 16, right: 6),
+                              leading: const Icon(Icons.location_city),
+                              title: Text(recentSearchProjects[index]),
+                              onTap: () {
+                                setState(() {
+                                  _searchController.text =
+                                      recentSearchProjects[index];
+                                });
+                              },
+                              trailing: IconButton(
+                                onPressed: () async {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  recentSearchProjects.removeAt(index);
+                                  await prefs.setStringList(
+                                      'searchHistory_projects',
+                                      recentSearchProjects);
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.close, size: 20),
+                              ),
+                            ),
                           ),
-                          //Builder
-                          FutureBuilder<List<String>>(
-                            future: SharedPreferences.getInstance().then(
-                                (prefs) =>
-                                    prefs.getStringList(
-                                        'searchHistory_builder') ??
-                                    []),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const SizedBox.shrink();
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else if (!snapshot.hasData ||
-                                  snapshot.data!.isEmpty) {
-                                return const SizedBox.shrink();
-                              } else {
-                                final limitedSearchHistory =
-                                    snapshot.data!.take(8).toList();
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ListView.builder(
-                                      padding: EdgeInsets.zero,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: limitedSearchHistory.length,
-                                      itemBuilder: (context, index) {
-                                        final searchTerm =
-                                            limitedSearchHistory[index];
-                                        return ListTile(
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 16, right: 6),
-                                          leading: const Icon(
-                                              Icons.real_estate_agent_outlined),
-                                          title: Text(searchTerm),
-                                          onTap: () {
-                                            setState(() {
-                                              _searchController.text =
-                                                  searchTerm;
-                                            });
-                                          },
-                                          trailing: IconButton(
-                                            onPressed: () async {
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
-                                              final searchHistory =
-                                                  prefs.getStringList(
-                                                          'searchHistory_builder') ??
-                                                      [];
-                                              searchHistory.remove(searchTerm);
-                                              await prefs.setStringList(
-                                                  'searchHistory_builder',
-                                                  searchHistory);
-                                              setState(() {});
-                                            },
-                                            icon: const Icon(
-                                              Icons.close,
-                                              size: 20,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
+
+                          //builders
+                          ...List.generate(
+                            recentSearchBuilders.take(8).length,
+                            (index) => ListTile(
+                              contentPadding:
+                                  const EdgeInsets.only(left: 16, right: 6),
+                              leading:
+                                  const Icon(Icons.real_estate_agent_outlined),
+                              title: Text(recentSearchBuilders[index]),
+                              onTap: () {
+                                setState(() {
+                                  _searchController.text =
+                                      recentSearchBuilders[index];
+                                });
+                              },
+                              trailing: IconButton(
+                                onPressed: () async {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  recentSearchBuilders.removeAt(index);
+                                  await prefs.setStringList(
+                                      'searchHistory_builder',
+                                      recentSearchBuilders);
+                                  setState(() {});
+                                },
+                                icon: const Icon(Icons.close, size: 20),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  if (ref
-                          .read(localityListProvider.notifier)
-                          .searchLocality(
-                              _searchController.text.trim(), localities)
-                          .isEmpty &&
-                      ref
-                          .watch(homePropertiesProvider.notifier)
-                          .getApartmentsByName(_searchController.text.trim())
-                          .isEmpty &&
-                      ref
-                          .watch(homePropertiesProvider.notifier)
-                          .getApartmentsByBuilderName(
-                              _searchController.text.trim())
-                          .isEmpty)
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: Center(
-                        child: Text(
-                          "No results found for - '${_searchController.text.trim()}'",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: CustomColors.black,
-                          ),
-                        ),
-                      ),
-                    ),
+
                   if (ref
                       .watch(homePropertiesProvider.notifier)
                       .getApartmentsByName(_searchController.text.trim())
@@ -689,6 +586,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const SizedBox(width: double.infinity),
                           const Padding(
                             padding: EdgeInsets.fromLTRB(8, 0, 4, 4),
                             child: Text(

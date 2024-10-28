@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/maps/maps_property_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -213,54 +212,71 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
               ),
             ),
             Positioned(
-              bottom: 20,
+              bottom: 0,
               right: 0,
               left: 0,
-              child: SizedBox(
-                height: 165,
-                child: FlutterCarousel.builder(
-                  itemCount:
-                      ref.watch(homePropertiesProvider).allApartments.length,
-                  itemBuilder: (context, index, realIndex) {
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      CustomColors.secondary.withOpacity(0.6),
+                      CustomColors.secondary.withOpacity(0.01),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 10,
+              right: 0,
+              left: 0,
+              child: FlutterCarousel.builder(
+                itemCount:
+                    ref.watch(homePropertiesProvider).allApartments.length,
+                itemBuilder: (context, index, realIndex) {
+                  final apartment =
+                      ref.watch(homePropertiesProvider).allApartments[index];
+                  return MapsPropertyCard(
+                    apartment: apartment,
+                    index: index,
+                    length:
+                        ref.watch(homePropertiesProvider).allApartments.length,
+                  );
+                },
+                options: CarouselOptions(
+                  controller: carouselController,
+                  height: 180,
+                  viewportFraction: 0.85,
+                  enableInfiniteScroll: false,
+                  enlargeCenterPage: true,
+                  enlargeStrategy: CenterPageEnlargeStrategy.height,
+                  padEnds: false,
+                  showIndicator: false,
+                  onPageChanged: (index, reason) {
                     final apartment =
                         ref.watch(homePropertiesProvider).allApartments[index];
-                    return MapsPropertyCard(
-                      apartment: apartment,
-                    );
-                  },
-                  options: CarouselOptions(
-                    controller: carouselController,
-                    height: 180,
-                    viewportFraction: 0.85,
-                    enableInfiniteScroll: false,
-                    enlargeCenterPage: true,
-                    enlargeStrategy: CenterPageEnlargeStrategy.height,
-                    padEnds: false,
-                    showIndicator: false,
-                    onPageChanged: (index, reason) {
-                      final apartment = ref
-                          .watch(homePropertiesProvider)
-                          .allApartments[index];
-                      _googleMapsController.future.then((controller) {
-                        controller
-                            .animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: LatLng(
-                                  apartment.latitude, apartment.longitude),
-                              zoom: 14,
-                            ),
+                    _googleMapsController.future.then((controller) {
+                      controller
+                          .animateCamera(
+                        CameraUpdate.newCameraPosition(
+                          CameraPosition(
+                            target:
+                                LatLng(apartment.latitude, apartment.longitude),
+                            zoom: 14,
                           ),
-                        )
-                            .then((_) {
-                          setState(
-                              () => _selectedApartmentId = apartment.projectId);
-                          controller.showMarkerInfoWindow(
-                              MarkerId(apartment.projectId));
-                        });
+                        ),
+                      )
+                          .then((_) {
+                        setState(
+                            () => _selectedApartmentId = apartment.projectId);
+                        controller.showMarkerInfoWindow(
+                            MarkerId(apartment.projectId));
                       });
-                    },
-                  ),
+                    });
+                  },
                 ),
               ),
             ),
@@ -273,6 +289,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                 decoration: BoxDecoration(
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(25),
+                  // border: Border.all(color: CustomColors.black50),
                   boxShadow: const [
                     BoxShadow(
                       color: CustomColors.black50,
