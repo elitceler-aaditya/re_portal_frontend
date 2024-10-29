@@ -6,7 +6,8 @@ import 'package:re_portal_frontend/riverpod/search_bar.dart';
 
 class CategoryRow extends ConsumerStatefulWidget {
   final Function()? onTap;
-  const CategoryRow({super.key, this.onTap});
+  final double cardHeight;
+  const CategoryRow({super.key, this.onTap, this.cardHeight = 80});
 
   @override
   ConsumerState<CategoryRow> createState() => _CategoryRowState();
@@ -45,6 +46,18 @@ class _CategoryRowState extends ConsumerState<CategoryRow> {
     {
       'title': 'Skyscrapers',
       'filter': FiltersModel(skyScrapers: 'true'),
+    },
+    {
+      'title': 'IGBC Certified Homes',
+      'filter': FiltersModel(igbcCertifiedHomes: 'true'),
+    },
+    {
+      'title': 'Semi-Gated Apartments',
+      'filter': FiltersModel(semiGatedApartments: 'true'),
+    },
+    {
+      'title': 'More Offers',
+      'filter': FiltersModel(moreOffers: 'true'),
     },
   ];
 
@@ -88,7 +101,7 @@ class _CategoryRowState extends ConsumerState<CategoryRow> {
                     widget.onTap?.call();
                   },
                   child: Container(
-                    height: 80,
+                    height: widget.cardHeight,
                     width: 150,
                     margin: const EdgeInsets.only(left: 6),
                     decoration: BoxDecoration(

@@ -43,15 +43,37 @@ class _MyAccountState extends State<MyAccount> {
               children: [
                 Container(
                   height: 130,
-                  color: CustomColors.primary,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Color(0xFFFCCBAE),
+                        Color(0xFFF87988),
+                      ],
+                    ),
+                  ),
                 ),
-                const Positioned(
+                Positioned(
                   left: 0,
                   right: 0,
                   top: 64,
-                  child: CircleAvatar(
-                    radius: 64,
-                    child: Center(
+                  child: Container(
+                    height: 120,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFCCBAE),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
                       child: Icon(
                         Icons.person_outline,
                         size: 40,

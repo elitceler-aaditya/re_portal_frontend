@@ -103,11 +103,20 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
     state = state.copyWith(propertyType: propertyType);
   }
 
+
   void setBuilderData(List<BuilderDataModel> builderData) {
     //remove element which dont have any projects
     builderData =
         builderData.where((element) => element.projects.isNotEmpty).toList();
     state = state.copyWith(builderData: builderData);
+  }
+
+  void setSponsoredAd(List<ApartmentModel> sponsoredAd) {
+    state = state.copyWith(sponsoredAd: sponsoredAd);
+  }
+
+  void setLimelight(List<ApartmentModel> limelight) {
+    state = state.copyWith(limelight: limelight);
   }
 
   List<ApartmentModel> getUltraLuxuryHomes() {
@@ -171,6 +180,8 @@ class HomeData {
   final List<ApartmentModel> newProjects;
   final List<ApartmentModel> readyToMoveIn;
   final List<ApartmentModel> lifestyleProjects;
+  final List<ApartmentModel> sponsoredAd;
+  final List<ApartmentModel> limelight;
   final String propertyType;
 
   HomeData({
@@ -184,6 +195,8 @@ class HomeData {
     this.newProjects = const [],
     this.readyToMoveIn = const [],
     this.lifestyleProjects = const [],
+    this.sponsoredAd = const [],
+    this.limelight = const [],
     this.propertyType = '',
   });
 
@@ -198,6 +211,8 @@ class HomeData {
     List<ApartmentModel>? newProjects,
     List<ApartmentModel>? readyToMoveIn,
     List<ApartmentModel>? lifestyleProjects,
+    List<ApartmentModel>? sponsoredAd,
+    List<ApartmentModel>? limelight,
     String? propertyType,
   }) {
     return HomeData(
@@ -211,6 +226,8 @@ class HomeData {
       newProjects: newProjects ?? this.newProjects,
       readyToMoveIn: readyToMoveIn ?? this.readyToMoveIn,
       lifestyleProjects: lifestyleProjects ?? this.lifestyleProjects,
+      sponsoredAd: sponsoredAd ?? this.sponsoredAd,
+      limelight: limelight ?? this.limelight,
       propertyType: propertyType ?? this.propertyType,
     );
   }

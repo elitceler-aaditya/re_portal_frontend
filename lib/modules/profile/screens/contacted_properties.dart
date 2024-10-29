@@ -62,6 +62,18 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
       appBar: AppBar(
         titleSpacing: 0,
         title: const Text('Contacted Properties'),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(0xFFFCCBAE),
+                Color(0xFFF87988),
+              ],
+            ),
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: contactedProperties.length,

@@ -56,6 +56,18 @@ class _ComparePropertiesState extends ConsumerState<SavedProperties> {
               },
               icon: const Icon(Icons.arrow_back),
             ),
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
+                  ],
+                ),
+              ),
+            ),
           ),
           body: ref.watch(savedPropertiesProvider).isEmpty
               ? const Center(

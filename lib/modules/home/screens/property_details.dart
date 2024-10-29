@@ -892,8 +892,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   begin: Alignment.bottomLeft,
                                   end: Alignment.topRight,
                                   colors: [
-                                    Color(0xFFFFCAB2),
-                                    Color(0xFFFFFFFF),
+                                    Color(0xFFF5B79A),
+                                    Color(0xFFFFF9F9),
                                   ],
                                 ),
                                 boxShadow: [
@@ -951,8 +951,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   begin: Alignment.bottomLeft,
                                   end: Alignment.topRight,
                                   colors: [
-                                    Color(0xFFFFCAB2),
-                                    Color(0xFFFFFFFF),
+                                    Color(0xFFF5B79A),
+                                    Color(0xFFFFF9F9),
                                   ],
                                 ),
                                 boxShadow: [
@@ -1009,8 +1009,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   begin: Alignment.bottomLeft,
                                   end: Alignment.topRight,
                                   colors: [
-                                    Color(0xFFFFCAB2),
-                                    Color(0xFFFFFFFF),
+                                    Color(0xFFF5B79A),
+                                    Color(0xFFFFF9F9),
                                   ],
                                 ),
                                 boxShadow: [
@@ -1255,10 +1255,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
-            //category options
             CategoryRow(
               onTap: () =>
                   rightSlideTransition(context, const SearchApartmentResults()),
+              cardHeight: 110,
             ),
             const LocationHomes(),
             const SizedBox(height: 10),

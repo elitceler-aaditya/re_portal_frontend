@@ -28,6 +28,9 @@ class FiltersModel {
   final String postedByBuilder;
   final String postedByOwner;
   final String postedByAgent;
+  final String igbcCertifiedHomes;
+  final String semiGatedApartments;
+  final String moreOffers;
 
   FiltersModel({
     this.selectedLocalities = const [],
@@ -56,6 +59,9 @@ class FiltersModel {
     this.postedByBuilder = 'false',
     this.postedByOwner = 'false',
     this.postedByAgent = 'false',
+    this.igbcCertifiedHomes = 'false',
+    this.semiGatedApartments = 'false',
+    this.moreOffers = 'false',
   });
 
   FiltersModel copyWith({
@@ -85,6 +91,9 @@ class FiltersModel {
     String? postedByBuilder,
     String? postedByOwner,
     String? postedByAgent,
+    String? igbcCertifiedHomes,
+    String? semiGatedApartments,
+    String? moreOffers,
   }) {
     return FiltersModel(
       selectedLocalities: selectedLocalities ?? this.selectedLocalities,
@@ -115,6 +124,9 @@ class FiltersModel {
       postedByBuilder: postedByBuilder ?? this.postedByBuilder,
       postedByOwner: postedByOwner ?? this.postedByOwner,
       postedByAgent: postedByAgent ?? this.postedByAgent,
+      igbcCertifiedHomes: igbcCertifiedHomes ?? this.igbcCertifiedHomes,
+      semiGatedApartments: semiGatedApartments ?? this.semiGatedApartments,
+      moreOffers: moreOffers ?? this.moreOffers,
     );
   }
 
@@ -157,6 +169,9 @@ class FiltersModel {
     if (postedByBuilder == 'true') json['postedByBuilder'] = 'true';
     if (postedByOwner == 'true') json['postedByOwner'] = 'true';
     if (postedByAgent == 'true') json['postedByAgent'] = 'true';
+    if (igbcCertifiedHomes == 'true') json['igbcCertifiedHomes'] = 'true';
+    if (semiGatedApartments == 'true') json['semiGatedApartments'] = 'true';
+    if (moreOffers == 'true') json['moreOffers'] = 'true';
 
     return json;
   }
@@ -187,6 +202,9 @@ class FiltersModel {
       postedByBuilder: json['postedByBuilder'] ?? 'false',
       postedByOwner: json['postedByOwner'] ?? 'false',
       postedByAgent: json['postedByAgent'] ?? 'false',
+      igbcCertifiedHomes: json['igbcCertifiedHomes'] ?? 'false',
+      semiGatedApartments: json['semiGatedApartments'] ?? 'false',
+      moreOffers: json['moreOffers'] ?? 'false',
     );
   }
 }
@@ -239,6 +257,9 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
       postedByBuilder: filters.postedByBuilder,
       postedByOwner: filters.postedByOwner,
       postedByAgent: filters.postedByAgent,
+      igbcCertifiedHomes: filters.igbcCertifiedHomes,
+      semiGatedApartments: filters.semiGatedApartments,
+      moreOffers: filters.moreOffers,
     );
   }
 
@@ -350,10 +371,21 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = state.copyWith(postedByAgent: value);
   }
 
+  void updateIgbcCertifiedHomes(String value) {
+    state = state.copyWith(igbcCertifiedHomes: value);
+  }
+
+  void updateSemiGatedApartments(String value) {
+    state = state.copyWith(semiGatedApartments: value);
+  }
+
+  void updateMoreOffers(String value) {
+    state = state.copyWith(moreOffers: value);
+  }
+
   void clearAllFilters() {
     state = FiltersModel();
   }
-
 }
 
 // Define the provider

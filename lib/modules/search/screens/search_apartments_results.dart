@@ -73,40 +73,6 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
   ];
   int searchOptionsIndex = 0;
   bool isEndReached = false;
-  List<Map<String, dynamic>> categoryOptions = [
-    {
-      'title': 'Affordable Homes',
-      'filter': FiltersModel(affordableHomes: 'true'),
-    },
-    {
-      'title': 'Large Living Spaces',
-      'filter': FiltersModel(largeLivingSpaces: 'true'),
-    },
-    {
-      'title': 'Sustainable Living Homes',
-      'filter': FiltersModel(sustainableLivingHomes: 'true'),
-    },
-    {
-      'title': '2.5 BHK Homes',
-      'filter': FiltersModel(twopointfiveBHKHomes: 'true'),
-    },
-    {
-      'title': 'Large Balconies',
-      'filter': FiltersModel(largeBalconies: 'true'),
-    },
-    {
-      'title': 'Sky Villa Habitat',
-      'filter': FiltersModel(skyVillaHabitat: 'true'),
-    },
-    {
-      'title': 'Standalone Buildings',
-      'filter': FiltersModel(standAloneBuildings: 'true'),
-    },
-    {
-      'title': 'Skyscrapers',
-      'filter': FiltersModel(skyScrapers: 'true'),
-    },
-  ];
 
   void _toggleOverlay(
       BuildContext context, ApartmentModel apartment, GlobalKey globalKey) {
@@ -676,7 +642,14 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               width: double.infinity,
               padding: const EdgeInsets.only(top: 40, bottom: 4),
               decoration: const BoxDecoration(
-                color: CustomColors.primary,
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
+                  ],
+                ),
               ),
               child: Row(
                 children: [
@@ -686,7 +659,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     },
                     icon: const Icon(
                       Icons.arrow_back,
-                      color: CustomColors.white,
+                      color: CustomColors.black,
                     ),
                   ),
                   const Text(
@@ -694,7 +667,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: CustomColors.white,
+                      color: CustomColors.black,
                     ),
                   ),
                 ],
@@ -709,7 +682,16 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                 );
               },
               child: Container(
-                color: CustomColors.primary,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color(0xFFFCCBAE),
+                      Color(0xFFF87988),
+                    ],
+                  ),
+                ),
                 child: Container(
                   height: 50,
                   margin: const EdgeInsets.all(6),
@@ -771,12 +753,12 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                   colors: [
-                    CustomColors.primary,
-                    CustomColors.primary50,
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
                   ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
                 ),
               ),
               child: ref.watch(filtersProvider).toJson().isNotEmpty
@@ -792,7 +774,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: CustomColors.white,
+                              color: CustomColors.black,
                             ),
                           ),
                           SingleChildScrollView(
@@ -1215,6 +1197,54 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                           useDefaultParams: true);
                                     },
                                   ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .igbcCertifiedHomes ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'IGBC Certified Homes',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(
+                                                  igbcCertifiedHomes: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref
+                                        .watch(filtersProvider)
+                                        .semiGatedApartments ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'Semi Gated',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(
+                                                  semiGatedApartments: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
+                                if (ref.watch(filtersProvider).moreOffers ==
+                                    'true')
+                                  CustomListChip(
+                                    text: 'More Offers',
+                                    onTap: () {
+                                      ref
+                                          .read(filtersProvider.notifier)
+                                          .updateFilters(ref
+                                              .read(filtersProvider)
+                                              .copyWith(moreOffers: ''));
+                                      getFilteredApartments(
+                                          useDefaultParams: true);
+                                    },
+                                  ),
                                 GestureDetector(
                                   onTap: () {
                                     ref
@@ -1232,7 +1262,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                       "clear",
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: CustomColors.white,
+                                        color: CustomColors.black,
                                       ),
                                     ),
                                   ),

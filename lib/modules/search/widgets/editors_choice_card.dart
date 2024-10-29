@@ -52,7 +52,7 @@ class EditorsChoiceCard extends StatelessWidget {
                   left: leftPadding ? 10 : 0, right: leftPadding ? 0 : 10),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                color: CustomColors.white,
+                color: CustomColors.black10,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Stack(
@@ -100,6 +100,7 @@ class EditorsChoiceCard extends StatelessWidget {
                   Positioned(
                     top: 0,
                     left: 0,
+                    right: 4,
                     child: Container(
                       height: 200,
                       padding: const EdgeInsets.all(8),

@@ -122,7 +122,19 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
             },
             icon: const Icon(Icons.arrow_back),
           ),
-          backgroundColor: CustomColors.primary10,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xFFFCCBAE),
+                  Color(0xFFF87988),
+                ],
+              ),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
         ),
         body: comparedProperties.length < 2
             ? const SafeArea(

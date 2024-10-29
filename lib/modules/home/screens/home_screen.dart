@@ -7,6 +7,8 @@ import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
 import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
+import 'package:re_portal_frontend/modules/home/widgets/limelight.dart';
+import 'package:re_portal_frontend/modules/home/widgets/sponsored_ads.dart';
 import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
@@ -46,6 +48,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> newProjects = [];
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
+  List<ApartmentModel> limelight = [];
+  List<ApartmentModel> sponsoredAd = [];
   bool loading = true;
   final ScrollController _masterScrollController = ScrollController();
   bool showScrollUpButton = false;
@@ -63,7 +67,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final response = await http.get(uri);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
-        debugPrint("-----------------responseData: $responseData");
 
         ref
             .read(locationHomesProvider.notifier)
@@ -134,6 +137,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         lifestyleProjects = (responseBody['lifestyleProjects'] as List<dynamic>)
             .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
             .toList();
+        limelight = (responseBody['limelight'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        sponsoredAd = (responseBody['sponsoredAd'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
 
         allApartments = [
           ...bestDeals,
@@ -165,14 +174,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ref
             .watch(homePropertiesProvider.notifier)
             .setAllApartments(allApartments);
+        ref.watch(homePropertiesProvider.notifier).setSponsoredAd(sponsoredAd);
+        ref.watch(homePropertiesProvider.notifier).setLimelight(limelight);
 
         setState(() {
           loading = false;
         });
       }
     }).onError((error, stackTrace) {
-      debugPrint("error: $error");
-      debugPrint("stackTrace: $stackTrace");
       setState(() {
         loading = false;
       });
@@ -243,22 +252,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
-              if (mounted)
-                EditorsChoiceCard(
-                  apartments: ref.watch(homePropertiesProvider).editorsChoice,
-                ),
+              EditorsChoiceCard(
+                apartments: ref.watch(homePropertiesProvider).editorsChoice,
+              ),
             ],
           ),
         ),
-        const NewLaunchSection(
-          title: "New launches",
-        ),
+        const NewLaunchSection(title: "New launches"),
         if (mounted)
           BuilderInFocus(
               builderData: ref.watch(homePropertiesProvider).builderData),
         if (mounted) const LifestyleProperties(),
         const ReadyToMovein(),
-        const SizedBox(height: 20),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: const Limelight(),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: const SponsoredAds(),
+        ),
+        const SizedBox(height: 5),
       ],
     );
   }
@@ -288,19 +312,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: showScrollUpButton
-          ? FloatingActionButton(
-              onPressed: () {
-                _masterScrollController
-                    .animateTo(0,
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeInOut)
-                    .then((v) {
-                  setState(() {
-                    showScrollUpButton = false;
+          ? AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              height: showScrollUpButton ? 50 : 0,
+              width: showScrollUpButton ? 50 : 0,
+              child: FloatingActionButton(
+                backgroundColor: CustomColors.primary.withOpacity(0.7),
+                onPressed: () {
+                  _masterScrollController
+                      .animateTo(0,
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeInOut)
+                      .then((v) {
+                    setState(() {
+                      showScrollUpButton = false;
+                    });
                   });
-                });
-              },
-              child: const Icon(Icons.arrow_upward),
+                },
+                child: showScrollUpButton
+                    ? const Icon(
+                        Icons.arrow_upward,
+                        weight: 5,
+                        size: 30,
+                        color: CustomColors.white,
+                      )
+                    : null,
+              ),
             )
           : null,
       backgroundColor: CustomColors.black10,

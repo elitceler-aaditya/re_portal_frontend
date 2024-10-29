@@ -23,7 +23,7 @@ class CustomChip extends StatelessWidget {
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: CustomColors.primary,
+            color: Colors.grey,
             width: 1,
           ),
         ),

@@ -67,14 +67,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         children: [
                           Container(
                             height: 100,
-                            color: CustomColors.primary,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  Color(0xFFFCCBAE),
+                                  Color(0xFFF87988),
+                                ],
+                              ),
+                            ),
                           ),
-                          const Positioned(
+                          Positioned(
                             left: 16,
                             top: 50,
-                            child: CircleAvatar(
-                              radius: 50,
-                              child: Center(
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFFCCBAE),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Center(
                                 child: Icon(
                                   Icons.person_outline,
                                   size: 40,
@@ -96,7 +118,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
-                                    color: CustomColors.white,
+                                    color: CustomColors.black,
                                   ),
                                 ),
                                 Text(
@@ -118,7 +140,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       icon: Icons.bookmark_outline,
                       onTap: () => rightSlideTransition(
                         context,
-                        const SavedProperties(),
+                        const SavedProperties(isPop: true),
                       ),
                     ),
                     _listTile(

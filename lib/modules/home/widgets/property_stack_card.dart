@@ -161,7 +161,7 @@ class PropertyStackCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${apartments[index].projectLocation} • ${apartments[index].configuration.first} • ${formatBudget(apartments[index].budget)}",
+                                "${apartments[index].projectLocation} ${apartments[index].configuration.isNotEmpty ? '• ${apartments[index].configuration.first}' : ''} ${apartments[index].budget == 0 ? '' : '• ${formatBudget(apartments[index].budget)}'}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
