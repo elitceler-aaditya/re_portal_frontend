@@ -17,7 +17,7 @@ class PropertiesTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 180,
+      height: 190,
       child: GestureDetector(
         onTap: onTap,
         child: Container(

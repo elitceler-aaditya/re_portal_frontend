@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/search/widgets/sponsored_cards.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 
@@ -34,8 +34,11 @@ class _SponsoredAdsState extends ConsumerState<SponsoredAds> {
               ),
             ),
           ),
-          EditorsChoiceCard(
-            apartments: ref.watch(homePropertiesProvider).sponsoredAd,
+          SizedBox(
+            height: 200,
+            child: SponsoredCards(
+              apartments: ref.watch(homePropertiesProvider).sponsoredAd,
+            ),
           ),
         ],
       ),

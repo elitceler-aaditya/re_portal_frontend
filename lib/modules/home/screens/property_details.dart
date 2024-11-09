@@ -11,6 +11,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -294,7 +296,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               size: 10, color: CustomColors.black),
           const SizedBox(width: 8),
           SizedBox(
-            width: 52,
+            width: 56,
             child: Text(
               value,
               style: const TextStyle(
@@ -332,11 +334,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     );
   }
 
-  _formatArea(int area) {
+  String _formatArea(int area) {
     if (area < 1000) {
-      return "${area.toString()} sq.ft";
+      return area.toString();
     } else {
-      return "${(area / 1000).toStringAsFixed(1)}k sq.ft";
+      return "${(area / 1000).toStringAsFixed(1)}k";
     }
   }
 
@@ -879,181 +881,171 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(
-                              height: 160,
-                              margin: const EdgeInsets.only(left: 10),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width - 50,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.topRight,
-                                  colors: [
-                                    Color(0xFFF5B79A),
-                                    Color(0xFFFFF9F9),
-                                  ],
+                            if (_projectDetails
+                                .projectDetails.amenities.isNotEmpty)
+                              Container(
+                                height: 145,
+                                margin: const EdgeInsets.only(left: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.2),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "General Amenities",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: CustomColors.black,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.2),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Wrap(
-                                        direction: Axis.horizontal,
-                                        children: List.generate(
-                                          _projectDetails
-                                              .projectDetails.amenities
-                                              .split(",")
-                                              .length,
-                                          (index) => CustomChip(
-                                            text: _projectDetails
+                                  ],
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      "General Amenities",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: CustomColors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Wrap(
+                                          direction: Axis.horizontal,
+                                          children: List.generate(
+                                            _projectDetails
                                                 .projectDetails.amenities
-                                                .split(",")[index],
+                                                .split(",")
+                                                .length,
+                                            (index) => CustomChip(
+                                              text: _projectDetails
+                                                  .projectDetails.amenities
+                                                  .split(",")[index],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
                             const SizedBox(height: 10),
-                            Container(
-                              height: 160,
-                              margin: const EdgeInsets.only(left: 10),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width - 50,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.topRight,
-                                  colors: [
-                                    Color(0xFFF5B79A),
-                                    Color(0xFFFFF9F9),
-                                  ],
+                            if (_projectDetails
+                                .projectDetails.clubHouseAmenities.isNotEmpty)
+                              Container(
+                                height: 145,
+                                margin: const EdgeInsets.only(left: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Clubhouse Amenities",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: CustomColors.black,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Wrap(
-                                        direction: Axis.horizontal,
-                                        children: List.generate(
-                                          _projectDetails
-                                              .projectDetails.clubHouseAmenities
-                                              .split(",")
-                                              .length,
-                                          (index) => CustomChip(
-                                            text: _projectDetails.projectDetails
+                                  ],
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      "Clubhouse Amenities",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: CustomColors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Wrap(
+                                          direction: Axis.horizontal,
+                                          children: List.generate(
+                                            _projectDetails.projectDetails
                                                 .clubHouseAmenities
-                                                .split(",")[index],
+                                                .split(",")
+                                                .length,
+                                            (index) => CustomChip(
+                                              text: _projectDetails
+                                                  .projectDetails
+                                                  .clubHouseAmenities
+                                                  .split(",")[index],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              height: 160,
-                              margin: const EdgeInsets.only(left: 10),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width - 50,
-                              ),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.topRight,
-                                  colors: [
-                                    Color(0xFFF5B79A),
-                                    Color(0xFFFFF9F9),
                                   ],
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CustomColors.black.withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(16),
                               ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Outdoor Amenities",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: CustomColors.black,
+                            if (_projectDetails
+                                .projectDetails.outdoorAmenities.isNotEmpty)
+                              Container(
+                                height: 145,
+                                margin: const EdgeInsets.only(left: 10),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width - 50,
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 0),
                                     ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Wrap(
-                                        direction: Axis.horizontal,
-                                        children: List.generate(
-                                          _projectDetails
-                                              .projectDetails.outdoorAmenities
-                                              .split(",")
-                                              .length,
-                                          (index) => CustomChip(
-                                            text: _projectDetails
+                                  ],
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      "Outdoor Amenities",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: CustomColors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Wrap(
+                                          direction: Axis.horizontal,
+                                          children: List.generate(
+                                            _projectDetails
                                                 .projectDetails.outdoorAmenities
-                                                .split(",")[index],
+                                                .split(",")
+                                                .length,
+                                            (index) => CustomChip(
+                                              text: _projectDetails
+                                                  .projectDetails
+                                                  .outdoorAmenities
+                                                  .split(",")[index],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -1061,9 +1053,73 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-            if (_projectDetails.projectDetails.hospitals.isNotEmpty &&
-                _projectDetails.projectDetails.offices.isNotEmpty &&
-                _projectDetails.projectDetails.connectivity.isNotEmpty)
+            if (_projectDetails.projectDetails.specifications.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Project Specifications",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: CustomColors.black,
+                      ),
+                    ),
+                    Column(
+                      children: _projectDetails.projectDetails.specifications
+                          .map((point) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 4, right: 4),
+                                child: Icon(
+                                  Icons.circle,
+                                  size: 10,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  point,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    )
+                  ],
+                ),
+              ),
+            if (_projectDetails
+                    .projectDetails.educationalInstitutions.isNotEmpty ||
+                _projectDetails.projectDetails.hospitals.isNotEmpty ||
+                _projectDetails.projectDetails.offices.isNotEmpty ||
+                _projectDetails.projectDetails.connectivity.isNotEmpty ||
+                _projectDetails.projectDetails.restaurants.isNotEmpty ||
+                _projectDetails.projectDetails.colleges.isNotEmpty ||
+                _projectDetails.projectDetails.pharmacies.isNotEmpty ||
+                _projectDetails.projectDetails.hotspots.isNotEmpty ||
+                _projectDetails.projectDetails.shopping.isNotEmpty ||
+                _projectDetails.projectDetails.entertainment.isNotEmpty)
               Container(
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: 4),
@@ -1244,8 +1300,399 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                               ],
                             ),
-                          // const SizedBox(width: 10),
+                          if (_projectDetails.projectDetails
+                              .educationalInstitutions.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Educational Institutions",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails.projectDetails
+                                          .educationalInstitutions.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails
+                                            .projectDetails
+                                            .educationalInstitutions[index]
+                                            .name,
+                                        _projectDetails
+                                            .projectDetails
+                                            .educationalInstitutions[index]
+                                            .dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          if (_projectDetails
+                              .projectDetails.colleges.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Colleges",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.colleges.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .colleges[index].name,
+                                        _projectDetails.projectDetails
+                                            .colleges[index].dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          if (_projectDetails
+                              .projectDetails.pharmacies.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Pharmacies",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.pharmacies.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .pharmacies[index].name,
+                                        _projectDetails.projectDetails
+                                            .pharmacies[index].dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          if (_projectDetails
+                              .projectDetails.hotspots.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Hotspots",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.hotspots.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .hotspots[index].name,
+                                        _projectDetails.projectDetails
+                                            .hotspots[index].dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          if (_projectDetails
+                              .projectDetails.shopping.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Shopping",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.shopping.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .shopping[index].name,
+                                        _projectDetails.projectDetails
+                                            .shopping[index].dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          if (_projectDetails
+                              .projectDetails.entertainment.isNotEmpty)
+                            Column(
+                              children: [
+                                const Text(
+                                  "Entertainment",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomColors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 150,
+                                  margin: const EdgeInsets.only(right: 10),
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width - 50,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            CustomColors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 0),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: List.generate(
+                                      _projectDetails
+                                          .projectDetails.entertainment.length,
+                                      (index) => _keyHighlights(
+                                        _projectDetails.projectDetails
+                                            .entertainment[index].name,
+                                        _projectDetails.projectDetails
+                                            .entertainment[index].dist,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
                         ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (_projectDetails.projectDetails.banks.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10, bottom: 8),
+                      child: Text(
+                        "Home Loan",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
+                        ),
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(
+                          _projectDetails.projectDetails.banks.length,
+                          (index) => Container(
+                            margin: const EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: CustomColors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomColors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: CustomColors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color:
+                                          CustomColors.black.withOpacity(0.1),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Image.network(
+                                    _projectDetails
+                                        .projectDetails.banks[index].bankLogo,
+                                    width: 72,
+                                    height: 42,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "Starts from ${_projectDetails.projectDetails.banks[index].loanPercentage}%",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: CustomColors.black.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -1272,16 +1719,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     return GestureDetector(
       onTap: () {
         final List<String> allImgs = widget.apartment.projectGallery;
-        List<double> breakpoints = [];
 
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => PhotoScrollingGallery(
-              allImages: allImgs,
-              labels: const [],
-              galleryIndex: 0,
-              breakPoints: breakpoints,
-              // image: _projectDetails.projectImages[0].images[0],
+            builder: (context) => PhotoViewGallery.builder(
+              itemCount: allImgs.length,
+              builder: (context, index) {
+                return PhotoViewGalleryPageOptions(
+                  imageProvider: NetworkImage(allImgs[index]),
+                );
+              },
             ),
           ),
         );
@@ -1326,49 +1773,70 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ),
                 ],
                 child: GestureDetector(
-                  onTap: () {
-                    final List<String> allImgs =
-                        widget.apartment.projectGallery;
-                    List<double> breakpoints = [];
+                  child: GestureDetector(
+                    onTap: () {
+                      final List<String> allImgs =
+                          widget.apartment.projectGallery;
 
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PhotoScrollingGallery(
-                          allImages: allImgs,
-                          labels: const [],
-                          galleryIndex: index,
-                          breakPoints: breakpoints,
-                          image: widget.apartment.projectGallery[index],
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                            appBar: AppBar(
+                              backgroundColor: CustomColors.black,
+                              title: const Text(
+                                "Gallery",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              leading: IconButton(
+                                icon: const Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                            ),
+                            body: PhotoViewGallery.builder(
+                              itemCount: allImgs.length,
+                              builder: (context, index) {
+                                return PhotoViewGalleryPageOptions(
+                                  imageProvider: NetworkImage(allImgs[index]),
+                                  minScale: PhotoViewComputedScale.contained,
+                                  maxScale:
+                                      PhotoViewComputedScale.contained * 2,
+                                );
+                              },
+                            ),
+                          ),
                         ),
+                      );
+                    },
+                    child: Container(
+                      height: h + 32,
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: CustomColors.black25,
                       ),
-                    );
-                  },
-                  child: Container(
-                    height: h + 32,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: CustomColors.black25,
-                    ),
-                    child: Image.network(
-                      widget.apartment.projectGallery[index],
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.error),
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          loadingProgress == null
-                              ? child
-                              : Shimmer.fromColors(
-                                  baseColor: CustomColors.black25,
-                                  highlightColor: CustomColors.black50,
-                                  child: Container(
-                                    height: 200,
-                                    width: 320,
-                                    decoration: BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        widget.apartment.projectGallery[index],
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.error),
+                        loadingBuilder: (context, child, loadingProgress) =>
+                            loadingProgress == null
+                                ? child
+                                : Shimmer.fromColors(
+                                    baseColor: CustomColors.black25,
+                                    highlightColor: CustomColors.black50,
+                                    child: Container(
+                                      height: 200,
+                                      width: 320,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
                                     ),
                                   ),
-                                ),
+                      ),
                     ),
                   ),
                 ),
@@ -1523,14 +1991,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                               .watch(comparePropertyProvider)
                                               .contains(widget.apartment)
                                           ? SvgPicture.asset(
-                                              "assets/icons/compare_active.svg",
+                                              "assets/icons/compare.svg",
                                               color: Colors.white,
                                               height: 22,
                                               width: 22,
                                             )
-                                          : const Icon(
-                                              Icons.close,
+                                          : SvgPicture.asset(
+                                              "assets/icons/compare.svg",
                                               color: CustomColors.primary,
+                                              height: 22,
+                                              width: 22,
                                             ),
                                       onPressed: () {
                                         if (!ref
@@ -1604,19 +2074,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 if (_highlights.isNotEmpty)
                   GestureDetector(
                     onTap: () {
-                      final List<String> allImgs =
-                          widget.apartment.projectGallery;
-                      List<double> breakpoints = [];
-
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => PhotoScrollingGallery(
-                            allImages: allImgs,
-                            labels: const [],
-                            galleryIndex: 0,
-                            breakPoints: breakpoints,
-                            image: widget.apartment.projectGallery[0],
-                          ),
+                          builder: (context) => UnitPlanGallery(
+                              unitPlans:
+                                  _projectDetails.unitPlanConfigFilesFormatted),
                         ),
                       );
                     },
@@ -1695,7 +2157,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             SlideEffect(
                               duration: Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
-                              begin: Offset(-0.4, 0),
+                              begin: Offset(-0.42, 0),
                             ),
                           ],
                           child: Row(
@@ -1705,7 +2167,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   horizontal: 16,
                                   vertical: 20,
                                 ),
-                                width: MediaQuery.of(context).size.width * 0.4,
+                                width: MediaQuery.of(context).size.width * 0.42,
                                 decoration: BoxDecoration(
                                   color: CustomColors.black.withOpacity(0.7),
                                   borderRadius: const BorderRadius.only(
@@ -1792,7 +2254,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             ),
           ),
           Positioned(
-            right: 0,
+            right: 14,
             bottom: MediaQuery.of(context).size.height - position.dy - 10,
             child: Material(
               color: Colors.transparent,
@@ -1982,40 +2444,19 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
 
           _highlights = [];
 
-          if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+          //1 - project size
+          if (_projectDetails.projectDetails.projectSize.isNotEmpty) {
             _highlights.add({
-              "title": "Configurations",
-              "value": _projectDetails.unitPlanConfigFilesFormatted.length
-            });
-            projectDetailsList.add({
-              "title": "Configurations",
-              "value": _projectDetails.unitPlanConfigFilesFormatted.length
-            });
-          }
-          if (_projectDetails
-              .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
-            projectDetailsList.add({
-              "title": "Price/sq.ft",
-              "value": _formatArea(int.parse(
-                  _projectDetails.projectDetails.pricePerSquareFeetRate))
+              "title": "Project Size",
+              "value": _projectDetails.projectDetails.projectSize
             });
           }
 
-          if (_projectDetails.projectDetails.noOfFloors.isNotEmpty) {
-            _highlights.add({
-              "title": "No. of Floors",
-              "value": _projectDetails.projectDetails.noOfFloors
-            });
-            projectDetailsList.add({
-              "title": "No. of Floors",
-              "value": _projectDetails.projectDetails.noOfFloors
-            });
-          }
-
+          //2 - no of flats
           if (_projectDetails.projectDetails.noOfFlats.isNotEmpty) {
             _highlights.add({
-              "title": "No. of Flats",
-              "value": _projectDetails.projectDetails.noOfFlats
+              "title": "No. of Units",
+              "value": "${_projectDetails.projectDetails.noOfFlats} units"
             });
             projectDetailsList.add({
               "title": "No. of Flats",
@@ -2023,75 +2464,140 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
             });
           }
 
-          if (_projectDetails.projectDetails.projectLaunchedDate.isNotEmpty) {
-            _highlights.add({
-              "title": "Launch Date",
-              "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                  _projectDetails.projectDetails.projectLaunchedDate
-                      .substring(0, 10)))
-            });
-            projectDetailsList.add({
-              "title": "Launch Date",
-              "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                  _projectDetails.projectDetails.projectLaunchedDate
-                      .substring(0, 10)))
-            });
-          }
-
-          if (_projectDetails.projectDetails.clubhousesize.isNotEmpty) {
-            _highlights.add({
-              "title": "Club House Size",
-              "value": int.tryParse(
-                          _projectDetails.projectDetails.clubhousesize) !=
-                      null
-                  ? _formatArea(
-                      (int.parse(_projectDetails.projectDetails.clubhousesize)))
-                  : _projectDetails.projectDetails.clubhousesize
-            });
-            projectDetailsList.add({
-              "title": "Club House Size",
-              "value": int.tryParse(
-                          _projectDetails.projectDetails.clubhousesize) !=
-                      null
-                  ? _formatArea(
-                      (int.parse(_projectDetails.projectDetails.clubhousesize)))
-                  : _projectDetails.projectDetails.clubhousesize
-            });
-          }
-
-          if (_projectDetails.projectDetails.totalOpenSpace.isNotEmpty) {
-            _highlights.add({
-              "title": "Open Space",
-              "value": _projectDetails.projectDetails.totalOpenSpace
-            });
-            projectDetailsList.add({
-              "title": "Open Space",
-              "value": _projectDetails.projectDetails.totalOpenSpace
-            });
-          }
-          if (_projectDetails.projectDetails.reraID.isNotEmpty) {
-            projectDetailsList.add({"title": "RERA Approved", "value": "Yes"});
-          }
-
-          if (_projectDetails.projectDetails.constructionType.isNotEmpty) {
-            projectDetailsList.add({
-              "title": "Construction",
-              "value": _projectDetails.projectDetails.constructionType
-            });
-          }
-          if (_projectDetails.projectDetails.noOfTowers.isNotEmpty) {
-            projectDetailsList.add({
-              "title": "No. of Towers",
-              "value": _projectDetails.projectDetails.noOfTowers
-            });
-          }
+          //3 - posession
           if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
-            projectDetailsList.add({
-              "title": "Possession",
-              "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                  _projectDetails.projectDetails.projectPossession
-                      .substring(0, 10))),
-            });
+            {
+              _highlights.add({
+                "title": "Possession",
+                "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                    _projectDetails.projectDetails.projectPossession
+                        .substring(0, 10)))
+              });
+            }
+
+            //4 - configurations
+            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+              _highlights.add({
+                "title": "Configurations",
+                "value": _projectDetails.unitPlanConfigFilesFormatted.length > 2
+                    ? "${_projectDetails.unitPlanConfigFilesFormatted.take(1).map((e) => int.tryParse(e.bHKType) ?? e.bHKType).join(", ")} +${_projectDetails.unitPlanConfigFilesFormatted.length - 1} more"
+                    : _projectDetails.unitPlanConfigFilesFormatted
+                        .map((e) => int.tryParse(e.bHKType) ?? e.bHKType)
+                        .join(", ")
+              });
+            }
+
+            //5 - available sizes
+            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+              final sizes = _projectDetails.unitPlanConfigFilesFormatted
+                  .map((e) => int.tryParse(e.sizeInSqft) ?? 0)
+                  .toList();
+              sizes.sort();
+              final minSize = sizes.first;
+              final maxSize = sizes.last;
+              final displaySize = minSize == maxSize
+                  ? "$minSize sq.ft"
+                  : "$minSize - $maxSize sq.ft";
+              _highlights.add({
+                "title": "Available Sizes",
+                "value": displaySize,
+              });
+            }
+
+            //6 - price per sqft
+            if (_projectDetails
+                .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
+              _highlights.add({
+                "title": "Base price",
+                "value": "${_formatArea(
+                  int.parse(
+                      _projectDetails.projectDetails.pricePerSquareFeetRate),
+                )}/sq.ft"
+              });
+            }
+
+            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Configurations",
+                "value": _projectDetails.unitPlanConfigFilesFormatted.length
+              });
+            }
+            if (_projectDetails
+                .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Price/sq.ft",
+                "value":
+                    "₹${_formatArea(int.parse(_projectDetails.projectDetails.pricePerSquareFeetRate))}"
+              });
+            }
+
+            if (_projectDetails.projectDetails.noOfFloors.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "No. of Floors",
+                "value": _projectDetails.projectDetails.noOfFloors
+              });
+            }
+
+            if (_projectDetails.projectDetails.projectLaunchedDate.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Launch Date",
+                "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                    _projectDetails.projectDetails.projectLaunchedDate
+                        .substring(0, 10)))
+              });
+            }
+
+            if (_projectDetails.projectDetails.clubhousesize.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Club House Size",
+                "value": int.tryParse(
+                            _projectDetails.projectDetails.clubhousesize) !=
+                        null
+                    ? _formatArea((int.parse(
+                        _projectDetails.projectDetails.clubhousesize)))
+                    : _projectDetails.projectDetails.clubhousesize
+              });
+            }
+
+            if (_projectDetails.projectDetails.totalOpenSpace.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Open Space",
+                "value": _projectDetails.projectDetails.totalOpenSpace
+              });
+            }
+            if (_projectDetails.projectDetails.reraID.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "RERA",
+                "value": _projectDetails.projectDetails.reraID
+              });
+            }
+            if (_projectDetails.projectDetails.projectType.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Project Type",
+                "value": _projectDetails.projectDetails.projectType
+              });
+            }
+
+            if (_projectDetails.projectDetails.constructionType.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Construction",
+                "value": _projectDetails.projectDetails.constructionType
+              });
+            }
+            if (_projectDetails.projectDetails.noOfTowers.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "No. of Towers",
+                "value": _projectDetails.projectDetails.noOfTowers
+              });
+            }
+            if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
+              projectDetailsList.add({
+                "title": "Possession",
+                "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                    _projectDetails.projectDetails.projectPossession
+                        .substring(0, 10))),
+              });
+            }
           }
         });
       }
@@ -2134,24 +2640,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     var h = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: CustomColors.black10,
-      // floatingActionButton: Column(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   crossAxisAlignment: CrossAxisAlignment.center,
-      //   children: [
-      //     FloatingActionButton(
-      //       key: contactButtonKey,
-      //       backgroundColor: CustomColors.primary,
-      //       shape: const CircleBorder(),
-      //       onPressed: () {
-      //         _toggleOverlay(context);
-      //       },
-      //       child: SvgPicture.asset(
-      //         "assets/icons/phone.svg",
-      //         color: Colors.white,
-      //       ),
-      //     ),
-      //   ],
-      // ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [

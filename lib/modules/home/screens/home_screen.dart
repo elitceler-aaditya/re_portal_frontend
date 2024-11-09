@@ -10,8 +10,8 @@ import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
 import 'package:re_portal_frontend/modules/home/widgets/limelight.dart';
 import 'package:re_portal_frontend/modules/home/widgets/sponsored_ads.dart';
 import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
+import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
-import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
@@ -21,9 +21,11 @@ import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
+import 'package:re_portal_frontend/riverpod/open_filters.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -40,7 +42,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<BuilderDataModel> builderData = [];
-  List<ApartmentModel> allApartments = [];
   List<ApartmentModel> bestDeals = [];
   List<ApartmentModel> selectedProperties = [];
   List<ApartmentModel> editorsChoice = [];
@@ -94,12 +95,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<void> getApartments({
-    Map<String, dynamic> params = const {},
-  }) async {
+  Future<void> getApartments() async {
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getUserHomepageData";
-    Uri uri = Uri.parse(url).replace(queryParameters: params);
+
+    Uri uri = Uri.parse(url);
     http.get(
       uri,
       headers: {
@@ -144,15 +144,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
             .toList();
 
-        allApartments = [
-          ...bestDeals,
-          ...selectedProperties,
-          ...editorsChoice,
-          ...builderInFocus,
-          ...newProjects,
-          ...readyToMoveIn,
-          ...lifestyleProjects,
-        ];
         ref.watch(homePropertiesProvider.notifier).setBuilderData(builderData);
         ref.watch(homePropertiesProvider.notifier).setBestDeals(bestDeals);
         ref
@@ -171,9 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ref
             .watch(homePropertiesProvider.notifier)
             .setLifestyleProjects(lifestyleProjects);
-        ref
-            .watch(homePropertiesProvider.notifier)
-            .setAllApartments(allApartments);
+
         ref.watch(homePropertiesProvider.notifier).setSponsoredAd(sponsoredAd);
         ref.watch(homePropertiesProvider.notifier).setLimelight(limelight);
 
@@ -258,7 +247,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
-        const NewLaunchSection(title: "New launches"),
+        NewLaunchSection(
+          title: "New launches",
+          apartments: ref.watch(homePropertiesProvider).newProjects,
+        ),
         if (mounted)
           BuilderInFocus(
               builderData: ref.watch(homePropertiesProvider).builderData),
@@ -291,9 +283,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(filtersProvider.notifier).clearBuilderName();
-      if (ref.watch(homePropertiesProvider).allApartments.isEmpty) {
-        getApartments();
-      }
+      getApartments();
+
       if (ref.watch(locationHomesProvider) == null) {
         getLocationHomes(17.463, 78.286);
       }
@@ -350,7 +341,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //appbar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 36),
+              padding: const EdgeInsets.only(top: 36, right: 12, bottom: 5),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.centerLeft,
@@ -362,6 +353,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                     onPressed: () {
@@ -387,6 +380,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                         color: CustomColors.black,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      rightSlideTransition(context, const ProfileScreen());
+                    },
+                    child: CircleAvatar(
+                      radius: 20,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          "assets/icons/person.svg",
+                          height: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -467,14 +475,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SearchApartmentResults(
-                                    openFilters: true,
-                                  ),
-                                ),
-                              );
+                              ref
+                                  .read(openFiltersProvider.notifier)
+                                  .openFilterStatus(true);
+                              ref
+                                  .read(navBarIndexProvider.notifier)
+                                  .setNavBarIndex(1);
                             },
                             icon: SvgPicture.asset("assets/icons/filter.svg"),
                             label: const Text(
@@ -495,7 +501,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //category options
             CategoryRow(
               onTap: () =>
-                  rightSlideTransition(context, const SearchApartmentResults()),
+                  ref.read(navBarIndexProvider.notifier).setNavBarIndex(1),
+              title: "Choose by category",
             ),
             const SizedBox(height: 4),
 

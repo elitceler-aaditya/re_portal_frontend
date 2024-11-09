@@ -7,7 +7,9 @@ import 'package:re_portal_frontend/riverpod/search_bar.dart';
 class CategoryRow extends ConsumerStatefulWidget {
   final Function()? onTap;
   final double cardHeight;
-  const CategoryRow({super.key, this.onTap, this.cardHeight = 80});
+  final String title;
+  const CategoryRow(
+      {super.key, this.onTap, this.cardHeight = 80, this.title = 'Categories'});
 
   @override
   ConsumerState<CategoryRow> createState() => _CategoryRowState();
@@ -73,11 +75,11 @@ class _CategoryRowState extends ConsumerState<CategoryRow> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 8, bottom: 8),
+          Padding(
+            padding: const EdgeInsets.only(left: 8, bottom: 8),
             child: Text(
-              "Categories",
-              style: TextStyle(
+              widget.title,
+              style: const TextStyle(
                 fontSize: 16,
                 fontFamily: "PlusJakartaSans",
                 fontWeight: FontWeight.bold,

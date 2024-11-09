@@ -6,6 +6,7 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 class ProjectSnippetCard extends StatefulWidget {
   final ApartmentModel apartment;
   final String videoLink;
+  final double cardWidth;
   final bool leftPadding;
 
   const ProjectSnippetCard({
@@ -13,6 +14,7 @@ class ProjectSnippetCard extends StatefulWidget {
     required this.apartment,
     required this.videoLink,
     this.leftPadding = true,
+    this.cardWidth = 180,
   });
 
   @override
@@ -20,6 +22,16 @@ class ProjectSnippetCard extends StatefulWidget {
 }
 
 class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
+  String formatBudget(int budget) {
+    if (budget < 100000) {
+      return "₹${(budget / 1000).toStringAsFixed(00)}K";
+    } else if (budget < 10000000) {
+      return "₹${(budget / 100000).toStringAsFixed(1)}L";
+    } else {
+      return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -36,7 +48,7 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
       },
       child: Container(
         height: double.infinity,
-        width: 180,
+        width: widget.cardWidth,
         margin: EdgeInsets.only(
             left: widget.leftPadding ? 10 : 0,
             right: widget.leftPadding ? 0 : 10),
@@ -73,6 +85,7 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
             Positioned(
               bottom: 8,
               left: 8,
+              right: 3,
               child: SizedBox(
                 width: 180,
                 child: Column(
@@ -95,11 +108,13 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
                           color: CustomColors.primary,
                         ),
                         const SizedBox(width: 2),
-                        Text(
-                          widget.apartment.projectLocation,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
+                        Expanded(
+                          child: Text(
+                            "${widget.apartment.projectLocation} • ${formatBudget(widget.apartment.budget)}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],

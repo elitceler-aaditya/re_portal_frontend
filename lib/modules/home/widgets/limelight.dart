@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class Limelight extends ConsumerStatefulWidget {
@@ -27,8 +27,9 @@ class _LimelightState extends ConsumerState<Limelight> {
             ),
           ),
         ),
-        EditorsChoiceCard(
+        PropertyStackCard(
           apartments: ref.watch(homePropertiesProvider).limelight,
+          cardWidth: MediaQuery.of(context).size.width * 0.85,
         ),
       ],
     );

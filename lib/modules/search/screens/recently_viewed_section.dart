@@ -121,7 +121,7 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "${formatBudget(ref.watch(recentlyViewedProvider)[index].budget)} • ${ref.watch(recentlyViewedProvider)[index].configuration.first}",
+                                "${formatBudget(ref.watch(recentlyViewedProvider)[index].budget)} • ${ref.watch(recentlyViewedProvider)[index].configuration.isNotEmpty ? ref.watch(recentlyViewedProvider)[index].configuration.first : ''}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
@@ -134,13 +134,17 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
                                     size: 14,
                                     color: CustomColors.primary,
                                   ),
-                                  Text(
-                                    ref
-                                        .watch(recentlyViewedProvider)[index]
-                                        .projectLocation,
-                                    style: const TextStyle(
-                                      color: CustomColors.white,
-                                      fontSize: 12,
+                                  Expanded(
+                                    child: Text(
+                                      ref
+                                          .watch(recentlyViewedProvider)[index]
+                                          .projectLocation,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ],

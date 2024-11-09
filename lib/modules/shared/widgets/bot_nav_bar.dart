@@ -49,12 +49,10 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                     color: CustomColors.white,
                     child: ref.watch(navBarIndexProvider) == 0
                         ? SvgPicture.asset(
-                            'assets/icons/home.svg',
-                            color: CustomColors.primary,
+                            'assets/icons/home_active.svg',
                           )
                         : SvgPicture.asset(
                             'assets/icons/home.svg',
-                            color: CustomColors.primary50,
                           ),
                   ),
                   Text(
@@ -81,40 +79,16 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 children: [
                   Container(
                     color: CustomColors.white,
-                    child: ref.watch(comparePropertyProvider).isNotEmpty
-                        ? Badge(
-                            backgroundColor: ref.watch(navBarIndexProvider) == 1
-                                ? CustomColors.primary
-                                : CustomColors.primary50,
-                            label: Text(
-                              ref
-                                  .watch(comparePropertyProvider)
-                                  .length
-                                  .toString(),
-                              style: const TextStyle(fontSize: 10),
-                            ),
-                            child: ref.watch(navBarIndexProvider) == 1
-                                ? SvgPicture.asset(
-                                    'assets/icons/compare.svg',
-                                    color: CustomColors.primary,
-                                  )
-                                : SvgPicture.asset(
-                                    'assets/icons/compare.svg',
-                                    color: CustomColors.primary50,
-                                  ),
+                    child: ref.watch(navBarIndexProvider) == 1
+                        ? SvgPicture.asset(
+                            'assets/icons/search_active.svg',
                           )
-                        : ref.watch(navBarIndexProvider) == 1
-                            ? SvgPicture.asset(
-                                'assets/icons/compare.svg',
-                                color: CustomColors.primary,
-                              )
-                            : SvgPicture.asset(
-                                'assets/icons/compare.svg',
-                                color: CustomColors.primary50,
-                              ),
+                        : SvgPicture.asset(
+                            'assets/icons/search.svg',
+                          ),
                   ),
                   Text(
-                    'Compare',
+                    'Search',
                     style: TextStyle(
                       fontSize: 10,
                       color: ref.watch(navBarIndexProvider) == 1
@@ -139,7 +113,7 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                       color: CustomColors.white,
                       child: ref.watch(navBarIndexProvider) == 2
                           ? const Icon(
-                              Icons.map_outlined,
+                              Icons.map,
                               color: CustomColors.primary,
                             )
                           : const Icon(
@@ -170,44 +144,36 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 children: [
                   Container(
                     color: CustomColors.white,
-                    child: ref.watch(savedPropertiesProvider).isNotEmpty
+                    child: ref.watch(comparePropertyProvider).isNotEmpty
                         ? Badge(
                             backgroundColor: ref.watch(navBarIndexProvider) == 3
                                 ? CustomColors.primary
                                 : CustomColors.primary50,
                             label: Text(
                               ref
-                                  .watch(savedPropertiesProvider)
+                                  .watch(comparePropertyProvider)
                                   .length
                                   .toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: const TextStyle(fontSize: 10),
                             ),
                             child: ref.watch(navBarIndexProvider) == 3
                                 ? SvgPicture.asset(
-                                    'assets/icons/like.svg',
-                                    color: CustomColors.primary,
+                                    'assets/icons/compare_active.svg',
                                   )
                                 : SvgPicture.asset(
-                                    'assets/icons/like.svg',
-                                    color: CustomColors.primary50,
+                                    'assets/icons/compare.svg',
                                   ),
                           )
                         : ref.watch(navBarIndexProvider) == 3
                             ? SvgPicture.asset(
-                                'assets/icons/like.svg',
-                                color: CustomColors.primary,
+                                'assets/icons/compare_active.svg',
                               )
                             : SvgPicture.asset(
-                                'assets/icons/like.svg',
-                                color: CustomColors.primary50,
+                                'assets/icons/compare.svg',
                               ),
                   ),
                   Text(
-                    'Favourites',
+                    'Compare',
                     style: TextStyle(
                       fontSize: 10,
                       color: ref.watch(navBarIndexProvider) == 3
@@ -230,18 +196,40 @@ class _CustomBottomNavBarState extends ConsumerState<CustomBottomNavBar> {
                 children: [
                   Container(
                     color: CustomColors.white,
-                    child: ref.watch(navBarIndexProvider) == 4
-                        ? SvgPicture.asset(
-                            'assets/icons/person.svg',
-                            color: CustomColors.primary,
+                    child: ref.watch(savedPropertiesProvider).isNotEmpty
+                        ? Badge(
+                            backgroundColor: ref.watch(navBarIndexProvider) == 4
+                                ? CustomColors.primary
+                                : CustomColors.primary50,
+                            label: Text(
+                              ref
+                                  .watch(savedPropertiesProvider)
+                                  .length
+                                  .toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            child: ref.watch(navBarIndexProvider) == 4
+                                ? SvgPicture.asset(
+                                    'assets/icons/like_active.svg',
+                                  )
+                                : SvgPicture.asset(
+                                    'assets/icons/like.svg',
+                                  ),
                           )
-                        : SvgPicture.asset(
-                            'assets/icons/person.svg',
-                            color: CustomColors.primary50,
-                          ),
+                        : ref.watch(navBarIndexProvider) == 4
+                            ? SvgPicture.asset(
+                                'assets/icons/like_active.svg',
+                              )
+                            : SvgPicture.asset(
+                                'assets/icons/like.svg',
+                              ),
                   ),
                   Text(
-                    'Profile',
+                    'Favourites',
                     style: TextStyle(
                       fontSize: 10,
                       color: ref.watch(navBarIndexProvider) == 4

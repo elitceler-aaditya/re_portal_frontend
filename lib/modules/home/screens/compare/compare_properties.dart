@@ -136,7 +136,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
           ),
           backgroundColor: Colors.transparent,
         ),
-        body: comparedProperties.length < 2
+        body: comparedProperties.isEmpty
             ? const SafeArea(
                 child: Center(
                   child: Column(
@@ -151,7 +151,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                         ),
                       ),
                       Text(
-                        "Please select atleast 2 properties to compare",
+                        "Please select atleast 1 property to compare",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,

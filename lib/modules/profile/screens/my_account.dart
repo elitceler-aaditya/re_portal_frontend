@@ -62,7 +62,7 @@ class _MyAccountState extends State<MyAccount> {
                     height: 120,
                     width: 120,
                     decoration: BoxDecoration(
-                      color: Color(0xFFFCCBAE),
+                      color: const Color(0xFFFCCBAE),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(

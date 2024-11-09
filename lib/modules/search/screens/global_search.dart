@@ -6,14 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/models/search_result_model.dart';
 import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
-import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/search/widgets/search_apartment.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/custom_buttons.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
-import 'package:re_portal_frontend/riverpod/locality_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/riverpod/recently_viewed.dart';
 import 'package:re_portal_frontend/riverpod/search_bar.dart';
@@ -162,12 +161,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                     onChanged: (value) => globalSearch(value),
                     onSubmitted: (value) {
                       ref.read(searchBarProvider.notifier).setSearchTerm(value);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SearchApartmentResults(),
-                        ),
-                      );
+                      ref.read(navBarIndexProvider.notifier).setNavBarIndex(1);
+                      Navigator.pop(context);
                     },
                     style: const TextStyle(fontSize: 14),
                     decoration: InputDecoration(
@@ -194,7 +189,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.white,
+                        color: CustomColors.black,
                       ),
                     ),
                   ),
@@ -278,101 +273,87 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                               },
                             ),
                           ),
-                        if (ref
-                            .watch(localityListProvider.notifier)
-                            .searchLocality(
-                                _searchController.text.trim(), localities)
-                            .isNotEmpty)
-                          _searchController.text.trim().isEmpty
-                              ? const SizedBox.shrink()
-                              : ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.zero,
-                                  itemCount: searchResults.locations.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () async {
-                                        // Add the locality to the search history in SharedPreferences
-                                        SharedPreferences prefs =
-                                            await SharedPreferences
-                                                .getInstance();
-                                        List<String> searchHistory =
-                                            prefs.getStringList(
-                                                    'searchHistory_location') ??
-                                                [];
-                                        final localityToAdd =
-                                            searchResults.locations[index];
-                                        if (!searchHistory
-                                            .contains(localityToAdd)) {
-                                          searchHistory.insert(0,
-                                              localityToAdd); // Add to the beginning of the list
-                                          searchHistory = searchHistory
-                                              .take(10)
-                                              .toList(); // Keep only the 10 most recent
-                                          await prefs.setStringList(
-                                              'searchHistory_location',
-                                              searchHistory);
-                                        }
+                        if (_searchController.text.trim().isNotEmpty &&
+                            searchResults.locations.isNotEmpty)
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.zero,
+                            itemCount: searchResults.locations.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  // Add the locality to the search history in SharedPreferences
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  List<String> searchHistory =
+                                      prefs.getStringList(
+                                              'searchHistory_location') ??
+                                          [];
+                                  final localityToAdd =
+                                      searchResults.locations[index];
 
-                                        setState(() {
-                                          final modifiableLocalities =
-                                              List<String>.from(localities);
-                                          if (modifiableLocalities
-                                              .contains(localityToAdd)) {
-                                            modifiableLocalities
-                                                .remove(localityToAdd);
-                                          } else if (modifiableLocalities
-                                                  .length <
-                                              4) {
-                                            modifiableLocalities
-                                                .add(localityToAdd);
-                                            _searchController.clear();
-                                          } else {
-                                            errorSnackBar(context,
-                                                "You can only select 4 localities");
-                                          }
-                                          localities = modifiableLocalities;
-                                        });
-                                      },
-                                      child: Container(
-                                        margin:
-                                            const EdgeInsets.only(bottom: 4),
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: localities.contains(
-                                                  searchResults
-                                                      .locations[index])
-                                              ? CustomColors.primary20
-                                              : CustomColors.black10,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                                searchResults.locations[index]),
-                                            Icon(
-                                              localities.contains(searchResults
-                                                      .locations[index])
-                                                  ? Icons.check
-                                                  : Icons.add,
-                                              size: 18,
-                                            ),
-                                          ],
-                                        ),
+                                  searchHistory.remove(localityToAdd);
+                                  searchHistory.insert(0, localityToAdd);
+                                  searchHistory =
+                                      searchHistory.take(10).toList();
+                                  await prefs.setStringList(
+                                      'searchHistory_location', searchHistory);
+
+                                  setState(() {
+                                    final modifiableLocalities =
+                                        List<String>.from(localities);
+                                    if (modifiableLocalities
+                                        .contains(localityToAdd)) {
+                                      modifiableLocalities
+                                          .remove(localityToAdd);
+                                    } else if (modifiableLocalities.length <
+                                        4) {
+                                      modifiableLocalities.add(localityToAdd);
+                                      _searchController.clear();
+                                    } else {
+                                      errorSnackBar(context,
+                                          "You can only select 4 localities");
+                                    }
+                                    localities = modifiableLocalities;
+                                  });
+                                  setRecentSearches();
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(bottom: 4),
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: localities.contains(
+                                            searchResults.locations[index])
+                                        ? CustomColors.primary20
+                                        : CustomColors.black10,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(searchResults.locations[index]),
+                                      Icon(
+                                        localities.contains(
+                                                searchResults.locations[index])
+                                            ? Icons.check
+                                            : Icons.add,
+                                        size: 18,
                                       ),
-                                    );
-                                  },
+                                    ],
+                                  ),
                                 ),
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),
                   if (_searchController.text.trim().isEmpty &&
+                      localities.isEmpty &&
                       (recentSearchLocalities.isNotEmpty ||
                           recentSearchProjects.isNotEmpty ||
                           recentSearchBuilders.isNotEmpty))
@@ -387,7 +368,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Padding(
-                            padding: EdgeInsets.fromLTRB(8, 10, 4, 4),
+                            padding: EdgeInsets.fromLTRB(8, 0, 4, 0),
                             child: Text(
                               "Recent Searches",
                               style: TextStyle(
@@ -411,10 +392,11 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                     .read(filtersProvider.notifier)
                                     .updateSelectedLocalities(
                                         [recentSearchLocalities[index]]);
-                                localities
-                                    .remove(recentSearchLocalities[index]);
                                 setState(() {
                                   localities = List<String>.from(localities)
+                                    ..removeWhere((element) =>
+                                        element ==
+                                        recentSearchLocalities[index])
                                     ..add(recentSearchLocalities[index]);
                                 });
                               },
@@ -629,13 +611,10 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                     ref
                                         .read(filtersProvider.notifier)
                                         .updateBuilderName(companyName);
-
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SearchApartmentResults(),
-                                      ),
-                                    );
+                                    ref
+                                        .read(navBarIndexProvider.notifier)
+                                        .setNavBarIndex(1);
+                                    Navigator.pop(context);
                                   },
                                   child: Container(
                                     height: 80,
@@ -738,11 +717,8 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                   ref
                       .read(filtersProvider.notifier)
                       .updateSelectedLocalities(localities);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SearchApartmentResults(
-                              openFilters: false)));
+                  ref.read(navBarIndexProvider.notifier).setNavBarIndex(1);
+                  Navigator.pop(context);
                 },
               ),
             )

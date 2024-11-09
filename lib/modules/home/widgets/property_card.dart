@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:shimmer/shimmer.dart';
@@ -437,7 +435,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                           color: CustomColors.green,
                                         )
                                       : SvgPicture.asset(
-                                          "assets/icons/compare_active.svg",
+                                          "assets/icons/compare.svg",
                                           color: CustomColors.primary,
                                           height: 24,
                                           width: 24,

@@ -222,8 +222,8 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      CustomColors.secondary.withOpacity(0.6),
-                      CustomColors.secondary.withOpacity(0.01),
+                      CustomColors.white.withOpacity(0.6),
+                      CustomColors.white.withOpacity(0.01),
                     ],
                   ),
                 ),

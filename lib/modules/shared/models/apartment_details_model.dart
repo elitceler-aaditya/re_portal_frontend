@@ -56,16 +56,37 @@ class ProjectDetails with _$ProjectDetails {
     @Default('') String amenities,
     @Default('') String clubHouseAmenities,
     @Default('') String outdoorAmenities,
+    @Default([]) List<String> specifications,
     @Default([]) List<String> projectHighlightsPoints,
     @Default(Builder()) Builder builder,
     @Default([]) List<Institution> educationalInstitutions,
     @Default([]) List<Institution> hospitals,
     @Default([]) List<Institution> offices,
     @Default([]) List<Institution> connectivity,
+    @Default('') String bankName,
+    @Default(0) int loanPercentage,
+    @Default([]) List<Bank> banks,
+    @Default([]) List<Institution> restaurants,
+    @Default([]) List<Institution> colleges,
+    @Default([]) List<Institution> pharmacies,
+    @Default([]) List<Institution> hotspots,
+    @Default([]) List<Institution> shopping,
+    @Default([]) List<Institution> entertainment,
   }) = _ProjectDetails;
 
   factory ProjectDetails.fromJson(Map<String, dynamic> json) =>
       _$ProjectDetailsFromJson(json);
+}
+
+@freezed
+class Bank with _$Bank {
+  const factory Bank({
+    @Default('') String bankName,
+    @Default('') String bankLogo,
+    @Default(0) int loanPercentage,
+  }) = _Bank;
+
+  factory Bank.fromJson(Map<String, dynamic> json) => _$BankFromJson(json);
 }
 
 @freezed

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_projects_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class BudgetHomes extends ConsumerStatefulWidget {
@@ -135,7 +136,7 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
                         .isEmpty
                     ? Center(
                         child: Text(
-                            "No apartments found in ${budgetCategories[selectedBudget]['title']}"),
+                            "No apartments found in ${budgetCategories[selectedBudget]['title']}\nin ${ref.watch(filtersProvider).selectedLocalities.join(", ")}"),
                       )
                     : ListView.builder(
                         controller: pageController,

@@ -14,9 +14,7 @@ class UltraLuxuryHomes extends ConsumerWidget {
         ref.watch(homePropertiesProvider.notifier).getUltraLuxuryHomes();
 
     if (ultraLuxuryHomes.isEmpty) {
-      return SizedBox(
-        child: Text("No ultra luxury homes found: ${ultraLuxuryHomes.length}"),
-      );
+      return const SizedBox.shrink();
     }
 
     return Container(

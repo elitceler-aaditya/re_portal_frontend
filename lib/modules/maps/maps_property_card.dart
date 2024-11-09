@@ -61,63 +61,36 @@ class MapsPropertyCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    children: [
-                      Hero(
-                        tag: "map-prop-${apartment.projectId}",
-                        child: SizedBox(
-                          height: double.infinity,
-                          width: 110,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              apartment.coverImage,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(
-                                  child: Icon(Icons.error),
-                                );
-                              },
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Shimmer.fromColors(
-                                  baseColor: CustomColors.black25,
-                                  highlightColor: CustomColors.black50,
-                                  child: Container(
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                    color: Colors.white,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                  Hero(
+                    tag: "map-prop-${apartment.projectId}",
+                    child: SizedBox(
+                      height: double.infinity,
+                      width: 110,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          apartment.coverImage,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(Icons.error),
+                            );
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Shimmer.fromColors(
+                              baseColor: CustomColors.black25,
+                              highlightColor: CustomColors.black50,
+                              child: Container(
+                                height: double.infinity,
+                                width: double.infinity,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
                         ),
                       ),
-                      Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: CustomColors.black.withOpacity(0.7),
-                          ),
-                          child: Text(
-                            "${index + 1} / $length",
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Expanded(
@@ -245,35 +218,60 @@ class MapsPropertyCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        SizedBox(
-                          width: 90,
-                          height: 32,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: CustomColors.primary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PropertyDetails(
-                                    apartment: apartment,
-                                    heroTag: "map-prop-${apartment.projectId}",
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: 90,
+                              height: 32,
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: CustomColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                              );
-                            },
-                            child: const Text(
-                              'View more',
-                              style: TextStyle(
-                                color: CustomColors.white,
-                                fontSize: 12,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PropertyDetails(
+                                        apartment: apartment,
+                                        heroTag:
+                                            "map-prop-${apartment.projectId}",
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  'View more',
+                                  style: TextStyle(
+                                    color: CustomColors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: CustomColors.black.withOpacity(0.2),
+                              ),
+                              child: Text(
+                                "${index + 1} / $length",
+                                style: const TextStyle(
+                                  color: CustomColors.black,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

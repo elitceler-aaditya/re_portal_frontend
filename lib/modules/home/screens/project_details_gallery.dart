@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:re_portal_frontend/modules/search/widgets/photo_scrolling_gallery.dart';
+import 'package:re_portal_frontend/modules/home/screens/project_gallery_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:shimmer/shimmer.dart';
@@ -46,14 +46,6 @@ class _ProjectDetailsGalleryState extends State<ProjectDetailsGallery> {
       decoration: BoxDecoration(
         color: CustomColors.white,
         borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: CustomColors.black.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 0,
-            offset: const Offset(0, 0),
-          ),
-        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -125,24 +117,12 @@ class _ProjectDetailsGalleryState extends State<ProjectDetailsGallery> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    final List<String> allImgs = [];
-                    List<double> breakpoints = [];
-                    double cumulativeSum = 0;
-                    for (var gal in projectImages) {
-                      allImgs.addAll(gal.images);
-                      cumulativeSum += gal.images.length;
-                      breakpoints.add(cumulativeSum);
-                    }
-
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => PhotoScrollingGallery(
-                          allImages: allImgs,
-                          labels:
-                              projectImages.map((gal) => gal.title).toList(),
-                          galleryIndex: galleryIndex,
-                          breakPoints: breakpoints,
-                          image: projectImages[galleryIndex].images[index],
+                        builder: (context) => ProjectImageGallery(
+                          projectImages: projectImages,
+                          tabIndex: galleryIndex,
+                          photoIndex: index,
                         ),
                       ),
                     );

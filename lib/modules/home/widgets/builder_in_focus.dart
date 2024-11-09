@@ -273,11 +273,21 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
                 width: 200,
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
+                  color: CustomColors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Image.network(
                   apartment.coverImage,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Row(
+                      children: [
+                        Icon(Icons.error),
+                        SizedBox(width: 4),
+                        Text("Error loading image")
+                      ],
+                    ),
+                  ),
                   loadingBuilder: (context, child, loadingProgress) =>
                       loadingProgress == null
                           ? child

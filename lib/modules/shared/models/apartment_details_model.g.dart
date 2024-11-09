@@ -80,6 +80,10 @@ _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>
       amenities: json['amenities'] as String? ?? '',
       clubHouseAmenities: json['clubHouseAmenities'] as String? ?? '',
       outdoorAmenities: json['outdoorAmenities'] as String? ?? '',
+      specifications: (json['specifications'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       projectHighlightsPoints:
           (json['projectHighlightsPoints'] as List<dynamic>?)
                   ?.map((e) => e as String)
@@ -102,6 +106,36 @@ _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const [],
       connectivity: (json['connectivity'] as List<dynamic>?)
+              ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      bankName: json['bankName'] as String? ?? '',
+      loanPercentage: (json['loanPercentage'] as num?)?.toInt() ?? 0,
+      banks: (json['banks'] as List<dynamic>?)
+              ?.map((e) => Bank.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      restaurants: (json['restaurants'] as List<dynamic>?)
+              ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      colleges: (json['colleges'] as List<dynamic>?)
+              ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      pharmacies: (json['pharmacies'] as List<dynamic>?)
+              ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      hotspots: (json['hotspots'] as List<dynamic>?)
+              ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      shopping: (json['shopping'] as List<dynamic>?)
+              ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      entertainment: (json['entertainment'] as List<dynamic>?)
               ?.map((e) => Institution.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -136,12 +170,35 @@ Map<String, dynamic> _$$ProjectDetailsImplToJson(
       'amenities': instance.amenities,
       'clubHouseAmenities': instance.clubHouseAmenities,
       'outdoorAmenities': instance.outdoorAmenities,
+      'specifications': instance.specifications,
       'projectHighlightsPoints': instance.projectHighlightsPoints,
       'builder': instance.builder,
       'educationalInstitutions': instance.educationalInstitutions,
       'hospitals': instance.hospitals,
       'offices': instance.offices,
       'connectivity': instance.connectivity,
+      'bankName': instance.bankName,
+      'loanPercentage': instance.loanPercentage,
+      'banks': instance.banks,
+      'restaurants': instance.restaurants,
+      'colleges': instance.colleges,
+      'pharmacies': instance.pharmacies,
+      'hotspots': instance.hotspots,
+      'shopping': instance.shopping,
+      'entertainment': instance.entertainment,
+    };
+
+_$BankImpl _$$BankImplFromJson(Map<String, dynamic> json) => _$BankImpl(
+      bankName: json['bankName'] as String? ?? '',
+      bankLogo: json['bankLogo'] as String? ?? '',
+      loanPercentage: (json['loanPercentage'] as num?)?.toInt() ?? 0,
+    );
+
+Map<String, dynamic> _$$BankImplToJson(_$BankImpl instance) =>
+    <String, dynamic>{
+      'bankName': instance.bankName,
+      'bankLogo': instance.bankLogo,
+      'loanPercentage': instance.loanPercentage,
     };
 
 _$BuilderImpl _$$BuilderImplFromJson(Map<String, dynamic> json) =>
