@@ -237,10 +237,9 @@ Map<String, dynamic> _$$InstitutionImplToJson(_$InstitutionImpl instance) =>
 _$UnitPlanConfigImpl _$$UnitPlanConfigImplFromJson(Map<String, dynamic> json) =>
     _$UnitPlanConfigImpl(
       bHKType: json['bHKType'] as String? ?? '',
-      sizeInSqft: json['sizeInSqft'] as String? ?? '',
-      facing: json['facing'] as String? ?? '',
       unitPlanConfigFiles: (json['unitPlanConfigFiles'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map(
+                  (e) => UnitPlanConfigFile.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );
@@ -249,7 +248,21 @@ Map<String, dynamic> _$$UnitPlanConfigImplToJson(
         _$UnitPlanConfigImpl instance) =>
     <String, dynamic>{
       'bHKType': instance.bHKType,
-      'sizeInSqft': instance.sizeInSqft,
-      'facing': instance.facing,
       'unitPlanConfigFiles': instance.unitPlanConfigFiles,
+    };
+
+_$UnitPlanConfigFileImpl _$$UnitPlanConfigFileImplFromJson(
+        Map<String, dynamic> json) =>
+    _$UnitPlanConfigFileImpl(
+      image: json['image'] as String? ?? '',
+      flatSize: (json['flatSize'] as num?)?.toInt() ?? 0,
+      facing: json['facing'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$$UnitPlanConfigFileImplToJson(
+        _$UnitPlanConfigFileImpl instance) =>
+    <String, dynamic>{
+      'image': instance.image,
+      'flatSize': instance.flatSize,
+      'facing': instance.facing,
     };

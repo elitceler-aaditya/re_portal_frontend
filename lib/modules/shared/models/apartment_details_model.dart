@@ -118,11 +118,20 @@ class Institution with _$Institution {
 class UnitPlanConfig with _$UnitPlanConfig {
   const factory UnitPlanConfig({
     @Default('') String bHKType,
-    @Default('') String sizeInSqft,
-    @Default('') String facing,
-    @Default([]) List<String> unitPlanConfigFiles,
+    @Default([]) List<UnitPlanConfigFile> unitPlanConfigFiles,
   }) = _UnitPlanConfig;
 
   factory UnitPlanConfig.fromJson(Map<String, dynamic> json) =>
       _$UnitPlanConfigFromJson(json);
+}
+@freezed
+class UnitPlanConfigFile with _$UnitPlanConfigFile {
+  const factory UnitPlanConfigFile({
+    @Default('') String image,
+    @Default(0) int flatSize,
+    @Default('') String facing,
+  }) = _UnitPlanConfigFile;
+
+  factory UnitPlanConfigFile.fromJson(Map<String, dynamic> json) =>
+      _$UnitPlanConfigFileFromJson(json);
 }

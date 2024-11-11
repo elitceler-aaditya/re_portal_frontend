@@ -155,7 +155,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configuration.take(2).join(", ")}${ref.watch(homePropertiesProvider).bestDeals[index].configuration.length > 2 ? ' +${ref.watch(homePropertiesProvider).bestDeals[index].configuration.length - 2} more' : ''}",
+                                "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configuration.join(", ").trim().replaceAll("BHK", '')} BHK",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 14,

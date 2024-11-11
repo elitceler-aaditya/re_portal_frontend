@@ -337,7 +337,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                 },
                 options: CarouselOptions(
                   controller: carouselController,
-                  height: 160,
+                  height: 180,
                   viewportFraction: 0.85,
                   enableInfiniteScroll: false,
                   enlargeCenterPage: true,

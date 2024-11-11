@@ -3,6 +3,8 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'
+    as carousel;
 
 class UnitPlanGallery extends StatefulWidget {
   final List<UnitPlanConfig> unitPlans;
@@ -21,6 +23,8 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
   late TabController _tabController;
   int _current = 0;
   late PageController _pageController;
+  final carousel.CarouselController _carouselController =
+      carousel.CarouselController();
   bool _isZoomedIn = false;
 
   @override
@@ -122,28 +126,10 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
                         color: Colors.black,
                         child: Column(
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                child: Text(
-                                  '${plan.facing} facing  |  ${plan.sizeInSqft} sq.ft',
-                                  key: ValueKey<String>(
-                                      '${plan.bHKType}_${plan.sizeInSqft}'),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                ),
-                              ),
-                            ),
                             FlutterCarousel.builder(
                               itemCount: imageFiles.length,
                               options: CarouselOptions(
+                                controller: _carouselController,
                                 aspectRatio: 16 / 9,
                                 height:
                                     MediaQuery.of(context).size.height * 0.6,
@@ -162,53 +148,81 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
                                 ),
                               ),
                               itemBuilder: (context, index, realIndex) {
-                                return GestureDetector(
-                                  onTap: () =>
-                                      _openImage(context, imageFiles[index]),
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Image.network(
-                                      imageFiles[index],
-                                      loadingBuilder:
-                                          (context, child, loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        } else {
-                                          return Shimmer.fromColors(
-                                            baseColor: CustomColors.black25,
-                                            highlightColor:
-                                                CustomColors.black10,
-                                            child: Container(
-                                              height: 100,
-                                              width: 320,
-                                              decoration: BoxDecoration(
-                                                color: Colors.black,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0),
+                                      child: AnimatedSwitcher(
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        child: Text(
+                                          '${plan.unitPlanConfigFiles[index].facing} facing  |  ${plan.unitPlanConfigFiles[index].flatSize} sq.ft',
+                                          key: ValueKey<String>(
+                                              '${plan.bHKType}_${plan.unitPlanConfigFiles[index].flatSize}'),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
                                               ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return const Center(
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.error),
-                                              SizedBox(width: 4),
-                                              Text("Error loading image")
-                                            ],
-                                          ),
-                                        );
-                                      },
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    GestureDetector(
+                                      onTap: () => _openImage(
+                                          context, imageFiles[index].image),
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.network(
+                                          imageFiles[index].image,
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return Shimmer.fromColors(
+                                                baseColor: CustomColors.black25,
+                                                highlightColor:
+                                                    CustomColors.black10,
+                                                child: Container(
+                                                  height: 100,
+                                                  width: 320,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return const Center(
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.error),
+                                                  SizedBox(width: 4),
+                                                  Text("Error loading image")
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 );
                               },
                             ),

@@ -23,6 +23,7 @@ class AppartmentFilter extends ConsumerStatefulWidget {
 
 class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   bool _loading = false;
+  bool applyFilter = false;
   int? appartmentType;
   List<String> selectedConfigurations = [];
 
@@ -685,14 +686,17 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                   .contains(configurationList[index]),
                               onTap: () {
                                 setState(() {
-                                  if (selectedConfigurations
+                                  List<String> newConfigurations =
+                                      List.from(selectedConfigurations);
+                                  if (newConfigurations
                                       .contains(configurationList[index])) {
-                                    selectedConfigurations = [];
+                                    newConfigurations
+                                        .remove(configurationList[index]);
                                   } else {
-                                    selectedConfigurations = [
-                                      configurationList[index]
-                                    ];
+                                    newConfigurations
+                                        .add(configurationList[index]);
                                   }
+                                  selectedConfigurations = newConfigurations;
                                 });
                               },
                             );
@@ -746,12 +750,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                                   'true'
                                               ? 'false'
                                               : 'true');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateReadyToMove('false');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateUnderConstruction('false');
                                       break;
                                     case 1:
                                       ref
@@ -762,12 +760,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                                   'true'
                                               ? 'false'
                                               : 'true');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateNewProject('false');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateUnderConstruction('false');
                                       break;
                                     case 2:
                                       ref
@@ -778,12 +770,6 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                                                   'true'
                                               ? 'false'
                                               : 'true');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateNewProject('false');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateReadyToMove('false');
                                       break;
                                   }
                                 });
@@ -1059,6 +1045,7 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
                 child: GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
+                    ref.read(filtersProvider.notifier).clearAllFilters();
                   },
                   child: Container(
                     height: 60,

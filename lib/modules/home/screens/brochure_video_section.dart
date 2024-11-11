@@ -6,16 +6,17 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:video_player/video_player.dart';
-import 'package:flick_video_player/flick_video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class BrochureVideoSection extends ConsumerStatefulWidget {
   final Future<void> Function() sendEnquiry;
   final String videoLink;
   final List<String> brochureLink;
+  final String projectName;
   const BrochureVideoSection({
     super.key,
     required this.sendEnquiry,
+    required this.projectName,
     this.videoLink = '',
     this.brochureLink = const [],
   });
@@ -30,9 +31,8 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
-  late FlickManager flickManager;
-
-  Future<void> enquiryFormPopup() async {
+  late YoutubePlayerController _controller;
+  Future<void> enquiryFormPopup({bool downloadBrochure = false}) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -134,7 +134,16 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () => widget.sendEnquiry(),
+                                  onPressed: () => {
+                                    widget.sendEnquiry().then((_) => {
+                                          if (true)
+                                            {
+                                              for (String link
+                                                  in widget.brochureLink)
+                                                launchUrlString(link),
+                                            }
+                                        }),
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,
                                     padding: const EdgeInsets.symmetric(
@@ -174,21 +183,28 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
       _mobileController.text = ref.read(userProvider).phoneNumber;
       _emailController.text = ref.read(userProvider).email;
       _enquiryDetails.text =
-          'Hi, I am interested in your property. I want to know more about the project.';
+          'Hi, I am interested in ${widget.projectName}. I want to know more about the project.';
 
-      flickManager = FlickManager(
-        videoPlayerController: VideoPlayerController.networkUrl(
-          Uri.parse(widget.videoLink),
+      _controller = YoutubePlayerController(
+        initialVideoId: "OxgMyhLlgEg",
+        flags: const YoutubePlayerFlags(
+          autoPlay: false,
+          enableCaption: false,
         ),
-        autoInitialize: true,
-        autoPlay: false,
       );
     });
   }
 
   @override
+  void deactivate() {
+    // Pauses video while navigating to next page.
+    _controller.pause();
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
-    flickManager.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -261,23 +277,26 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            flickManager.flickControlManager!.pause();
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: FlickVideoPlayer(
-                              flickManager: flickManager,
-                              preferredDeviceOrientation: const [
-                                DeviceOrientation.portraitUp
-                              ],
-                            ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: YoutubePlayerBuilder(
+                        player: YoutubePlayer(
+                          controller: _controller,
+                          showVideoProgressIndicator: true,
+                          progressIndicatorColor: CustomColors.primary,
+                          progressColors: const ProgressBarColors(
+                            playedColor: CustomColors.primary,
+                            handleColor: CustomColors.primary,
                           ),
                         ),
-                      ],
+                        builder: (context, player) {
+                          return Column(
+                            children: [
+                              player,
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -302,7 +321,20 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
             ],
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (widget.brochureLink.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(left: 10, bottom: 10),
+                  child: Text(
+                    "Brochure",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CustomColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               if (widget.brochureLink.isNotEmpty)
                 GestureDetector(
                   onTap: () {
@@ -319,11 +351,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                       );
                     } else {
                       if (widget.brochureLink.isNotEmpty) {
-                        for (String link in widget.brochureLink) {
-                          widget.sendEnquiry().then((_) {
-                            launchUrlString(link);
-                          });
-                        }
+                        enquiryFormPopup(downloadBrochure: true);
                       }
                     }
                   },
@@ -332,42 +360,22 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                     width: double.infinity,
                     margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
                     decoration: BoxDecoration(
-                      color: CustomColors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: AssetImage("assets/images/brochure_cover.jpg"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                        color: CustomColors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        image: const DecorationImage(
+                          image: AssetImage("assets/images/brochure_cover.jpg"),
+                          fit: BoxFit.cover,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: CustomColors.black.withOpacity(0.4),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 0),
+                          ),
+                        ]),
                     child: Stack(
                       children: [
-                        Container(
-                          height: 140,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: [
-                                Colors.transparent,
-                                CustomColors.black.withOpacity(0.8),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        const Positioned(
-                          top: 10,
-                          left: 10,
-                          child: Text(
-                            "Brochure",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: CustomColors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
                         Positioned(
                           bottom: 10,
                           right: 10,

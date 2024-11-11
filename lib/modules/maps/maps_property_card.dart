@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -40,7 +41,7 @@ class MapsPropertyCard extends StatelessWidget {
         );
       },
       child: Container(
-        height: 80,
+        height: 110,
         width: 290,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -143,6 +144,7 @@ class MapsPropertyCard extends StatelessWidget {
                         //   ),
                         // ),
                         const SizedBox(height: 4),
+
                         Row(
                           children: [
                             const Icon(
@@ -164,46 +166,17 @@ class MapsPropertyCard extends StatelessWidget {
                         Row(
                           children: [
                             const Icon(
-                              Icons.bed,
+                              Icons.handshake,
                               color: CustomColors.primary,
                               size: 14,
                             ),
                             const SizedBox(width: 4),
-                            RichText(
-                              text: TextSpan(
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.black,
-                                ),
-                                children: [
-                                  ...apartment.configuration
-                                      .take(2)
-                                      .map((config) => TextSpan(
-                                            text: config +
-                                                (apartment.configuration
-                                                            .indexOf(config) <
-                                                        apartment.configuration
-                                                                .take(2)
-                                                                .length -
-                                                            1
-                                                    ? ', '
-                                                    : ''),
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.normal,
-                                            ),
-                                          )),
-                                  if (apartment.configuration.length - 2 != 0)
-                                    TextSpan(
-                                      text:
-                                          ' +${apartment.configuration.length - 2} more',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                ],
+                            Text(
+                              DateFormat("MMM yyyy").format(
+                                  DateTime.parse(apartment.projectPossession)),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
                               ),
                             ),
                           ],
@@ -212,13 +185,31 @@ class MapsPropertyCard extends StatelessWidget {
                         Row(
                           children: [
                             const Icon(
-                              Icons.fullscreen,
+                              Icons.bed,
                               color: CustomColors.primary,
                               size: 14,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              "${apartment.flatSize} sq.ft",
+                              "${apartment.configuration.join(", ").replaceAll('BHK', '')} BHK",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.currency_rupee,
+                              color: CustomColors.primary,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "${formatBudget(apartment.budget)} - ${formatBudget(apartment.budget + (apartment.budget * 0.1).toInt())}",
                               style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.normal,

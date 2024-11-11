@@ -2259,9 +2259,8 @@ UnitPlanConfig _$UnitPlanConfigFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UnitPlanConfig {
   String get bHKType => throw _privateConstructorUsedError;
-  String get sizeInSqft => throw _privateConstructorUsedError;
-  String get facing => throw _privateConstructorUsedError;
-  List<String> get unitPlanConfigFiles => throw _privateConstructorUsedError;
+  List<UnitPlanConfigFile> get unitPlanConfigFiles =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this UnitPlanConfig to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2279,11 +2278,7 @@ abstract class $UnitPlanConfigCopyWith<$Res> {
           UnitPlanConfig value, $Res Function(UnitPlanConfig) then) =
       _$UnitPlanConfigCopyWithImpl<$Res, UnitPlanConfig>;
   @useResult
-  $Res call(
-      {String bHKType,
-      String sizeInSqft,
-      String facing,
-      List<String> unitPlanConfigFiles});
+  $Res call({String bHKType, List<UnitPlanConfigFile> unitPlanConfigFiles});
 }
 
 /// @nodoc
@@ -2302,8 +2297,6 @@ class _$UnitPlanConfigCopyWithImpl<$Res, $Val extends UnitPlanConfig>
   @override
   $Res call({
     Object? bHKType = null,
-    Object? sizeInSqft = null,
-    Object? facing = null,
     Object? unitPlanConfigFiles = null,
   }) {
     return _then(_value.copyWith(
@@ -2311,18 +2304,10 @@ class _$UnitPlanConfigCopyWithImpl<$Res, $Val extends UnitPlanConfig>
           ? _value.bHKType
           : bHKType // ignore: cast_nullable_to_non_nullable
               as String,
-      sizeInSqft: null == sizeInSqft
-          ? _value.sizeInSqft
-          : sizeInSqft // ignore: cast_nullable_to_non_nullable
-              as String,
-      facing: null == facing
-          ? _value.facing
-          : facing // ignore: cast_nullable_to_non_nullable
-              as String,
       unitPlanConfigFiles: null == unitPlanConfigFiles
           ? _value.unitPlanConfigFiles
           : unitPlanConfigFiles // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<UnitPlanConfigFile>,
     ) as $Val);
   }
 }
@@ -2335,11 +2320,7 @@ abstract class _$$UnitPlanConfigImplCopyWith<$Res>
       __$$UnitPlanConfigImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String bHKType,
-      String sizeInSqft,
-      String facing,
-      List<String> unitPlanConfigFiles});
+  $Res call({String bHKType, List<UnitPlanConfigFile> unitPlanConfigFiles});
 }
 
 /// @nodoc
@@ -2356,8 +2337,6 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? bHKType = null,
-    Object? sizeInSqft = null,
-    Object? facing = null,
     Object? unitPlanConfigFiles = null,
   }) {
     return _then(_$UnitPlanConfigImpl(
@@ -2365,18 +2344,10 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
           ? _value.bHKType
           : bHKType // ignore: cast_nullable_to_non_nullable
               as String,
-      sizeInSqft: null == sizeInSqft
-          ? _value.sizeInSqft
-          : sizeInSqft // ignore: cast_nullable_to_non_nullable
-              as String,
-      facing: null == facing
-          ? _value.facing
-          : facing // ignore: cast_nullable_to_non_nullable
-              as String,
       unitPlanConfigFiles: null == unitPlanConfigFiles
           ? _value._unitPlanConfigFiles
           : unitPlanConfigFiles // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<UnitPlanConfigFile>,
     ));
   }
 }
@@ -2386,9 +2357,7 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
 class _$UnitPlanConfigImpl implements _UnitPlanConfig {
   const _$UnitPlanConfigImpl(
       {this.bHKType = '',
-      this.sizeInSqft = '',
-      this.facing = '',
-      final List<String> unitPlanConfigFiles = const []})
+      final List<UnitPlanConfigFile> unitPlanConfigFiles = const []})
       : _unitPlanConfigFiles = unitPlanConfigFiles;
 
   factory _$UnitPlanConfigImpl.fromJson(Map<String, dynamic> json) =>
@@ -2397,16 +2366,10 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
   @override
   @JsonKey()
   final String bHKType;
+  final List<UnitPlanConfigFile> _unitPlanConfigFiles;
   @override
   @JsonKey()
-  final String sizeInSqft;
-  @override
-  @JsonKey()
-  final String facing;
-  final List<String> _unitPlanConfigFiles;
-  @override
-  @JsonKey()
-  List<String> get unitPlanConfigFiles {
+  List<UnitPlanConfigFile> get unitPlanConfigFiles {
     if (_unitPlanConfigFiles is EqualUnmodifiableListView)
       return _unitPlanConfigFiles;
     // ignore: implicit_dynamic_type
@@ -2415,7 +2378,7 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
 
   @override
   String toString() {
-    return 'UnitPlanConfig(bHKType: $bHKType, sizeInSqft: $sizeInSqft, facing: $facing, unitPlanConfigFiles: $unitPlanConfigFiles)';
+    return 'UnitPlanConfig(bHKType: $bHKType, unitPlanConfigFiles: $unitPlanConfigFiles)';
   }
 
   @override
@@ -2424,16 +2387,13 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
         (other.runtimeType == runtimeType &&
             other is _$UnitPlanConfigImpl &&
             (identical(other.bHKType, bHKType) || other.bHKType == bHKType) &&
-            (identical(other.sizeInSqft, sizeInSqft) ||
-                other.sizeInSqft == sizeInSqft) &&
-            (identical(other.facing, facing) || other.facing == facing) &&
             const DeepCollectionEquality()
                 .equals(other._unitPlanConfigFiles, _unitPlanConfigFiles));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, bHKType, sizeInSqft, facing,
+  int get hashCode => Object.hash(runtimeType, bHKType,
       const DeepCollectionEquality().hash(_unitPlanConfigFiles));
 
   /// Create a copy of UnitPlanConfig
@@ -2455,10 +2415,9 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
 
 abstract class _UnitPlanConfig implements UnitPlanConfig {
   const factory _UnitPlanConfig(
-      {final String bHKType,
-      final String sizeInSqft,
-      final String facing,
-      final List<String> unitPlanConfigFiles}) = _$UnitPlanConfigImpl;
+          {final String bHKType,
+          final List<UnitPlanConfigFile> unitPlanConfigFiles}) =
+      _$UnitPlanConfigImpl;
 
   factory _UnitPlanConfig.fromJson(Map<String, dynamic> json) =
       _$UnitPlanConfigImpl.fromJson;
@@ -2466,16 +2425,202 @@ abstract class _UnitPlanConfig implements UnitPlanConfig {
   @override
   String get bHKType;
   @override
-  String get sizeInSqft;
-  @override
-  String get facing;
-  @override
-  List<String> get unitPlanConfigFiles;
+  List<UnitPlanConfigFile> get unitPlanConfigFiles;
 
   /// Create a copy of UnitPlanConfig
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UnitPlanConfigImplCopyWith<_$UnitPlanConfigImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+UnitPlanConfigFile _$UnitPlanConfigFileFromJson(Map<String, dynamic> json) {
+  return _UnitPlanConfigFile.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UnitPlanConfigFile {
+  String get image => throw _privateConstructorUsedError;
+  int get flatSize => throw _privateConstructorUsedError;
+  String get facing => throw _privateConstructorUsedError;
+
+  /// Serializes this UnitPlanConfigFile to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UnitPlanConfigFileCopyWith<UnitPlanConfigFile> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UnitPlanConfigFileCopyWith<$Res> {
+  factory $UnitPlanConfigFileCopyWith(
+          UnitPlanConfigFile value, $Res Function(UnitPlanConfigFile) then) =
+      _$UnitPlanConfigFileCopyWithImpl<$Res, UnitPlanConfigFile>;
+  @useResult
+  $Res call({String image, int flatSize, String facing});
+}
+
+/// @nodoc
+class _$UnitPlanConfigFileCopyWithImpl<$Res, $Val extends UnitPlanConfigFile>
+    implements $UnitPlanConfigFileCopyWith<$Res> {
+  _$UnitPlanConfigFileCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? image = null,
+    Object? flatSize = null,
+    Object? facing = null,
+  }) {
+    return _then(_value.copyWith(
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String,
+      flatSize: null == flatSize
+          ? _value.flatSize
+          : flatSize // ignore: cast_nullable_to_non_nullable
+              as int,
+      facing: null == facing
+          ? _value.facing
+          : facing // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UnitPlanConfigFileImplCopyWith<$Res>
+    implements $UnitPlanConfigFileCopyWith<$Res> {
+  factory _$$UnitPlanConfigFileImplCopyWith(_$UnitPlanConfigFileImpl value,
+          $Res Function(_$UnitPlanConfigFileImpl) then) =
+      __$$UnitPlanConfigFileImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String image, int flatSize, String facing});
+}
+
+/// @nodoc
+class __$$UnitPlanConfigFileImplCopyWithImpl<$Res>
+    extends _$UnitPlanConfigFileCopyWithImpl<$Res, _$UnitPlanConfigFileImpl>
+    implements _$$UnitPlanConfigFileImplCopyWith<$Res> {
+  __$$UnitPlanConfigFileImplCopyWithImpl(_$UnitPlanConfigFileImpl _value,
+      $Res Function(_$UnitPlanConfigFileImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? image = null,
+    Object? flatSize = null,
+    Object? facing = null,
+  }) {
+    return _then(_$UnitPlanConfigFileImpl(
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String,
+      flatSize: null == flatSize
+          ? _value.flatSize
+          : flatSize // ignore: cast_nullable_to_non_nullable
+              as int,
+      facing: null == facing
+          ? _value.facing
+          : facing // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UnitPlanConfigFileImpl implements _UnitPlanConfigFile {
+  const _$UnitPlanConfigFileImpl(
+      {this.image = '', this.flatSize = 0, this.facing = ''});
+
+  factory _$UnitPlanConfigFileImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UnitPlanConfigFileImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String image;
+  @override
+  @JsonKey()
+  final int flatSize;
+  @override
+  @JsonKey()
+  final String facing;
+
+  @override
+  String toString() {
+    return 'UnitPlanConfigFile(image: $image, flatSize: $flatSize, facing: $facing)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UnitPlanConfigFileImpl &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.flatSize, flatSize) ||
+                other.flatSize == flatSize) &&
+            (identical(other.facing, facing) || other.facing == facing));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, image, flatSize, facing);
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UnitPlanConfigFileImplCopyWith<_$UnitPlanConfigFileImpl> get copyWith =>
+      __$$UnitPlanConfigFileImplCopyWithImpl<_$UnitPlanConfigFileImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UnitPlanConfigFileImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UnitPlanConfigFile implements UnitPlanConfigFile {
+  const factory _UnitPlanConfigFile(
+      {final String image,
+      final int flatSize,
+      final String facing}) = _$UnitPlanConfigFileImpl;
+
+  factory _UnitPlanConfigFile.fromJson(Map<String, dynamic> json) =
+      _$UnitPlanConfigFileImpl.fromJson;
+
+  @override
+  String get image;
+  @override
+  int get flatSize;
+  @override
+  String get facing;
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UnitPlanConfigFileImplCopyWith<_$UnitPlanConfigFileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

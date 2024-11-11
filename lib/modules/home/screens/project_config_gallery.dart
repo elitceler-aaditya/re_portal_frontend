@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:re_portal_frontend/modules/search/widgets/photo_scrolling_gallery.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
@@ -26,7 +27,9 @@ class _ProjectConfigGalleryState extends State<ProjectConfigGallery> {
   void initState() {
     super.initState();
     for (var gal in widget.unitPlanConfigFilesFormatted) {
-      allImages.addAll(gal.unitPlanConfigFiles);
+      for (var images in gal.unitPlanConfigFiles) {
+        allImages.add(images.image);
+      }
     }
     projectImages = widget.unitPlanConfigFilesFormatted;
   }
@@ -127,7 +130,7 @@ class _ProjectConfigGalleryState extends State<ProjectConfigGallery> {
                   ),
                 if (projectImages.isNotEmpty)
                   SizedBox(
-                    height: 220,
+                    height: 260,
                     child: ListView.builder(
                       controller: configController,
                       shrinkWrap: true,
@@ -149,32 +152,32 @@ class _ProjectConfigGalleryState extends State<ProjectConfigGallery> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (projectImages[configIndex]
-                                  .sizeInSqft
-                                  .isNotEmpty)
-                                Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "${projectImages[configIndex].sizeInSqft}sq.ft",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: CustomColors.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "${projectImages[configIndex].unitPlanConfigFiles[index].flatSize}sq.ft",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: CustomColors.primary,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                              ),
                               Expanded(
                                 child: Container(
                                   width: 320,
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 4),
+                                    horizontal: 6,
+                                    vertical: 4,
+                                  ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(16),
                                     child: Image.network(
                                       projectImages[configIndex]
-                                          .unitPlanConfigFiles[index],
+                                          .unitPlanConfigFiles[index]
+                                          .image,
                                       fit: BoxFit.cover,
                                       loadingBuilder: (context, child,
                                               loadingProgress) =>
@@ -210,20 +213,19 @@ class _ProjectConfigGalleryState extends State<ProjectConfigGallery> {
                                   ),
                                 ),
                               ),
-                              if (projectImages[configIndex].facing.isNotEmpty)
-                                Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "Facing ${projectImages[configIndex].facing}",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: CustomColors.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "${projectImages[configIndex].unitPlanConfigFiles[index].facing} facing",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: CustomColors.primary,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                              ),
                             ],
                           ),
                         );
