@@ -280,7 +280,8 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
                   apartment.coverImage,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Row(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.error),
                         SizedBox(width: 4),

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
+import 'package:video_player/video_player.dart';
+import 'package:flick_video_player/flick_video_player.dart';
 
 class BrochureVideoSection extends ConsumerStatefulWidget {
   final Future<void> Function() sendEnquiry;
-  const BrochureVideoSection({super.key, required this.sendEnquiry});
+  final String videoLink;
+  const BrochureVideoSection({
+    super.key,
+    required this.sendEnquiry,
+    this.videoLink = '',
+  });
 
   @override
   ConsumerState<BrochureVideoSection> createState() =>
@@ -19,6 +27,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
+  late FlickManager flickManager;
 
   Future<void> enquiryFormPopup() async {
     return showDialog(
@@ -163,119 +172,115 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
       _emailController.text = ref.read(userProvider).email;
       _enquiryDetails.text =
           'Hi, I am interested in your property. I want to know more about the project.';
+
+      flickManager = FlickManager(
+        videoPlayerController: VideoPlayerController.networkUrl(
+          Uri.parse(widget.videoLink),
+        ),
+        autoInitialize: true,
+        autoPlay: false,
+      );
     });
+  }
+
+  @override
+  void dispose() {
+    flickManager.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          margin: const EdgeInsets.only(top: 4),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: CustomColors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: CustomColors.black.withOpacity(0.2),
-                blurRadius: 10,
-                spreadRadius: 0,
-                offset: const Offset(0, 0),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 8),
-                child: Text(
-                  "Video Walkthrough",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: CustomColors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+        if (widget.videoLink.isNotEmpty)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: CustomColors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: CustomColors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 0),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (ref.read(userProvider).token.isEmpty) {
-                    errorSnackBar(context, 'Please login first');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(
-                          goBack: true,
-                        ),
-                      ),
-                    );
-                  } else {
-                    enquiryFormPopup();
-                  }
-                },
-                child: Container(
-                  height: 150,
-                  width: double.infinity,
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  decoration: BoxDecoration(
-                    color: CustomColors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(10),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/walkthrough.jpg"),
-                      fit: BoxFit.cover,
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 8),
+                  child: Text(
+                    "Video Walkthrough",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CustomColors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 140,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: CustomColors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // if (ref.read(userProvider).token.isEmpty) {
+                    //   errorSnackBar(context, 'Please login first');
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => const LoginScreen(
+                    //         goBack: true,
+                    //       ),
+                    //     ),
+                    //   ).then((_) {
+                    //     _nameController.text = ref.read(userProvider).name;
+                    //     _mobileController.text =
+                    //         ref.read(userProvider).phoneNumber;
+                    //     _emailController.text = ref.read(userProvider).email;
+                    //   });
+                    // } else {
+                    //   enquiryFormPopup();
+                    // }
+                  },
+                  child: Container(
+                    height: 180,
+                    width: double.infinity,
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    decoration: BoxDecoration(
+                      color: CustomColors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                      image: const DecorationImage(
+                        image: AssetImage("assets/images/walkthrough.jpg"),
+                        fit: BoxFit.cover,
                       ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        child: Center(
-                          child: IconButton.filled(
-                            style: IconButton.styleFrom(
-                              backgroundColor:
-                                  CustomColors.black.withOpacity(0.5),
+                    ),
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            flickManager.flickControlManager!.pause();
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: FlickVideoPlayer(
+                              flickManager: flickManager,
+                              preferredDeviceOrientation: const [
+                                DeviceOrientation.portraitUp
+                              ],
                             ),
-                            onPressed: () {
-                              if (ref.read(userProvider).token.isEmpty) {
-                                errorSnackBar(context, 'Please login first');
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginScreen(
-                                      goBack: true,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                enquiryFormPopup();
-                              }
-                            },
-                            icon: const Icon(Icons.play_arrow),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         const SizedBox(width: 10),
         Container(
           width: double.infinity,
@@ -297,19 +302,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
             children: [
               GestureDetector(
                 onTap: () {
-                  if (ref.read(userProvider).token.isEmpty) {
-                    errorSnackBar(context, 'Please login first');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(
-                          goBack: true,
-                        ),
-                      ),
-                    );
-                  } else {
-                    enquiryFormPopup();
-                  }
+                  //Download PDF on tap
                 },
                 child: Container(
                   height: 140,

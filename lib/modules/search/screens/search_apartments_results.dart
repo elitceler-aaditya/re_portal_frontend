@@ -792,7 +792,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        ref
+                            .read(navBarIndexProvider.notifier)
+                            .setNavBarIndex(0);
                       },
                       icon: const Icon(
                         Icons.arrow_back,
@@ -899,501 +901,531 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   ),
                 ),
                 child: ref.watch(filtersProvider).toJson().isNotEmpty
-                    ? Container(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 2),
-                        width: double.infinity,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              "Selected Filters",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: CustomColors.black,
+                    ? Animate(
+                        effects: const [
+                          SlideEffect(
+                            begin: Offset(0, 1),
+                            duration: Duration(milliseconds: 400),
+                          )
+                        ],
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 0, 2),
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                "Selected Filters",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: CustomColors.black,
+                                ),
                               ),
-                            ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    height: 32,
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(
-                                        backgroundColor: CustomColors.secondary,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        filterBottomSheet();
-                                      },
-                                      child: const Text(
-                                        "+ Add more",
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: CustomColors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  ...ref
-                                      .watch(filtersProvider)
-                                      .selectedLocalities
-                                      .map(
-                                        (loc) => CustomListChip(
-                                          text: loc,
-                                          onTap: () {
-                                            List<String> localities = ref
-                                                .read(filtersProvider)
-                                                .selectedLocalities;
-                                            localities.remove(loc);
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .updateSelectedLocalities(
-                                                    localities);
-                                            updateResultsPage();
-                                          },
-                                        ),
-                                      ),
-                                  if (ref
-                                      .watch(filtersProvider)
-                                      .apartmentType
-                                      .isNotEmpty)
-                                    CustomListChip(
-                                      text: ref
-                                          .watch(filtersProvider)
-                                          .apartmentType,
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(
-                                              ref
-                                                  .read(filtersProvider)
-                                                  .copyWith(apartmentType: ''),
-                                            );
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  ...ref.watch(filtersProvider).amenities.map(
-                                        (amenity) => CustomListChip(
-                                          text: amenity,
-                                          onTap: () {
-                                            List<String> updatedAmenities =
-                                                List.from(ref
-                                                    .read(filtersProvider)
-                                                    .amenities);
-                                            updatedAmenities.remove(amenity);
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .updateFilters(
-                                                  ref
-                                                      .read(filtersProvider)
-                                                      .copyWith(
-                                                          amenities:
-                                                              updatedAmenities),
-                                                );
-                                            getFilteredApartments(
-                                                useDefaultParams: true);
-                                          },
-                                        ),
-                                      ),
-                                  ...ref
-                                      .watch(filtersProvider)
-                                      .selectedConfigurations
-                                      .map(
-                                        (config) => CustomListChip(
-                                          text: config,
-                                          onTap: () {
-                                            List<String> updatedConfigs =
-                                                List.from(ref
-                                                    .read(filtersProvider)
-                                                    .selectedConfigurations);
-                                            updatedConfigs.remove(config);
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .updateFilters(
-                                                  ref
-                                                      .read(filtersProvider)
-                                                      .copyWith(
-                                                          selectedConfigurations:
-                                                              updatedConfigs),
-                                                );
-                                            getFilteredApartments(
-                                                useDefaultParams: true);
-                                          },
-                                        ),
-                                      ),
-                                  if (ref
-                                      .watch(filtersProvider)
-                                      .builderName
-                                      .isNotEmpty)
-                                    CustomListChip(
-                                      text:
-                                          "Builder: ${ref.watch(filtersProvider).builderName}",
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateBuilderName('');
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).minBudget != 0)
-                                    CustomListChip(
-                                      text:
-                                          "Budget (min): ${formatBudget(ref.watch(filtersProvider).minBudget.toInt())}",
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateMinBudget(0);
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).maxBudget != 0)
-                                    CustomListChip(
-                                      text:
-                                          "Budget (max): ${formatBudget(ref.watch(filtersProvider).maxBudget.toInt())}",
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateMaxBudget(0);
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).minFlatSize !=
-                                      0)
-                                    CustomListChip(
-                                      text:
-                                          "Flat Size (min): ${(ref.watch(filtersProvider).minFlatSize / 100).round() * 100} sq.ft.",
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateMinFlatSize(0);
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).maxFlatSize !=
-                                      0)
-                                    CustomListChip(
-                                      text:
-                                          "Flat Size (max): ${((ref.watch(filtersProvider).maxFlatSize / 100).round() * 100).toInt()} sq.ft.",
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateMaxFlatSize(0);
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).newProject ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'New Project',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(newProject: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).readyToMove ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Ready to Move',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(readyToMove: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .underConstruction ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Under Construction',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    underConstruction: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .postedByBuilder ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Posted by Builder',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(postedByBuilder: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .postedByOwner ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Posted by Owner',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(postedByOwner: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .postedByAgent ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Posted by Agent',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(postedByAgent: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).newSaleType ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'New Sale',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(newSaleType: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).resaleType ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Resale',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(resaleType: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .affordableHomes ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Affordable Homes',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(affordableHomes: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .largeLivingSpaces ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Large Living Space',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    largeLivingSpaces: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .sustainableLivingHomes ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Sustainable',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    sustainableLivingHomes:
-                                                        ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .twopointfiveBHKHomes ==
-                                      'true')
-                                    CustomListChip(
-                                      text: '2.5 BHK',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    twopointfiveBHKHomes: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .largeBalconies ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Large Balcony',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(largeBalconies: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .skyVillaHabitat ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Sky Villa Habitat',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(skyVillaHabitat: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .standAloneBuildings ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Standalone Buildings',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    standAloneBuildings: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).skyScrapers ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Skyscrapers',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(skyScrapers: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .igbcCertifiedHomes ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'IGBC Certified Homes',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    igbcCertifiedHomes: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref
-                                          .watch(filtersProvider)
-                                          .semiGatedApartments ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'Semi Gated',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(
-                                                    semiGatedApartments: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  if (ref.watch(filtersProvider).moreOffers ==
-                                      'true')
-                                    CustomListChip(
-                                      text: 'More Offers',
-                                      onTap: () {
-                                        ref
-                                            .read(filtersProvider.notifier)
-                                            .updateFilters(ref
-                                                .read(filtersProvider)
-                                                .copyWith(moreOffers: ''));
-                                        updateResultsPage();
-                                      },
-                                    ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .clearAllFilters();
-                                      getFilteredApartments(
-                                          useDefaultParams: true);
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      alignment: Alignment.center,
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
                                       height: 32,
-                                      child: const Text(
-                                        "clear",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: CustomColors.black,
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          backgroundColor:
+                                              CustomColors.secondary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          filterBottomSheet();
+                                        },
+                                        child: const Text(
+                                          "+ Add more",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: CustomColors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    ...ref
+                                        .watch(filtersProvider)
+                                        .selectedLocalities
+                                        .map(
+                                          (loc) => CustomListChip(
+                                            text: loc,
+                                            onTap: () {
+                                              List<String> localities = ref
+                                                  .read(filtersProvider)
+                                                  .selectedLocalities;
+                                              localities.remove(loc);
+                                              ref
+                                                  .read(
+                                                      filtersProvider.notifier)
+                                                  .updateSelectedLocalities(
+                                                      localities);
+                                              updateResultsPage();
+                                            },
+                                          ),
+                                        ),
+                                    if (ref
+                                        .watch(filtersProvider)
+                                        .apartmentType
+                                        .isNotEmpty)
+                                      CustomListChip(
+                                        text: ref
+                                            .watch(filtersProvider)
+                                            .apartmentType,
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(
+                                                ref
+                                                    .read(filtersProvider)
+                                                    .copyWith(
+                                                        apartmentType: ''),
+                                              );
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    ...ref.watch(filtersProvider).amenities.map(
+                                          (amenity) => CustomListChip(
+                                            text: amenity,
+                                            onTap: () {
+                                              List<String> updatedAmenities =
+                                                  List.from(ref
+                                                      .read(filtersProvider)
+                                                      .amenities);
+                                              updatedAmenities.remove(amenity);
+                                              ref
+                                                  .read(
+                                                      filtersProvider.notifier)
+                                                  .updateFilters(
+                                                    ref
+                                                        .read(filtersProvider)
+                                                        .copyWith(
+                                                            amenities:
+                                                                updatedAmenities),
+                                                  );
+                                              getFilteredApartments(
+                                                  useDefaultParams: true);
+                                            },
+                                          ),
+                                        ),
+                                    ...ref
+                                        .watch(filtersProvider)
+                                        .selectedConfigurations
+                                        .map(
+                                          (config) => CustomListChip(
+                                            text: config,
+                                            onTap: () {
+                                              List<String> updatedConfigs =
+                                                  List.from(ref
+                                                      .read(filtersProvider)
+                                                      .selectedConfigurations);
+                                              updatedConfigs.remove(config);
+                                              ref
+                                                  .read(
+                                                      filtersProvider.notifier)
+                                                  .updateFilters(
+                                                    ref
+                                                        .read(filtersProvider)
+                                                        .copyWith(
+                                                            selectedConfigurations:
+                                                                updatedConfigs),
+                                                  );
+                                              getFilteredApartments(
+                                                  useDefaultParams: true);
+                                            },
+                                          ),
+                                        ),
+                                    if (ref
+                                        .watch(filtersProvider)
+                                        .builderName
+                                        .isNotEmpty)
+                                      CustomListChip(
+                                        text:
+                                            "Builder: ${ref.watch(filtersProvider).builderName}",
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateBuilderName('');
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref.watch(filtersProvider).minBudget !=
+                                        0)
+                                      CustomListChip(
+                                        text:
+                                            "Budget (min): ${formatBudget(ref.watch(filtersProvider).minBudget.toInt())}",
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateMinBudget(0);
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref.watch(filtersProvider).maxBudget !=
+                                        0)
+                                      CustomListChip(
+                                        text:
+                                            "Budget (max): ${formatBudget(ref.watch(filtersProvider).maxBudget.toInt())}",
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateMaxBudget(0);
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .minFlatSize !=
+                                        0)
+                                      CustomListChip(
+                                        text:
+                                            "Flat Size (min): ${(ref.watch(filtersProvider).minFlatSize / 100).round() * 100} sq.ft.",
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateMinFlatSize(0);
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .maxFlatSize !=
+                                        0)
+                                      CustomListChip(
+                                        text:
+                                            "Flat Size (max): ${((ref.watch(filtersProvider).maxFlatSize / 100).round() * 100).toInt()} sq.ft.",
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateMaxFlatSize(0);
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref.watch(filtersProvider).newProject ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'New Project',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(newProject: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .readyToMove ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Ready to Move',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(readyToMove: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .underConstruction ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Under Construction',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      underConstruction: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .postedByBuilder ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Posted by Builder',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      postedByBuilder: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .postedByOwner ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Posted by Owner',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(postedByOwner: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .postedByAgent ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Posted by Agent',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(postedByAgent: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .newSaleType ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'New Sale',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(newSaleType: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref.watch(filtersProvider).resaleType ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Resale',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(resaleType: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .affordableHomes ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Affordable Homes',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      affordableHomes: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .largeLivingSpaces ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Large Living Space',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      largeLivingSpaces: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .sustainableLivingHomes ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Sustainable',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      sustainableLivingHomes:
+                                                          ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .twopointfiveBHKHomes ==
+                                        'true')
+                                      CustomListChip(
+                                        text: '2.5 BHK',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      twopointfiveBHKHomes:
+                                                          ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .largeBalconies ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Large Balcony',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      largeBalconies: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .skyVillaHabitat ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Sky Villa Habitat',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      skyVillaHabitat: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .standAloneBuildings ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Standalone Buildings',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      standAloneBuildings: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .skyScrapers ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Skyscrapers',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(skyScrapers: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .igbcCertifiedHomes ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'IGBC Certified Homes',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      igbcCertifiedHomes: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref
+                                            .watch(filtersProvider)
+                                            .semiGatedApartments ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'Semi Gated',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(
+                                                      semiGatedApartments: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    if (ref.watch(filtersProvider).moreOffers ==
+                                        'true')
+                                      CustomListChip(
+                                        text: 'More Offers',
+                                        onTap: () {
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateFilters(ref
+                                                  .read(filtersProvider)
+                                                  .copyWith(moreOffers: ''));
+                                          updateResultsPage();
+                                        },
+                                      ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        ref
+                                            .read(filtersProvider.notifier)
+                                            .clearAllFilters();
+                                        getFilteredApartments(
+                                            useDefaultParams: true);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        alignment: Alignment.center,
+                                        height: 32,
+                                        child: const Text(
+                                          "clear",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: CustomColors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       )
                     : const SizedBox(
@@ -1402,13 +1434,14 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
               ),
               CategoryRow(
                 title: "Choose by category",
+                stackFilter: true,
                 onTap: () {
                   _masterScrollController.animateTo(
                     300,
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOut,
                   );
-                  getFilteredApartments(useDefaultParams: true);
+                  getFilteredApartments();
                 },
               ),
               if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)

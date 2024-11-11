@@ -229,6 +229,39 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = filters;
   }
 
+  void updateOnlySelectedFilter(FiltersModel filters) {
+    state = state.copyWith(
+      selectedLocalities: filters.selectedLocalities.isNotEmpty ? filters.selectedLocalities : state.selectedLocalities,
+      apartmentType: filters.apartmentType.isNotEmpty ? filters.apartmentType : state.apartmentType,
+      amenities: filters.amenities.isNotEmpty ? filters.amenities : state.amenities,
+      selectedConfigurations: filters.selectedConfigurations.isNotEmpty ? filters.selectedConfigurations : state.selectedConfigurations,
+      minBudget: filters.minBudget != 0 ? filters.minBudget : state.minBudget,
+      maxBudget: filters.maxBudget != 0 ? filters.maxBudget : state.maxBudget,
+      minFlatSize: filters.minFlatSize != 0 ? filters.minFlatSize : state.minFlatSize,
+      maxFlatSize: filters.maxFlatSize != 0 ? filters.maxFlatSize : state.maxFlatSize,
+      builderName: filters.builderName.isNotEmpty ? filters.builderName : state.builderName,
+      affordableHomes: filters.affordableHomes.isNotEmpty ? filters.affordableHomes : state.affordableHomes,
+      largeLivingSpaces: filters.largeLivingSpaces.isNotEmpty ? filters.largeLivingSpaces : state.largeLivingSpaces,
+      sustainableLivingHomes: filters.sustainableLivingHomes.isNotEmpty ? filters.sustainableLivingHomes : state.sustainableLivingHomes,
+      twopointfiveBHKHomes: filters.twopointfiveBHKHomes.isNotEmpty ? filters.twopointfiveBHKHomes : state.twopointfiveBHKHomes,
+      largeBalconies: filters.largeBalconies.isNotEmpty ? filters.largeBalconies : state.largeBalconies,
+      skyVillaHabitat: filters.skyVillaHabitat.isNotEmpty ? filters.skyVillaHabitat : state.skyVillaHabitat,
+      standAloneBuildings: filters.standAloneBuildings.isNotEmpty ? filters.standAloneBuildings : state.standAloneBuildings,
+      skyScrapers: filters.skyScrapers.isNotEmpty ? filters.skyScrapers : state.skyScrapers,
+      readyToMove: filters.readyToMove.isNotEmpty ? filters.readyToMove : state.readyToMove,
+      newProject: filters.newProject.isNotEmpty ? filters.newProject : state.newProject,
+      underConstruction: filters.underConstruction.isNotEmpty ? filters.underConstruction : state.underConstruction,
+      newSaleType: filters.newSaleType.isNotEmpty ? filters.newSaleType : state.newSaleType,
+      resaleType: filters.resaleType.isNotEmpty ? filters.resaleType : state.resaleType,
+      postedByBuilder: filters.postedByBuilder.isNotEmpty ? filters.postedByBuilder : state.postedByBuilder,
+      postedByOwner: filters.postedByOwner.isNotEmpty ? filters.postedByOwner : state.postedByOwner,
+      postedByAgent: filters.postedByAgent.isNotEmpty ? filters.postedByAgent : state.postedByAgent,
+      igbcCertifiedHomes: filters.igbcCertifiedHomes.isNotEmpty ? filters.igbcCertifiedHomes : state.igbcCertifiedHomes,
+      semiGatedApartments: filters.semiGatedApartments.isNotEmpty ? filters.semiGatedApartments : state.semiGatedApartments,
+      moreOffers: filters.moreOffers.isNotEmpty ? filters.moreOffers : state.moreOffers,
+    );
+  }
+
   void updateFilters(FiltersModel filters) {
     state = state.copyWith(
       selectedLocalities: filters.selectedLocalities,

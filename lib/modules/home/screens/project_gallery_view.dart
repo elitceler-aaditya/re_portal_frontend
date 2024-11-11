@@ -5,7 +5,6 @@ import 'package:shimmer/shimmer.dart';
 
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 
 class ProjectImageGallery extends StatefulWidget {
   final List<ProjectImageModel> projectImages;

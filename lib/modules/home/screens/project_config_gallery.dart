@@ -28,10 +28,7 @@ class _ProjectConfigGalleryState extends State<ProjectConfigGallery> {
     for (var gal in widget.unitPlanConfigFilesFormatted) {
       allImages.addAll(gal.unitPlanConfigFiles);
     }
-    projectImages = [
-      UnitPlanConfig(bHKType: 'All', unitPlanConfigFiles: allImages),
-      ...widget.unitPlanConfigFilesFormatted,
-    ];
+    projectImages = widget.unitPlanConfigFilesFormatted;
   }
 
   @override

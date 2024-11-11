@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
@@ -76,17 +77,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   String displayImage = "";
   Timer? _timer;
   bool openOptions = true;
+  bool openProjectSpecifications = false;
+  bool openProjectDetails = false;
   List<Map<String, dynamic>> projectDetailsList = [];
 
-  Future<void> sendEnquiry(BuildContext context) async {
+  Future<void> sendEnquiry(BuildContext context, String message) async {
     final url = Uri.parse("${dotenv.env['BASE_URL']}/user/newLeadGeneration");
     final body = {
       "name": _nameController.text.trim(),
       "number": _mobileController.text.trim(),
       "email": _emailController.text.trim(),
-      "enquiryDetails": _enquiryDetails.text.trim().isEmpty
-          ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
-          : _enquiryDetails.text.trim(),
+      "enquiryDetails": message,
       "projectID": widget.apartment.projectId,
     };
 
@@ -94,7 +95,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     if (token.isEmpty) {
       errorSnackBar(context, 'Please login first');
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()));
+              MaterialPageRoute(builder: (context) => const LoginScreen()))
+          .then((_) {
+        _nameController.text = ref.read(userProvider).name;
+        _mobileController.text = ref.read(userProvider).phoneNumber;
+        _emailController.text = ref.read(userProvider).email;
+      });
       errorSnackBar(context, 'User not logged in');
       return;
     }
@@ -207,32 +213,33 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () =>
-                        launchUrlString('tel:${widget.apartment.companyPhone}'),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.phone,
-                            color: CustomColors.black,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            "For more details ${widget.apartment.companyPhone}",
-                            style: const TextStyle(
+                  if (widget.apartment.companyPhone.isNotEmpty)
+                    GestureDetector(
+                      onTap: () => launchUrlString(
+                          'tel:${widget.apartment.companyPhone}'),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.phone,
                               color: CustomColors.black,
-                              fontWeight: FontWeight.bold,
+                              size: 16,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 10),
+                            Text(
+                              "For more details ${widget.apartment.companyPhone}",
+                              style: const TextStyle(
+                                color: CustomColors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   Column(
                     children: [
                       if (widget.nextApartment != null)
@@ -445,7 +452,12 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    sendEnquiry(context);
+                                    sendEnquiry(
+                                      context,
+                                      _enquiryDetails.text.trim().isEmpty
+                                          ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
+                                          : _enquiryDetails.text.trim(),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,
@@ -618,7 +630,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                           goBack: true,
                                         ),
                                       ),
-                                    );
+                                    ).then((_) {
+                                      _nameController.text =
+                                          ref.read(userProvider).name;
+                                      _mobileController.text =
+                                          ref.read(userProvider).phoneNumber;
+                                      _emailController.text =
+                                          ref.read(userProvider).email;
+                                    });
                                   } else {
                                     _showOverlay(
                                         context,
@@ -674,14 +693,33 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       },
                       child: Text(
                         widget.apartment.description,
-                        maxLines: _showFullDescription ? 100 : 3,
-                        overflow: TextOverflow.ellipsis,
+                        maxLines: _showFullDescription ? 100 : 1,
+                        overflow: TextOverflow.fade,
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.normal,
                           color: CustomColors.black,
                         ),
                       ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showFullDescription = !_showFullDescription;
+                        });
+                      },
+                      child: const Center(
+                        child: Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: CustomColors.black,
+                          size: 20,
+                        ),
+                      )
+                          .animate(
+                            autoPlay: false,
+                            target: !_showFullDescription ? 0 : 1,
+                          )
+                          .rotate(end: 0.5),
                     ),
                   ],
                 ),
@@ -754,94 +792,139 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(top: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: CustomColors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: CustomColors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, bottom: 6),
-                    child: Text(
-                      "Project Details",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: CustomColors.black,
+            if (projectDetailsList.isNotEmpty)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4, bottom: 6),
+                      child: Text(
+                        "Project Details",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
+                        ),
                       ),
                     ),
-                  ),
-                  GridView.builder(
-                    padding: EdgeInsets.zero,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.8,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: projectDetailsList.length,
-                    itemBuilder: (context, index) {
-                      final detail = projectDetailsList[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: CustomColors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            const BoxShadow(
-                              color: CustomColors.white,
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
-                            ),
-                            BoxShadow(
-                              color: CustomColors.black.withOpacity(0.1),
-                              blurRadius: 5,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 700),
+                      curve: Curves.easeInOut,
+                      child: GridView.builder(
+                        padding: EdgeInsets.zero,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 1.8,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              detail["title"],
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              detail["value"].toString(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount:
+                            openProjectDetails ? projectDetailsList.length : 3,
+                        itemBuilder: (context, index) {
+                          final detail = projectDetailsList[index];
+                          return AnimatedOpacity(
+                            duration: const Duration(milliseconds: 700),
+                            opacity: 1.0,
+                            child: AnimatedScale(
+                              duration: const Duration(milliseconds: 700),
+                              scale: 1.0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: CustomColors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    const BoxShadow(
+                                      color: CustomColors.white,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 0),
+                                    ),
+                                    BoxShadow(
+                                      color:
+                                          CustomColors.black.withOpacity(0.1),
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      detail["title"],
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                    Text(
+                                      detail["value"].toString(),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
+                          );
+                        },
+                      ),
+                    ),
+                    //view more button
+                    if (projectDetailsList.length > 3)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 700),
+                        padding: const EdgeInsets.only(top: 10),
+                        height: 44,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              openProjectDetails = !openProjectDetails;
+                            });
+                          },
+                          icon: AnimatedRotation(
+                            duration: const Duration(milliseconds: 700),
+                            turns: openProjectDetails ? 0.5 : 0,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: CustomColors.primary,
+                            ),
+                          ),
+                          label: Text(
+                            openProjectDetails ? "View Less" : "View More",
+                            style: const TextStyle(
+                              color: CustomColors.primary,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ],
+                      ),
+                  ],
+                ),
               ),
-            ),
             if (_projectDetails.projectImages.isNotEmpty)
               ProjectDetailsGallery(
                   projectImages: _projectDetails.projectImages),
@@ -1075,37 +1158,76 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         color: CustomColors.black,
                       ),
                     ),
-                    Column(
-                      children: _projectDetails.projectDetails.specifications
-                          .map((point) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 4, right: 4),
-                                child: Icon(
-                                  Icons.circle,
-                                  size: 10,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 700),
+                      curve: Curves.easeInOut,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            openProjectSpecifications =
+                                !openProjectSpecifications;
+                          });
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...List.generate(
+                              openProjectSpecifications
+                                  ? _projectDetails
+                                      .projectDetails.specifications.length
+                                  : min(
+                                      3,
+                                      _projectDetails.projectDetails
+                                          .specifications.length),
+                              (index) => Padding(
+                                padding: const EdgeInsets.only(top: 10),
                                 child: Text(
-                                  point,
+                                  _projectDetails
+                                      .projectDetails.specifications[index],
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: CustomColors.black,
                                   ),
                                 ),
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    //view more button
+                    if (_projectDetails.projectDetails.specifications.length >
+                        3)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 700),
+                        padding: const EdgeInsets.only(top: 10),
+                        height: 44,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              openProjectSpecifications =
+                                  !openProjectSpecifications;
+                            });
+                          },
+                          icon: AnimatedRotation(
+                            duration: const Duration(milliseconds: 700),
+                            turns: openProjectSpecifications ? 0.5 : 0,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: CustomColors.primary,
+                            ),
                           ),
-                        );
-                      }).toList(),
-                    )
+                          label: Text(
+                            openProjectSpecifications
+                                ? "View Less"
+                                : "View More",
+                            style: const TextStyle(
+                              color: CustomColors.primary,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -1164,7 +1286,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   clipBehavior: Clip.hardEdge,
                                   constraints: BoxConstraints(
@@ -1184,15 +1306,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     ],
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Column(
-                                    children: List.generate(
-                                      _projectDetails
-                                          .projectDetails.hospitals.length,
-                                      (index) => _keyHighlights(
-                                        _projectDetails.projectDetails
-                                            .hospitals[index].name,
-                                        _projectDetails.projectDetails
-                                            .hospitals[index].dist,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: List.generate(
+                                        _projectDetails
+                                            .projectDetails.hospitals.length,
+                                        (index) => _keyHighlights(
+                                          _projectDetails.projectDetails
+                                              .hospitals[index].name,
+                                          _projectDetails.projectDetails
+                                              .hospitals[index].dist,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -1213,7 +1337,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1264,7 +1388,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1314,7 +1438,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1333,19 +1457,21 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     ],
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Column(
-                                    children: List.generate(
-                                      _projectDetails.projectDetails
-                                          .educationalInstitutions.length,
-                                      (index) => _keyHighlights(
-                                        _projectDetails
-                                            .projectDetails
-                                            .educationalInstitutions[index]
-                                            .name,
-                                        _projectDetails
-                                            .projectDetails
-                                            .educationalInstitutions[index]
-                                            .dist,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: List.generate(
+                                        _projectDetails.projectDetails
+                                            .educationalInstitutions.length,
+                                        (index) => _keyHighlights(
+                                          _projectDetails
+                                              .projectDetails
+                                              .educationalInstitutions[index]
+                                              .name,
+                                          _projectDetails
+                                              .projectDetails
+                                              .educationalInstitutions[index]
+                                              .dist,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -1367,7 +1493,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1416,7 +1542,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1465,7 +1591,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1514,7 +1640,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1563,7 +1689,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                                 const SizedBox(height: 8),
                                 Container(
-                                  height: 150,
+                                  height: 135,
                                   margin: const EdgeInsets.only(right: 10),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -1698,7 +1824,15 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-            BrochureVideoSection(sendEnquiry: () => sendEnquiry(context)),
+            BrochureVideoSection(
+              sendEnquiry: () => sendEnquiry(
+                context,
+                _enquiryDetails.text.trim().isEmpty
+                    ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
+                    : _enquiryDetails.text.trim(),
+              ),
+              videoLink: _projectDetails.projectDetails.videoLink,
+            ),
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
@@ -2288,6 +2422,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ),
                       'Call now',
                       () {
+                        sendEnquiry(context,
+                            "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name} and contacted you via phone call");
                         if (ref.read(userProvider).token.isNotEmpty) {
                           launchUrl(Uri.parse(
                                   "tel:${widget.apartment.companyPhone}"))
@@ -2303,7 +2439,14 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   goBack: true,
                                 ),
                               ),
-                            );
+                            ).then((_) {
+                              _nameController.text =
+                                  ref.read(userProvider).name;
+                              _mobileController.text =
+                                  ref.read(userProvider).phoneNumber;
+                              _emailController.text =
+                                  ref.read(userProvider).email;
+                            });
                           } else {
                             enquiryFormPopup().then((_) {
                               _removeOverlay();
@@ -2323,6 +2466,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ),
                       'Chat on Whatsapp',
                       () {
+                        sendEnquiry(context,
+                            "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name} and contacted you via Whatsapp");
                         if (ref.read(userProvider).token.isNotEmpty) {
                           launchUrl(Uri.parse(
                             'https://wa.me/+91${widget.apartment.companyPhone}?text=${Uri.encodeComponent("Hello, I'm interested in your property")}',
@@ -2336,7 +2481,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 goBack: true,
                               ),
                             ),
-                          );
+                          ).then((_) {
+                            _nameController.text = ref.read(userProvider).name;
+                            _mobileController.text =
+                                ref.read(userProvider).phoneNumber;
+                            _emailController.text =
+                                ref.read(userProvider).email;
+                          });
                         }
                       },
                       delay: 100,
@@ -2359,7 +2510,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 goBack: true,
                               ),
                             ),
-                          );
+                          ).then((_) {
+                            _nameController.text = ref.read(userProvider).name;
+                            _mobileController.text =
+                                ref.read(userProvider).phoneNumber;
+                            _emailController.text =
+                                ref.read(userProvider).email;
+                          });
                         } else {
                           enquiryFormPopup();
                           _removeOverlay();

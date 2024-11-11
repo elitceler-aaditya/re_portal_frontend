@@ -83,10 +83,10 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // PropertiesTiles(
             //   title: 'Commercial',
@@ -102,6 +102,15 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             //     );
             //   },
             // ),
+            const Text(
+              "Select Property Type",
+              style: TextStyle(
+                color: CustomColors.black50,
+                fontWeight: FontWeight.normal,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 10),
             PropertiesTiles(
               title: 'Villas',
               description: 'Luxurious villas and upscale properties',

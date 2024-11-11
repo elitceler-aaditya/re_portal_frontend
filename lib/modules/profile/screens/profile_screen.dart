@@ -49,31 +49,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFFFCCBAE),
-                Color(0xFFF87988),
-              ],
-            ),
-          ),
-        ),
-      ),
       body: ref.watch(userProvider).name.isNotEmpty
           ? SingleChildScrollView(
               child: Column(
                 children: [
                   SizedBox(
-                    height: 160,
+                    height: 180,
                     width: double.infinity,
                     child: Stack(
                       children: [
                         Container(
-                          height: 100,
+                          height: 120,
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.centerLeft,
@@ -86,11 +72,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         Positioned(
-                          left: 16,
-                          top: 50,
+                          left: 24,
+                          top: 74,
                           child: Container(
-                            height: 100,
-                            width: 100,
+                            height: 84,
+                            width: 84,
                             decoration: BoxDecoration(
                               color: const Color(0xFFFCCBAE),
                               shape: BoxShape.circle,
@@ -114,7 +100,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         Positioned(
                           left: 120,
-                          top: 64,
+                          top: 86,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -137,6 +123,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               ),
                             ],
                           ),
+                        ),
+                        Positioned(
+                          left: 10,
+                          top: MediaQuery.of(context).padding.top,
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(Icons.arrow_back)),
                         ),
                       ],
                     ),

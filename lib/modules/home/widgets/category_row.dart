@@ -8,8 +8,14 @@ class CategoryRow extends ConsumerStatefulWidget {
   final Function()? onTap;
   final double cardHeight;
   final String title;
-  const CategoryRow(
-      {super.key, this.onTap, this.cardHeight = 80, this.title = 'Categories'});
+  final bool stackFilter;
+  const CategoryRow({
+    super.key,
+    this.onTap,
+    this.cardHeight = 80,
+    this.title = 'Categories',
+    this.stackFilter = false,
+  });
 
   @override
   ConsumerState<CategoryRow> createState() => _CategoryRowState();
@@ -96,9 +102,18 @@ class _CategoryRowState extends ConsumerState<CategoryRow> {
                     ref.read(searchBarProvider.notifier).setSearchTerm(
                           categoryOptions[index]['title'],
                         );
-                    ref.read(filtersProvider.notifier).setAllFilters(
-                          categoryOptions[index]['filter'],
-                        );
+
+                    if (widget.stackFilter) {
+                      ref
+                          .read(filtersProvider.notifier)
+                          .updateOnlySelectedFilter(
+                            categoryOptions[index]['filter'],
+                          );
+                    } else {
+                      ref.read(filtersProvider.notifier).setAllFilters(
+                            categoryOptions[index]['filter'],
+                          );
+                    }
 
                     widget.onTap?.call();
                   },

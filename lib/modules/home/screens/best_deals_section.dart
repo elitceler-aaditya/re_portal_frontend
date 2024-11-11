@@ -165,14 +165,14 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            "Price starts from ₹${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].budget)}",
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                          // Text(
+                          //   "Price starts from ₹${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].budget)}",
+                          //   style: const TextStyle(
+                          //     color: CustomColors.white,
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.w400,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

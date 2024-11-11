@@ -80,6 +80,8 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
         itemCount: contactedProperties.length,
         itemBuilder: (context, index) {
           return ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            titleAlignment: ListTileTitleAlignment.center,
             onTap: () {
               launchUrlString(
                   'tel:${contactedProperties[index].phone.replaceAll(RegExp(r'[^0-9]'), '')}');
@@ -105,29 +107,12 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
               children: [
                 Text(
                   "By ${contactedProperties[index].builder.CompanyName}",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: CustomColors.black50,
                   ),
-                ),
-                Text(
-                  contactedProperties[index].phone,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: CustomColors.black50,
-                  ),
-                ),
-              ],
-            ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  DateFormat('dd MMM yyyy\nhh:mm a').format(
-                    DateTime.parse(contactedProperties[index].createdAt),
-                  ),
-                  textAlign: TextAlign.end,
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -137,16 +122,42 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
                       size: 16,
                       color: CustomColors.primary,
                     ),
-                    Text(
-                      contactedProperties[index].project.projectLocation,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: CustomColors.black50,
+                    Expanded(
+                      child: Text(
+                        contactedProperties[index].project.projectLocation,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: CustomColors.black50,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ],
+            ),
+            trailing: SizedBox(
+              width: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    DateFormat('dd MMM yyyy\nhh:mm a').format(
+                      DateTime.parse(contactedProperties[index].createdAt),
+                    ),
+                    textAlign: TextAlign.end,
+                  ),
+                  Text(
+                    contactedProperties[index].phone,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: CustomColors.black50,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

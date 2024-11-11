@@ -427,6 +427,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                 setState(() {
                                   _searchController.text =
                                       recentSearchProjects[index];
+                                  globalSearch(recentSearchProjects[index]);
                                 });
                               },
                               trailing: IconButton(
@@ -457,6 +458,7 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                                 setState(() {
                                   _searchController.text =
                                       recentSearchBuilders[index];
+                                  globalSearch(recentSearchBuilders[index]);
                                 });
                               },
                               trailing: IconButton(
