@@ -207,7 +207,7 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                             style: const TextStyle(
                               height: 1.2,
                               color: CustomColors.white,
-                              fontSize: 20,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -265,99 +265,91 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                   const SizedBox(height: 2),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                      text: "Area: ",
-                                      style: TextStyle(
-                                        color: CustomColors.black75,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          "${widget.apartment.flatSize} sq.ft",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
+                      Expanded(
+                        child: Wrap(
+                          children: [
+                            // RichText(
+                            //   text: TextSpan(
+                            //     style: const TextStyle(
+                            //       fontSize: 14,
+                            //       color: Colors.black,
+                            //     ),
+                            //     children: [
+                            //       const TextSpan(
+                            //         text: "Area: ",
+                            //         style: TextStyle(
+                            //           color: CustomColors.black75,
+                            //           fontSize: 14,
+                            //           fontWeight: FontWeight.normal,
+                            //         ),
+                            //       ),
+                            //       TextSpan(
+                            //         text: "${widget.apartment.flatSize} sq.ft",
+                            //         style: const TextStyle(
+                            //           fontWeight: FontWeight.bold,
+                            //           fontSize: 14,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // const SizedBox(width: 16),
+                            // RichText(
+                            //   text: TextSpan(
+                            //     style: const TextStyle(
+                            //       fontSize: 14,
+                            //       color: Colors.black,
+                            //     ),
+                            //     children: [
+                            //       const TextSpan(
+                            //         text: "Price: ",
+                            //         style: TextStyle(
+                            //           color: CustomColors.black75,
+                            //           fontWeight: FontWeight.normal,
+                            //           fontSize: 14,
+                            //         ),
+                            //       ),
+                            //       TextSpan(
+                            //         text: formatBudget(widget.apartment.budget),
+                            //         style: const TextStyle(
+                            //           fontWeight: FontWeight.bold,
+                            //           fontSize: 14,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            RichText(
+                              text: TextSpan(
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
                                 ),
+                                children: [
+                                  const TextSpan(
+                                    text: "Cost/sqft: ",
+                                    style: TextStyle(
+                                      color: CustomColors.black75,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        "₹${widget.apartment.pricePerSquareFeetRate}",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 16),
-                              RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                      text: "Price: ",
-                                      style: TextStyle(
-                                        color: CustomColors.black75,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          formatBudget(widget.apartment.budget),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                              children: [
-                                const TextSpan(
-                                  text: "Cost/sqft: ",
-                                  style: TextStyle(
-                                    color: CustomColors.black75,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text:
-                                      "₹${widget.apartment.pricePerSquareFeetRate}",
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      const Spacer(),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: Row(

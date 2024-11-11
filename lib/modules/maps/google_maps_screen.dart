@@ -292,7 +292,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
               right: 0,
               left: 0,
               child: Container(
-                height: 200,
+                height: 180,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
@@ -337,7 +337,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                 },
                 options: CarouselOptions(
                   controller: carouselController,
-                  height: 180,
+                  height: 160,
                   viewportFraction: 0.85,
                   enableInfiniteScroll: false,
                   enlargeCenterPage: true,

@@ -113,6 +113,8 @@ class _MyAccountState extends State<MyAccount> {
                   ),
                   const Spacer(),
                   CustomPrimaryButton(
+                    btnColor: CustomColors.primary,
+                    btnTextColor: CustomColors.white,
                     title: "Update",
                     onTap: () {
                       Navigator.pop(context);

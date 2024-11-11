@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/table.dart';
+import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:http/http.dart' as http;
@@ -134,6 +137,23 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
               ),
             ),
           ),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                rightSlideTransition(context, const ProfileScreen());
+              },
+              child: CircleAvatar(
+                radius: 20,
+                child: Center(
+                  child: SvgPicture.asset(
+                    "assets/icons/person.svg",
+                    height: 20,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
           backgroundColor: Colors.transparent,
         ),
         body: comparedProperties.isEmpty

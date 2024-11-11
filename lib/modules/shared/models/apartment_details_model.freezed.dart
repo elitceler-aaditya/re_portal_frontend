@@ -489,6 +489,7 @@ mixin _$ProjectDetails {
   String get clubHouseAmenities => throw _privateConstructorUsedError;
   String get outdoorAmenities => throw _privateConstructorUsedError;
   String get videoLink => throw _privateConstructorUsedError;
+  List<String> get brochurePdf => throw _privateConstructorUsedError;
   List<String> get specifications => throw _privateConstructorUsedError;
   List<String> get projectHighlightsPoints =>
       throw _privateConstructorUsedError;
@@ -552,6 +553,7 @@ abstract class $ProjectDetailsCopyWith<$Res> {
       String clubHouseAmenities,
       String outdoorAmenities,
       String videoLink,
+      List<String> brochurePdf,
       List<String> specifications,
       List<String> projectHighlightsPoints,
       Builder builder,
@@ -614,6 +616,7 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
     Object? videoLink = null,
+    Object? brochurePdf = null,
     Object? specifications = null,
     Object? projectHighlightsPoints = null,
     Object? builder = null,
@@ -740,6 +743,10 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
           ? _value.videoLink
           : videoLink // ignore: cast_nullable_to_non_nullable
               as String,
+      brochurePdf: null == brochurePdf
+          ? _value.brochurePdf
+          : brochurePdf // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       specifications: null == specifications
           ? _value.specifications
           : specifications // ignore: cast_nullable_to_non_nullable
@@ -854,6 +861,7 @@ abstract class _$$ProjectDetailsImplCopyWith<$Res>
       String clubHouseAmenities,
       String outdoorAmenities,
       String videoLink,
+      List<String> brochurePdf,
       List<String> specifications,
       List<String> projectHighlightsPoints,
       Builder builder,
@@ -915,6 +923,7 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
     Object? videoLink = null,
+    Object? brochurePdf = null,
     Object? specifications = null,
     Object? projectHighlightsPoints = null,
     Object? builder = null,
@@ -1041,6 +1050,10 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value.videoLink
           : videoLink // ignore: cast_nullable_to_non_nullable
               as String,
+      brochurePdf: null == brochurePdf
+          ? _value._brochurePdf
+          : brochurePdf // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       specifications: null == specifications
           ? _value._specifications
           : specifications // ignore: cast_nullable_to_non_nullable
@@ -1140,6 +1153,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       this.clubHouseAmenities = '',
       this.outdoorAmenities = '',
       this.videoLink = '',
+      final List<String> brochurePdf = const [],
       final List<String> specifications = const [],
       final List<String> projectHighlightsPoints = const [],
       this.builder = const Builder(),
@@ -1156,7 +1170,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       final List<Institution> hotspots = const [],
       final List<Institution> shopping = const [],
       final List<Institution> entertainment = const []})
-      : _specifications = specifications,
+      : _brochurePdf = brochurePdf,
+        _specifications = specifications,
         _projectHighlightsPoints = projectHighlightsPoints,
         _educationalInstitutions = educationalInstitutions,
         _hospitals = hospitals,
@@ -1254,6 +1269,15 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   @override
   @JsonKey()
   final String videoLink;
+  final List<String> _brochurePdf;
+  @override
+  @JsonKey()
+  List<String> get brochurePdf {
+    if (_brochurePdf is EqualUnmodifiableListView) return _brochurePdf;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_brochurePdf);
+  }
+
   final List<String> _specifications;
   @override
   @JsonKey()
@@ -1384,7 +1408,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
 
   @override
   String toString() {
-    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, videoLink: $videoLink, specifications: $specifications, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, bankName: $bankName, loanPercentage: $loanPercentage, banks: $banks, restaurants: $restaurants, colleges: $colleges, pharmacies: $pharmacies, hotspots: $hotspots, shopping: $shopping, entertainment: $entertainment)';
+    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, videoLink: $videoLink, brochurePdf: $brochurePdf, specifications: $specifications, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, bankName: $bankName, loanPercentage: $loanPercentage, banks: $banks, restaurants: $restaurants, colleges: $colleges, pharmacies: $pharmacies, hotspots: $hotspots, shopping: $shopping, entertainment: $entertainment)';
   }
 
   @override
@@ -1445,6 +1469,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
             (identical(other.videoLink, videoLink) ||
                 other.videoLink == videoLink) &&
             const DeepCollectionEquality()
+                .equals(other._brochurePdf, _brochurePdf) &&
+            const DeepCollectionEquality()
                 .equals(other._specifications, _specifications) &&
             const DeepCollectionEquality().equals(
                 other._projectHighlightsPoints, _projectHighlightsPoints) &&
@@ -1503,6 +1529,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
         clubHouseAmenities,
         outdoorAmenities,
         videoLink,
+        const DeepCollectionEquality().hash(_brochurePdf),
         const DeepCollectionEquality().hash(_specifications),
         const DeepCollectionEquality().hash(_projectHighlightsPoints),
         builder,
@@ -1567,6 +1594,7 @@ abstract class _ProjectDetails implements ProjectDetails {
       final String clubHouseAmenities,
       final String outdoorAmenities,
       final String videoLink,
+      final List<String> brochurePdf,
       final List<String> specifications,
       final List<String> projectHighlightsPoints,
       final Builder builder,
@@ -1641,6 +1669,8 @@ abstract class _ProjectDetails implements ProjectDetails {
   String get outdoorAmenities;
   @override
   String get videoLink;
+  @override
+  List<String> get brochurePdf;
   @override
   List<String> get specifications;
   @override

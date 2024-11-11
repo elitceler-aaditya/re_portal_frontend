@@ -40,7 +40,7 @@ class MapsPropertyCard extends StatelessWidget {
         );
       },
       child: Container(
-        height: 100,
+        height: 80,
         width: 290,
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -98,41 +98,50 @@ class MapsPropertyCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            apartment.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              height: 1.1,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          apartment.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            height: 1.1,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: CustomColors.primary20,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: CustomColors.primary,
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            formatBudget(apartment.budget),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: CustomColors.primary,
-                            ),
+                        Text(
+                          "By ${apartment.companyName}",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.normal,
+                            color: CustomColors.black50,
                           ),
                         ),
+                        const Spacer(),
+                        // Container(
+                        //   padding: const EdgeInsets.symmetric(
+                        //     horizontal: 8,
+                        //     vertical: 2,
+                        //   ),
+                        //   decoration: BoxDecoration(
+                        //     color: CustomColors.primary20,
+                        //     borderRadius: BorderRadius.circular(12),
+                        //     border: Border.all(
+                        //       color: CustomColors.primary,
+                        //       width: 1,
+                        //     ),
+                        //   ),
+                        //   child: Text(
+                        //     formatBudget(apartment.budget),
+                        //     style: const TextStyle(
+                        //       fontSize: 12,
+                        //       fontWeight: FontWeight.bold,
+                        //       color: CustomColors.primary,
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 4),
                         Row(
                           children: [

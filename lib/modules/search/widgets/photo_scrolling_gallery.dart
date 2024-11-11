@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:shimmer/shimmer.dart';
 
 class UnitPlanGallery extends StatefulWidget {
@@ -21,38 +19,19 @@ class UnitPlanGallery extends StatefulWidget {
 class _UnitPlanGalleryState extends State<UnitPlanGallery>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late Map<String, List<UnitPlanConfig>> _groupedPlans;
   int _current = 0;
   late PageController _pageController;
-
   bool _isZoomedIn = false;
 
   @override
   void initState() {
     super.initState();
-    _groupedPlans = _groupUnitPlansByBHK();
     _tabController = TabController(
-      length: _groupedPlans.keys.length,
+      length:
+          widget.unitPlans.length, // Use total length instead of grouped length
       vsync: this,
     );
     _pageController = PageController();
-  }
-
-  Map<String, List<UnitPlanConfig>> _groupUnitPlansByBHK() {
-    final Map<String, List<UnitPlanConfig>> grouped = {};
-
-    for (final plan in widget.unitPlans) {
-      if (!grouped.containsKey(plan.bHKType)) {
-        grouped[plan.bHKType] = [];
-      }
-      grouped[plan.bHKType]!.add(plan);
-    }
-
-    // Sort the BHK types for consistent ordering
-    final Map<String, List<UnitPlanConfig>> sortedGrouped = Map.fromEntries(
-        grouped.entries.toList()..sort((a, b) => a.key.compareTo(b.key)));
-
-    return sortedGrouped;
   }
 
   void _handleCarouselPageChange(int index, CarouselPageChangedReason reason) {
@@ -68,13 +47,11 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
   }
 
   void _openImage(BuildContext context, String imageUrl) {
-    upSlideTransition(context, ImageViewPage(imageUrl: imageUrl));
+    // upSlideTransition(context, PhotoView( imageUrl));
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<String> bhkTypes = _groupedPlans.keys.toList();
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -90,10 +67,11 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
-          tabs: bhkTypes.map((bhk) => Tab(text: bhk)).toList(),
+          tabs:
+              widget.unitPlans.map((plan) => Tab(text: plan.bHKType)).toList(),
         ),
       ),
-      body: bhkTypes.isEmpty
+      body: widget.unitPlans.isEmpty
           ? const Center(
               child: Text(
                 'No plans available',
@@ -107,11 +85,8 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
                     if (_isZoomedIn) return;
                     if (details.primaryVelocity == null) return;
 
-                    final currentBhkType = bhkTypes[_tabController.index];
-                    final plans = _groupedPlans[currentBhkType] ?? [];
-                    if (plans.isEmpty) return;
-
-                    final imageFiles = plans[_current].unitPlanConfigFiles;
+                    final currentPlan = widget.unitPlans[_tabController.index];
+                    final imageFiles = currentPlan.unitPlanConfigFiles;
 
                     if (_current == imageFiles.length - 1 &&
                         details.primaryVelocity! < 0 &&
@@ -131,24 +106,8 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
                   },
                   child: TabBarView(
                     controller: _tabController,
-                    children: bhkTypes.map((bhk) {
-                      final plans = _groupedPlans[bhk] ?? [];
-
-                      if (plans.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'No plans available for this type',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        );
-                      }
-
-                      if (_current >= plans.length) {
-                        _current = 0;
-                      }
-
-                      final currentPlan = plans[_current];
-                      final imageFiles = currentPlan.unitPlanConfigFiles;
+                    children: widget.unitPlans.map((plan) {
+                      final imageFiles = plan.unitPlanConfigFiles;
 
                       if (imageFiles.isEmpty) {
                         return const Center(
@@ -169,8 +128,9 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 300),
                                 child: Text(
-                                  '${currentPlan.facing} facing  |  ${currentPlan.sizeInSqft} sq.ft',
-                                  key: ValueKey<int>(_current),
+                                  '${plan.facing} facing  |  ${plan.sizeInSqft} sq.ft',
+                                  key: ValueKey<String>(
+                                      '${plan.bHKType}_${plan.sizeInSqft}'),
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -193,13 +153,13 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
                                 onPageChanged: _handleCarouselPageChange,
                                 showIndicator: true,
                                 slideIndicator: const CircularSlideIndicator(
-                                    slideIndicatorOptions:
-                                        SlideIndicatorOptions(
-                                  indicatorRadius: 4,
-                                  itemSpacing: 16,
-                                  currentIndicatorColor: Colors.white,
-                                  indicatorBackgroundColor: Colors.white54,
-                                )),
+                                  slideIndicatorOptions: SlideIndicatorOptions(
+                                    indicatorRadius: 4,
+                                    itemSpacing: 16,
+                                    currentIndicatorColor: Colors.white,
+                                    indicatorBackgroundColor: Colors.white54,
+                                  ),
+                                ),
                               ),
                               itemBuilder: (context, index, realIndex) {
                                 return GestureDetector(
@@ -267,90 +227,6 @@ class _UnitPlanGalleryState extends State<UnitPlanGallery>
   void dispose() {
     _tabController.dispose();
     _pageController.dispose();
-    super.dispose();
-  }
-}
-
-class ImageViewPage extends StatefulWidget {
-  final String imageUrl;
-
-  const ImageViewPage({super.key, required this.imageUrl});
-
-  @override
-  State<ImageViewPage> createState() => _ImageViewPageState();
-}
-
-class _ImageViewPageState extends State<ImageViewPage> {
-  late PhotoViewController _photoViewController;
-
-  @override
-  void initState() {
-    super.initState();
-    _photoViewController = PhotoViewController();
-  }
-
-  void _toggleZoom(bool zoomin) {
-    setState(() {
-      if (zoomin) {
-        _photoViewController.scale = (_photoViewController.scale! * 1.2);
-      } else {
-        _photoViewController.scale = (_photoViewController.scale! * 0.8);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 64,
-            width: 64,
-            child: IconButton(
-              icon: const Icon(
-                Icons.zoom_in,
-                color: Colors.white,
-              ),
-              onPressed: () => _toggleZoom(true),
-            ),
-          ),
-          SizedBox(
-            height: 64,
-            width: 64,
-            child: IconButton(
-              icon: const Icon(
-                Icons.zoom_out,
-                color: Colors.white,
-              ),
-              onPressed: () => _toggleZoom(false),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text('Image View', style: TextStyle(color: Colors.white)),
-      ),
-      body: Center(
-        child: PhotoView(
-          controller: _photoViewController,
-          imageProvider: NetworkImage(widget.imageUrl),
-          heroAttributes: const PhotoViewHeroAttributes(tag: "imageHero"),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _photoViewController.dispose();
     super.dispose();
   }
 }

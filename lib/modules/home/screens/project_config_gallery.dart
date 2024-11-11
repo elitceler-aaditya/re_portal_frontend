@@ -137,15 +137,6 @@ class _ProjectConfigGalleryState extends State<ProjectConfigGallery> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            final List<String> allImgs = [];
-                            List<double> breakpoints = [];
-                            double cumulativeSum = 0;
-                            for (var gal in projectImages) {
-                              allImgs.addAll(gal.unitPlanConfigFiles);
-                              cumulativeSum += gal.unitPlanConfigFiles.length;
-                              breakpoints.add(cumulativeSum);
-                            }
-
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => UnitPlanGallery(

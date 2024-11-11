@@ -11,6 +11,7 @@ import 'package:re_portal_frontend/modules/home/screens/project_snippets.dart';
 import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
 import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
 import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
@@ -809,6 +810,22 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                         color: CustomColors.black,
                       ),
                     ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        rightSlideTransition(context, const ProfileScreen());
+                      },
+                      child: CircleAvatar(
+                        radius: 20,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            "assets/icons/person.svg",
+                            height: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                   ],
                 ),
               ),
@@ -1637,33 +1654,36 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                           homePropertiesProvider)
                                                       .newProjects
                                                       .isNotEmpty) {
-                                                    widgetList.add(Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        const Text(
-                                                          "New Launches",
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                    widgetList.add(
+                                                      Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          const Text(
+                                                            "New Launches",
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 8),
-                                                        EditorsChoiceCard(
-                                                          apartments: ref
-                                                              .watch(
-                                                                  homePropertiesProvider)
-                                                              .newProjects,
-                                                          leftPadding: false,
-                                                        ),
-                                                      ],
-                                                    ));
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          EditorsChoiceCard(
+                                                            apartments: ref
+                                                                .watch(
+                                                                    homePropertiesProvider)
+                                                                .newProjects,
+                                                            leftPadding: false,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
                                                   }
 
                                                   if (ref

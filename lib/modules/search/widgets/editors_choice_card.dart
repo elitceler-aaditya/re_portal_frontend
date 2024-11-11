@@ -142,7 +142,7 @@ class EditorsChoiceCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                apartments[index].configuration.join(", "),
+                                "${apartments[index].configuration.join(", ").replaceAll("BHK", "")} BHK",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,

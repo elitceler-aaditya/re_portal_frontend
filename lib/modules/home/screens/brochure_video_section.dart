@@ -5,16 +5,19 @@ import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart'
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 
 class BrochureVideoSection extends ConsumerStatefulWidget {
   final Future<void> Function() sendEnquiry;
   final String videoLink;
+  final List<String> brochureLink;
   const BrochureVideoSection({
     super.key,
     required this.sendEnquiry,
     this.videoLink = '',
+    this.brochureLink = const [],
   });
 
   @override
@@ -300,77 +303,97 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
           ),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () {
-                  //Download PDF on tap
-                },
-                child: Container(
-                  height: 140,
-                  width: double.infinity,
-                  margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
-                  decoration: BoxDecoration(
-                    color: CustomColors.black.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(10),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/brochure_cover.jpg"),
-                      fit: BoxFit.cover,
+              if (widget.brochureLink.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    //Download PDF on tap
+                    if (ref.read(userProvider).token.isEmpty) {
+                      errorSnackBar(context, 'Please login first');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(
+                            goBack: true,
+                          ),
+                        ),
+                      );
+                    } else {
+                      if (widget.brochureLink.isNotEmpty) {
+                        for (String link in widget.brochureLink) {
+                          widget.sendEnquiry().then((_) {
+                            launchUrlString(link);
+                          });
+                        }
+                      }
+                    }
+                  },
+                  child: Container(
+                    height: 140,
+                    width: double.infinity,
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+                    decoration: BoxDecoration(
+                      color: CustomColors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                      image: const DecorationImage(
+                        image: AssetImage("assets/images/brochure_cover.jpg"),
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 140,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.transparent,
-                              CustomColors.black.withOpacity(0.8),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      const Positioned(
-                        top: 10,
-                        left: 10,
-                        child: Text(
-                          "Brochure",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: CustomColors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: Container(
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 140,
+                          width: double.infinity,
                           decoration: BoxDecoration(
-                            color: CustomColors.black.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                Colors.transparent,
+                                CustomColors.black.withOpacity(0.8),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: const Text(
-                            "Download",
+                        ),
+                        const Positioned(
+                          top: 10,
+                          left: 10,
+                          child: Text(
+                            "Brochure",
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 16,
                               color: CustomColors.white,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: const Text(
+                              "Download",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: CustomColors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 width: double.infinity,

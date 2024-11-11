@@ -78,7 +78,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   Timer? _timer;
   bool openOptions = true;
   bool openProjectSpecifications = false;
-  bool openProjectDetails = false;
+  bool openWhyProject = false;
   List<Map<String, dynamic>> projectDetailsList = [];
 
   Future<void> sendEnquiry(BuildContext context, String message) async {
@@ -258,6 +258,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             globalKey: nextPropertyButtonKey,
                           ),
                         ),
+                      const LocationHomes(),
                     ],
                   ),
                 ],
@@ -762,6 +763,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     Column(
                       children: _projectDetails
                           .projectDetails.projectHighlightsPoints
+                          .take(openWhyProject
+                              ? _projectDetails
+                                  .projectDetails.projectHighlightsPoints.length
+                              : 3)
                           .map((point) {
                         return Padding(
                           padding: const EdgeInsets.only(top: 10),
@@ -788,7 +793,37 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           ),
                         );
                       }).toList(),
-                    )
+                    ),
+                    if (_projectDetails
+                            .projectDetails.projectHighlightsPoints.length >
+                        3)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 700),
+                        padding: const EdgeInsets.only(top: 10),
+                        height: 44,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              openWhyProject = !openWhyProject;
+                            });
+                          },
+                          icon: AnimatedRotation(
+                            duration: const Duration(milliseconds: 700),
+                            turns: openWhyProject ? 0.5 : 0,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: CustomColors.primary,
+                            ),
+                          ),
+                          label: Text(
+                            openWhyProject ? "View Less" : "View More",
+                            style: const TextStyle(
+                              color: CustomColors.primary,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -839,8 +874,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         ),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount:
-                            openProjectDetails ? projectDetailsList.length : 3,
+                        itemCount: projectDetailsList.length,
                         itemBuilder: (context, index) {
                           final detail = projectDetailsList[index];
                           return AnimatedOpacity(
@@ -893,39 +927,13 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         },
                       ),
                     ),
-                    //view more button
-                    if (projectDetailsList.length > 3)
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 700),
-                        padding: const EdgeInsets.only(top: 10),
-                        height: 44,
-                        child: TextButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              openProjectDetails = !openProjectDetails;
-                            });
-                          },
-                          icon: AnimatedRotation(
-                            duration: const Duration(milliseconds: 700),
-                            turns: openProjectDetails ? 0.5 : 0,
-                            child: const Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: CustomColors.primary,
-                            ),
-                          ),
-                          label: Text(
-                            openProjectDetails ? "View Less" : "View More",
-                            style: const TextStyle(
-                              color: CustomColors.primary,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
-            if (_projectDetails.projectImages.isNotEmpty)
+            if (_projectDetails.projectImages
+                .map((e) => e.images)
+                .toList()
+                .isNotEmpty)
               ProjectDetailsGallery(
                   projectImages: _projectDetails.projectImages),
             if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty)
@@ -967,7 +975,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             if (_projectDetails
                                 .projectDetails.amenities.isNotEmpty)
                               Container(
-                                height: 145,
+                                height: 170,
                                 margin: const EdgeInsets.only(left: 10),
                                 constraints: BoxConstraints(
                                   maxWidth:
@@ -1022,7 +1030,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             if (_projectDetails
                                 .projectDetails.clubHouseAmenities.isNotEmpty)
                               Container(
-                                height: 145,
+                                height: 170,
                                 margin: const EdgeInsets.only(left: 10),
                                 constraints: BoxConstraints(
                                   maxWidth:
@@ -1077,7 +1085,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             if (_projectDetails
                                 .projectDetails.outdoorAmenities.isNotEmpty)
                               Container(
-                                height: 145,
+                                height: 170,
                                 margin: const EdgeInsets.only(left: 10),
                                 constraints: BoxConstraints(
                                   maxWidth:
@@ -1832,6 +1840,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                     : _enquiryDetails.text.trim(),
               ),
               videoLink: _projectDetails.projectDetails.videoLink,
+              brochureLink: _projectDetails.projectDetails.brochurePdf,
             ),
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),

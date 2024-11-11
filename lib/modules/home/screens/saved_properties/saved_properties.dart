@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_list.dart';
+import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 
@@ -68,6 +71,23 @@ class _ComparePropertiesState extends ConsumerState<SavedProperties> {
                 ),
               ),
             ),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  rightSlideTransition(context, const ProfileScreen());
+                },
+                child: CircleAvatar(
+                  radius: 20,
+                  child: Center(
+                    child: SvgPicture.asset(
+                      "assets/icons/person.svg",
+                      height: 20,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
           ),
           body: ref.watch(savedPropertiesProvider).isEmpty
               ? const Center(
