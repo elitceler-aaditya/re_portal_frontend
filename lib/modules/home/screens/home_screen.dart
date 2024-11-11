@@ -25,6 +25,7 @@ import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
+import 'package:re_portal_frontend/riverpod/maps_properties.dart';
 import 'package:re_portal_frontend/riverpod/open_filters.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
@@ -165,6 +166,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         ref.watch(homePropertiesProvider.notifier).setSponsoredAd(sponsoredAd);
         ref.watch(homePropertiesProvider.notifier).setLimelight(limelight);
+
+        ref
+            .watch(mapsApartmentProvider.notifier)
+            .setApartments(ref.watch(homePropertiesProvider).allApartments);
 
         setState(() {
           loading = false;

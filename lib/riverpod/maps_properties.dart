@@ -16,4 +16,13 @@ class ApartmentListNotifier extends StateNotifier<List<ApartmentModel>> {
   void addApartments(List<ApartmentModel> apartments) {
     state = [...state, ...apartments];
   }
+  
+  ApartmentModel getApartmentById(String id) {
+    return state.firstWhere((element) => element.projectId == id);
+  }
+
+  void clearApartments() {
+    state = [];
+  }
+
 }
