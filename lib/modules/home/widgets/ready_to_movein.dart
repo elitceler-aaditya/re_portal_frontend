@@ -146,6 +146,17 @@ class ReadyToMovein extends ConsumerWidget {
                                           color: CustomColors.white,
                                         ),
                                       ),
+                                      if (apartments[index]
+                                          .builderName
+                                          .isNotEmpty)
+                                        Text(
+                                          "By ${apartments[index].builderName}",
+                                          style: const TextStyle(
+                                            color: CustomColors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       Row(
                                         children: [
                                           const Icon(
@@ -155,11 +166,11 @@ class ReadyToMovein extends ConsumerWidget {
                                           ),
                                           const SizedBox(width: 2),
                                           Text(
-                                            "${apartments[index].projectLocation} • ${formatBudget(apartments[index].budget)}",
+                                            "${apartments[index].projectLocation} • ${formatBudget(apartments[index].minBudget)}",
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
-                                              fontSize: 14,
+                                              fontSize: 12,
                                               color: CustomColors.white,
                                             ),
                                           ),

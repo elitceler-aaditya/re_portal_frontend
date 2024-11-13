@@ -111,7 +111,7 @@ class MapsPropertyCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "By ${apartment.companyName}",
+                          "By ${apartment.builderName}",
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -153,11 +153,15 @@ class MapsPropertyCard extends StatelessWidget {
                               size: 14,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              apartment.projectLocation,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal,
+                            Expanded(
+                              child: Text(
+                                apartment.projectLocation,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                             ),
                           ],
@@ -183,6 +187,7 @@ class MapsPropertyCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Icon(
                               Icons.bed,
@@ -190,11 +195,13 @@ class MapsPropertyCard extends StatelessWidget {
                               size: 14,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              "${apartment.configuration.join(", ").replaceAll('BHK', '')} BHK",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal,
+                            Expanded(
+                              child: Text(
+                                "${apartment.configTitle} ",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                             ),
                           ],
@@ -208,11 +215,15 @@ class MapsPropertyCard extends StatelessWidget {
                               size: 14,
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              "${formatBudget(apartment.budget)} - ${formatBudget(apartment.budget + (apartment.budget * 0.1).toInt())}",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.normal,
+                            Expanded(
+                              child: Text(
+                                "${formatBudget(apartment.minBudget)} - ${formatBudget(apartment.maxBudget)}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                             ),
                           ],

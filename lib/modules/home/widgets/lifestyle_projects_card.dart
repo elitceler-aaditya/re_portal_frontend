@@ -51,12 +51,17 @@ class LifestyleProjectCard extends StatelessWidget {
                 tag: "lifestyle-${lifestyleProperty.projectId}",
                 child: Stack(
                   children: [
-                    SizedBox(
+                    Container(
+                      color: CustomColors.black10,
                       width: double.infinity,
                       height: MediaQuery.of(context).size.width * 0.8,
                       child: Image.network(
                         lifestyleProperty.coverImage,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                          child: Icon(Icons.info),
+                        ),
                       ),
                     ),
                     //price
@@ -118,7 +123,7 @@ class LifestyleProjectCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "By ${lifestyleProperty.companyName}",
+                          "By ${lifestyleProperty.builderName}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -128,7 +133,7 @@ class LifestyleProjectCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             )

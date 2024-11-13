@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/screens/video_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -31,7 +33,9 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
+  bool mute = false;
+
   Future<void> enquiryFormPopup({bool downloadBrochure = false}) async {
     return showDialog(
       context: context,
@@ -135,14 +139,12 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () => {
-                                    widget.sendEnquiry().then((_) => {
-                                          if (true)
-                                            {
-                                              for (String link
-                                                  in widget.brochureLink)
-                                                launchUrlString(link),
-                                            }
-                                        }),
+                                    if (downloadBrochure)
+                                      {
+                                        for (String link in widget.brochureLink)
+                                          launchUrlString(link),
+                                      },
+                                    widget.sendEnquiry()
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,
@@ -186,9 +188,10 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
           'Hi, I am interested in ${widget.projectName}. I want to know more about the project.';
 
       _controller = YoutubePlayerController(
-        initialVideoId: "OxgMyhLlgEg",
+        initialVideoId: YoutubePlayer.convertUrlToId(widget.videoLink) ?? '',
         flags: const YoutubePlayerFlags(
           autoPlay: false,
+          mute: false,
           enableCaption: false,
         ),
       );
@@ -198,13 +201,14 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
-    _controller.pause();
+    _controller!.pause();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.removeListener(() {});
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -212,7 +216,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.videoLink.isNotEmpty)
+        if (_controller != null && widget.videoLink.isNotEmpty)
           Container(
             width: double.infinity,
             margin: const EdgeInsets.only(top: 4),
@@ -244,60 +248,70 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    // if (ref.read(userProvider).token.isEmpty) {
-                    //   errorSnackBar(context, 'Please login first');
-                    //   Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => const LoginScreen(
-                    //         goBack: true,
-                    //       ),
-                    //     ),
-                    //   ).then((_) {
-                    //     _nameController.text = ref.read(userProvider).name;
-                    //     _mobileController.text =
-                    //         ref.read(userProvider).phoneNumber;
-                    //     _emailController.text = ref.read(userProvider).email;
-                    //   });
-                    // } else {
-                    //   enquiryFormPopup();
-                    // }
-                  },
-                  child: Container(
-                    height: 180,
-                    width: double.infinity,
-                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    decoration: BoxDecoration(
-                      color: CustomColors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: AssetImage("assets/images/walkthrough.jpg"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: YoutubePlayerBuilder(
-                        player: YoutubePlayer(
-                          controller: _controller,
-                          showVideoProgressIndicator: true,
-                          progressIndicatorColor: CustomColors.primary,
-                          progressColors: const ProgressBarColors(
-                            playedColor: CustomColors.primary,
-                            handleColor: CustomColors.primary,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Stack(
+                    children: [
+                      Container(
+                        // height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: CustomColors.black10,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: YoutubePlayerBuilder(
+                            player: YoutubePlayer(
+                              controller: _controller!,
+                              showVideoProgressIndicator: true,
+                              progressIndicatorColor: CustomColors.primary,
+                              progressColors: const ProgressBarColors(
+                                playedColor: CustomColors.primary,
+                                handleColor: CustomColors.primary,
+                              ),
+                              onReady: () {},
+                            ),
+                            builder: (context, player) {
+                              return Column(
+                                children: [player],
+                              );
+                            },
                           ),
                         ),
-                        builder: (context, player) {
-                          return Column(
-                            children: [
-                              player,
-                            ],
-                          );
-                        },
                       ),
-                    ),
+                      Positioned.fill(
+                        child: GestureDetector(
+                          onTap: () {
+                            rightSlideTransition(
+                              context,
+                              VideoScreen(
+                                videoLink: widget.videoLink,
+                              ),
+                              onComplete: (() {
+                                setState(() {
+                                  SystemChrome.setEnabledSystemUIMode(
+                                    SystemUiMode.manual,
+                                    overlays: SystemUiOverlay.values,
+                                  );
+                                });
+                              }),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: const Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 55,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ],
@@ -341,6 +355,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                     //Download PDF on tap
                     if (ref.read(userProvider).token.isEmpty) {
                       errorSnackBar(context, 'Please login first');
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -426,8 +441,10 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                 ),
                 child: ElevatedButton.icon(
                   onPressed: () {
+                    _controller!.pause();
                     if (ref.read(userProvider).token.isEmpty) {
                       errorSnackBar(context, 'Please login first');
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -437,7 +454,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                         ),
                       );
                     } else {
-                      enquiryFormPopup();
+                      enquiryFormPopup(downloadBrochure: false);
                     }
                   },
                   style: ElevatedButton.styleFrom(

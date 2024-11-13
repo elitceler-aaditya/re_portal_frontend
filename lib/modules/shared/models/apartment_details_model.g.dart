@@ -69,6 +69,8 @@ _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>
       constructionType: json['constructionType'] as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      leadPOCName: json['leadPOCName'] as String? ?? '',
+      leadPOCNumber: json['leadPOCNumber'] as String? ?? '',
       reraID: json['reraID'] as String? ?? '',
       projectType: json['projectType'] as String? ?? '',
       projectLaunchedDate: json['projectLaunchedDate'] as String? ?? '',
@@ -81,6 +83,10 @@ _$ProjectDetailsImpl _$$ProjectDetailsImplFromJson(Map<String, dynamic> json) =>
       clubHouseAmenities: json['clubHouseAmenities'] as String? ?? '',
       outdoorAmenities: json['outdoorAmenities'] as String? ?? '',
       videoLink: json['videoLink'] as String? ?? '',
+      configurations: (json['configurations'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       brochurePdf: (json['brochurePdf'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -164,6 +170,8 @@ Map<String, dynamic> _$$ProjectDetailsImplToJson(
       'constructionType': instance.constructionType,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'leadPOCName': instance.leadPOCName,
+      'leadPOCNumber': instance.leadPOCNumber,
       'reraID': instance.reraID,
       'projectType': instance.projectType,
       'projectLaunchedDate': instance.projectLaunchedDate,
@@ -176,6 +184,7 @@ Map<String, dynamic> _$$ProjectDetailsImplToJson(
       'clubHouseAmenities': instance.clubHouseAmenities,
       'outdoorAmenities': instance.outdoorAmenities,
       'videoLink': instance.videoLink,
+      'configurations': instance.configurations,
       'brochurePdf': instance.brochurePdf,
       'specifications': instance.specifications,
       'projectHighlightsPoints': instance.projectHighlightsPoints,

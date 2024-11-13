@@ -115,7 +115,7 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
 
   List<ApartmentModel> getUltraLuxuryHomes() {
     return state.filteredApartments
-        .where((apartment) => apartment.budget >= 20000000)
+        .where((apartment) => apartment.budget >= 10000000)
         .toList();
   }
 

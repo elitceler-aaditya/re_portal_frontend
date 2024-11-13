@@ -39,9 +39,6 @@ class EditorsChoiceCard extends StatelessWidget {
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
                     heroTag: "editors-choice-${apartments[index].projectId}",
-                    nextApartment: index + 1 < apartments.length
-                        ? apartments[index + 1]
-                        : apartments.first,
                   ),
                 ),
               );
@@ -115,6 +112,15 @@ class EditorsChoiceCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          Text(
+                            "By ${apartments[index].builderName}",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
                               const Icon(
@@ -142,7 +148,7 @@ class EditorsChoiceCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${apartments[index].configuration.join(", ").replaceAll("BHK", "")} BHK",
+                                "${apartments[index].configTitle} ",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
@@ -153,7 +159,7 @@ class EditorsChoiceCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            "your dream flat @ ${formatBudget(apartments[index].budget)}",
+                            "your dream flat @ ${formatBudget(apartments[index].minBudget)}",
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 12,

@@ -96,7 +96,7 @@ class _SearchApartmentCardState extends ConsumerState<SearchApartmentCard> {
                       style: const TextStyle(
                         height: 1,
                         color: CustomColors.white,
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -114,7 +114,7 @@ class _SearchApartmentCardState extends ConsumerState<SearchApartmentCard> {
                         widget.apartment.projectLocation,
                         style: const TextStyle(
                           color: CustomColors.white,
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w400,
                         ),
                       ),

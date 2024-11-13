@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:re_portal_frontend/modules/home/screens/main_screen.dart';
+import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,7 +30,6 @@ import 'package:re_portal_frontend/modules/home/screens/project_details_gallery.
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
-import 'package:re_portal_frontend/modules/home/widgets/property_card.dart';
 import 'package:re_portal_frontend/modules/maps/google_maps_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
@@ -47,13 +47,11 @@ import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 
 class PropertyDetails extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
-  final ApartmentModel? nextApartment;
   final String heroTag;
   const PropertyDetails({
     super.key,
     required this.apartment,
     required this.heroTag,
-    this.nextApartment,
   });
 
   @override
@@ -81,6 +79,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   bool openProjectSpecifications = false;
   bool openWhyProject = false;
   List<Map<String, dynamic>> projectDetailsList = [];
+  List<ApartmentModel> nextApartments = [];
+  List<GlobalKey> nextApartmentsKeys = [];
+  List<Map<String, dynamic>> highlights = [];
 
   Future<void> sendEnquiry(BuildContext context, String message) async {
     final url = Uri.parse("${dotenv.env['BASE_URL']}/user/newLeadGeneration");
@@ -140,6 +141,44 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     }
   }
 
+  Future<void> getFilteredApartments() async {
+    Map<String, dynamic> defaultParams = {
+      'projectLocation': widget.apartment.projectLocation
+    };
+    defaultParams['page'] = "1";
+
+    try {
+      String baseUrl = dotenv.get('BASE_URL');
+      String url = "$baseUrl/project/filterApartmentsNew";
+      Uri uri = Uri.parse(url).replace(queryParameters: defaultParams);
+
+      final response = await http.get(
+        uri,
+        headers: {
+          "Authorization": "Bearer ${ref.watch(userProvider).token}",
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+        List responseBody = responseData['projects'] ?? [];
+        if (mounted) {
+          setState(() {
+            nextApartments =
+                responseBody.map((e) => ApartmentModel.fromJson(e)).toList();
+            nextApartmentsKeys =
+                List.generate(nextApartments.length, (index) => GlobalKey());
+          });
+        }
+      } else {
+        throw Exception("${response.statusCode}: ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("Error in getting next appts: $e");
+      // Handle error (e.g., show error message to user)
+    }
+  }
+
   enquirySuccessBottomSheet() {
     return showModalBottomSheet(
       backgroundColor: CustomColors.white,
@@ -161,6 +200,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
               controller: scrollController,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     height: 150,
@@ -176,6 +217,8 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             child: Image.network(
                               widget.apartment.coverImage,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.error),
                             ),
                           ),
                         ),
@@ -214,10 +257,10 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       ],
                     ),
                   ),
-                  if (widget.apartment.companyPhone.isNotEmpty)
+                  if (_projectDetails.projectDetails.leadPOCNumber.isNotEmpty)
                     GestureDetector(
                       onTap: () => launchUrlString(
-                          'tel:${widget.apartment.companyPhone}'),
+                          'tel:${_projectDetails.projectDetails.leadPOCNumber.isNotEmpty}'),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Row(
@@ -231,7 +274,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              "For more details ${widget.apartment.companyPhone}",
+                              "For more details ${_projectDetails.projectDetails.leadPOCNumber}",
                               style: const TextStyle(
                                 color: CustomColors.black,
                                 fontWeight: FontWeight.bold,
@@ -241,26 +284,25 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                         ),
                       ),
                     ),
-                  Column(
-                    children: [
-                      if (widget.nextApartment != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2),
-                          child: PropertyCard(
-                            apartment: widget.nextApartment!,
-                            isCompare: false,
-                            onCallPress: (context) {
-                              _showOverlay(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      children: List.generate(
+                        nextApartments.length,
+                        (index) => PropertyCard(
+                          apartment: nextApartments[index],
+                          globalKey: nextApartmentsKeys[index],
+                          isContact: true,
+                          onCallPress: (context) {
+                            _showOverlay(
                                 context,
-                                nextPropertyButtonKey.currentContext!
-                                    .findRenderObject() as RenderBox,
-                              );
-                            },
-                            globalKey: nextPropertyButtonKey,
-                          ),
+                                nextApartmentsKeys[index]
+                                    .currentContext!
+                                    .findRenderObject() as RenderBox);
+                          },
                         ),
-                      const LocationHomes(),
-                    ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -327,7 +369,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 10,
             color: CustomColors.white,
           ),
         ),
@@ -336,7 +378,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           style: const TextStyle(
             color: CustomColors.white,
             fontWeight: FontWeight.w600,
-            fontSize: 14,
+            fontSize: 12,
           ),
         ),
       ],
@@ -990,7 +1032,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             if (_projectDetails
-                                .projectDetails.amenities.isNotEmpty)
+                                    .projectDetails.amenities.isNotEmpty &&
+                                _projectDetails.projectDetails.amenities !=
+                                    "null")
                               Container(
                                 height: 170,
                                 margin: const EdgeInsets.only(left: 10),
@@ -1044,8 +1088,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                 ),
                               ),
                             const SizedBox(height: 10),
-                            if (_projectDetails
-                                .projectDetails.clubHouseAmenities.isNotEmpty)
+                            if (_projectDetails.projectDetails
+                                    .clubHouseAmenities.isNotEmpty &&
+                                _projectDetails
+                                        .projectDetails.clubHouseAmenities !=
+                                    "null")
                               Container(
                                 height: 170,
                                 margin: const EdgeInsets.only(left: 10),
@@ -1099,8 +1146,11 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                   ],
                                 ),
                               ),
-                            if (_projectDetails
-                                .projectDetails.outdoorAmenities.isNotEmpty)
+                            if (_projectDetails.projectDetails.outdoorAmenities
+                                    .isNotEmpty &&
+                                _projectDetails
+                                        .projectDetails.outdoorAmenities !=
+                                    "null")
                               Container(
                                 height: 170,
                                 margin: const EdgeInsets.only(left: 10),
@@ -1267,218 +1317,96 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                 _projectDetails.projectDetails.hotspots.isNotEmpty ||
                 _projectDetails.projectDetails.shopping.isNotEmpty ||
                 _projectDetails.projectDetails.entertainment.isNotEmpty)
-              StatefulBuilder(builder: (context, setState) {
-                List<Map<String, dynamic>> _highlights = [
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.hospitals.isNotEmpty,
-                    'title': 'Hospitals',
-                    'data': [
-                      for (var hospital
-                          in _projectDetails.projectDetails.hospitals)
-                        {
-                          'title': hospital.name,
-                          'value': hospital.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.offices.isNotEmpty,
-                    'title': 'Offices',
-                    'data': [
-                      for (var office in _projectDetails.projectDetails.offices)
-                        {
-                          'title': office.name,
-                          'value': office.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.connectivity.isNotEmpty,
-                    'title': 'Connectivity',
-                    'data': [
-                      for (var connectivity
-                          in _projectDetails.projectDetails.connectivity)
-                        {
-                          'title': connectivity.name,
-                          'value': connectivity.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible': _projectDetails
-                        .projectDetails.educationalInstitutions.isNotEmpty,
-                    'title': 'Educational Institutions',
-                    'data': [
-                      for (var institution in _projectDetails
-                          .projectDetails.educationalInstitutions)
-                        {
-                          'title': institution.name,
-                          'value': institution.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.colleges.isNotEmpty,
-                    'title': 'Colleges',
-                    'data': [
-                      for (var college
-                          in _projectDetails.projectDetails.colleges)
-                        {
-                          'title': college.name,
-                          'value': college.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.pharmacies.isNotEmpty,
-                    'title': 'Pharmacies',
-                    'data': [
-                      for (var pharmacy
-                          in _projectDetails.projectDetails.pharmacies)
-                        {
-                          'title': pharmacy.name,
-                          'value': pharmacy.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.hotspots.isNotEmpty,
-                    'title': 'Hotspots',
-                    'data': [
-                      for (var hotspot
-                          in _projectDetails.projectDetails.hotspots)
-                        {
-                          'title': hotspot.name,
-                          'value': hotspot.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.shopping.isNotEmpty,
-                    'title': 'Shopping',
-                    'data': [
-                      for (var shop in _projectDetails.projectDetails.shopping)
-                        {
-                          'title': shop.name,
-                          'value': shop.dist,
-                        }
-                    ],
-                  },
-                  {
-                    'visible':
-                        _projectDetails.projectDetails.entertainment.isNotEmpty,
-                    'title': 'Entertainment',
-                    'data': [
-                      for (var entertainment
-                          in _projectDetails.projectDetails.entertainment)
-                        {
-                          'title': entertainment.name,
-                          'value': entertainment.dist,
-                        }
-                    ],
-                  },
-                ];
-
-                return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(top: 4),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: CustomColors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6),
-                        child: Text(
-                          "Key Highlights",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: CustomColors.black,
-                          ),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: CustomColors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        "Key Highlights",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: CustomColors.black,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: List.generate(
-                            _highlights.length,
-                            (index) => Visibility(
-                              visible: _highlights[index]['visible'],
-                              child: Container(
-                                height: 170,
-                                width: 310,
-                                margin: const EdgeInsets.only(left: 10),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: CustomColors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.black.withOpacity(0.2),
-                                      blurRadius: 10,
-                                      spreadRadius: 0,
-                                      offset: const Offset(0, 0),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.generate(
+                          highlights.length,
+                          (index) => Visibility(
+                            visible: highlights[index]['visible'],
+                            child: Container(
+                              height: 170,
+                              width: 310,
+                              margin: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: CustomColors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CustomColors.black.withOpacity(0.2),
+                                    blurRadius: 10,
+                                    spreadRadius: 0,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    highlights[index]['title'],
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: CustomColors.black,
                                     ),
-                                  ],
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      _highlights[index]['title'],
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: CustomColors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Expanded(
-                                      child: SingleChildScrollView(
-                                        child: Column(
-                                          children: List.generate(
-                                            _highlights[index]['data'].length,
-                                            (i) => _keyHighlights(
-                                              _highlights[index]['data'][i]
-                                                  ['title'],
-                                              _highlights[index]['data'][i]
-                                                  ['value'],
-                                            ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: List.generate(
+                                          highlights[index]['data'].length,
+                                          (i) => _keyHighlights(
+                                            highlights[index]['data'][i]
+                                                ['title'],
+                                            highlights[index]['data'][i]
+                                                ['value'],
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }),
+                    ),
+                  ],
+                ),
+              ),
             if (_projectDetails.projectDetails.banks.isNotEmpty)
               Container(
                 width: double.infinity,
@@ -1554,6 +1482,9 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                     width: 72,
                                     height: 42,
                                     fit: BoxFit.contain,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.error),
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -1573,17 +1504,19 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-            BrochureVideoSection(
-              sendEnquiry: () => sendEnquiry(
-                context,
-                _enquiryDetails.text.trim().isEmpty
-                    ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
-                    : _enquiryDetails.text.trim(),
+            if (_projectDetails.projectDetails.videoLink.isNotEmpty ||
+                _projectDetails.projectDetails.brochurePdf.isNotEmpty)
+              BrochureVideoSection(
+                sendEnquiry: () => sendEnquiry(
+                  context,
+                  _enquiryDetails.text.trim().isEmpty
+                      ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
+                      : _enquiryDetails.text.trim(),
+                ),
+                projectName: widget.apartment.name,
+                videoLink: _projectDetails.projectDetails.videoLink,
+                brochureLink: _projectDetails.projectDetails.brochurePdf,
               ),
-              projectName: widget.apartment.name,
-              videoLink: _projectDetails.projectDetails.videoLink,
-              brochureLink: _projectDetails.projectDetails.brochurePdf,
-            ),
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
@@ -1784,180 +1717,188 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(100),
                         ),
-                        child: Row(
-                          children: [
-                            if (openOptions)
-                              Row(
-                                children: [
-                                  const SizedBox(width: 4),
-                                  SizedBox(
-                                    height: 36,
-                                    width: 36,
-                                    child: IconButton(
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                      ),
-                                      icon: Icon(
-                                        ref
-                                                .watch(savedPropertiesProvider)
-                                                .contains(widget.apartment)
-                                            ? Icons.favorite
-                                            : Icons.favorite_outline,
-                                        size: 20,
-                                        color: ref
-                                                .watch(savedPropertiesProvider)
-                                                .contains(widget.apartment)
-                                            ? CustomColors.primary
-                                            : CustomColors.white,
-                                      ),
-                                      onPressed: () {
-                                        ref
-                                                .read(savedPropertiesProvider)
-                                                .contains(widget.apartment)
-                                            ? {
-                                                errorSnackBar(context,
-                                                    'Property removed from favourites'),
-                                                ref
-                                                    .read(
-                                                        savedPropertiesProvider
-                                                            .notifier)
-                                                    .removeApartment(
-                                                        widget.apartment)
-                                              }
-                                            : {
-                                                successSnackBar(
-                                                  context,
-                                                  'Property added to favourites',
-                                                  action: SnackBarAction(
-                                                    backgroundColor:
-                                                        CustomColors.white
-                                                            .withOpacity(0.25),
-                                                    textColor:
-                                                        CustomColors.white,
-                                                    label: 'View',
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const SavedProperties(
-                                                            isPop: true,
+                        child: AnimatedSize(
+                          duration: const Duration(milliseconds: 500),
+                          child: Row(
+                            children: [
+                              if (openOptions)
+                                Row(
+                                  children: [
+                                    const SizedBox(width: 4),
+                                    SizedBox(
+                                      height: 36,
+                                      width: 36,
+                                      child: IconButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                        icon: Icon(
+                                          ref
+                                                  .watch(
+                                                      savedPropertiesProvider)
+                                                  .contains(widget.apartment)
+                                              ? Icons.favorite
+                                              : Icons.favorite_outline,
+                                          size: 20,
+                                          color: ref
+                                                  .watch(
+                                                      savedPropertiesProvider)
+                                                  .contains(widget.apartment)
+                                              ? CustomColors.primary
+                                              : CustomColors.white,
+                                        ),
+                                        onPressed: () {
+                                          ref
+                                                  .read(savedPropertiesProvider)
+                                                  .contains(widget.apartment)
+                                              ? {
+                                                  errorSnackBar(context,
+                                                      'Property removed from favourites'),
+                                                  ref
+                                                      .read(
+                                                          savedPropertiesProvider
+                                                              .notifier)
+                                                      .removeApartment(
+                                                          widget.apartment)
+                                                }
+                                              : {
+                                                  successSnackBar(
+                                                    context,
+                                                    'Property added to favourites',
+                                                    action: SnackBarAction(
+                                                      backgroundColor:
+                                                          CustomColors.white
+                                                              .withOpacity(
+                                                                  0.25),
+                                                      textColor:
+                                                          CustomColors.white,
+                                                      label: 'View',
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .push(
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const SavedProperties(
+                                                              isPop: true,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      );
-                                                    },
+                                                        );
+                                                      },
+                                                    ),
                                                   ),
-                                                ),
-                                                ref
-                                                    .read(
-                                                        savedPropertiesProvider
-                                                            .notifier)
-                                                    .addApartment(
-                                                        widget.apartment)
-                                              };
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 36,
-                                    width: 36,
-                                    child: IconButton(
-                                      icon: const Icon(
-                                        Icons.share,
-                                        color: CustomColors.white,
-                                        size: 20,
+                                                  ref
+                                                      .read(
+                                                          savedPropertiesProvider
+                                                              .notifier)
+                                                      .addApartment(
+                                                          widget.apartment)
+                                                };
+                                        },
                                       ),
-                                      onPressed: () {
-                                        // Implement share functionality
-                                      },
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 36,
-                                    width: 36,
-                                    child: IconButton(
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.zero,
+                                    SizedBox(
+                                      height: 36,
+                                      width: 36,
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.share,
+                                          color: CustomColors.white,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          // Implement share functionality
+                                        },
                                       ),
-                                      icon: !ref
+                                    ),
+                                    SizedBox(
+                                      height: 36,
+                                      width: 36,
+                                      child: IconButton(
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                        icon: !ref
+                                                .watch(comparePropertyProvider)
+                                                .contains(widget.apartment)
+                                            ? SvgPicture.asset(
+                                                "assets/icons/compare.svg",
+                                                color: Colors.white,
+                                                height: 22,
+                                                width: 22,
+                                              )
+                                            : SvgPicture.asset(
+                                                "assets/icons/compare.svg",
+                                                color: CustomColors.primary,
+                                                height: 22,
+                                                width: 22,
+                                              ),
+                                        onPressed: () {
+                                          if (!ref
                                               .watch(comparePropertyProvider)
-                                              .contains(widget.apartment)
-                                          ? SvgPicture.asset(
-                                              "assets/icons/compare.svg",
-                                              color: Colors.white,
-                                              height: 22,
-                                              width: 22,
-                                            )
-                                          : SvgPicture.asset(
-                                              "assets/icons/compare.svg",
-                                              color: CustomColors.primary,
-                                              height: 22,
-                                              width: 22,
-                                            ),
-                                      onPressed: () {
-                                        if (!ref
-                                            .watch(comparePropertyProvider)
-                                            .contains(widget.apartment)) {
-                                          if (ref
-                                                  .read(comparePropertyProvider)
-                                                  .length >=
-                                              4) {
-                                            errorSnackBar(context,
-                                                "You can compare up to 4 properties");
+                                              .contains(widget.apartment)) {
+                                            if (ref
+                                                    .read(
+                                                        comparePropertyProvider)
+                                                    .length >=
+                                                4) {
+                                              errorSnackBar(context,
+                                                  "You can compare up to 4 properties");
+                                            } else {
+                                              ref
+                                                  .read(comparePropertyProvider
+                                                      .notifier)
+                                                  .addApartment(
+                                                      widget.apartment);
+                                              successSnackBar(
+                                                context,
+                                                'property added',
+                                                action: SnackBarAction(
+                                                  backgroundColor: CustomColors
+                                                      .white
+                                                      .withOpacity(0.25),
+                                                  textColor: CustomColors.white,
+                                                  label: 'Compare',
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const CompareProperties(
+                                                          isPop: true,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            }
                                           } else {
                                             ref
                                                 .read(comparePropertyProvider
                                                     .notifier)
-                                                .addApartment(widget.apartment);
-                                            successSnackBar(
-                                              context,
-                                              'property added',
-                                              action: SnackBarAction(
-                                                backgroundColor: CustomColors
-                                                    .white
-                                                    .withOpacity(0.25),
-                                                textColor: CustomColors.white,
-                                                label: 'Compare',
-                                                onPressed: () {
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const CompareProperties(
-                                                        isPop: true,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            );
+                                                .removeApartment(
+                                                    widget.apartment);
                                           }
-                                        } else {
-                                          ref
-                                              .read(comparePropertyProvider
-                                                  .notifier)
-                                              .removeApartment(
-                                                  widget.apartment);
-                                        }
-                                      },
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                              IconButton(
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    openOptions = !openOptions;
+                                  });
+                                },
+                                icon: const Icon(
+                                  Icons.more_horiz,
+                                  color: CustomColors.white,
+                                ),
                               ),
-                            IconButton(
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  openOptions = !openOptions;
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.more_horiz,
-                                color: CustomColors.white,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -2028,7 +1969,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       TextSpan(
-                                        text: widget.apartment.companyName,
+                                        text: widget.apartment.builderName,
                                         style: const TextStyle(
                                           decoration: TextDecoration.underline,
                                           decorationColor: CustomColors.white,
@@ -2079,7 +2020,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                                               padding: EdgeInsets.only(
                                                 bottom: index !=
                                                         _highlights.length - 1
-                                                    ? 16
+                                                    ? 14
                                                     : 0,
                                               ),
                                               child: highlightsOption(
@@ -2297,7 +2238,6 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {});
   }
 
   Widget _buildOption(Widget icon, String text, VoidCallback onTap,
@@ -2345,173 +2285,299 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     );
   }
 
-  getPropertyDetails() {
+  Future<void> getPropertyDetails() async {
     Uri url = Uri.parse(
         "${dotenv.env['BASE_URL']}/user/getProjectHighlightsNew/${widget.apartment.projectId}");
     debugPrint("---------------------$url");
     http.get(url, headers: {
       "Authorization": "Bearer ${ref.read(userProvider).token}",
-    }).then((response) {
+    }).then((response) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
           _projectDetails =
               ApartmentDetailsResponse.fromJson(jsonDecode(response.body));
-
-          _highlights = [];
-
-          //1 - project size
-          if (_projectDetails.projectDetails.projectSize.isNotEmpty) {
-            _highlights.add({
-              "title": "Project Size",
-              "value": _projectDetails.projectDetails.projectSize
-            });
-          }
-
-          //2 - no of flats
-          if (_projectDetails.projectDetails.noOfFlats.isNotEmpty) {
-            _highlights.add({
-              "title": "No. of Units",
-              "value": "${_projectDetails.projectDetails.noOfFlats} units"
-            });
-            projectDetailsList.add({
-              "title": "No. of Flats",
-              "value": _projectDetails.projectDetails.noOfFlats
-            });
-          }
-
-          //3 - posession
-          if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
-            {
-              _highlights.add({
-                "title": "Possession",
-                "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                    _projectDetails.projectDetails.projectPossession
-                        .substring(0, 10)))
-              });
-            }
-
-            //4 - configurations
-            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
-              _highlights.add({
-                "title": "Configurations",
-                "value":
-                    "${_projectDetails.unitPlanConfigFilesFormatted.map((e) => e.bHKType).join(", ").replaceAll("BHK", "")} BHK"
-              });
-            }
-
-            //5 - available sizes
-            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
-              final sizes = _projectDetails.unitPlanConfigFilesFormatted
-                  .map((e) => int.tryParse(e.bHKType) ?? 0)
-                  .toList();
-              sizes.sort();
-              final minSize = sizes.first;
-              final maxSize = sizes.last;
-              final displaySize = minSize == maxSize
-                  ? "$minSize sq.ft"
-                  : "$minSize - $maxSize sq.ft";
-              _highlights.add({
-                "title": "Available Sizes",
-                "value": displaySize,
-              });
-            }
-
-            //6 - price per sqft
-            if (_projectDetails
-                .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
-              _highlights.add({
-                "title": "Base price",
-                "value": "${_formatArea(
-                  int.parse(
-                      _projectDetails.projectDetails.pricePerSquareFeetRate),
-                )}/sq.ft"
-              });
-            }
-
-            if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Configurations",
-                "value": _projectDetails.unitPlanConfigFilesFormatted.length
-              });
-            }
-            if (_projectDetails
-                .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Price/sq.ft",
-                "value":
-                    "₹${_formatArea(int.parse(_projectDetails.projectDetails.pricePerSquareFeetRate))}"
-              });
-            }
-
-            if (_projectDetails.projectDetails.noOfFloors.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "No. of Floors",
-                "value": _projectDetails.projectDetails.noOfFloors
-              });
-            }
-
-            if (_projectDetails.projectDetails.projectLaunchedDate.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Launch Date",
-                "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                    _projectDetails.projectDetails.projectLaunchedDate
-                        .substring(0, 10)))
-              });
-            }
-
-            if (_projectDetails.projectDetails.clubhousesize.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Club House Size",
-                "value": int.tryParse(
-                            _projectDetails.projectDetails.clubhousesize) !=
-                        null
-                    ? _formatArea((int.parse(
-                        _projectDetails.projectDetails.clubhousesize)))
-                    : _projectDetails.projectDetails.clubhousesize
-              });
-            }
-
-            if (_projectDetails.projectDetails.totalOpenSpace.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Open Space",
-                "value": _projectDetails.projectDetails.totalOpenSpace
-              });
-            }
-            if (_projectDetails.projectDetails.reraID.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "RERA",
-                "value": _projectDetails.projectDetails.reraID
-              });
-            }
-            if (_projectDetails.projectDetails.projectType.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Project Type",
-                "value": _projectDetails.projectDetails.projectType
-              });
-            }
-
-            if (_projectDetails.projectDetails.constructionType.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Construction",
-                "value": _projectDetails.projectDetails.constructionType
-              });
-            }
-            if (_projectDetails.projectDetails.noOfTowers.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "No. of Towers",
-                "value": _projectDetails.projectDetails.noOfTowers
-              });
-            }
-            if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
-              projectDetailsList.add({
-                "title": "Possession",
-                "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                    _projectDetails.projectDetails.projectPossession
-                        .substring(0, 10))),
-              });
-            }
-          }
         });
+
+        _highlights = [];
+        //1 - project size
+        if (_projectDetails.projectDetails.projectSize.isNotEmpty) {
+          _highlights.add({
+            "title": "Project Size",
+            "value": _projectDetails.projectDetails.projectSize,
+          });
+        }
+
+        //2 - no of flats
+        if (_projectDetails.projectDetails.noOfFlats.isNotEmpty) {
+          _highlights.add({
+            "title": "No. of Units",
+            "value": "${_projectDetails.projectDetails.noOfFlats} Units"
+          });
+          projectDetailsList.add({
+            "title": "No. of Flats",
+            "value": _projectDetails.projectDetails.noOfFlats
+          });
+        }
+
+        //3 - Possession
+        if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
+          {
+            _highlights.add({
+              "title": "Possession by",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectPossession
+                      .substring(0, 10)))
+            });
+          }
+
+          //4 - configurations
+          if (widget.apartment.configTitle.isNotEmpty) {
+            _highlights.add({
+              "title": "Configurations",
+              "value": widget.apartment.configTitle,
+            });
+          }
+
+          //5 - available sizes
+          if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+            final sizes = _projectDetails.unitPlanConfigFilesFormatted
+                .expand((e) => e.unitPlanConfigFiles.map((f) => f.flatSize))
+                .toList();
+            sizes.sort();
+            final minSize = sizes.first;
+            final maxSize = sizes.last;
+            final displaySize = minSize == maxSize
+                ? "$minSize Sq.Ft"
+                : "$minSize - $maxSize Sq.Ft";
+            _highlights.add({
+              "title": "Available Sizes",
+              "value": displaySize,
+            });
+          }
+
+          //6 - price per sqft
+          if (_projectDetails
+              .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
+            _highlights.add({
+              "title": "Base price",
+              "value": "${_formatArea(
+                int.parse(
+                    _projectDetails.projectDetails.pricePerSquareFeetRate),
+              )}/Sq.Ft"
+            });
+          }
+
+          if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Configurations",
+              "value": _projectDetails.unitPlanConfigFilesFormatted.length
+            });
+          }
+          if (_projectDetails
+              .projectDetails.pricePerSquareFeetRate.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Price/Sq.Ft",
+              "value":
+                  "₹${_formatArea(int.parse(_projectDetails.projectDetails.pricePerSquareFeetRate))}"
+            });
+          }
+
+          if (_projectDetails.projectDetails.noOfFloors.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "No. of Floors",
+              "value": _projectDetails.projectDetails.noOfFloors
+            });
+          }
+
+          if (_projectDetails.projectDetails.projectLaunchedDate.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Launch Date",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectLaunchedDate
+                      .substring(0, 10)))
+            });
+          }
+
+          if (_projectDetails.projectDetails.clubhousesize.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Club House Size",
+              "value": int.tryParse(
+                          _projectDetails.projectDetails.clubhousesize) !=
+                      null
+                  ? _formatArea(
+                      (int.parse(_projectDetails.projectDetails.clubhousesize)))
+                  : _projectDetails.projectDetails.clubhousesize
+            });
+          }
+
+          if (_projectDetails.projectDetails.totalOpenSpace.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Open Space",
+              "value": _projectDetails.projectDetails.totalOpenSpace
+            });
+          }
+          if (_projectDetails.projectDetails.reraID.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "RERA",
+              "value": _projectDetails.projectDetails.reraID
+            });
+          }
+          if (_projectDetails.projectDetails.projectType.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Project Type",
+              "value": _projectDetails.projectDetails.projectType
+            });
+          }
+
+          if (_projectDetails.projectDetails.constructionType.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Construction",
+              "value": _projectDetails.projectDetails.constructionType
+            });
+          }
+          if (_projectDetails.projectDetails.noOfTowers.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "No. of Towers",
+              "value": _projectDetails.projectDetails.noOfTowers
+            });
+          }
+          if (_projectDetails.projectDetails.projectPossession.isNotEmpty) {
+            projectDetailsList.add({
+              "title": "Possession by",
+              "value": DateFormat("MMM yyyy").format(DateTime.parse(
+                  _projectDetails.projectDetails.projectPossession
+                      .substring(0, 10))),
+            });
+          }
+        }
+
+        highlights = [
+          //1: Hospitals
+          {
+            'visible': _projectDetails.projectDetails.hospitals.isNotEmpty,
+            'title': 'Hospitals',
+            'data': [
+              for (var hospital in _projectDetails.projectDetails.hospitals)
+                {
+                  'title': hospital.name,
+                  'value': hospital.dist,
+                }
+            ],
+          },
+          //2: Offices
+          {
+            'visible': _projectDetails.projectDetails.offices.isNotEmpty,
+            'title': 'Offices',
+            'data': [
+              for (var office in _projectDetails.projectDetails.offices)
+                {
+                  'title': office.name,
+                  'value': office.dist,
+                }
+            ],
+          },
+          //3: Connectivity
+          {
+            'visible': _projectDetails.projectDetails.connectivity.isNotEmpty,
+            'title': 'Connectivity',
+            'data': [
+              for (var connectivity
+                  in _projectDetails.projectDetails.connectivity)
+                {
+                  'title': connectivity.name,
+                  'value': connectivity.dist,
+                }
+            ],
+          },
+          //4: Educational
+          {
+            'visible': _projectDetails
+                .projectDetails.educationalInstitutions.isNotEmpty,
+            'title': 'Educational Institutions',
+            'data': [
+              for (var institution
+                  in _projectDetails.projectDetails.educationalInstitutions)
+                {
+                  'title': institution.name,
+                  'value': institution.dist,
+                }
+            ],
+          },
+          //5: Colleges
+          {
+            'visible': _projectDetails.projectDetails.colleges.isNotEmpty,
+            'title': 'Colleges',
+            'data': [
+              for (var college in _projectDetails.projectDetails.colleges)
+                {
+                  'title': college.name,
+                  'value': college.dist,
+                }
+            ],
+          },
+          //6: Pharmacies
+          {
+            'visible': _projectDetails.projectDetails.pharmacies.isNotEmpty,
+            'title': 'Pharmacies',
+            'data': [
+              for (var pharmacy in _projectDetails.projectDetails.pharmacies)
+                {
+                  'title': pharmacy.name,
+                  'value': pharmacy.dist,
+                }
+            ],
+          },
+          //7: Hotspots
+          {
+            'visible': _projectDetails.projectDetails.hotspots.isNotEmpty,
+            'title': 'Hotspots',
+            'data': [
+              for (var hotspot in _projectDetails.projectDetails.hotspots)
+                {
+                  'title': hotspot.name,
+                  'value': hotspot.dist,
+                }
+            ],
+          },
+          //8: Shopping
+          {
+            'visible': _projectDetails.projectDetails.shopping.isNotEmpty,
+            'title': 'Shopping',
+            'data': [
+              for (var shop in _projectDetails.projectDetails.shopping)
+                {
+                  'title': shop.name,
+                  'value': shop.dist,
+                }
+            ],
+          },
+          //9: Entertainment
+          {
+            'visible': _projectDetails.projectDetails.entertainment.isNotEmpty,
+            'title': 'Entertainment',
+            'data': [
+              for (var entertainment
+                  in _projectDetails.projectDetails.entertainment)
+                {
+                  'title': entertainment.name,
+                  'value': entertainment.dist,
+                }
+            ],
+          },
+          //10: Restaurants
+          {
+            'visible': _projectDetails.projectDetails.restaurants.isNotEmpty,
+            'title': 'Restaurants',
+            'data': [
+              for (var restaurant in _projectDetails.projectDetails.restaurants)
+                {
+                  'title': restaurant.name,
+                  'value': restaurant.dist,
+                }
+            ],
+          },
+        ];
+        setState(() {});
       }
     });
   }
@@ -2536,6 +2602,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
     });
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ref.read(recentlyViewedProvider.notifier).addApartment(widget.apartment);
+      getFilteredApartments();
     });
     super.initState();
   }

@@ -477,6 +477,8 @@ mixin _$ProjectDetails {
   String get constructionType => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  String get leadPOCName => throw _privateConstructorUsedError;
+  String get leadPOCNumber => throw _privateConstructorUsedError;
   String get reraID => throw _privateConstructorUsedError;
   String get projectType => throw _privateConstructorUsedError;
   String get projectLaunchedDate => throw _privateConstructorUsedError;
@@ -489,6 +491,7 @@ mixin _$ProjectDetails {
   String get clubHouseAmenities => throw _privateConstructorUsedError;
   String get outdoorAmenities => throw _privateConstructorUsedError;
   String get videoLink => throw _privateConstructorUsedError;
+  List<String> get configurations => throw _privateConstructorUsedError;
   List<String> get brochurePdf => throw _privateConstructorUsedError;
   List<String> get specifications => throw _privateConstructorUsedError;
   List<String> get projectHighlightsPoints =>
@@ -541,6 +544,8 @@ abstract class $ProjectDetailsCopyWith<$Res> {
       String constructionType,
       double latitude,
       double longitude,
+      String leadPOCName,
+      String leadPOCNumber,
       String reraID,
       String projectType,
       String projectLaunchedDate,
@@ -553,6 +558,7 @@ abstract class $ProjectDetailsCopyWith<$Res> {
       String clubHouseAmenities,
       String outdoorAmenities,
       String videoLink,
+      List<String> configurations,
       List<String> brochurePdf,
       List<String> specifications,
       List<String> projectHighlightsPoints,
@@ -604,6 +610,8 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? constructionType = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? leadPOCName = null,
+    Object? leadPOCNumber = null,
     Object? reraID = null,
     Object? projectType = null,
     Object? projectLaunchedDate = null,
@@ -616,6 +624,7 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
     Object? videoLink = null,
+    Object? configurations = null,
     Object? brochurePdf = null,
     Object? specifications = null,
     Object? projectHighlightsPoints = null,
@@ -695,6 +704,14 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      leadPOCName: null == leadPOCName
+          ? _value.leadPOCName
+          : leadPOCName // ignore: cast_nullable_to_non_nullable
+              as String,
+      leadPOCNumber: null == leadPOCNumber
+          ? _value.leadPOCNumber
+          : leadPOCNumber // ignore: cast_nullable_to_non_nullable
+              as String,
       reraID: null == reraID
           ? _value.reraID
           : reraID // ignore: cast_nullable_to_non_nullable
@@ -743,6 +760,10 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
           ? _value.videoLink
           : videoLink // ignore: cast_nullable_to_non_nullable
               as String,
+      configurations: null == configurations
+          ? _value.configurations
+          : configurations // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       brochurePdf: null == brochurePdf
           ? _value.brochurePdf
           : brochurePdf // ignore: cast_nullable_to_non_nullable
@@ -849,6 +870,8 @@ abstract class _$$ProjectDetailsImplCopyWith<$Res>
       String constructionType,
       double latitude,
       double longitude,
+      String leadPOCName,
+      String leadPOCNumber,
       String reraID,
       String projectType,
       String projectLaunchedDate,
@@ -861,6 +884,7 @@ abstract class _$$ProjectDetailsImplCopyWith<$Res>
       String clubHouseAmenities,
       String outdoorAmenities,
       String videoLink,
+      List<String> configurations,
       List<String> brochurePdf,
       List<String> specifications,
       List<String> projectHighlightsPoints,
@@ -911,6 +935,8 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
     Object? constructionType = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? leadPOCName = null,
+    Object? leadPOCNumber = null,
     Object? reraID = null,
     Object? projectType = null,
     Object? projectLaunchedDate = null,
@@ -923,6 +949,7 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
     Object? videoLink = null,
+    Object? configurations = null,
     Object? brochurePdf = null,
     Object? specifications = null,
     Object? projectHighlightsPoints = null,
@@ -1002,6 +1029,14 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      leadPOCName: null == leadPOCName
+          ? _value.leadPOCName
+          : leadPOCName // ignore: cast_nullable_to_non_nullable
+              as String,
+      leadPOCNumber: null == leadPOCNumber
+          ? _value.leadPOCNumber
+          : leadPOCNumber // ignore: cast_nullable_to_non_nullable
+              as String,
       reraID: null == reraID
           ? _value.reraID
           : reraID // ignore: cast_nullable_to_non_nullable
@@ -1050,6 +1085,10 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value.videoLink
           : videoLink // ignore: cast_nullable_to_non_nullable
               as String,
+      configurations: null == configurations
+          ? _value._configurations
+          : configurations // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       brochurePdf: null == brochurePdf
           ? _value._brochurePdf
           : brochurePdf // ignore: cast_nullable_to_non_nullable
@@ -1141,6 +1180,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       this.constructionType = '',
       this.latitude = 0.0,
       this.longitude = 0.0,
+      this.leadPOCName = '',
+      this.leadPOCNumber = '',
       this.reraID = '',
       this.projectType = '',
       this.projectLaunchedDate = '',
@@ -1153,6 +1194,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       this.clubHouseAmenities = '',
       this.outdoorAmenities = '',
       this.videoLink = '',
+      final List<String> configurations = const [],
       final List<String> brochurePdf = const [],
       final List<String> specifications = const [],
       final List<String> projectHighlightsPoints = const [],
@@ -1170,7 +1212,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       final List<Institution> hotspots = const [],
       final List<Institution> shopping = const [],
       final List<Institution> entertainment = const []})
-      : _brochurePdf = brochurePdf,
+      : _configurations = configurations,
+        _brochurePdf = brochurePdf,
         _specifications = specifications,
         _projectHighlightsPoints = projectHighlightsPoints,
         _educationalInstitutions = educationalInstitutions,
@@ -1235,6 +1278,12 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   final double longitude;
   @override
   @JsonKey()
+  final String leadPOCName;
+  @override
+  @JsonKey()
+  final String leadPOCNumber;
+  @override
+  @JsonKey()
   final String reraID;
   @override
   @JsonKey()
@@ -1269,6 +1318,15 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   @override
   @JsonKey()
   final String videoLink;
+  final List<String> _configurations;
+  @override
+  @JsonKey()
+  List<String> get configurations {
+    if (_configurations is EqualUnmodifiableListView) return _configurations;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_configurations);
+  }
+
   final List<String> _brochurePdf;
   @override
   @JsonKey()
@@ -1408,7 +1466,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
 
   @override
   String toString() {
-    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, videoLink: $videoLink, brochurePdf: $brochurePdf, specifications: $specifications, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, bankName: $bankName, loanPercentage: $loanPercentage, banks: $banks, restaurants: $restaurants, colleges: $colleges, pharmacies: $pharmacies, hotspots: $hotspots, shopping: $shopping, entertainment: $entertainment)';
+    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, leadPOCName: $leadPOCName, leadPOCNumber: $leadPOCNumber, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, videoLink: $videoLink, configurations: $configurations, brochurePdf: $brochurePdf, specifications: $specifications, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, bankName: $bankName, loanPercentage: $loanPercentage, banks: $banks, restaurants: $restaurants, colleges: $colleges, pharmacies: $pharmacies, hotspots: $hotspots, shopping: $shopping, entertainment: $entertainment)';
   }
 
   @override
@@ -1445,6 +1503,10 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
+            (identical(other.leadPOCName, leadPOCName) ||
+                other.leadPOCName == leadPOCName) &&
+            (identical(other.leadPOCNumber, leadPOCNumber) ||
+                other.leadPOCNumber == leadPOCNumber) &&
             (identical(other.reraID, reraID) || other.reraID == reraID) &&
             (identical(other.projectType, projectType) ||
                 other.projectType == projectType) &&
@@ -1468,6 +1530,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
                 other.outdoorAmenities == outdoorAmenities) &&
             (identical(other.videoLink, videoLink) ||
                 other.videoLink == videoLink) &&
+            const DeepCollectionEquality()
+                .equals(other._configurations, _configurations) &&
             const DeepCollectionEquality()
                 .equals(other._brochurePdf, _brochurePdf) &&
             const DeepCollectionEquality()
@@ -1517,6 +1581,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
         constructionType,
         latitude,
         longitude,
+        leadPOCName,
+        leadPOCNumber,
         reraID,
         projectType,
         projectLaunchedDate,
@@ -1529,6 +1595,7 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
         clubHouseAmenities,
         outdoorAmenities,
         videoLink,
+        const DeepCollectionEquality().hash(_configurations),
         const DeepCollectionEquality().hash(_brochurePdf),
         const DeepCollectionEquality().hash(_specifications),
         const DeepCollectionEquality().hash(_projectHighlightsPoints),
@@ -1582,6 +1649,8 @@ abstract class _ProjectDetails implements ProjectDetails {
       final String constructionType,
       final double latitude,
       final double longitude,
+      final String leadPOCName,
+      final String leadPOCNumber,
       final String reraID,
       final String projectType,
       final String projectLaunchedDate,
@@ -1594,6 +1663,7 @@ abstract class _ProjectDetails implements ProjectDetails {
       final String clubHouseAmenities,
       final String outdoorAmenities,
       final String videoLink,
+      final List<String> configurations,
       final List<String> brochurePdf,
       final List<String> specifications,
       final List<String> projectHighlightsPoints,
@@ -1646,6 +1716,10 @@ abstract class _ProjectDetails implements ProjectDetails {
   @override
   double get longitude;
   @override
+  String get leadPOCName;
+  @override
+  String get leadPOCNumber;
+  @override
   String get reraID;
   @override
   String get projectType;
@@ -1669,6 +1743,8 @@ abstract class _ProjectDetails implements ProjectDetails {
   String get outdoorAmenities;
   @override
   String get videoLink;
+  @override
+  List<String> get configurations;
   @override
   List<String> get brochurePdf;
   @override

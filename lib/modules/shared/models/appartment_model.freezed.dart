@@ -22,6 +22,7 @@ ApartmentModel _$ApartmentModelFromJson(Map<String, dynamic> json) {
 mixin _$ApartmentModel {
   String get projectId => throw _privateConstructorUsedError;
   String get builderID => throw _privateConstructorUsedError;
+  String get builderName => throw _privateConstructorUsedError;
   String get apartmentID => throw _privateConstructorUsedError;
   String get companyPhone => throw _privateConstructorUsedError;
   String get companyName => throw _privateConstructorUsedError;
@@ -35,9 +36,12 @@ mixin _$ApartmentModel {
   String get coverImage => throw _privateConstructorUsedError;
   List<String> get projectGallery => throw _privateConstructorUsedError;
   List<String> get configuration => throw _privateConstructorUsedError;
+  String get configTitle => throw _privateConstructorUsedError;
   String? get videoLink => throw _privateConstructorUsedError;
   int get flatSize => throw _privateConstructorUsedError;
   int get budget => throw _privateConstructorUsedError;
+  int get minBudget => throw _privateConstructorUsedError;
+  int get maxBudget => throw _privateConstructorUsedError;
 
   /// Serializes this ApartmentModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -58,6 +62,7 @@ abstract class $ApartmentModelCopyWith<$Res> {
   $Res call(
       {String projectId,
       String builderID,
+      String builderName,
       String apartmentID,
       String companyPhone,
       String companyName,
@@ -71,9 +76,12 @@ abstract class $ApartmentModelCopyWith<$Res> {
       String coverImage,
       List<String> projectGallery,
       List<String> configuration,
+      String configTitle,
       String? videoLink,
       int flatSize,
-      int budget});
+      int budget,
+      int minBudget,
+      int maxBudget});
 }
 
 /// @nodoc
@@ -93,6 +101,7 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
   $Res call({
     Object? projectId = null,
     Object? builderID = null,
+    Object? builderName = null,
     Object? apartmentID = null,
     Object? companyPhone = null,
     Object? companyName = null,
@@ -106,9 +115,12 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
     Object? coverImage = null,
     Object? projectGallery = null,
     Object? configuration = null,
+    Object? configTitle = null,
     Object? videoLink = freezed,
     Object? flatSize = null,
     Object? budget = null,
+    Object? minBudget = null,
+    Object? maxBudget = null,
   }) {
     return _then(_value.copyWith(
       projectId: null == projectId
@@ -118,6 +130,10 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
       builderID: null == builderID
           ? _value.builderID
           : builderID // ignore: cast_nullable_to_non_nullable
+              as String,
+      builderName: null == builderName
+          ? _value.builderName
+          : builderName // ignore: cast_nullable_to_non_nullable
               as String,
       apartmentID: null == apartmentID
           ? _value.apartmentID
@@ -171,6 +187,10 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
           ? _value.configuration
           : configuration // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      configTitle: null == configTitle
+          ? _value.configTitle
+          : configTitle // ignore: cast_nullable_to_non_nullable
+              as String,
       videoLink: freezed == videoLink
           ? _value.videoLink
           : videoLink // ignore: cast_nullable_to_non_nullable
@@ -182,6 +202,14 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
       budget: null == budget
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
+              as int,
+      minBudget: null == minBudget
+          ? _value.minBudget
+          : minBudget // ignore: cast_nullable_to_non_nullable
+              as int,
+      maxBudget: null == maxBudget
+          ? _value.maxBudget
+          : maxBudget // ignore: cast_nullable_to_non_nullable
               as int,
     ) as $Val);
   }
@@ -198,6 +226,7 @@ abstract class _$$ApartmentModelImplCopyWith<$Res>
   $Res call(
       {String projectId,
       String builderID,
+      String builderName,
       String apartmentID,
       String companyPhone,
       String companyName,
@@ -211,9 +240,12 @@ abstract class _$$ApartmentModelImplCopyWith<$Res>
       String coverImage,
       List<String> projectGallery,
       List<String> configuration,
+      String configTitle,
       String? videoLink,
       int flatSize,
-      int budget});
+      int budget,
+      int minBudget,
+      int maxBudget});
 }
 
 /// @nodoc
@@ -231,6 +263,7 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
   $Res call({
     Object? projectId = null,
     Object? builderID = null,
+    Object? builderName = null,
     Object? apartmentID = null,
     Object? companyPhone = null,
     Object? companyName = null,
@@ -244,9 +277,12 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
     Object? coverImage = null,
     Object? projectGallery = null,
     Object? configuration = null,
+    Object? configTitle = null,
     Object? videoLink = freezed,
     Object? flatSize = null,
     Object? budget = null,
+    Object? minBudget = null,
+    Object? maxBudget = null,
   }) {
     return _then(_$ApartmentModelImpl(
       projectId: null == projectId
@@ -256,6 +292,10 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
       builderID: null == builderID
           ? _value.builderID
           : builderID // ignore: cast_nullable_to_non_nullable
+              as String,
+      builderName: null == builderName
+          ? _value.builderName
+          : builderName // ignore: cast_nullable_to_non_nullable
               as String,
       apartmentID: null == apartmentID
           ? _value.apartmentID
@@ -309,6 +349,10 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
           ? _value._configuration
           : configuration // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      configTitle: null == configTitle
+          ? _value.configTitle
+          : configTitle // ignore: cast_nullable_to_non_nullable
+              as String,
       videoLink: freezed == videoLink
           ? _value.videoLink
           : videoLink // ignore: cast_nullable_to_non_nullable
@@ -321,6 +365,14 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
           ? _value.budget
           : budget // ignore: cast_nullable_to_non_nullable
               as int,
+      minBudget: null == minBudget
+          ? _value.minBudget
+          : minBudget // ignore: cast_nullable_to_non_nullable
+              as int,
+      maxBudget: null == maxBudget
+          ? _value.maxBudget
+          : maxBudget // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -331,6 +383,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
   const _$ApartmentModelImpl(
       {this.projectId = "",
       this.builderID = "",
+      this.builderName = "",
       this.apartmentID = "",
       this.companyPhone = "",
       this.companyName = "",
@@ -344,9 +397,12 @@ class _$ApartmentModelImpl implements _ApartmentModel {
       this.coverImage = "",
       final List<String> projectGallery = const [],
       final List<String> configuration = const [],
+      this.configTitle = "",
       this.videoLink = null,
       this.flatSize = 0,
-      this.budget = 0})
+      this.budget = 0,
+      this.minBudget = 0,
+      this.maxBudget = 0})
       : _projectGallery = projectGallery,
         _configuration = configuration;
 
@@ -359,6 +415,9 @@ class _$ApartmentModelImpl implements _ApartmentModel {
   @override
   @JsonKey()
   final String builderID;
+  @override
+  @JsonKey()
+  final String builderName;
   @override
   @JsonKey()
   final String apartmentID;
@@ -412,6 +471,9 @@ class _$ApartmentModelImpl implements _ApartmentModel {
 
   @override
   @JsonKey()
+  final String configTitle;
+  @override
+  @JsonKey()
   final String? videoLink;
   @override
   @JsonKey()
@@ -419,10 +481,16 @@ class _$ApartmentModelImpl implements _ApartmentModel {
   @override
   @JsonKey()
   final int budget;
+  @override
+  @JsonKey()
+  final int minBudget;
+  @override
+  @JsonKey()
+  final int maxBudget;
 
   @override
   String toString() {
-    return 'ApartmentModel(projectId: $projectId, builderID: $builderID, apartmentID: $apartmentID, companyPhone: $companyPhone, companyName: $companyName, name: $name, description: $description, projectLocation: $projectLocation, pricePerSquareFeetRate: $pricePerSquareFeetRate, latitude: $latitude, longitude: $longitude, projectPossession: $projectPossession, coverImage: $coverImage, projectGallery: $projectGallery, configuration: $configuration, videoLink: $videoLink, flatSize: $flatSize, budget: $budget)';
+    return 'ApartmentModel(projectId: $projectId, builderID: $builderID, builderName: $builderName, apartmentID: $apartmentID, companyPhone: $companyPhone, companyName: $companyName, name: $name, description: $description, projectLocation: $projectLocation, pricePerSquareFeetRate: $pricePerSquareFeetRate, latitude: $latitude, longitude: $longitude, projectPossession: $projectPossession, coverImage: $coverImage, projectGallery: $projectGallery, configuration: $configuration, configTitle: $configTitle, videoLink: $videoLink, flatSize: $flatSize, budget: $budget, minBudget: $minBudget, maxBudget: $maxBudget)';
   }
 
   @override
@@ -434,6 +502,8 @@ class _$ApartmentModelImpl implements _ApartmentModel {
                 other.projectId == projectId) &&
             (identical(other.builderID, builderID) ||
                 other.builderID == builderID) &&
+            (identical(other.builderName, builderName) ||
+                other.builderName == builderName) &&
             (identical(other.apartmentID, apartmentID) ||
                 other.apartmentID == apartmentID) &&
             (identical(other.companyPhone, companyPhone) ||
@@ -459,35 +529,46 @@ class _$ApartmentModelImpl implements _ApartmentModel {
                 .equals(other._projectGallery, _projectGallery) &&
             const DeepCollectionEquality()
                 .equals(other._configuration, _configuration) &&
+            (identical(other.configTitle, configTitle) ||
+                other.configTitle == configTitle) &&
             (identical(other.videoLink, videoLink) ||
                 other.videoLink == videoLink) &&
             (identical(other.flatSize, flatSize) ||
                 other.flatSize == flatSize) &&
-            (identical(other.budget, budget) || other.budget == budget));
+            (identical(other.budget, budget) || other.budget == budget) &&
+            (identical(other.minBudget, minBudget) ||
+                other.minBudget == minBudget) &&
+            (identical(other.maxBudget, maxBudget) ||
+                other.maxBudget == maxBudget));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      projectId,
-      builderID,
-      apartmentID,
-      companyPhone,
-      companyName,
-      name,
-      description,
-      projectLocation,
-      pricePerSquareFeetRate,
-      latitude,
-      longitude,
-      projectPossession,
-      coverImage,
-      const DeepCollectionEquality().hash(_projectGallery),
-      const DeepCollectionEquality().hash(_configuration),
-      videoLink,
-      flatSize,
-      budget);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        projectId,
+        builderID,
+        builderName,
+        apartmentID,
+        companyPhone,
+        companyName,
+        name,
+        description,
+        projectLocation,
+        pricePerSquareFeetRate,
+        latitude,
+        longitude,
+        projectPossession,
+        coverImage,
+        const DeepCollectionEquality().hash(_projectGallery),
+        const DeepCollectionEquality().hash(_configuration),
+        configTitle,
+        videoLink,
+        flatSize,
+        budget,
+        minBudget,
+        maxBudget
+      ]);
 
   /// Create a copy of ApartmentModel
   /// with the given fields replaced by the non-null parameter values.
@@ -510,6 +591,7 @@ abstract class _ApartmentModel implements ApartmentModel {
   const factory _ApartmentModel(
       {final String projectId,
       final String builderID,
+      final String builderName,
       final String apartmentID,
       final String companyPhone,
       final String companyName,
@@ -523,9 +605,12 @@ abstract class _ApartmentModel implements ApartmentModel {
       final String coverImage,
       final List<String> projectGallery,
       final List<String> configuration,
+      final String configTitle,
       final String? videoLink,
       final int flatSize,
-      final int budget}) = _$ApartmentModelImpl;
+      final int budget,
+      final int minBudget,
+      final int maxBudget}) = _$ApartmentModelImpl;
 
   factory _ApartmentModel.fromJson(Map<String, dynamic> json) =
       _$ApartmentModelImpl.fromJson;
@@ -534,6 +619,8 @@ abstract class _ApartmentModel implements ApartmentModel {
   String get projectId;
   @override
   String get builderID;
+  @override
+  String get builderName;
   @override
   String get apartmentID;
   @override
@@ -561,11 +648,17 @@ abstract class _ApartmentModel implements ApartmentModel {
   @override
   List<String> get configuration;
   @override
+  String get configTitle;
+  @override
   String? get videoLink;
   @override
   int get flatSize;
   @override
   int get budget;
+  @override
+  int get minBudget;
+  @override
+  int get maxBudget;
 
   /// Create a copy of ApartmentModel
   /// with the given fields replaced by the non-null parameter values.

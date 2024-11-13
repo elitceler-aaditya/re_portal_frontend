@@ -10,13 +10,17 @@ class ApartmentListNotifier extends StateNotifier<List<ApartmentModel>> {
   ApartmentListNotifier() : super([]);
 
   void setApartments(List<ApartmentModel> apartments) {
-    state = apartments;
+    final uniqueApartments = <String, ApartmentModel>{};
+    for (var apartment in apartments) {
+      uniqueApartments[apartment.projectId] = apartment;
+    }
+    state = uniqueApartments.values.toList();
   }
 
   void addApartments(List<ApartmentModel> apartments) {
-    state = [...state, ...apartments];
+    state = <ApartmentModel>{...state, ...apartments}.toList();
   }
-  
+
   ApartmentModel getApartmentById(String id) {
     return state.firstWhere((element) => element.projectId == id);
   }
@@ -24,5 +28,4 @@ class ApartmentListNotifier extends StateNotifier<List<ApartmentModel>> {
   void clearApartments() {
     state = [];
   }
-
 }

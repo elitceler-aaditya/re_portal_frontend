@@ -95,10 +95,11 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                   ),
                   children: [
                     const TextSpan(
-                        text: "Popular locations near  ",
-                        style: TextStyle(
-                          fontFamily: 'eudoxus',
-                        )),
+                      text: "Popular locations near ",
+                      style: TextStyle(
+                        fontFamily: 'eudoxus',
+                      ),
+                    ),
                     TextSpan(
                       text: ref.watch(locationHomesProvider)!.searchedLocation,
                       style: const TextStyle(

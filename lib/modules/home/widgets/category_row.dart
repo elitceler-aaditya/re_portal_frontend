@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
@@ -71,110 +72,117 @@ class _CategoryRowState extends ConsumerState<CategoryRow> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: CustomColors.white,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8, bottom: 8),
-            child: Text(
-              widget.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontFamily: "PlusJakartaSans",
-                fontWeight: FontWeight.bold,
+    return Animate(
+      effects: const [
+        FadeEffect(
+          duration: Duration(milliseconds: 500),
+        ),
+      ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: CustomColors.white,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 8),
+              child: Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontFamily: "PlusJakartaSans",
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(
-                categoryOptions.length,
-                (index) => GestureDetector(
-                  onTap: () {
-                    ref.read(searchBarProvider.notifier).setSearchTerm(
-                          categoryOptions[index]['title'],
-                        );
-
-                    if (widget.stackFilter) {
-                      ref
-                          .read(filtersProvider.notifier)
-                          .updateOnlySelectedFilter(
-                            categoryOptions[index]['filter'],
-                          );
-                    } else {
-                      ref.read(filtersProvider.notifier).setAllFilters(
-                            categoryOptions[index]['filter'],
-                          );
-                    }
-
-                    widget.onTap?.call();
-                  },
-                  child: Container(
-                    height: widget.cardHeight,
-                    width: 150,
-                    margin: const EdgeInsets.only(left: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      image: DecorationImage(
-                        image: AssetImage(
-                          "assets/images/category-${index + 1}.jpg",
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: double.infinity,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            gradient: LinearGradient(
-                              colors: [
-                                CustomColors.black.withOpacity(0),
-                                CustomColors.black.withOpacity(0.77),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 6,
-                          left: 0,
-                          right: 0,
-                          child: Text(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  categoryOptions.length,
+                  (index) => GestureDetector(
+                    onTap: () {
+                      ref.read(searchBarProvider.notifier).setSearchTerm(
                             categoryOptions[index]['title'],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: CustomColors.white,
-                              shadows: [
-                                BoxShadow(
-                                  color: CustomColors.white.withOpacity(0.5),
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
+                          );
+
+                      if (widget.stackFilter) {
+                        ref
+                            .read(filtersProvider.notifier)
+                            .updateOnlySelectedFilter(
+                              categoryOptions[index]['filter'],
+                            );
+                      } else {
+                        ref.read(filtersProvider.notifier).setAllFilters(
+                              categoryOptions[index]['filter'],
+                            );
+                      }
+
+                      widget.onTap?.call();
+                    },
+                    child: Container(
+                      height: widget.cardHeight,
+                      width: 150,
+                      margin: const EdgeInsets.only(left: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        image: DecorationImage(
+                          image: AssetImage(
+                            "assets/images/category-${index + 1}.jpg",
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              gradient: LinearGradient(
+                                colors: [
+                                  CustomColors.black.withOpacity(0),
+                                  CustomColors.black.withOpacity(0.77),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned(
+                            bottom: 6,
+                            left: 0,
+                            right: 0,
+                            child: Text(
+                              categoryOptions[index]['title'],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: CustomColors.white,
+                                shadows: [
+                                  BoxShadow(
+                                    color: CustomColors.white.withOpacity(0.5),
+                                    blurRadius: 3,
+                                    offset: const Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

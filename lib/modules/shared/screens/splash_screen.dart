@@ -21,22 +21,26 @@ class _SplashScreenState extends State<SplashScreen> {
   bool isExpired = true;
 
   Future<void> checkIfLoggedIn() async {
-    String token = "";
 
     try {
       SharedPreferences.getInstance().then((sharedPref) {
-        token = sharedPref.getString('token') ?? "";
+        final token = sharedPref.getString('token') ?? '';
         // refreshToken = sharedPref.getString('refreshToken') ?? "";
 
         if (token.isEmpty) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const GetStarted()));
-        } else {
-          
           Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const PropertyTypesScreen()));
+            context,
+            MaterialPageRoute(
+              builder: (context) => const GetStarted(),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PropertyTypesScreen(),
+            ),
+          );
         }
       });
     } catch (e) {

@@ -119,6 +119,14 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
                                   fontSize: 16,
                                 ),
                               ),
+                              Text(
+                                "By ${ref.watch(recentlyViewedProvider)[index].builderName}",
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               Text(
                                 "${formatBudget(ref.watch(recentlyViewedProvider)[index].budget)} • ${ref.watch(recentlyViewedProvider)[index].configuration.isNotEmpty ? ref.watch(recentlyViewedProvider)[index].configuration.first : ''}",

@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,20 +19,20 @@ import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'
     as carousel;
+import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/locality_list.dart';
 import 'package:re_portal_frontend/riverpod/maps_properties.dart';
-//http
 import 'package:http/http.dart' as http;
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class GoogleMapsScreen extends ConsumerStatefulWidget {
-  final ApartmentModel apartment;
+  final ApartmentModel? apartment;
   final ApartmentDetailsResponse? apartmentDetails;
   final bool isPop;
   const GoogleMapsScreen({
     super.key,
-    required this.apartment,
+    this.apartment,
     this.apartmentDetails,
     this.isPop = false,
   });
@@ -44,8 +47,8 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   bool isEndReached = false;
   int currentPage = 1;
   int apartmentListTotalCount = 10;
+  ApartmentModel? selectedApartment;
   List<ApartmentModel> apartments = [];
-  List<LatLng> locations = [];
   StreamSubscription<LocationData>? _locationSubscription;
   final Completer<GoogleMapController> _googleMapsController =
       Completer<GoogleMapController>();
@@ -55,7 +58,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<String> propertyLocations = [];
 
-  fetchLocationUpdate() async {
+  Future<void> fetchLocationUpdate() async {
     bool serviceEnabled;
     PermissionStatus permissionGranted;
     serviceEnabled = await Location.instance.serviceEnabled();
@@ -112,10 +115,19 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
         List responseBody = responseData['projects'] ?? [];
         if (responseBody.isNotEmpty) {
           apartmentListTotalCount = responseData['totalCount'];
-          debugPrint("-----------------responseData: $responseData");
-          ref.read(mapsApartmentProvider.notifier).addApartments(
-                responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
-              );
+
+          if (page == 1) {
+            ref.read(mapsApartmentProvider.notifier).setApartments(
+              [
+                if (selectedApartment != null) selectedApartment!,
+                ...responseBody.map((e) => ApartmentModel.fromJson(e)),
+              ],
+            );
+          } else {
+            ref.read(mapsApartmentProvider.notifier).addApartments(
+                  responseBody.map((e) => ApartmentModel.fromJson(e)).toList(),
+                );
+          }
           if (pan) panToLocation(ref.watch(mapsApartmentProvider).first);
         } else {
           setState(() {
@@ -136,21 +148,19 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
     } finally {}
   }
 
-  void getLocalitiesList() async {
+  Future<void> getLocalitiesList() async {
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getLocations";
     Uri uri = Uri.parse(url);
 
     try {
       final response = await http.get(uri);
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
         List<dynamic> responseBody = responseData['data'];
         List<String> localities =
             responseBody.map((item) => item.toString()).toList();
         ref.read(localityListProvider.notifier).setLocalities(localities);
-        getApartmentByLocation('');
       } else {
         throw Exception('Failed to load localities');
       }
@@ -188,34 +198,34 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      selectedApartment = widget.apartment;
       ref.read(mapsApartmentProvider.notifier).clearApartments();
-      getLocalitiesList();
-      fetchLocationUpdate();
-      apartments = ref.read(mapsApartmentProvider);
-      propertyLocations =
-          apartments.map((e) => e.projectLocation).toSet().toList();
-      apartments.removeWhere(
-          (element) => element.latitude == 0 && element.longitude == 0);
-      apartments.removeWhere(
-          (element) => element.projectId == widget.apartment.projectId);
+      debugPrint("-----------------getApartmentByLocation 1");
 
-      //inseart widget.apartment at the first position
-      apartments.insert(0, widget.apartment);
-      setState(() {
-        locations =
-            apartments.map((e) => LatLng(e.latitude, e.longitude)).toList();
+      Future.wait([
+        getLocalitiesList(),
+        fetchLocationUpdate(),
+        getApartmentByLocation(
+            widget.apartment == null ? '' : widget.apartment!.projectLocation),
+      ]).then((_) {
+        apartments = ref.read(mapsApartmentProvider);
+        propertyLocations =
+            apartments.map((e) => e.projectLocation).toSet().toList();
+        if (selectedApartment != null) {
+          _selectedApartmentId = selectedApartment?.projectId;
+        } else {
+          setState(() {
+            _selectedApartmentId = apartments.first.projectId;
+          });
+        }
       });
-
-      if (apartments.isNotEmpty) {
-        _selectedApartmentId = widget.apartment.projectId;
-      }
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
-
     super.dispose();
   }
 
@@ -231,9 +241,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
       child: Scaffold(
         body: Stack(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
+            Positioned.fill(
               child: GoogleMap(
                 onMapCreated: (GoogleMapController controller) {
                   _googleMapsController.complete(controller);
@@ -246,9 +254,21 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                   }
                 },
                 initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                      widget.apartment.latitude, widget.apartment.longitude),
-                  zoom: 14,
+                  target: selectedApartment == null
+                      ? LatLng(
+                          ref
+                              .read(homePropertiesProvider)
+                              .allApartments
+                              .first
+                              .latitude,
+                          ref
+                              .read(homePropertiesProvider)
+                              .allApartments
+                              .first
+                              .longitude)
+                      : LatLng(selectedApartment!.latitude,
+                          selectedApartment!.longitude),
+                  zoom: 18,
                 ),
                 markers: {
                   ...ref.watch(mapsApartmentProvider).map(
@@ -285,6 +305,15 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                         ),
                       )
                 },
+                gestureRecognizers: {
+                  Factory<EagerGestureRecognizer>(
+                      () => EagerGestureRecognizer()),
+                },
+                zoomControlsEnabled: true,
+                zoomGesturesEnabled: true,
+                scrollGesturesEnabled: true,
+                rotateGesturesEnabled: true,
+                tiltGesturesEnabled: true,
               ),
             ),
             Positioned(
@@ -309,64 +338,81 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
               bottom: 10,
               right: 0,
               left: 0,
-              child: FlutterCarousel.builder(
-                itemCount: ref.watch(mapsApartmentProvider).length,
-                itemBuilder: (context, index, realIndex) {
-                  final apartment = ref.watch(mapsApartmentProvider)[index];
-                  return VisibilityDetector(
-                    key: Key(apartment.projectId),
-                    onVisibilityChanged: (info) {
-                      if (index + 1 ==
-                              ref.watch(mapsApartmentProvider).length &&
-                          info.visibleFraction >= 0) {
-                        if (!isEndReached) {
-                          getApartmentByLocation(
-                            _searchController.text.trim(),
-                            page: currentPage++,
-                            pan: false,
-                          );
+              child: Animate(
+                effects: [
+                  FadeEffect(
+                    duration: 700.milliseconds,
+                  ),
+                  SlideEffect(
+                    duration: 600.milliseconds,
+                    begin: const Offset(0, 1),
+                  )
+                ],
+                child: FlutterCarousel.builder(
+                  itemCount: ref.watch(mapsApartmentProvider).length,
+                  itemBuilder: (context, index, realIndex) {
+                    final apartment = ref.watch(mapsApartmentProvider)[index];
+                    return VisibilityDetector(
+                      key: Key(apartment.projectId),
+                      onVisibilityChanged: (info) {
+                        if (index + 1 ==
+                                ref.watch(mapsApartmentProvider).length &&
+                            info.visibleFraction >= 0) {
+                          if (!isEndReached) {
+                            debugPrint(
+                                "-----------------getApartmentByLocation 2");
+
+                            getApartmentByLocation(
+                              widget.apartment == null
+                                  ? _searchController.text.trim()
+                                  : widget.apartment!.projectLocation,
+                              page: currentPage++,
+                              pan: false,
+                            );
+                          }
                         }
+                      },
+                      child: MapsPropertyCard(
+                        apartment: apartment,
+                        index: index,
+                        length: apartmentListTotalCount,
+                      ),
+                    );
+                  },
+                  options: CarouselOptions(
+                    controller: carouselController,
+                    height: 180,
+                    viewportFraction: 0.85,
+                    enableInfiniteScroll: false,
+                    enlargeCenterPage: true,
+                    enlargeStrategy: CenterPageEnlargeStrategy.height,
+                    padEnds: false,
+                    showIndicator: false,
+                    onPageChanged: (index, reason) {
+                      if (reason == CarouselPageChangedReason.manual) {
+                        final apartment =
+                            ref.watch(mapsApartmentProvider)[index];
+                        _googleMapsController.future.then((controller) {
+                          controller
+                              .animateCamera(
+                            CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                target: LatLng(
+                                    apartment.latitude, apartment.longitude),
+                                zoom: 14,
+                              ),
+                            ),
+                          )
+                              .then((_) {
+                            setState(() =>
+                                _selectedApartmentId = apartment.projectId);
+                            controller.showMarkerInfoWindow(
+                                MarkerId(apartment.projectId));
+                          });
+                        });
                       }
                     },
-                    child: MapsPropertyCard(
-                      apartment: apartment,
-                      index: index,
-                      length: apartmentListTotalCount,
-                    ),
-                  );
-                },
-                options: CarouselOptions(
-                  controller: carouselController,
-                  height: 180,
-                  viewportFraction: 0.85,
-                  enableInfiniteScroll: false,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.height,
-                  padEnds: false,
-                  showIndicator: false,
-                  onPageChanged: (index, reason) {
-                    if (reason == CarouselPageChangedReason.manual) {
-                      final apartment = ref.watch(mapsApartmentProvider)[index];
-                      _googleMapsController.future.then((controller) {
-                        controller
-                            .animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: LatLng(
-                                  apartment.latitude, apartment.longitude),
-                              zoom: 14,
-                            ),
-                          ),
-                        )
-                            .then((_) {
-                          setState(
-                              () => _selectedApartmentId = apartment.projectId);
-                          controller.showMarkerInfoWindow(
-                              MarkerId(apartment.projectId));
-                        });
-                      });
-                    }
-                  },
+                  ),
                 ),
               ),
             ),
@@ -437,6 +483,9 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                                 ref
                                     .read(mapsApartmentProvider.notifier)
                                     .clearApartments();
+                                debugPrint(
+                                    "-----------------getApartmentByLocation 3");
+
                                 getApartmentByLocation('');
                               });
                             },
@@ -464,15 +513,6 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                                 .searchLocality(
                                     _searchController.text.trim(), []).length,
                             itemBuilder: (context, index) {
-                              // String value = apartments
-                              //     .map((e) => e.projectLocation)
-                              //     .where((element) => element
-                              //         .toLowerCase()
-                              //         .contains(_searchController.text
-                              //             .trim()
-                              //             .toLowerCase()))
-                              //     .toSet()
-                              //     .toList()[index];
                               return ListTile(
                                 title: Text(ref
                                     .watch(localityListProvider.notifier)
@@ -481,6 +521,7 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                                         [])[index]),
                                 onTap: () {
                                   setState(() {
+                                    selectedApartment = null;
                                     ref
                                         .read(mapsApartmentProvider.notifier)
                                         .clearApartments();
@@ -493,6 +534,9 @@ class _GoogleMapsScreenState extends ConsumerState<GoogleMapsScreen> {
                                             [])[index];
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
+                                    debugPrint(
+                                        "-----------------getApartmentByLocation 4");
+
                                     getApartmentByLocation(
                                         _searchController.text.trim());
                                   });

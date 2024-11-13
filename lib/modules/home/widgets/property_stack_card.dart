@@ -50,9 +50,6 @@ class PropertyStackCard extends StatelessWidget {
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
                     heroTag: "property-stack-${apartments[index].projectId}",
-                    nextApartment: index + 1 < apartments.length
-                        ? apartments[index + 1]
-                        : apartments.first,
                   ),
                 ),
               );
@@ -131,14 +128,15 @@ class PropertyStackCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(
-                            "By ${apartments[index].companyName}",
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
+                          if (apartments[index].companyName.isNotEmpty)
+                            Text(
+                              "By ${apartments[index].builderName}",
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
                           const SizedBox(height: 8),
                           if (showCompanyName)
                             Padding(
@@ -161,7 +159,7 @@ class PropertyStackCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${apartments[index].projectLocation} ${apartments[index].configuration.isNotEmpty ? '• ${apartments[index].configuration.first}' : ''} ${apartments[index].budget == 0 ? '' : '• ${formatBudget(apartments[index].budget)}'}",
+                                "${apartments[index].projectLocation} ${apartments[index].configuration.isNotEmpty ? '• ${apartments[index].configTitle}' : ''} ${apartments[index].budget == 0 ? '' : '• ${formatBudget(apartments[index].minBudget)}'}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,

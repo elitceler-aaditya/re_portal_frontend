@@ -106,7 +106,7 @@ class _ProjectSnippetsState extends ConsumerState<ProjectSnippets> {
                         apartment: ref
                             .watch(homePropertiesProvider)
                             .projectSnippets[index],
-                        videoLink: videoLinks[index],
+                        videoLink:  videoLinks[index],
                       ),
                     ),
                   ),

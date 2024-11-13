@@ -450,6 +450,9 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
           List<ApartmentModel> snippets = responseBody
               .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
               .toList();
+          ref
+              .watch(homePropertiesProvider.notifier)
+              .setProjectSnippets(snippets);
           // videoLinks =
           //     responseBody.map((e) => e['videoLink'] as String).toList();
         });
@@ -661,13 +664,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Map<String, dynamic> params = ref.watch(filtersProvider).toJson();
-      params['page'] = "1";
+      updateResultsPage();
       if (ref.watch(localityListProvider).isEmpty) {
         getLocalitiesList();
       }
-      getHomeApartments();
-      getFilteredApartments(params: params);
       getLocationAndAppts();
       if (ref.read(openFiltersProvider)) {
         filterBottomSheet().then((value) =>
@@ -907,6 +907,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                 ),
               ),
               Container(
+                clipBehavior: Clip.hardEdge,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
@@ -920,6 +921,10 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                 child: ref.watch(filtersProvider).toJson().isNotEmpty
                     ? Animate(
                         effects: const [
+                          FadeEffect(
+                            begin: 0,
+                            duration: Duration(milliseconds: 400),
+                          ),
                           SlideEffect(
                             begin: Offset(0, 1),
                             duration: Duration(milliseconds: 400),
@@ -1461,7 +1466,8 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   getFilteredApartments();
                 },
               ),
-              if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
+              if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty &&
+                  ref.watch(filtersProvider).toJson().isEmpty)
                 VisibilityDetector(
                   key: const Key('best-deals-detector'),
                   onVisibilityChanged: (visibilityInfo) {
@@ -1515,323 +1521,332 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: CustomColors.white,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              margin: const EdgeInsets.only(top: 4),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 10),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      SizedBox(
-                                        height: 36,
-                                        width: 80,
-                                        child: TextButton.icon(
-                                          style: TextButton.styleFrom(
-                                            padding: EdgeInsets.zero,
-                                            backgroundColor:
-                                                CustomColors.primary,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
+                            Animate(
+                              effects: const [
+                                FadeEffect(
+                                  duration: Duration(milliseconds: 500),
+                                ),
+                              ],
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: CustomColors.white,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                margin: const EdgeInsets.only(top: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 10),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          height: 36,
+                                          width: 80,
+                                          child: TextButton.icon(
+                                            style: TextButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              backgroundColor:
+                                                  CustomColors.primary,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              side: const BorderSide(
+                                                color: CustomColors.primary,
+                                              ),
                                             ),
-                                            side: const BorderSide(
-                                              color: CustomColors.primary,
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            _showSortBottomSheet(context);
-                                          },
-                                          icon: const Icon(
-                                            Icons.filter_list,
-                                            size: 20,
-                                            color: CustomColors.white,
-                                          ),
-                                          label: const Text(
-                                            "Sort",
-                                            style: TextStyle(
+                                            onPressed: () {
+                                              _showSortBottomSheet(context);
+                                            },
+                                            icon: const Icon(
+                                              Icons.filter_list,
+                                              size: 20,
                                               color: CustomColors.white,
                                             ),
+                                            label: const Text(
+                                              "Sort",
+                                              style: TextStyle(
+                                                color: CustomColors.white,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            isListview = !isListview;
-                                          });
-                                        },
-                                        icon: isListview
-                                            ? const Icon(
-                                                Icons.grid_view_outlined,
-                                                color: CustomColors.primary,
-                                                size: 28,
-                                              )
-                                            : const Icon(
-                                                Icons.list,
-                                                color: CustomColors.primary,
-                                                size: 28,
-                                              ),
-                                      )
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 2),
-                                    child: !isListview
-                                        ? PropertyGridView(
-                                            sortedApartments: ref
-                                                .watch(homePropertiesProvider)
-                                                .filteredApartments,
-                                            globalKeys: _globalKeys,
-                                            compare: true,
-                                          )
-                                        : ListView.builder(
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            padding: EdgeInsets.zero,
-                                            itemCount: ref
-                                                        .watch(
-                                                            homePropertiesProvider)
-                                                        .filteredApartments
-                                                        .length >
-                                                    4
-                                                ? ref
-                                                        .watch(
-                                                            homePropertiesProvider)
-                                                        .filteredApartments
-                                                        .length +
-                                                    1
-                                                : ref
-                                                    .watch(
-                                                        homePropertiesProvider)
-                                                    .filteredApartments
-                                                    .length,
-                                            itemBuilder: (context, index) {
-                                              if (displayAds) {
-                                                if (index % 5 == 4) {
-                                                  List<Widget> widgetList = [];
-
-                                                  if (ref
-                                                      .watch(
-                                                          homePropertiesProvider)
-                                                      .projectSnippets
-                                                      .isNotEmpty) {
-                                                    widgetList
-                                                        .add(VisibilityDetector(
-                                                      key: const Key(
-                                                          'project-snippets'),
-                                                      onVisibilityChanged:
-                                                          (visibilityInfo) {
-                                                        if (visibilityInfo
-                                                                .visibleFraction >=
-                                                            0) {
-                                                          setState(() {
-                                                            showScrollUpButton =
-                                                                true;
-                                                          });
-                                                          debugPrint(
-                                                              'showScrollUpButton: $showScrollUpButton');
-                                                        }
-                                                      },
-                                                      child:
-                                                          const ProjectSnippets(
-                                                              leftPadding:
-                                                                  false),
-                                                    ));
-                                                  }
-
-                                                  if (ref
-                                                      .watch(
-                                                          homePropertiesProvider)
-                                                      .newProjects
-                                                      .isNotEmpty) {
-                                                    widgetList.add(
-                                                      Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          const Text(
-                                                            "New Launches",
-                                                            style: TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 8),
-                                                          EditorsChoiceCard(
-                                                            apartments: ref
-                                                                .watch(
-                                                                    homePropertiesProvider)
-                                                                .newProjects,
-                                                            leftPadding: false,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  }
-
-                                                  if (ref
-                                                      .watch(
-                                                          homePropertiesProvider
-                                                              .notifier)
-                                                      .getBudgetHomes(0, 0)
-                                                      .isNotEmpty) {
-                                                    widgetList.add(
-                                                        const BudgetHomes());
-                                                  }
-
-                                                  widgetList.add(
-                                                      const LocationHomes());
-
-                                                  if (ref
-                                                      .watch(
-                                                          homePropertiesProvider)
-                                                      .readyToMoveIn
-                                                      .isNotEmpty) {
-                                                    widgetList.add(
-                                                        const ReadyToMovein());
-                                                  }
-
-                                                  if (ref
-                                                      .watch(
-                                                          homePropertiesProvider
-                                                              .notifier)
-                                                      .getUltraLuxuryHomes()
-                                                      .isNotEmpty) {
-                                                    widgetList.add(
-                                                      const UltraLuxuryHomes(
-                                                        leftPadding: false,
-                                                      ),
-                                                    );
-                                                  }
-
-                                                  if (ref
-                                                      .watch(
-                                                          homePropertiesProvider)
-                                                      .editorsChoice
-                                                      .isNotEmpty) {
-                                                    widgetList.add(
-                                                      NewLaunchSection(
-                                                        title:
-                                                            "Editor's Choice",
-                                                        apartments: ref
-                                                            .watch(
-                                                                homePropertiesProvider)
-                                                            .editorsChoice,
-                                                      ),
-                                                    );
-                                                  }
-                                                  int adsIndex = index ~/ 5;
-                                                  return widgetList[adsIndex %
-                                                      widgetList.length];
-                                                }
-                                              }
-                                              {
-                                                int listIndex =
-                                                    index - (index ~/ 5);
-
-                                                return PropertyCard(
-                                                  apartment: ref
-                                                          .watch(
-                                                              homePropertiesProvider)
-                                                          .filteredApartments[
-                                                      listIndex],
-                                                  nextApartment: ref
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              isListview = !isListview;
+                                            });
+                                          },
+                                          icon: isListview
+                                              ? const Icon(
+                                                  Icons.grid_view_outlined,
+                                                  color: CustomColors.primary,
+                                                  size: 28,
+                                                )
+                                              : const Icon(
+                                                  Icons.list,
+                                                  color: CustomColors.primary,
+                                                  size: 28,
+                                                ),
+                                        )
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 2),
+                                      child: !isListview
+                                          ? PropertyGridView(
+                                              sortedApartments: ref
+                                                  .watch(homePropertiesProvider)
+                                                  .filteredApartments,
+                                              globalKeys: _globalKeys,
+                                              compare: true,
+                                            )
+                                          : ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              padding: EdgeInsets.zero,
+                                              itemCount: ref
                                                           .watch(
                                                               homePropertiesProvider)
                                                           .filteredApartments
-                                                          .isNotEmpty
-                                                      ? ref
+                                                          .length >
+                                                      4
+                                                  ? ref
                                                           .watch(
                                                               homePropertiesProvider)
                                                           .filteredApartments
-                                                          .first
-                                                      : null,
-                                                  isCompare: true,
-                                                  onCallPress: (context) {
+                                                          .length +
+                                                      1
+                                                  : ref
+                                                      .watch(
+                                                          homePropertiesProvider)
+                                                      .filteredApartments
+                                                      .length,
+                                              itemBuilder: (context, index) {
+                                                if (displayAds) {
+                                                  if (index % 5 == 4) {
+                                                    List<Widget> widgetList =
+                                                        [];
+
                                                     if (ref
-                                                        .watch(userProvider)
-                                                        .token
-                                                        .isEmpty) {
-                                                      errorSnackBar(context,
-                                                          'Please login first');
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const LoginScreen(
-                                                            goBack: true,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      _toggleOverlay(
-                                                          context,
-                                                          ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .projectSnippets
+                                                        .isNotEmpty) {
+                                                      widgetList.add(
+                                                          VisibilityDetector(
+                                                        key: const Key(
+                                                            'project-snippets'),
+                                                        onVisibilityChanged:
+                                                            (visibilityInfo) {
+                                                          if (visibilityInfo
+                                                                  .visibleFraction >=
+                                                              0) {
+                                                            setState(() {
+                                                              showScrollUpButton =
+                                                                  true;
+                                                            });
+                                                            debugPrint(
+                                                                'showScrollUpButton: $showScrollUpButton');
+                                                          }
+                                                        },
+                                                        child:
+                                                            const ProjectSnippets(
+                                                                leftPadding:
+                                                                    false),
+                                                      ));
+                                                    }
+
+                                                    if (ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .newProjects
+                                                        .isNotEmpty) {
+                                                      widgetList.add(
+                                                        Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const Text(
+                                                              "New Launches",
+                                                              style: TextStyle(
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 8),
+                                                            EditorsChoiceCard(
+                                                              apartments: ref
                                                                   .watch(
                                                                       homePropertiesProvider)
-                                                                  .filteredApartments[
-                                                              listIndex],
-                                                          _globalKeys[
-                                                              listIndex]);
+                                                                  .newProjects,
+                                                              leftPadding:
+                                                                  false,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
                                                     }
-                                                  },
-                                                  globalKey:
-                                                      _globalKeys[listIndex],
-                                                );
-                                              }
-                                            },
-                                          ),
-                                  ),
-                                  if (!isEndReached)
-                                    VisibilityDetector(
-                                      key: const Key('load-more-detector'),
-                                      onVisibilityChanged: (visibilityInfo) {
-                                        if (visibilityInfo.visibleFraction >
-                                            0) {
-                                          Map<String, dynamic> params = ref
-                                              .watch(filtersProvider)
-                                              .toJson();
-                                          params['page'] =
-                                              (currentPage + 1).toString();
-                                          getMoreProjects(params: params);
-                                        }
 
-                                        if (visibilityInfo.visibleFraction >=
-                                            0) {
-                                          setState(() {
-                                            showScrollUpButton = true;
-                                          });
-                                        }
-                                      },
-                                      child: Container(
-                                        height: 1,
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                                    if (ref
+                                                        .watch(
+                                                            homePropertiesProvider
+                                                                .notifier)
+                                                        .getBudgetHomes(0, 0)
+                                                        .isNotEmpty) {
+                                                      widgetList.add(
+                                                          const BudgetHomes());
+                                                    }
+
+                                                    widgetList.add(
+                                                        const LocationHomes());
+
+                                                    if (ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .readyToMoveIn
+                                                        .isNotEmpty) {
+                                                      widgetList.add(
+                                                          const ReadyToMovein());
+                                                    }
+
+                                                    if (ref
+                                                        .watch(
+                                                            homePropertiesProvider
+                                                                .notifier)
+                                                        .getUltraLuxuryHomes()
+                                                        .isNotEmpty) {
+                                                      widgetList.add(
+                                                        const UltraLuxuryHomes(
+                                                          leftPadding: false,
+                                                        ),
+                                                      );
+                                                    }
+
+                                                    if (ref
+                                                        .watch(
+                                                            homePropertiesProvider)
+                                                        .editorsChoice
+                                                        .isNotEmpty) {
+                                                      widgetList.add(
+                                                        NewLaunchSection(
+                                                          title:
+                                                              "Editor's Choice",
+                                                          apartments: ref
+                                                              .watch(
+                                                                  homePropertiesProvider)
+                                                              .editorsChoice,
+                                                        ),
+                                                      );
+                                                    }
+                                                    int adsIndex = index ~/ 5;
+                                                    return widgetList[adsIndex %
+                                                        widgetList.length];
+                                                  }
+                                                }
+                                                {
+                                                  int listIndex =
+                                                      index - (index ~/ 5);
+
+                                                  return PropertyCard(
+                                                    apartment: ref
+                                                            .watch(
+                                                                homePropertiesProvider)
+                                                            .filteredApartments[
+                                                        listIndex],
+                                                    nextApartment: ref
+                                                            .watch(
+                                                                homePropertiesProvider)
+                                                            .filteredApartments
+                                                            .isNotEmpty
+                                                        ? ref
+                                                            .watch(
+                                                                homePropertiesProvider)
+                                                            .filteredApartments
+                                                            .first
+                                                        : null,
+                                                    isCompare: true,
+                                                    onCallPress: (context) {
+                                                      if (ref
+                                                          .watch(userProvider)
+                                                          .token
+                                                          .isEmpty) {
+                                                        errorSnackBar(context,
+                                                            'Please login first');
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const LoginScreen(
+                                                              goBack: true,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        _toggleOverlay(
+                                                            context,
+                                                            ref
+                                                                    .watch(
+                                                                        homePropertiesProvider)
+                                                                    .filteredApartments[
+                                                                listIndex],
+                                                            _globalKeys[
+                                                                listIndex]);
+                                                      }
+                                                    },
+                                                    globalKey:
+                                                        _globalKeys[listIndex],
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                    ),
+                                    if (!isEndReached)
+                                      VisibilityDetector(
+                                        key: const Key('load-more-detector'),
+                                        onVisibilityChanged: (visibilityInfo) {
+                                          if (visibilityInfo.visibleFraction >
+                                              0) {
+                                            Map<String, dynamic> params = ref
+                                                .watch(filtersProvider)
+                                                .toJson();
+                                            params['page'] =
+                                                (currentPage + 1).toString();
+                                            getMoreProjects(params: params);
+                                          }
+
+                                          if (visibilityInfo.visibleFraction >=
+                                              0) {
+                                            setState(() {
+                                              showScrollUpButton = true;
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                          height: 1,
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 16.0),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                             if (displayAds &&
@@ -2063,11 +2078,15 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                       ref
                                                           .read(filtersProvider
                                                               .notifier)
+                                                          .clearAllFilters();
+                                                      ref
+                                                          .read(filtersProvider
+                                                              .notifier)
                                                           .updateSelectedLocalities([
                                                         otherLocations[index]
                                                             ['name']
                                                       ]);
-
+                                                      getHomeApartments();
                                                       getFilteredApartments(
                                                           useDefaultParams:
                                                               true);
@@ -2077,7 +2096,7 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                         () {
                                                           _masterScrollController
                                                               .animateTo(
-                                                            0,
+                                                            500,
                                                             duration:
                                                                 const Duration(
                                                                     milliseconds:

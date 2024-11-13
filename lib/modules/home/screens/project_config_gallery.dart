@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:re_portal_frontend/modules/search/widgets/photo_scrolling_gallery.dart';
 import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';

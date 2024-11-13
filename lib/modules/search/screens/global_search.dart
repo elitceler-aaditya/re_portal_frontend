@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/screens/main_screen.dart';
 import 'package:re_portal_frontend/modules/home/widgets/custom_chip.dart';
 import 'package:re_portal_frontend/modules/search/models/search_result_model.dart';
 import 'package:re_portal_frontend/modules/search/screens/recently_viewed_section.dart';
@@ -70,6 +71,11 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
       // debugPrint("stackTrace: $stackTrace");
     }
     setState(() {});
+  }
+
+  Future<void> setSearch() async {
+    ref.read(filtersProvider.notifier).updateSelectedLocalities(localities);
+    ref.read(navBarIndexProvider.notifier).setNavBarIndex(1);
   }
 
   @override
@@ -716,11 +722,14 @@ class _GlobalSearchState extends ConsumerState<GlobalSearch> {
                   color: CustomColors.white,
                 ),
                 onTap: () {
-                  ref
-                      .read(filtersProvider.notifier)
-                      .updateSelectedLocalities(localities);
+                  // Future.wait([
+                  setSearch();
+                  // ]);
                   ref.read(navBarIndexProvider.notifier).setNavBarIndex(1);
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainScreen()));
                 },
               ),
             )

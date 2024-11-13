@@ -254,7 +254,6 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
           builder: (context) => PropertyDetails(
             apartment: apartment,
             heroTag: "builder-in-focus-${apartment.projectId}",
-            nextApartment: nextApartment,
           ),
         ),
       );
