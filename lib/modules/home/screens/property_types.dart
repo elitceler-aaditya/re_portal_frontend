@@ -46,41 +46,47 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: GestureDetector(
-          onTap: () async {
-            //get refresh token
-            // SharedPreferences prefs = await SharedPreferences.getInstance();
-            // await prefs.setString('refreshToken', "what tf?");
-            // String refreshToken = prefs.getString('refreshToken') ?? '';
-          },
-          child: RichText(
-            textAlign: TextAlign.start,
-            text: const TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Re',
-                  style: TextStyle(
-                    color: CustomColors.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Portal',
-                  style: TextStyle(
-                    color: CustomColors.secondary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(0xFFFCCBAE),
+                Color(0xFFF87988),
               ],
             ),
           ),
         ),
+        title: RichText(
+          textAlign: TextAlign.start,
+          text: const TextSpan(
+            children: [
+              TextSpan(
+                text: 'Re',
+                style: TextStyle(
+                  color: CustomColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              TextSpan(
+                text: 'Portal',
+                style: TextStyle(
+                  color: CustomColors.secondary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // PropertiesTiles(
             //   title: 'Commercial',
@@ -96,6 +102,15 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             //     );
             //   },
             // ),
+            const Text(
+              "Select Property Type",
+              style: TextStyle(
+                color: CustomColors.black50,
+                fontWeight: FontWeight.normal,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 10),
             PropertiesTiles(
               title: 'Villas',
               description: 'Luxurious villas and upscale properties',

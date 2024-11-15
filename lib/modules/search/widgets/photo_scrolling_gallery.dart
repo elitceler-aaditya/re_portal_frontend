@@ -1,201 +1,246 @@
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:re_portal_frontend/modules/shared/models/apartment_details_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'
+    as carousel;
 
-class PhotoScrollingGallery extends StatefulWidget {
-  final List<String> allImages;
-  final List<String> labels;
-  final List<double> breakPoints;
-  final List<String>? extraDetails;
-  final int galleryIndex;
-  final String image;
+class UnitPlanGallery extends StatefulWidget {
+  final List<UnitPlanConfig> unitPlans;
 
-  const PhotoScrollingGallery({
+  const UnitPlanGallery({
     super.key,
-    required this.allImages,
-    required this.labels,
-    required this.breakPoints,
-    required this.galleryIndex,
-    this.extraDetails,
-    required this.image,
+    required this.unitPlans,
   });
 
   @override
-  State<PhotoScrollingGallery> createState() => _PhotoScrollingGalleryState();
+  State<UnitPlanGallery> createState() => _UnitPlanGalleryState();
 }
 
-class _PhotoScrollingGalleryState extends State<PhotoScrollingGallery> {
-  int galleryIndex = 0;
-  PageController? galleryController;
+class _UnitPlanGalleryState extends State<UnitPlanGallery>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _current = 0;
+  late PageController _pageController;
+  final carousel.CarouselController _carouselController =
+      carousel.CarouselController();
+  bool _isZoomedIn = false;
 
   @override
   void initState() {
     super.initState();
-    galleryIndex = widget.galleryIndex;
-    galleryController =
-        PageController(initialPage: widget.allImages.indexOf(widget.image))
-          ..addListener(() {
-            setState(() {
-              galleryIndex = widget.breakPoints.indexWhere((breakpoint) =>
-                  (galleryController?.page?.toDouble() ?? 0) <= breakpoint);
-            });
-          });
+    _tabController = TabController(
+      length:
+          widget.unitPlans.length, // Use total length instead of grouped length
+      vsync: this,
+    );
+    _pageController = PageController();
   }
 
-  @override
-  void dispose() {
-    galleryController?.dispose();
-    super.dispose();
+  void _handleCarouselPageChange(int index, CarouselPageChangedReason reason) {
+    if (!_isZoomedIn) {
+      setState(() {
+        _current = index;
+      });
+    } else {
+      setState(() {
+        _isZoomedIn = false;
+      });
+    }
+  }
+
+  void _openImage(BuildContext context, String imageUrl) {
+    // upSlideTransition(context, PhotoView( imageUrl));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.black,
-      body: Stack(
-        children: [
-          PageView.builder(
-            controller: galleryController,
-            itemCount: widget.allImages.length,
-            itemBuilder: (context, imageIndex) {
-              return PhotoView(
-                imageProvider: NetworkImage(
-                  widget.allImages[imageIndex].trim(),
-                ),
-                minScale: PhotoViewComputedScale.contained,
-                maxScale: PhotoViewComputedScale.covered * 4,
-                initialScale: PhotoViewComputedScale.contained,
-                backgroundDecoration:
-                    const BoxDecoration(color: CustomColors.black),
-                loadingBuilder: (context, event) => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.error),
-                filterQuality: FilterQuality.high,
-                heroAttributes:
-                    PhotoViewHeroAttributes(tag: "image_$imageIndex"),
-                gestureDetectorBehavior: HitTestBehavior.opaque,
-              );
-            },
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: MediaQuery.of(context).padding.top + 60,
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top,
-                left: 0,
-                right: 10,
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white60,
+          tabs:
+              widget.unitPlans.map((plan) => Tab(text: plan.bHKType)).toList(),
+        ),
+      ),
+      body: widget.unitPlans.isEmpty
+          ? const Center(
+              child: Text(
+                'No plans available',
+                style: TextStyle(color: Colors.white),
               ),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-              ),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: CustomColors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 70,
-            left: 0,
-            right: 0,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            )
+          : Stack(
               children: [
-                Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ...List.generate(
-                          widget.labels.length,
-                          (index) => widget.labels[index].isEmpty
-                              ? const SizedBox()
-                              : Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: galleryIndex == index
-                                          ? CustomColors.white.withOpacity(0.4)
-                                          : Colors.transparent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      side: BorderSide(
-                                        color: CustomColors.white
-                                            .withOpacity(0.15),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        galleryIndex = index;
-                                      });
-                                      galleryController?.animateTo(
-                                        index == 0
-                                            ? 0
-                                            : MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                (widget.breakPoints[index - 1] +
-                                                    1),
-                                        duration:
-                                            const Duration(milliseconds: 500),
-                                        curve: Curves.easeInOut,
-                                      );
-                                    },
-                                    child: Text(
-                                      widget.labels[index],
-                                      style: TextStyle(
-                                        color: galleryIndex == index
-                                            ? CustomColors.white
-                                            : CustomColors.black50,
-                                      ),
-                                    ),
+                GestureDetector(
+                  onHorizontalDragEnd: (details) {
+                    if (_isZoomedIn) return;
+                    if (details.primaryVelocity == null) return;
+
+                    final currentPlan = widget.unitPlans[_tabController.index];
+                    final imageFiles = currentPlan.unitPlanConfigFiles;
+
+                    if (_current == imageFiles.length - 1 &&
+                        details.primaryVelocity! < 0 &&
+                        _tabController.index < _tabController.length - 1) {
+                      _tabController.animateTo(_tabController.index + 1);
+                      setState(() {
+                        _current = 0;
+                      });
+                    } else if (_current == 0 &&
+                        details.primaryVelocity! > 0 &&
+                        _tabController.index > 0) {
+                      _tabController.animateTo(_tabController.index - 1);
+                      setState(() {
+                        _current = 0;
+                      });
+                    }
+                  },
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: widget.unitPlans.map((plan) {
+                      final imageFiles = plan.unitPlanConfigFiles;
+
+                      if (imageFiles.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'No images available for this plan',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }
+
+                      return Container(
+                        color: Colors.black,
+                        child: Column(
+                          children: [
+                            FlutterCarousel.builder(
+                              itemCount: imageFiles.length,
+                              options: CarouselOptions(
+                                controller: _carouselController,
+                                aspectRatio: 16 / 9,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.6,
+                                viewportFraction: 1,
+                                initialPage: 0,
+                                enlargeCenterPage: true,
+                                onPageChanged: _handleCarouselPageChange,
+                                showIndicator: true,
+                                slideIndicator: const CircularSlideIndicator(
+                                  slideIndicatorOptions: SlideIndicatorOptions(
+                                    indicatorRadius: 4,
+                                    itemSpacing: 16,
+                                    currentIndicatorColor: Colors.white,
+                                    indicatorBackgroundColor: Colors.white54,
                                   ),
                                 ),
+                              ),
+                              itemBuilder: (context, index, realIndex) {
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0),
+                                      child: AnimatedSwitcher(
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        child: Text(
+                                          '${plan.unitPlanConfigFiles[index].facing} facing  |  ${plan.unitPlanConfigFiles[index].flatSize} sq.ft',
+                                          key: ValueKey<String>(
+                                              '${plan.bHKType}_${plan.unitPlanConfigFiles[index].flatSize}'),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => _openImage(
+                                          context, imageFiles[index].image),
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Image.network(
+                                          imageFiles[index].image,
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return Shimmer.fromColors(
+                                                baseColor: CustomColors.black25,
+                                                highlightColor:
+                                                    CustomColors.black10,
+                                                child: Container(
+                                                  height: 100,
+                                                  width: 320,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return const Center(
+                                              child: Row(
+                                                children: [
+                                                  Icon(Icons.error),
+                                                  SizedBox(width: 4),
+                                                  Text("Error loading image")
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    }).toList(),
                   ),
                 ),
-                if (widget.extraDetails != null &&
-                    widget.extraDetails!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 8),
-                    child: Text(
-                      widget.extraDetails![galleryIndex],
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: CustomColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
               ],
             ),
-          )
-        ],
-      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _pageController.dispose();
+    super.dispose();
   }
 }

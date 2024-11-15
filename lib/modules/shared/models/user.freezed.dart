@@ -20,11 +20,14 @@ User _$UserFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$User {
-  String get uid => throw _privateConstructorUsedError;
+  String get token => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
-  String get token => throw _privateConstructorUsedError;
+  int get iat => throw _privateConstructorUsedError;
+  double get lat => throw _privateConstructorUsedError;
+  double get lng => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,11 +44,14 @@ abstract class $UserCopyWith<$Res> {
       _$UserCopyWithImpl<$Res, User>;
   @useResult
   $Res call(
-      {String uid,
+      {String token,
+      String userId,
       String name,
       String email,
       String phoneNumber,
-      String token});
+      int iat,
+      double lat,
+      double lng});
 }
 
 /// @nodoc
@@ -63,16 +69,23 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uid = null,
+    Object? token = null,
+    Object? userId = null,
     Object? name = null,
     Object? email = null,
     Object? phoneNumber = null,
-    Object? token = null,
+    Object? iat = null,
+    Object? lat = null,
+    Object? lng = null,
   }) {
     return _then(_value.copyWith(
-      uid: null == uid
-          ? _value.uid
-          : uid // ignore: cast_nullable_to_non_nullable
+      token: null == token
+          ? _value.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       name: null == name
           ? _value.name
@@ -86,10 +99,18 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String,
+      iat: null == iat
+          ? _value.iat
+          : iat // ignore: cast_nullable_to_non_nullable
+              as int,
+      lat: null == lat
+          ? _value.lat
+          : lat // ignore: cast_nullable_to_non_nullable
+              as double,
+      lng: null == lng
+          ? _value.lng
+          : lng // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -102,11 +123,14 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String uid,
+      {String token,
+      String userId,
       String name,
       String email,
       String phoneNumber,
-      String token});
+      int iat,
+      double lat,
+      double lng});
 }
 
 /// @nodoc
@@ -121,16 +145,23 @@ class __$$UserImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uid = null,
+    Object? token = null,
+    Object? userId = null,
     Object? name = null,
     Object? email = null,
     Object? phoneNumber = null,
-    Object? token = null,
+    Object? iat = null,
+    Object? lat = null,
+    Object? lng = null,
   }) {
     return _then(_$UserImpl(
-      uid: null == uid
-          ? _value.uid
-          : uid // ignore: cast_nullable_to_non_nullable
+      token: null == token
+          ? _value.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       name: null == name
           ? _value.name
@@ -144,10 +175,18 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      token: null == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String,
+      iat: null == iat
+          ? _value.iat
+          : iat // ignore: cast_nullable_to_non_nullable
+              as int,
+      lat: null == lat
+          ? _value.lat
+          : lat // ignore: cast_nullable_to_non_nullable
+              as double,
+      lng: null == lng
+          ? _value.lng
+          : lng // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -156,18 +195,24 @@ class __$$UserImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserImpl implements _User {
   const _$UserImpl(
-      {this.uid = "",
+      {this.token = "",
+      this.userId = "",
       this.name = "",
       this.email = "",
       this.phoneNumber = "",
-      this.token = ""});
+      this.iat = 0,
+      this.lat = 0.0,
+      this.lng = 0.0});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
 
   @override
   @JsonKey()
-  final String uid;
+  final String token;
+  @override
+  @JsonKey()
+  final String userId;
   @override
   @JsonKey()
   final String name;
@@ -179,11 +224,17 @@ class _$UserImpl implements _User {
   final String phoneNumber;
   @override
   @JsonKey()
-  final String token;
+  final int iat;
+  @override
+  @JsonKey()
+  final double lat;
+  @override
+  @JsonKey()
+  final double lng;
 
   @override
   String toString() {
-    return 'User(uid: $uid, name: $name, email: $email, phoneNumber: $phoneNumber, token: $token)';
+    return 'User(token: $token, userId: $userId, name: $name, email: $email, phoneNumber: $phoneNumber, iat: $iat, lat: $lat, lng: $lng)';
   }
 
   @override
@@ -191,18 +242,21 @@ class _$UserImpl implements _User {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserImpl &&
-            (identical(other.uid, uid) || other.uid == uid) &&
+            (identical(other.token, token) || other.token == token) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
-            (identical(other.token, token) || other.token == token));
+            (identical(other.iat, iat) || other.iat == iat) &&
+            (identical(other.lat, lat) || other.lat == lat) &&
+            (identical(other.lng, lng) || other.lng == lng));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, uid, name, email, phoneNumber, token);
+  int get hashCode => Object.hash(
+      runtimeType, token, userId, name, email, phoneNumber, iat, lat, lng);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -222,16 +276,21 @@ class _$UserImpl implements _User {
 
 abstract class _User implements User {
   const factory _User(
-      {final String uid,
+      {final String token,
+      final String userId,
       final String name,
       final String email,
       final String phoneNumber,
-      final String token}) = _$UserImpl;
+      final int iat,
+      final double lat,
+      final double lng}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
   @override
-  String get uid;
+  String get token;
+  @override
+  String get userId;
   @override
   String get name;
   @override
@@ -239,7 +298,11 @@ abstract class _User implements User {
   @override
   String get phoneNumber;
   @override
-  String get token;
+  int get iat;
+  @override
+  double get lat;
+  @override
+  double get lng;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.

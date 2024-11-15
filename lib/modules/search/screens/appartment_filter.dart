@@ -23,6 +23,7 @@ class AppartmentFilter extends ConsumerStatefulWidget {
 
 class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
   bool _loading = false;
+  bool applyFilter = false;
   int? appartmentType;
   List<String> selectedConfigurations = [];
 
@@ -303,807 +304,793 @@ class _AppartmentFilterState extends ConsumerState<AppartmentFilter> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 50),
-                      const Text(
-                        "Filters",
+        SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 50),
+                    const Text(
+                      "Filters",
+                      style: TextStyle(
+                        color: CustomColors.primary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    RichText(
+                      text: const TextSpan(
                         style: TextStyle(
-                          color: CustomColors.primary,
-                          fontSize: 20,
+                          color: CustomColors.secondary,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            color: CustomColors.secondary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          children: [
-                            TextSpan(text: "You are searching in "),
-                            TextSpan(
-                              text: "Hyderabad",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Divider(
-                        color: CustomColors.secondary,
-                        height: 30,
-                      ),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            "Localities",
-                            style: TextStyle(
-                              color: CustomColors.secondary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            "Add upto 4 locations",
-                            style: TextStyle(
-                              color: CustomColors.black50,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          TextSpan(text: "You are searching in "),
+                          TextSpan(
+                            text: "Hyderabad",
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                      //search box
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 44,
-                        child: TextField(
-                          controller: _localitySearchController,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search for localities',
-                            hintStyle: const TextStyle(
-                                color: CustomColors.black25,
-                                fontWeight: FontWeight.w600),
-                            prefixIcon: const Icon(Icons.search,
-                                color: CustomColors.black50),
-                            filled: true,
-                            fillColor: CustomColors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: CustomColors.black25),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: CustomColors.black25),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: CustomColors.primary),
-                            ),
-                          ),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: CustomColors.black,
+                    ),
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Localities",
+                          style: TextStyle(
+                            color: CustomColors.secondary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            ...ref
-                                .watch(filtersProvider)
-                                .selectedLocalities
-                                .take(4)
-                                .map(
-                                  (e) => CustomListChip(
-                                    text: e,
-                                    isSelected: true,
-                                    onTap: () {
-                                      final List<String> loc = ref
-                                          .watch(filtersProvider)
-                                          .selectedLocalities;
-                                      loc.remove(e);
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateSelectedLocalities(loc);
-                                    },
-                                  ),
-                                ),
-                            if (_localitySearchController.text.isNotEmpty &&
-                                ref
-                                        .watch(filtersProvider)
-                                        .selectedLocalities
-                                        .length <
-                                    4)
-                              ...ref
-                                  .watch(localityListProvider)
-                                  .toSet()
-                                  .where((e) => e.toLowerCase().contains(
-                                      _localitySearchController.text
-                                          .trim()
-                                          .toLowerCase()))
-                                  .where((e) => !ref
-                                      .watch(filtersProvider)
-                                      .selectedLocalities
-                                      .contains(e))
-                                  .take(4 -
-                                      ref
-                                          .watch(filtersProvider)
-                                          .selectedLocalities
-                                          .length)
-                                  .map(
-                                    (e) => CustomListChip(
-                                      text: e,
-                                      isSelected: false,
-                                      onTap: () {
-                                        setState(() {
-                                          if (ref
-                                                  .watch(filtersProvider)
-                                                  .selectedLocalities
-                                                  .length <
-                                              4) {
-                                            List<String> loc = ref
-                                                .watch(filtersProvider)
-                                                .selectedLocalities
-                                                .toList();
-                                            loc.add(e);
-                                            ref
-                                                .read(filtersProvider.notifier)
-                                                .updateSelectedLocalities(loc);
-
-                                            _localitySearchController.clear();
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
-
-                      const Divider(
-                        color: CustomColors.secondary,
-                        height: 30,
-                      ),
-
-                      const Text(
-                        "Apartment Types",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-
-                      SizedBox(
-                        height: 36,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              CustomRadioButton(
-                                text: "All",
-                                isSelected: appartmentType == null,
-                                onTap: () {
-                                  setState(() {
-                                    appartmentType = null;
-                                  });
-                                },
-                              ),
-                              ...List.generate(
-                                apartmentTypeList.length,
-                                (index) => CustomRadioButton(
-                                  text: apartmentTypeList[index],
-                                  isSelected: appartmentType == index,
-                                  onTap: () {
-                                    //tap to unselect
-                                    if (appartmentType == index) {
-                                      setState(() {
-                                        appartmentType = null;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        appartmentType = index;
-                                      });
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
+                        Text(
+                          "Add upto 4 locations",
+                          style: TextStyle(
+                            color: CustomColors.black50,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-
-                      const Divider(
-                        color: CustomColors.secondary,
-                        height: 30,
-                      ),
-
-                      const Text(
-                        "Amenities",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      //search box
-                      const SizedBox(height: 6),
-                      SizedBox(
-                        height: 44,
-                        child: TextField(
-                          controller: _amenitySearchController,
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Search Amenities',
-                            hintStyle: const TextStyle(
-                                color: CustomColors.black25,
-                                fontWeight: FontWeight.w600),
-                            prefixIcon: const Icon(Icons.search,
-                                color: CustomColors.black50),
-                            filled: true,
-                            fillColor: CustomColors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: CustomColors.black25),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: CustomColors.black25),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: CustomColors.primary),
-                            ),
+                      ],
+                    ),
+                    //search box
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 44,
+                      child: TextField(
+                        controller: _localitySearchController,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search for localities',
+                          hintStyle: const TextStyle(
+                              color: CustomColors.black25,
+                              fontWeight: FontWeight.w600),
+                          prefixIcon: const Icon(Icons.search,
+                              color: CustomColors.black50),
+                          filled: true,
+                          fillColor: CustomColors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: CustomColors.black25),
                           ),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: CustomColors.black,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: CustomColors.black25),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: CustomColors.primary),
                           ),
                         ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: CustomColors.black,
+                        ),
                       ),
-                      const SizedBox(height: 6),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            if (_amenitySearchController.text.isNotEmpty)
-                              ...basicAmenities
-                                  .where((e) => e.toLowerCase().contains(
-                                      _amenitySearchController.text
-                                          .trim()
-                                          .toLowerCase()))
-                                  .map(
-                                    (e) => CustomListChip(
-                                      text: e,
-                                      isSelected: amenities.contains(e),
-                                      onTap: () {
-                                        setState(() {
-                                          if (amenities.contains(e)) {
-                                            amenities.remove(e);
-                                          } else {
-                                            amenities.add(e);
-                                          }
-                                        });
-                                        _amenitySearchController.clear();
-                                      },
-                                    ),
-                                  ),
-                            if (_amenitySearchController.text.isEmpty)
-                              ...amenities.map(
+                    ),
+                    const SizedBox(height: 4),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ...ref
+                              .watch(filtersProvider)
+                              .selectedLocalities
+                              .take(4)
+                              .map(
                                 (e) => CustomListChip(
                                   text: e,
                                   isSelected: true,
                                   onTap: () {
-                                    setState(() {
-                                      amenities.remove(e);
-                                    });
-                                    _amenitySearchController.clear();
+                                    final List<String> loc = ref
+                                        .watch(filtersProvider)
+                                        .selectedLocalities;
+                                    loc.remove(e);
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateSelectedLocalities(loc);
                                   },
                                 ),
                               ),
-                            if (_amenitySearchController.text.isEmpty)
-                              ...basicAmenities
-                                  .where((e) => !amenities.contains(e))
-                                  .map(
-                                    (e) => CustomListChip(
-                                      text: e,
-                                      isSelected: false,
-                                      onTap: () {
-                                        setState(() {
-                                          if (amenities.contains(e)) {
-                                            amenities.remove(e);
-                                          } else {
-                                            amenities.add(e);
-                                          }
-                                        });
-                                        _amenitySearchController.clear();
-                                      },
-                                    ),
+                          if (_localitySearchController.text.isNotEmpty &&
+                              ref
+                                      .watch(filtersProvider)
+                                      .selectedLocalities
+                                      .length <
+                                  4)
+                            ...ref
+                                .watch(localityListProvider)
+                                .toSet()
+                                .where((e) => e.toLowerCase().contains(
+                                    _localitySearchController.text
+                                        .trim()
+                                        .toLowerCase()))
+                                .where((e) => !ref
+                                    .watch(filtersProvider)
+                                    .selectedLocalities
+                                    .contains(e))
+                                .take(4 -
+                                    ref
+                                        .watch(filtersProvider)
+                                        .selectedLocalities
+                                        .length)
+                                .map(
+                                  (e) => CustomListChip(
+                                    text: e,
+                                    isSelected: false,
+                                    onTap: () {
+                                      setState(() {
+                                        if (ref
+                                                .watch(filtersProvider)
+                                                .selectedLocalities
+                                                .length <
+                                            4) {
+                                          List<String> loc = ref
+                                              .watch(filtersProvider)
+                                              .selectedLocalities
+                                              .toList();
+                                          loc.add(e);
+                                          ref
+                                              .read(filtersProvider.notifier)
+                                              .updateSelectedLocalities(loc);
+
+                                          _localitySearchController.clear();
+                                        }
+                                      });
+                                    },
                                   ),
+                                ),
+                        ],
+                      ),
+                    ),
+
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+
+                    const Text(
+                      "Apartment Types",
+                      style: TextStyle(
+                        color: CustomColors.secondary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+
+                    SizedBox(
+                      height: 36,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            CustomRadioButton(
+                              text: "All",
+                              isSelected: appartmentType == null,
+                              onTap: () {
+                                setState(() {
+                                  appartmentType = null;
+                                });
+                              },
+                            ),
+                            ...List.generate(
+                              apartmentTypeList.length,
+                              (index) => CustomRadioButton(
+                                text: apartmentTypeList[index],
+                                isSelected: appartmentType == index,
+                                onTap: () {
+                                  //tap to unselect
+                                  if (appartmentType == index) {
+                                    setState(() {
+                                      appartmentType = null;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      appartmentType = index;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
                           ],
                         ),
                       ),
+                    ),
 
-                      const Divider(
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+
+                    const Text(
+                      "Amenities",
+                      style: TextStyle(
                         color: CustomColors.secondary,
-                        height: 30,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const Text(
-                        "Configuration",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                    ),
+                    //search box
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: 44,
+                      child: TextField(
+                        controller: _amenitySearchController,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Search Amenities',
+                          hintStyle: const TextStyle(
+                              color: CustomColors.black25,
+                              fontWeight: FontWeight.w600),
+                          prefixIcon: const Icon(Icons.search,
+                              color: CustomColors.black50),
+                          filled: true,
+                          fillColor: CustomColors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: CustomColors.black25),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: CustomColors.black25),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide:
+                                const BorderSide(color: CustomColors.primary),
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: CustomColors.black,
                         ),
                       ),
-                      const SizedBox(height: 6),
-
-                      SizedBox(
-                        height: 36,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: configurationList.length,
-                          itemBuilder: (context, index) {
-                            return CustomRadioButton(
-                              text: configurationList[index],
-                              isSelected: selectedConfigurations
-                                  .contains(configurationList[index]),
-                              onTap: () {
-                                setState(() {
-                                  if (selectedConfigurations
-                                      .contains(configurationList[index])) {
-                                    selectedConfigurations = [];
-                                  } else {
-                                    selectedConfigurations = [
-                                      configurationList[index]
-                                    ];
-                                  }
-                                });
-                              },
-                            );
-                          },
-                        ),
+                    ),
+                    const SizedBox(height: 6),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          if (_amenitySearchController.text.isNotEmpty)
+                            ...basicAmenities
+                                .where((e) => e.toLowerCase().contains(
+                                    _amenitySearchController.text
+                                        .trim()
+                                        .toLowerCase()))
+                                .map(
+                                  (e) => CustomListChip(
+                                    text: e,
+                                    isSelected: amenities.contains(e),
+                                    onTap: () {
+                                      setState(() {
+                                        if (amenities.contains(e)) {
+                                          amenities = List.from(amenities)
+                                            ..remove(e);
+                                        } else {
+                                          amenities = List.from(amenities)
+                                            ..add(e);
+                                        }
+                                      });
+                                      _amenitySearchController.clear();
+                                    },
+                                  ),
+                                ),
+                          if (_amenitySearchController.text.isEmpty)
+                            ...amenities.map(
+                              (e) => CustomListChip(
+                                text: e,
+                                isSelected: true,
+                                onTap: () {
+                                  setState(() {
+                                    amenities.remove(e);
+                                  });
+                                  _amenitySearchController.clear();
+                                },
+                              ),
+                            ),
+                          if (_amenitySearchController.text.isEmpty)
+                            ...basicAmenities
+                                .where((e) => !amenities.contains(e))
+                                .map(
+                                  (e) => CustomListChip(
+                                    text: e,
+                                    isSelected: false,
+                                    onTap: () {
+                                      setState(() {
+                                        if (amenities.contains(e)) {
+                                          amenities = List.from(amenities)
+                                            ..remove(e);
+                                        } else {
+                                          amenities = List.from(amenities)
+                                            ..add(e);
+                                        }
+                                      });
+                                      _amenitySearchController.clear();
+                                    },
+                                  ),
+                                ),
+                        ],
                       ),
+                    ),
 
-                      const Divider(
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+                    const Text(
+                      "Configuration",
+                      style: TextStyle(
                         color: CustomColors.secondary,
-                        height: 30,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const Text(
-                        "Type",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
+                    ),
+                    const SizedBox(height: 6),
 
-                      SizedBox(
-                        height: 36,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: typeList.length,
-                          itemBuilder: (context, index) {
-                            return CustomRadioButton(
-                              text: typeList[index],
-                              isSelected:
-                                  ref.watch(filtersProvider).newProject ==
-                                              'true' &&
-                                          index == 0 ||
-                                      ref.watch(filtersProvider).readyToMove ==
-                                              'true' &&
-                                          index == 1 ||
-                                      ref
+                    SizedBox(
+                      height: 36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: configurationList.length,
+                        itemBuilder: (context, index) {
+                          return CustomRadioButton(
+                            text: configurationList[index],
+                            isSelected: selectedConfigurations
+                                .contains(configurationList[index]),
+                            onTap: () {
+                              setState(() {
+                                List<String> newConfigurations =
+                                    List.from(selectedConfigurations);
+                                if (newConfigurations
+                                    .contains(configurationList[index])) {
+                                  newConfigurations
+                                      .remove(configurationList[index]);
+                                } else {
+                                  newConfigurations
+                                      .add(configurationList[index]);
+                                }
+                                selectedConfigurations = newConfigurations;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+                    const Text(
+                      "Type",
+                      style: TextStyle(
+                        color: CustomColors.secondary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+
+                    SizedBox(
+                      height: 36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: typeList.length,
+                        itemBuilder: (context, index) {
+                          return CustomRadioButton(
+                            text: typeList[index],
+                            isSelected: ref.watch(filtersProvider).newProject ==
+                                        'true' &&
+                                    index == 0 ||
+                                ref.watch(filtersProvider).readyToMove ==
+                                        'true' &&
+                                    index == 1 ||
+                                ref.watch(filtersProvider).underConstruction ==
+                                        'true' &&
+                                    index == 2,
+                            onTap: () {
+                              setState(() {
+                                switch (index) {
+                                  case 0:
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateNewProject(ref
+                                                    .watch(filtersProvider)
+                                                    .newProject ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                    break;
+                                  case 1:
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateReadyToMove(ref
+                                                    .watch(filtersProvider)
+                                                    .readyToMove ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                    break;
+                                  case 2:
+                                    ref
+                                        .read(filtersProvider.notifier)
+                                        .updateUnderConstruction(ref
+                                                    .watch(filtersProvider)
+                                                    .underConstruction ==
+                                                'true'
+                                            ? 'false'
+                                            : 'true');
+                                    break;
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+                    const Text(
+                      "Posted By",
+                      style: TextStyle(
+                        color: CustomColors.secondary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      height: 36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: postedByList.length,
+                        itemBuilder: (context, index) {
+                          return CustomRadioButton(
+                            text: postedByList[index]['label'],
+                            isSelected: (index == 0 &&
+                                    ref
+                                            .watch(filtersProvider)
+                                            .postedByBuilder ==
+                                        'true') ||
+                                (index == 1 &&
+                                    ref.watch(filtersProvider).postedByOwner ==
+                                        'true') ||
+                                (index == 2 &&
+                                    ref.watch(filtersProvider).postedByAgent ==
+                                        'true'),
+                            onTap: () {
+                              setState(() {
+                                if (index == 0) {
+                                  ref
+                                      .read(filtersProvider.notifier)
+                                      .updatePostedByBuilder(ref
                                                   .watch(filtersProvider)
-                                                  .underConstruction ==
-                                              'true' &&
-                                          index == 2,
-                              onTap: () {
-                                setState(() {
-                                  switch (index) {
-                                    case 0:
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateNewProject(ref
-                                                      .watch(filtersProvider)
-                                                      .newProject ==
-                                                  'true'
-                                              ? 'false'
-                                              : 'true');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateReadyToMove('false');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateUnderConstruction('false');
-                                      break;
-                                    case 1:
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateReadyToMove(ref
-                                                      .watch(filtersProvider)
-                                                      .readyToMove ==
-                                                  'true'
-                                              ? 'false'
-                                              : 'true');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateNewProject('false');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateUnderConstruction('false');
-                                      break;
-                                    case 2:
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateUnderConstruction(ref
-                                                      .watch(filtersProvider)
-                                                      .underConstruction ==
-                                                  'true'
-                                              ? 'false'
-                                              : 'true');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateNewProject('false');
-                                      ref
-                                          .read(filtersProvider.notifier)
-                                          .updateReadyToMove('false');
-                                      break;
-                                  }
-                                });
-                              },
-                            );
-                          },
-                        ),
+                                                  .postedByBuilder ==
+                                              'true'
+                                          ? 'false'
+                                          : 'true');
+                                } else if (index == 1) {
+                                  ref
+                                      .read(filtersProvider.notifier)
+                                      .updatePostedByOwner(ref
+                                                  .watch(filtersProvider)
+                                                  .postedByOwner ==
+                                              'true'
+                                          ? 'false'
+                                          : 'true');
+                                } else if (index == 2) {
+                                  ref
+                                      .read(filtersProvider.notifier)
+                                      .updatePostedByAgent(ref
+                                                  .watch(filtersProvider)
+                                                  .postedByAgent ==
+                                              'true'
+                                          ? 'false'
+                                          : 'true');
+                                }
+                              });
+                            },
+                          );
+                        },
                       ),
+                    ),
 
-                      const Divider(
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+
+                    const Text(
+                      "Sale Type",
+                      style: TextStyle(
                         color: CustomColors.secondary,
-                        height: 30,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const Text(
-                        "Posted By",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      SizedBox(
-                        height: 36,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: postedByList.length,
-                          itemBuilder: (context, index) {
-                            return CustomRadioButton(
-                              text: postedByList[index]['label'],
-                              isSelected: (index == 0 &&
-                                      ref
-                                              .watch(filtersProvider)
-                                              .postedByBuilder ==
-                                          'true') ||
-                                  (index == 1 &&
-                                      ref
-                                              .watch(filtersProvider)
-                                              .postedByOwner ==
-                                          'true') ||
-                                  (index == 2 &&
-                                      ref
-                                              .watch(filtersProvider)
-                                              .postedByAgent ==
-                                          'true'),
-                              onTap: () {
-                                setState(() {
-                                  if (index == 0) {
-                                    ref
-                                        .read(filtersProvider.notifier)
-                                        .updatePostedByBuilder(ref
-                                                    .watch(filtersProvider)
-                                                    .postedByBuilder ==
-                                                'true'
-                                            ? 'false'
-                                            : 'true');
-                                  } else if (index == 1) {
-                                    ref
-                                        .read(filtersProvider.notifier)
-                                        .updatePostedByOwner(ref
-                                                    .watch(filtersProvider)
-                                                    .postedByOwner ==
-                                                'true'
-                                            ? 'false'
-                                            : 'true');
-                                  } else if (index == 2) {
-                                    ref
-                                        .read(filtersProvider.notifier)
-                                        .updatePostedByAgent(ref
-                                                    .watch(filtersProvider)
-                                                    .postedByAgent ==
-                                                'true'
-                                            ? 'false'
-                                            : 'true');
-                                  }
-                                });
-                              },
-                            );
-                          },
-                        ),
-                      ),
+                    ),
+                    const SizedBox(height: 6),
 
-                      const Divider(
+                    SizedBox(
+                      height: 36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: saleTypeList.length,
+                        itemBuilder: (context, index) {
+                          return CustomRadioButton(
+                            text: saleTypeList[index]['label'],
+                            isSelected: (index == 0 &&
+                                    ref.watch(filtersProvider).newSaleType ==
+                                        'true') ||
+                                (index == 1 &&
+                                    ref.watch(filtersProvider).resaleType ==
+                                        'true'),
+                            onTap: () {
+                              setState(() {
+                                if (index == 0) {
+                                  ref
+                                      .read(filtersProvider.notifier)
+                                      .updateNewSaleType(ref
+                                                  .watch(filtersProvider)
+                                                  .newSaleType ==
+                                              'true'
+                                          ? 'false'
+                                          : 'true');
+                                } else if (index == 1) {
+                                  ref
+                                      .read(filtersProvider.notifier)
+                                      .updateResaleType(ref
+                                                  .watch(filtersProvider)
+                                                  .resaleType ==
+                                              'true'
+                                          ? 'false'
+                                          : 'true');
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+
+                    const Text(
+                      "Budget",
+                      style: TextStyle(
                         color: CustomColors.secondary,
-                        height: 30,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-
-                      const Text(
-                        "Sale Type",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("₹${formatBudget(_budgetSliderMin)}"),
+                        Text("₹${formatBudget(_budgetSliderMax)}"),
+                      ],
+                    ),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: CustomColors.primary,
+                        inactiveTrackColor: CustomColors.black10,
+                        thumbColor: CustomColors.primary,
+                        overlayColor: CustomColors.primary.withOpacity(0.2),
+                        valueIndicatorColor: CustomColors.primary,
+                        valueIndicatorTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 6),
-
-                      SizedBox(
-                        height: 36,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: saleTypeList.length,
-                          itemBuilder: (context, index) {
-                            return CustomRadioButton(
-                              text: saleTypeList[index]['label'],
-                              isSelected: (index == 0 &&
-                                      ref.watch(filtersProvider).newSaleType ==
-                                          'true') ||
-                                  (index == 1 &&
-                                      ref.watch(filtersProvider).resaleType ==
-                                          'true'),
-                              onTap: () {
-                                setState(() {
-                                  if (index == 0) {
-                                    ref
-                                        .read(filtersProvider.notifier)
-                                        .updateNewSaleType(ref
-                                                    .watch(filtersProvider)
-                                                    .newSaleType ==
-                                                'true'
-                                            ? 'false'
-                                            : 'true');
-                                  } else if (index == 1) {
-                                    ref
-                                        .read(filtersProvider.notifier)
-                                        .updateResaleType(ref
-                                                    .watch(filtersProvider)
-                                                    .resaleType ==
-                                                'true'
-                                            ? 'false'
-                                            : 'true');
-                                  }
-                                });
-                              },
-                            );
-                          },
+                      child: RangeSlider(
+                        min: _minBudget,
+                        max: _maxBudget,
+                        divisions: ref
+                            .watch(homePropertiesProvider)
+                            .allApartments
+                            .length,
+                        labels: RangeLabels(
+                          '₹${formatBudget(_budgetSliderMin)}',
+                          '₹${formatBudget(_budgetSliderMax)}',
                         ),
+                        values: RangeValues(_budgetSliderMin, _budgetSliderMax),
+                        onChanged: (RangeValues values) {
+                          setState(() {
+                            _budgetSliderMin = values.start;
+                            _budgetSliderMax = values.end;
+                          });
+                        },
                       ),
+                    ),
 
-                      const Divider(
+                    const Divider(
+                      color: CustomColors.secondary,
+                      height: 30,
+                    ),
+                    const Text(
+                      "Flat Size",
+                      style: TextStyle(
                         color: CustomColors.secondary,
-                        height: 30,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-
-                      const Text(
-                        "Budget",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("${_flatSizeSliderMin.toInt()} sq.ft"),
+                        Text("${_flatSizeSliderMax.toInt()} sq.ft"),
+                      ],
+                    ),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: CustomColors.primary,
+                        inactiveTrackColor: CustomColors.black10,
+                        thumbColor: CustomColors.primary,
+                        overlayColor: CustomColors.primary.withOpacity(0.2),
+                        valueIndicatorColor: CustomColors.primary,
+                        valueIndicatorTextStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("₹${formatBudget(_budgetSliderMin)}"),
-                          Text("₹${formatBudget(_budgetSliderMax)}"),
-                        ],
+                      child: RangeSlider(
+                        min: _minFlatSize,
+                        max: _maxFlatSize,
+                        divisions: ref
+                            .watch(homePropertiesProvider)
+                            .allApartments
+                            .length,
+                        labels: RangeLabels(
+                          '${_flatSizeSliderMin.toStringAsFixed(1)} sq.ft',
+                          '${_flatSizeSliderMax.toInt()} sq.ft',
+                        ),
+                        values:
+                            RangeValues(_flatSizeSliderMin, _flatSizeSliderMax),
+                        onChanged: (RangeValues values) {
+                          setState(() {
+                            _flatSizeSliderMin = values.start;
+                            _flatSizeSliderMax = values.end;
+                          });
+                        },
                       ),
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: CustomColors.primary,
-                          inactiveTrackColor: CustomColors.black10,
-                          thumbColor: CustomColors.primary,
-                          overlayColor: CustomColors.primary.withOpacity(0.2),
-                          valueIndicatorColor: CustomColors.primary,
-                          valueIndicatorTextStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
+        ),
+        Positioned(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 60,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 10,
+                ),
+              ],
+              color: Colors.white,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      ref.read(filtersProvider.notifier).clearAllFilters();
+                    },
+                    child: Container(
+                      height: 60,
+                      width: double.infinity,
+                      color: Colors.white,
+                      child: const Center(
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: CustomColors.black,
+                            fontSize: 16,
                           ),
                         ),
-                        child: RangeSlider(
-                          min: _minBudget,
-                          max: _maxBudget,
-                          divisions: ref
-                              .watch(homePropertiesProvider)
-                              .allApartments
-                              .length,
-                          labels: RangeLabels(
-                            '₹${formatBudget(_budgetSliderMin)}',
-                            '₹${formatBudget(_budgetSliderMax)}',
-                          ),
-                          values:
-                              RangeValues(_budgetSliderMin, _budgetSliderMax),
-                          onChanged: (RangeValues values) {
-                            setState(() {
-                              _budgetSliderMin = values.start;
-                              _budgetSliderMax = values.end;
-                            });
-                          },
-                        ),
                       ),
-
-                      const Divider(
-                        color: CustomColors.secondary,
-                        height: 30,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      updateFilters();
+                    },
+                    child: Container(
+                      height: 60,
+                      width: double.infinity,
+                      color: CustomColors.primary20,
+                      child: Center(
+                        child: _loading
+                            ? const Center(
+                                child: CircularProgressIndicator(
+                                  color: CustomColors.primary,
+                                ),
+                              )
+                            : const Text(
+                                "Apply",
+                                style: TextStyle(
+                                  color: CustomColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
                       ),
-                      const Text(
-                        "Flat Size",
-                        style: TextStyle(
-                          color: CustomColors.secondary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text("${_flatSizeSliderMin.toInt()} sq.ft"),
-                          Text("${_flatSizeSliderMax.toInt()} sq.ft"),
-                        ],
-                      ),
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: CustomColors.primary,
-                          inactiveTrackColor: CustomColors.black10,
-                          thumbColor: CustomColors.primary,
-                          overlayColor: CustomColors.primary.withOpacity(0.2),
-                          valueIndicatorColor: CustomColors.primary,
-                          valueIndicatorTextStyle: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        child: RangeSlider(
-                          min: _minFlatSize,
-                          max: _maxFlatSize,
-                          divisions: ref
-                              .watch(homePropertiesProvider)
-                              .allApartments
-                              .length,
-                          labels: RangeLabels(
-                            '${_flatSizeSliderMin.toStringAsFixed(1)} sq.ft',
-                            '${_flatSizeSliderMax.toInt()} sq.ft',
-                          ),
-                          values: RangeValues(
-                              _flatSizeSliderMin, _flatSizeSliderMax),
-                          onChanged: (RangeValues values) {
-                            setState(() {
-                              _flatSizeSliderMin = values.start;
-                              _flatSizeSliderMax = values.end;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-        Container(
-          height: 60,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                spreadRadius: 10,
-              ),
-            ],
-            color: Colors.white,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    height: 60,
-                    width: double.infinity,
-                    color: Colors.white,
-                    child: const Center(
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(
-                          color: CustomColors.black,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    updateFilters();
-                  },
-                  child: Container(
-                    height: 60,
-                    width: double.infinity,
-                    color: CustomColors.primary20,
-                    child: Center(
-                      child: _loading
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: CustomColors.primary,
-                              ),
-                            )
-                          : const Text(
-                              "Apply",
-                              style: TextStyle(
-                                color: CustomColors.primary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        )
       ],
     );
   }

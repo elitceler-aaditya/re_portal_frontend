@@ -6,9 +6,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/best_deals_section.dart';
 import 'package:re_portal_frontend/modules/home/widgets/builder_in_focus.dart';
+import 'package:re_portal_frontend/modules/home/widgets/category_row.dart';
+import 'package:re_portal_frontend/modules/home/widgets/limelight.dart';
+import 'package:re_portal_frontend/modules/home/widgets/sponsored_ads.dart';
 import 'package:re_portal_frontend/modules/home/widgets/text_switcher.dart';
+import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/search/screens/global_search.dart';
-import 'package:re_portal_frontend/modules/search/screens/search_apartments_results.dart';
 import 'package:re_portal_frontend/modules/search/screens/user_location_properties.dart';
 import 'package:re_portal_frontend/modules/search/widgets/editors_choice_card.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_properties.dart';
@@ -18,15 +21,17 @@ import 'package:re_portal_frontend/modules/home/widgets/ready_to_movein.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
+import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
-import 'package:re_portal_frontend/riverpod/search_bar.dart';
+import 'package:re_portal_frontend/riverpod/open_filters.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shimmer/shimmer.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +42,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<BuilderDataModel> builderData = [];
-  List<ApartmentModel> allApartments = [];
   List<ApartmentModel> bestDeals = [];
   List<ApartmentModel> selectedProperties = [];
   List<ApartmentModel> editorsChoice = [];
@@ -45,50 +49,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<ApartmentModel> newProjects = [];
   List<ApartmentModel> readyToMoveIn = [];
   List<ApartmentModel> lifestyleProjects = [];
+  List<ApartmentModel> limelight = [];
+  List<ApartmentModel> sponsoredAd = [];
   bool loading = true;
-  final List<String> _searchOptions = [
-    'apartments',
-    'builders',
-    'locations',
-  ];
-
-  List<Map<String, dynamic>> categoryOptions = [
-    {
-      'title': 'Affordable Homes',
-      'filter': FiltersModel(affordableHomes: 'true'),
-    },
-    {
-      'title': 'Large Living Spaces',
-      'filter': FiltersModel(largeLivingSpaces: 'true'),
-    },
-    {
-      'title': 'Sustainable Living Homes',
-      'filter': FiltersModel(sustainableLivingHomes: 'true'),
-    },
-    {
-      'title': '2.5 BHK Homes',
-      'filter': FiltersModel(twopointfiveBHKHomes: 'true'),
-    },
-    {
-      'title': 'Large Balconies',
-      'filter': FiltersModel(largeBalconies: 'true'),
-    },
-    {
-      'title': 'Sky Villa Habitat',
-      'filter': FiltersModel(skyVillaHabitat: 'true'),
-    },
-    {
-      'title': 'Standalone Buildings',
-      'filter': FiltersModel(standAloneBuildings: 'true'),
-    },
-    {
-      'title': 'Skyscrapers',
-      'filter': FiltersModel(skyScrapers: 'true'),
-    },
-  ];
+  final ScrollController _masterScrollController = ScrollController();
+  bool showScrollUpButton = false;
 
   void getLocationHomes(double lat, double long) async {
-    debugPrint("-----------------getting location homes");
+    debugPrint("-----------------home1: location homes lat: $lat, long: $long");
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getPopularLocalities";
     Uri uri = Uri.parse(url).replace(queryParameters: {
@@ -98,19 +66,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     try {
       final response = await http.get(uri);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        debugPrint("-----------------responseData: $responseData");
 
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+      debugPrint("-----------------home1 response: $responseData");
+      if (response.statusCode == 200 || response.statusCode == 201) {
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
-        getLocationHomes(17.4699, 78.2236);
+        getLocationHomes(
+            ref.read(userProvider).lat, ref.read(userProvider).lng);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
-      getLocationHomes(17.4699, 78.2236);
+      getLocationHomes(ref.read(userProvider).lat, ref.read(userProvider).lng);
 
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
@@ -128,12 +97,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Future<void> getApartments({
-    Map<String, dynamic> params = const {},
-  }) async {
+  Future<void> getApartments() async {
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getUserHomepageData";
-    Uri uri = Uri.parse(url).replace(queryParameters: params);
+
+    Uri uri = Uri.parse(url);
     http.get(
       uri,
       headers: {
@@ -171,16 +139,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         lifestyleProjects = (responseBody['lifestyleProjects'] as List<dynamic>)
             .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
             .toList();
+        limelight = (responseBody['limelight'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+        sponsoredAd = (responseBody['sponsoredAd'] as List<dynamic>)
+            .map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
 
-        allApartments = [
-          ...bestDeals,
-          ...selectedProperties,
-          ...editorsChoice,
-          ...builderInFocus,
-          ...newProjects,
-          ...readyToMoveIn,
-          ...lifestyleProjects,
-        ];
         ref.watch(homePropertiesProvider.notifier).setBuilderData(builderData);
         ref.watch(homePropertiesProvider.notifier).setBestDeals(bestDeals);
         ref
@@ -199,20 +164,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ref
             .watch(homePropertiesProvider.notifier)
             .setLifestyleProjects(lifestyleProjects);
-        ref
-            .watch(homePropertiesProvider.notifier)
-            .setAllApartments(allApartments);
 
+        ref.watch(homePropertiesProvider.notifier).setSponsoredAd(sponsoredAd);
+        ref.watch(homePropertiesProvider.notifier).setLimelight(limelight);
+        if (mounted) {
+          setState(() {
+            loading = false;
+          });
+        }
+      }
+    }).onError((error, stackTrace) {
+      if (mounted) {
         setState(() {
           loading = false;
         });
       }
-    }).onError((error, stackTrace) {
-      debugPrint("error: $error");
-      debugPrint("stackTrace: $stackTrace");
-      setState(() {
-        loading = false;
-      });
     });
   }
 
@@ -226,7 +192,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: CustomColors.white,
             borderRadius: BorderRadius.circular(6),
           ),
-          margin: const EdgeInsets.only(top: 16),
+          margin: const EdgeInsets.only(top: 4),
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -243,8 +209,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               PropertyStackCard(
-                  cardHeight: 280,
-                  cardWidth: MediaQuery.of(context).size.width * 0.85,
+                  cardHeight: 300,
+                  cardWidth: MediaQuery.of(context).size.width * 0.9,
                   apartments:
                       ref.watch(homePropertiesProvider).selectedProperties),
             ],
@@ -255,37 +221,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: CustomColors.white,
             borderRadius: BorderRadius.circular(6),
           ),
-          margin: const EdgeInsets.only(top: 16),
+          margin: const EdgeInsets.only(top: 4),
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
-                child: Text(
-                  "Editor's Choice",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+              VisibilityDetector(
+                key: const Key('editors-choice-detector'),
+                onVisibilityChanged: (visibilityInfo) {
+                  if (visibilityInfo.visibleFraction >= 0) {
+                    setState(() {
+                      showScrollUpButton = true;
+                    });
+                  }
+                },
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(8, 0, 0, 8),
+                  child: Text(
+                    "Editor's Choice",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              if (mounted)
-                EditorsChoiceCard(
-                  apartments: ref.watch(homePropertiesProvider).editorsChoice,
-                ),
+              EditorsChoiceCard(
+                apartments: ref.watch(homePropertiesProvider).editorsChoice,
+              ),
             ],
           ),
         ),
-        const NewLaunchSection(
+        NewLaunchSection(
           title: "New launches",
+          apartments: ref.watch(homePropertiesProvider).newProjects,
         ),
         if (mounted)
           BuilderInFocus(
               builderData: ref.watch(homePropertiesProvider).builderData),
         if (mounted) const LifestyleProperties(),
         const ReadyToMovein(),
-        const SizedBox(height: 20),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: const Limelight(),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: const SponsoredAds(),
+        ),
+        const SizedBox(height: 5),
       ],
     );
   }
@@ -294,21 +288,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(filtersProvider.notifier).clearBuilderName();
-      if (ref.watch(homePropertiesProvider).allApartments.isEmpty) {
-        getApartments();
-      }
+      getApartments();
+
       if (ref.watch(locationHomesProvider) == null) {
-        getLocationHomes(17.463, 78.286);
+        getLocationHomes(
+            ref.read(userProvider).lat, ref.read(userProvider).lng);
       }
     });
     super.initState();
   }
 
   @override
+  void dispose() {
+    _masterScrollController.dispose();
+    showScrollUpButton = false;
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: showScrollUpButton
+          ? AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              height: showScrollUpButton ? 50 : 0,
+              width: showScrollUpButton ? 50 : 0,
+              child: FloatingActionButton(
+                backgroundColor: CustomColors.primary.withOpacity(0.7),
+                onPressed: () {
+                  _masterScrollController
+                      .animateTo(0,
+                          duration: const Duration(milliseconds: 500),
+                          curve: Curves.easeInOut)
+                      .then((v) {
+                    setState(() {
+                      showScrollUpButton = false;
+                    });
+                  });
+                },
+                child: showScrollUpButton
+                    ? const Icon(
+                        Icons.arrow_upward,
+                        weight: 5,
+                        size: 30,
+                        color: CustomColors.white,
+                      )
+                    : null,
+              ),
+            )
+          : null,
       backgroundColor: CustomColors.black10,
       body: SingleChildScrollView(
+        controller: _masterScrollController,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,11 +348,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             //appbar
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(top: 36),
+              padding: const EdgeInsets.only(top: 36, right: 12, bottom: 5),
               decoration: const BoxDecoration(
-                color: CustomColors.primary,
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
+                  ],
+                ),
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
                     onPressed: () {
@@ -328,15 +369,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     },
                     icon: const Icon(
                       Icons.arrow_back,
-                      color: CustomColors.white,
+                      color: CustomColors.black,
                     ),
                   ),
-                  Text(
-                    ref.watch(homePropertiesProvider).propertyType,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: CustomColors.white,
+                  VisibilityDetector(
+                    key: const Key('property-type-detector'),
+                    onVisibilityChanged: (visibilityInfo) {
+                      if (visibilityInfo.visibleFraction >= 0) {
+                        if (mounted) {
+                          setState(() {
+                            showScrollUpButton = false;
+                          });
+                        }
+                      }
+                    },
+                    child: Text(
+                      ref.watch(homePropertiesProvider).propertyType,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: CustomColors.black,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      rightSlideTransition(context, const ProfileScreen());
+                    },
+                    child: CircleAvatar(
+                      radius: 20,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          "assets/icons/person.svg",
+                          height: 20,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -346,7 +414,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: CustomColors.primary,
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color(0xFFFCCBAE),
+                    Color(0xFFF87988),
+                  ],
+                ),
               ),
               child: Column(
                 children: [
@@ -409,14 +484,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SearchApartmentResults(
-                                    openFilters: true,
-                                  ),
-                                ),
-                              );
+                              ref
+                                  .read(openFiltersProvider.notifier)
+                                  .openFilterStatus(true);
+                              ref
+                                  .read(navBarIndexProvider.notifier)
+                                  .setNavBarIndex(1);
                             },
                             icon: SvgPicture.asset("assets/icons/filter.svg"),
                             label: const Text(
@@ -435,95 +508,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             //category options
-            Container(
-              decoration: BoxDecoration(
-                color: CustomColors.white,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(
-                    categoryOptions.length,
-                    (index) => GestureDetector(
-                      onTap: () {
-                        ref.read(searchBarProvider.notifier).setSearchTerm(
-                              categoryOptions[index]['title'],
-                            );
-                        ref.read(filtersProvider.notifier).setAllFilters(
-                              categoryOptions[index]['filter'],
-                            );
-
-                        rightSlideTransition(
-                            context, const SearchApartmentResults());
-                      },
-                      child: Container(
-                        height: 80,
-                        width: 150,
-                        margin: const EdgeInsets.only(left: 6),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          image: DecorationImage(
-                            image: AssetImage(
-                              "assets/images/category-${index + 1}.jpg",
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: double.infinity,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    CustomColors.black.withOpacity(0),
-                                    CustomColors.black.withOpacity(0.77),
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 6,
-                              left: 0,
-                              right: 0,
-                              child: Text(
-                                categoryOptions[index]['title'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: CustomColors.white,
-                                  shadows: [
-                                    BoxShadow(
-                                      color:
-                                          CustomColors.white.withOpacity(0.5),
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            CategoryRow(
+              onTap: () =>
+                  ref.read(navBarIndexProvider.notifier).setNavBarIndex(1),
+              title: "Choose by category",
             ),
+            const SizedBox(height: 4),
 
             //Best deals
             if (ref.watch(homePropertiesProvider).bestDeals.isNotEmpty)
               BestDealsSection(
                 height: MediaQuery.of(context).size.width + 50,
               ),
-            const SizedBox(height: 10),
 
             (loading && ref.watch(homePropertiesProvider).allApartments.isEmpty)
                 ? ListView.builder(

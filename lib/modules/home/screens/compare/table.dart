@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
@@ -61,20 +62,45 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
     '',
   ];
 
-  Widget _buildOption(
-      Widget icon, String text, VoidCallback onTap, Color? color) {
-    return InkWell(
-      onTap: () {
-        _removeOverlay();
-        onTap();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap,
+      {int delay = 0}) {
+    return Animate(
+      effects: [
+        FadeEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        ),
+        SlideEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          begin: const Offset(0, 1),
+        ),
+      ],
+      child: InkWell(
+        onTap: () {
+          _removeOverlay();
+          onTap();
+        },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            icon,
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(width: 12),
-            Text(text, style: TextStyle(color: color)),
+            Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child: icon),
           ],
         ),
       ),
@@ -116,7 +142,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
     // Adjust vertical position if it goes off-screen
     if (top + menuHeight > screenSize.height) {
-      top = position.dy - menuHeight;
+      top = position.dy - menuHeight - 65;
     }
 
     _overlayEntry = OverlayEntry(
@@ -126,7 +152,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
             child: GestureDetector(
               onTap: _removeOverlay,
               child: Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withOpacity(0.7),
               ),
             ),
           ),
@@ -139,7 +165,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                 width: menuWidth,
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
@@ -150,7 +176,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildOption(
                       SvgPicture.asset("assets/icons/phone.svg",
@@ -166,7 +193,6 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                           });
                         }
                       },
-                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
@@ -189,7 +215,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                           });
                         }
                       },
-                      const Color(0XFF30D14E),
+                      delay: 100,
                     ),
                     _buildOption(
                       SizedBox(
@@ -203,7 +229,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
                         enquiryFormPopup();
                         _removeOverlay();
                       },
-                      CustomColors.secondary,
+                      delay: 200,
                     ),
                   ],
                 ),
@@ -407,6 +433,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
       _nameController.text = ref.read(userProvider).name;
       _mobileController.text = ref.read(userProvider).phoneNumber;
       _emailController.text = ref.read(userProvider).email;
+      _enquiryDetails.text =
+          'Hi. I am interested in your property. Please share more details on this project.';
     });
   }
 
@@ -524,18 +552,17 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
       (ComparePropertyData d) => Text(d.projectLocation),
       (ComparePropertyData d) =>
           Text(d.rERAApproval ? 'RERA approved' : 'Not approved'),
-      (ComparePropertyData d) => Text("${d.projectSize} sq.ft"),
-      (ComparePropertyData d) => Text("${d.noOfTowers} units"),
-      (ComparePropertyData d) => Text("${d.noOfFloors} floors"),
-      (ComparePropertyData d) => Text("${d.noOfTowers} towers"),
+      (ComparePropertyData d) => Text(d.projectSize),
+      (ComparePropertyData d) => Text(d.noOfTowers),
+      (ComparePropertyData d) => Text(d.noOfFloors),
+      (ComparePropertyData d) => Text(d.noOfTowers),
       (ComparePropertyData d) => Text(d.totalOpenSpace),
-      (ComparePropertyData d) =>
-          Text(d.unitPlanConfigs.map((e) => e.BHKType).join(', ')),
-      (ComparePropertyData d) => Text("${d.flatSizes} sq.ft"),
+      (ComparePropertyData d) => Text(d.configTitle),
+      (ComparePropertyData d) => Text(d.flatSizes.toString()),
       (ComparePropertyData d) => Text(d.projectPossession.isEmpty
           ? ''
           : d.projectPossession.substring(0, 10)),
-      (ComparePropertyData d) => Text("${d.clubhousesize} sq.ft"),
+      (ComparePropertyData d) => Text(d.clubhousesize),
       (ComparePropertyData d) => Text(formatBudget(d.budget)),
       (ComparePropertyData d) => Text(d.constructionType),
       (ComparePropertyData d) => SizedBox(

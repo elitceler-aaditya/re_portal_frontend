@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
+import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class NewLaunchSection extends ConsumerWidget {
   final String title;
-  const NewLaunchSection({super.key, required this.title});
+  final List<ApartmentModel> apartments;
+  const NewLaunchSection(
+      {super.key, required this.title, required this.apartments});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final apartments = ref.watch(homePropertiesProvider).newProjects;
     return Container(
       decoration: BoxDecoration(
         color: CustomColors.white,
         borderRadius: BorderRadius.circular(6),
       ),
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -271,17 +272,19 @@ class NewLaunchSection extends ConsumerWidget {
                                                       .configuration
                                                       .where((item) =>
                                                           item.isNotEmpty)
+                                                      .toList()
                                                       .length,
-                                                  (index) => Container(
+                                                  (configIndex) => Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
                                                         horizontal: 6),
                                                     decoration: BoxDecoration(
-                                                      border: index !=
+                                                      border: configIndex !=
                                                               apartments[index]
                                                                       .configuration
                                                                       .where((item) =>
                                                                           item.isNotEmpty)
+                                                                      .toList()
                                                                       .length -
                                                                   1
                                                           ? const Border(
@@ -299,7 +302,7 @@ class NewLaunchSection extends ConsumerWidget {
                                                           .configuration
                                                           .where((item) =>
                                                               item.isNotEmpty)
-                                                          .first,
+                                                          .toList()[configIndex],
                                                       style: const TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:

@@ -6,6 +6,7 @@ import 'package:re_portal_frontend/modules/home/widgets/property_stack_card.dart
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/location_homes.dart';
 import 'package:http/http.dart' as http;
+import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
 
 class LocationHomes extends ConsumerStatefulWidget {
   final bool useActualLocation;
@@ -17,10 +18,10 @@ class LocationHomes extends ConsumerStatefulWidget {
 
 class _LocationHomesState extends ConsumerState<LocationHomes> {
   int selectedlocation = 0;
-  PageController pageController = PageController();
+  final ScrollController _scrollController = ScrollController();
 
   void getLocationHomes(double lat, double long) async {
-    debugPrint("-----------------getting location homes");
+    debugPrint("-----------------home2: location homes lat: $lat, long: $long");
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getPopularLocalities";
     Uri uri = Uri.parse(url).replace(queryParameters: {
@@ -30,18 +31,19 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
 
     try {
       final response = await http.get(uri);
+
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+      debugPrint("-----------------home2 response: $responseData");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        debugPrint("-----------------responseData: $responseData");
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
-        getLocationHomes(17.4699, 78.2236);
+        getLocationHomes(0, 0);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
-      getLocationHomes(17.4699, 78.2236);
+      getLocationHomes(0, 0);
 
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
@@ -52,9 +54,11 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.watch(locationHomesProvider) == null &&
-          widget.useActualLocation) {
-        getLocationHomes(17.463, 78.286);
+      if (ref.watch(locationHomesProvider) == null) {
+        getLocationHomes(
+          ref.read(userProvider).lat,
+          ref.read(userProvider).lng,
+        );
       }
     });
   }
@@ -66,7 +70,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
     } else {
       return Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(top: 16),
+        margin: const EdgeInsets.only(top: 4),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: CustomColors.white,
@@ -95,14 +99,15 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                   ),
                   children: [
                     const TextSpan(
-                        text: "Popular locations near  ",
-                        style: TextStyle(
-                          fontFamily: 'eudoxus',
-                        )),
+                      text: "Popular locations near ",
+                      style: TextStyle(
+                          // fontFamily: 'eudoxus',
+                          ),
+                    ),
                     TextSpan(
                       text: ref.watch(locationHomesProvider)!.searchedLocation,
                       style: const TextStyle(
-                        fontFamily: 'eudoxus',
+                        // fontFamily: 'eudoxus',
                         fontWeight: FontWeight.bold,
                         color: CustomColors.primary,
                       ),
@@ -138,7 +143,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                         onPressed: () {
                           setState(() {
                             selectedlocation = index;
-                            pageController.animateTo(
+                            _scrollController.animateTo(
                               0,
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
@@ -175,6 +180,7 @@ class _LocationHomesState extends ConsumerState<LocationHomes> {
                           "No apartments found in ${ref.watch(locationHomesProvider.notifier).getLocations()[selectedlocation]}"),
                     )
                   : PropertyStackCard(
+                      controller: _scrollController,
                       cardWidth: MediaQuery.of(context).size.width * 0.9,
                       apartments: ref
                           .watch(locationHomesProvider.notifier)

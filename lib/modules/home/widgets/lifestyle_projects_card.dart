@@ -39,7 +39,7 @@ class LifestyleProjectCard extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.95,
         height: MediaQuery.of(context).size.width * 0.8,
         clipBehavior: Clip.hardEdge,
-        margin: const EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(left: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: CustomColors.black25),
@@ -51,12 +51,17 @@ class LifestyleProjectCard extends StatelessWidget {
                 tag: "lifestyle-${lifestyleProperty.projectId}",
                 child: Stack(
                   children: [
-                    SizedBox(
+                    Container(
+                      color: CustomColors.black10,
                       width: double.infinity,
                       height: MediaQuery.of(context).size.width * 0.8,
                       child: Image.network(
                         lifestyleProperty.coverImage,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                          child: Icon(Icons.info),
+                        ),
                       ),
                     ),
                     //price
@@ -118,7 +123,7 @@ class LifestyleProjectCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "By ${lifestyleProperty.companyName}",
+                          "By ${lifestyleProperty.builderName}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -128,7 +133,7 @@ class LifestyleProjectCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
@@ -38,20 +39,45 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
     }
   }
 
-  Widget _buildOption(
-      Widget icon, String text, VoidCallback onTap, Color color) {
-    return InkWell(
-      onTap: () {
-        _removeOverlay();
-        onTap();
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+  Widget _buildOption(Widget icon, String text, VoidCallback onTap,
+      {int delay = 0}) {
+    return Animate(
+      effects: [
+        FadeEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        ),
+        SlideEffect(
+          delay: Duration(milliseconds: delay),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          begin: const Offset(0, 1),
+        ),
+      ],
+      child: InkWell(
+        onTap: () {
+          _removeOverlay();
+          onTap();
+        },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            icon,
+            Text(
+              text,
+              style: const TextStyle(color: Colors.white),
+            ),
             const SizedBox(width: 12),
-            Text(text, style: TextStyle(color: color)),
+            Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                padding: const EdgeInsets.all(14),
+                child: icon),
           ],
         ),
       ),
@@ -70,7 +96,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
         children: [
           Positioned.fill(
             child: Container(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.8),
             ),
           ),
           Positioned.fill(
@@ -82,16 +108,14 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
             ),
           ),
           Positioned(
-            left: index % 2 == 0
-                ? position.dx + size.width / 2
-                : position.dx - 200,
-            top: position.dy + size.height,
+            left: index % 2 == 0 ? 0 : position.dx - 150,
+            top: position.dy - size.height * 5.5,
             child: Material(
               color: Colors.transparent,
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(index % 2 == 0 ? 0 : 10),
                     bottomLeft: const Radius.circular(10),
@@ -107,7 +131,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _buildOption(
                       SvgPicture.asset(
@@ -121,7 +145,6 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           (value) => _removeOverlay(),
                         );
                       },
-                      CustomColors.blue,
                     ),
                     _buildOption(
                       SizedBox(
@@ -139,7 +162,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           (value) => _removeOverlay(),
                         );
                       },
-                      CustomColors.green,
+                      delay: 100,
                     ),
                     _buildOption(
                       SizedBox(
@@ -150,7 +173,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                           )),
                       'Request call back',
                       () => _removeOverlay(),
-                      CustomColors.secondary,
+                      delay: 200,
                     ),
                   ],
                 ),
@@ -237,7 +260,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
             child: Column(
               children: [
                 SizedBox(
-                  height: 180,
+                  height: 160,
                   child: Stack(
                     children: [
                       Hero(
@@ -299,11 +322,11 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                     .watch(savedPropertiesProvider)
                                     .contains(widget.sortedApartments[index])
                                 ? const Icon(
-                                    Icons.bookmark,
+                                    Icons.favorite,
                                     color: CustomColors.white,
                                   )
                                 : const Icon(
-                                    Icons.bookmark_outline,
+                                    Icons.favorite_outline,
                                     color: CustomColors.white,
                                   ),
                           )),
@@ -432,6 +455,7 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                   width: 32,
                                   child: IconButton.filled(
                                     style: IconButton.styleFrom(
+                                      padding: const EdgeInsets.all(2),
                                       backgroundColor: ref
                                               .watch(comparePropertyProvider)
                                               .contains(widget
@@ -474,11 +498,14 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                             .watch(comparePropertyProvider)
                                             .contains(
                                                 widget.sortedApartments[index])
-                                        ? SvgPicture.asset(
-                                            "assets/icons/compare.svg",
-                                            color: CustomColors.primary,
-                                            height: 20,
-                                            width: 20)
+                                        ? SizedBox(
+                                            height: 22,
+                                            width: 22,
+                                            child: SvgPicture.asset(
+                                              "assets/icons/compare.svg",
+                                              color: CustomColors.primary,
+                                            ),
+                                          )
                                         : const Icon(
                                             Icons.check,
                                             color: CustomColors.green,

@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:re_portal_frontend/modules/home/screens/video_screen.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/user_riverpod.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class BrochureVideoSection extends ConsumerStatefulWidget {
-  final Function sendEnquiry;
-  const BrochureVideoSection({super.key, required this.sendEnquiry});
+  final Future<void> Function() sendEnquiry;
+  final String videoLink;
+  final List<String> brochureLink;
+  final String projectName;
+  const BrochureVideoSection({
+    super.key,
+    required this.sendEnquiry,
+    required this.projectName,
+    this.videoLink = '',
+    this.brochureLink = const [],
+  });
 
   @override
   ConsumerState<BrochureVideoSection> createState() =>
@@ -19,8 +33,10 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
   final _mobileController = TextEditingController();
   final _emailController = TextEditingController();
   final _enquiryDetails = TextEditingController();
+  YoutubePlayerController? _controller;
+  bool mute = false;
 
-  Future<void> enquiryFormPopup() async {
+  Future<void> enquiryFormPopup({bool downloadBrochure = false}) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -122,8 +138,13 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    widget.sendEnquiry(context);
+                                  onPressed: () => {
+                                    if (downloadBrochure)
+                                      {
+                                        for (String link in widget.brochureLink)
+                                          launchUrlString(link),
+                                      },
+                                    widget.sendEnquiry()
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: CustomColors.primary,
@@ -164,248 +185,305 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
       _mobileController.text = ref.read(userProvider).phoneNumber;
       _emailController.text = ref.read(userProvider).email;
       _enquiryDetails.text =
-          'Hi, I am interested in your property. I want to know more about the project.';
+          'Hi, I am interested in ${widget.projectName}. I want to know more about the project.';
+
+      _controller = YoutubePlayerController(
+        initialVideoId: YoutubePlayer.convertUrlToId(widget.videoLink) ?? '',
+        flags: const YoutubePlayerFlags(
+          autoPlay: false,
+          mute: false,
+          enableCaption: false,
+        ),
+      );
     });
   }
 
   @override
+  void deactivate() {
+    // Pauses video while navigating to next page.
+    _controller!.pause();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _controller!.removeListener(() {});
+    _controller!.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: CustomColors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: CustomColors.black.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 0,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () {
-              if (ref.read(userProvider).token.isEmpty) {
-                errorSnackBar(context, 'Please login first');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(
-                      goBack: true,
-                    ),
-                  ),
-                );
-              } else {
-                enquiryFormPopup();
-              }
-            },
-            child: Container(
-              height: 140,
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
-              decoration: BoxDecoration(
-                color: CustomColors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage("assets/images/walkthrough.jpg"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 140,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: CustomColors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    child: Center(
-                      child: IconButton.filled(
-                        style: IconButton.styleFrom(
-                          backgroundColor: CustomColors.black.withOpacity(0.5),
-                        ),
-                        onPressed: () {
-                          if (ref.read(userProvider).token.isEmpty) {
-                            errorSnackBar(context, 'Please login first');
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(
-                                  goBack: true,
-                                ),
-                              ),
-                            );
-                          } else {
-                            enquiryFormPopup();
-                          }
-                        },
-                        icon: const Icon(Icons.play_arrow),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          GestureDetector(
-            onTap: () {
-              if (ref.read(userProvider).token.isEmpty) {
-                errorSnackBar(context, 'Please login first');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(
-                      goBack: true,
-                    ),
-                  ),
-                );
-              } else {
-                enquiryFormPopup();
-              }
-            },
-            child: Container(
-              height: 140,
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
-              decoration: BoxDecoration(
-                color: CustomColors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage("assets/images/brochure_cover.jpg"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 140,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.transparent,
-                          CustomColors.black.withOpacity(0.8),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  const Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Text(
-                      "Brochure",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: CustomColors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: CustomColors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: const Text(
-                        "Download",
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: CustomColors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+    return Column(
+      children: [
+        if (_controller != null && widget.videoLink.isNotEmpty)
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
             width: double.infinity,
+            margin: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              gradient: LinearGradient(
-                colors: [
-                  CustomColors.primary,
-                  CustomColors.primary.withOpacity(0.7)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: CustomColors.white,
+              borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: CustomColors.primary.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
+                  color: CustomColors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 0),
                 ),
               ],
             ),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                if (ref.read(userProvider).token.isEmpty) {
-                  errorSnackBar(context, 'Please login first');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(
-                        goBack: true,
-                      ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 8),
+                  child: Text(
+                    "Video Walkthrough",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CustomColors.black,
+                      fontWeight: FontWeight.bold,
                     ),
-                  );
-                } else {
-                  enquiryFormPopup();
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  ),
                 ),
-              ),
-              icon: const Icon(
-                Icons.phone,
-                color: CustomColors.white,
-              ),
-              label: const Text(
-                'Contact Builder',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: CustomColors.white,
-                  fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Stack(
+                    children: [
+                      Container(
+                        // height: 180,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: CustomColors.black10,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: YoutubePlayerBuilder(
+                            player: YoutubePlayer(
+                              controller: _controller!,
+                              showVideoProgressIndicator: true,
+                              progressIndicatorColor: CustomColors.primary,
+                              progressColors: const ProgressBarColors(
+                                playedColor: CustomColors.primary,
+                                handleColor: CustomColors.primary,
+                              ),
+                              onReady: () {},
+                            ),
+                            builder: (context, player) {
+                              return Column(
+                                children: [player],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: GestureDetector(
+                          onTap: () {
+                            rightSlideTransition(
+                              context,
+                              VideoScreen(
+                                videoLink: widget.videoLink,
+                              ),
+                              onComplete: (() {
+                                setState(() {
+                                  SystemChrome.setEnabledSystemUIMode(
+                                    SystemUiMode.manual,
+                                    overlays: SystemUiOverlay.values,
+                                  );
+                                });
+                              }),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: const Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 55,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-        ],
-      ),
+        const SizedBox(width: 10),
+        Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: CustomColors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: CustomColors.black.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 0,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.brochureLink.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(left: 10, bottom: 10),
+                  child: Text(
+                    "Brochure",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CustomColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              if (widget.brochureLink.isNotEmpty)
+                GestureDetector(
+                  onTap: () {
+                    //Download PDF on tap
+                    if (ref.read(userProvider).token.isEmpty) {
+                      errorSnackBar(context, 'Please login first');
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(
+                            goBack: true,
+                          ),
+                        ),
+                      );
+                    } else {
+                      if (widget.brochureLink.isNotEmpty) {
+                        enquiryFormPopup(downloadBrochure: true);
+                      }
+                    }
+                  },
+                  child: Container(
+                    height: 140,
+                    width: double.infinity,
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
+                    decoration: BoxDecoration(
+                        color: CustomColors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        image: const DecorationImage(
+                          image: AssetImage("assets/images/brochure_cover.jpg"),
+                          fit: BoxFit.cover,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: CustomColors.black.withOpacity(0.4),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 0),
+                          ),
+                        ]),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: CustomColors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: const Text(
+                              "Download",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: CustomColors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    colors: [
+                      CustomColors.primary,
+                      CustomColors.primary.withOpacity(0.7)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColors.primary.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    _controller!.pause();
+                    if (ref.read(userProvider).token.isEmpty) {
+                      errorSnackBar(context, 'Please login first');
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(
+                            goBack: true,
+                          ),
+                        ),
+                      );
+                    } else {
+                      enquiryFormPopup(downloadBrochure: false);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.phone,
+                    color: CustomColors.white,
+                  ),
+                  label: const Text(
+                    'Contact Builder',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: CustomColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

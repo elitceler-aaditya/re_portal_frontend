@@ -5,11 +5,6 @@ import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 class HomeDataNotifier extends StateNotifier<HomeData> {
   HomeDataNotifier() : super(HomeData());
 
-  void setAllApartments(List<ApartmentModel> allApartments) {
-    final uniqueApartments = allApartments.toSet().toList();
-    state = state.copyWith(allApartments: uniqueApartments);
-  }
-
   void setfilteredApartments(List<ApartmentModel> filteredApartments) {
     state = state.copyWith(filteredApartments: filteredApartments);
   }
@@ -34,14 +29,36 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
             ..sort((a, b) => a.budget.compareTo(b.budget)));
     } else if (sortBy == 3) {
       state = state.copyWith(
-          filteredApartments: state.filteredApartments
-            ..sort((a, b) =>
-                b.pricePerSquareFeetRate.compareTo(a.pricePerSquareFeetRate)));
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (a, b) =>
+                b.pricePerSquareFeetRate.compareTo(a.pricePerSquareFeetRate),
+          ),
+      );
     } else if (sortBy == 4) {
       state = state.copyWith(
-          filteredApartments: state.filteredApartments
-            ..sort((a, b) =>
-                a.pricePerSquareFeetRate.compareTo(b.pricePerSquareFeetRate)));
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (a, b) =>
+                a.pricePerSquareFeetRate.compareTo(b.pricePerSquareFeetRate),
+          ),
+      );
+    } else if (sortBy == 5) {
+      state = state.copyWith(
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (a, b) => DateTime.parse(a.projectPossession)
+                .compareTo(DateTime.parse(b.projectPossession)),
+          ),
+      );
+    } else if (sortBy == 6) {
+      state = state.copyWith(
+        filteredApartments: state.filteredApartments
+          ..sort(
+            (b, a) => DateTime.parse(a.projectPossession)
+                .compareTo(DateTime.parse(b.projectPossession)),
+          ),
+      );
     }
   }
 
@@ -88,17 +105,25 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
     state = state.copyWith(builderData: builderData);
   }
 
+  void setSponsoredAd(List<ApartmentModel> sponsoredAd) {
+    state = state.copyWith(sponsoredAd: sponsoredAd);
+  }
+
+  void setLimelight(List<ApartmentModel> limelight) {
+    state = state.copyWith(limelight: limelight);
+  }
+
   List<ApartmentModel> getUltraLuxuryHomes() {
-    return state.allApartments
-        .where((apartment) => apartment.budget >= 20000000)
+    return state.filteredApartments
+        .where((apartment) => apartment.budget >= 10000000)
         .toList();
   }
 
   List<ApartmentModel> getBudgetHomes(int maxBudget, int minBudget) {
     if (minBudget == 0 && maxBudget == 0) {
-      return state.allApartments;
+      return state.filteredApartments;
     } else {
-      return state.allApartments
+      return state.filteredApartments
           .where((apartment) =>
               apartment.budget >= minBudget && apartment.budget <= maxBudget)
           .toList();
@@ -136,10 +161,13 @@ class HomeDataNotifier extends StateNotifier<HomeData> {
         .map((builder) => builder)
         .toList();
   }
+
+  void setProjectSnippets(List<ApartmentModel> projectSnippets) {
+    state = state.copyWith(projectSnippets: projectSnippets);
+  }
 }
 
 class HomeData {
-  final List<ApartmentModel> allApartments;
   final List<BuilderDataModel> builderData;
   final List<ApartmentModel> filteredApartments;
   final List<ApartmentModel> bestDeals;
@@ -149,10 +177,12 @@ class HomeData {
   final List<ApartmentModel> newProjects;
   final List<ApartmentModel> readyToMoveIn;
   final List<ApartmentModel> lifestyleProjects;
+  final List<ApartmentModel> sponsoredAd;
+  final List<ApartmentModel> limelight;
   final String propertyType;
+  final List<ApartmentModel> projectSnippets;
 
   HomeData({
-    this.allApartments = const [],
     this.builderData = const [],
     this.filteredApartments = const [],
     this.bestDeals = const [],
@@ -162,11 +192,30 @@ class HomeData {
     this.newProjects = const [],
     this.readyToMoveIn = const [],
     this.lifestyleProjects = const [],
+    this.sponsoredAd = const [],
+    this.limelight = const [],
     this.propertyType = '',
+    this.projectSnippets = const [],
   });
 
+  List<ApartmentModel> get allApartments {
+    // Combine all apartment lists into a single set to remove duplicates
+    return {
+      ...filteredApartments,
+      ...bestDeals,
+      ...selectedProperties,
+      ...editorsChoice,
+      ...builderInFocus,
+      ...newProjects,
+      ...readyToMoveIn,
+      ...lifestyleProjects,
+      ...sponsoredAd,
+      ...limelight,
+      ...projectSnippets,
+    }.toList();
+  }
+
   HomeData copyWith({
-    List<ApartmentModel>? allApartments,
     List<BuilderDataModel>? builderData,
     List<ApartmentModel>? filteredApartments,
     List<ApartmentModel>? bestDeals,
@@ -176,10 +225,12 @@ class HomeData {
     List<ApartmentModel>? newProjects,
     List<ApartmentModel>? readyToMoveIn,
     List<ApartmentModel>? lifestyleProjects,
+    List<ApartmentModel>? sponsoredAd,
+    List<ApartmentModel>? limelight,
     String? propertyType,
+    List<ApartmentModel>? projectSnippets,
   }) {
     return HomeData(
-      allApartments: allApartments ?? this.allApartments,
       builderData: builderData ?? this.builderData,
       filteredApartments: filteredApartments ?? this.filteredApartments,
       bestDeals: bestDeals ?? this.bestDeals,
@@ -189,7 +240,10 @@ class HomeData {
       newProjects: newProjects ?? this.newProjects,
       readyToMoveIn: readyToMoveIn ?? this.readyToMoveIn,
       lifestyleProjects: lifestyleProjects ?? this.lifestyleProjects,
+      sponsoredAd: sponsoredAd ?? this.sponsoredAd,
+      limelight: limelight ?? this.limelight,
       propertyType: propertyType ?? this.propertyType,
+      projectSnippets: projectSnippets ?? this.projectSnippets,
     );
   }
 }

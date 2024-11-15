@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:re_portal_frontend/modules/home/models/compare_property_data.dart';
 import 'package:re_portal_frontend/modules/home/screens/compare/table.dart';
+import 'package:re_portal_frontend/modules/profile/screens/profile_screen.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
 import 'package:re_portal_frontend/riverpod/bot_nav_bar.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:http/http.dart' as http;
@@ -83,7 +86,9 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      getPropertyData();
+      if (ref.watch(comparePropertyProvider).isNotEmpty) {
+        getPropertyData();
+      }
     });
     _horizontalController.addListener(() {
       if (_horizontalController.position.pixels <= 0) {
@@ -120,9 +125,38 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
             },
             icon: const Icon(Icons.arrow_back),
           ),
-          backgroundColor: CustomColors.primary10,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Color(0xFFFCCBAE),
+                  Color(0xFFF87988),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                rightSlideTransition(context, const ProfileScreen());
+              },
+              child: CircleAvatar(
+                radius: 20,
+                child: Center(
+                  child: SvgPicture.asset(
+                    "assets/icons/person.svg",
+                    height: 20,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
+          backgroundColor: Colors.transparent,
         ),
-        body: comparedProperties.length < 2
+        body: comparedProperties.isEmpty
             ? const SafeArea(
                 child: Center(
                   child: Column(
@@ -137,7 +171,7 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                         ),
                       ),
                       Text(
-                        "Please select atleast 2 properties to compare",
+                        "Please select atleast 1 property to compare",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,

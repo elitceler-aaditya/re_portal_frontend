@@ -28,6 +28,9 @@ class FiltersModel {
   final String postedByBuilder;
   final String postedByOwner;
   final String postedByAgent;
+  final String igbcCertifiedHomes;
+  final String semiGatedApartments;
+  final String moreOffers;
 
   FiltersModel({
     this.selectedLocalities = const [],
@@ -56,6 +59,9 @@ class FiltersModel {
     this.postedByBuilder = 'false',
     this.postedByOwner = 'false',
     this.postedByAgent = 'false',
+    this.igbcCertifiedHomes = 'false',
+    this.semiGatedApartments = 'false',
+    this.moreOffers = 'false',
   });
 
   FiltersModel copyWith({
@@ -85,6 +91,9 @@ class FiltersModel {
     String? postedByBuilder,
     String? postedByOwner,
     String? postedByAgent,
+    String? igbcCertifiedHomes,
+    String? semiGatedApartments,
+    String? moreOffers,
   }) {
     return FiltersModel(
       selectedLocalities: selectedLocalities ?? this.selectedLocalities,
@@ -115,6 +124,9 @@ class FiltersModel {
       postedByBuilder: postedByBuilder ?? this.postedByBuilder,
       postedByOwner: postedByOwner ?? this.postedByOwner,
       postedByAgent: postedByAgent ?? this.postedByAgent,
+      igbcCertifiedHomes: igbcCertifiedHomes ?? this.igbcCertifiedHomes,
+      semiGatedApartments: semiGatedApartments ?? this.semiGatedApartments,
+      moreOffers: moreOffers ?? this.moreOffers,
     );
   }
 
@@ -157,6 +169,9 @@ class FiltersModel {
     if (postedByBuilder == 'true') json['postedByBuilder'] = 'true';
     if (postedByOwner == 'true') json['postedByOwner'] = 'true';
     if (postedByAgent == 'true') json['postedByAgent'] = 'true';
+    if (igbcCertifiedHomes == 'true') json['igbcCertifiedHomes'] = 'true';
+    if (semiGatedApartments == 'true') json['semiGatedApartments'] = 'true';
+    if (moreOffers == 'true') json['moreOffers'] = 'true';
 
     return json;
   }
@@ -187,6 +202,9 @@ class FiltersModel {
       postedByBuilder: json['postedByBuilder'] ?? 'false',
       postedByOwner: json['postedByOwner'] ?? 'false',
       postedByAgent: json['postedByAgent'] ?? 'false',
+      igbcCertifiedHomes: json['igbcCertifiedHomes'] ?? 'false',
+      semiGatedApartments: json['semiGatedApartments'] ?? 'false',
+      moreOffers: json['moreOffers'] ?? 'false',
     );
   }
 }
@@ -209,6 +227,39 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
 
   void setAllFilters(FiltersModel filters) {
     state = filters;
+  }
+
+  void updateOnlySelectedFilter(FiltersModel filters) {
+    state = state.copyWith(
+      selectedLocalities: filters.selectedLocalities.isNotEmpty ? filters.selectedLocalities : state.selectedLocalities,
+      apartmentType: filters.apartmentType.isNotEmpty ? filters.apartmentType : state.apartmentType,
+      amenities: filters.amenities.isNotEmpty ? filters.amenities : state.amenities,
+      selectedConfigurations: filters.selectedConfigurations.isNotEmpty ? filters.selectedConfigurations : state.selectedConfigurations,
+      minBudget: filters.minBudget != 0 ? filters.minBudget : state.minBudget,
+      maxBudget: filters.maxBudget != 0 ? filters.maxBudget : state.maxBudget,
+      minFlatSize: filters.minFlatSize != 0 ? filters.minFlatSize : state.minFlatSize,
+      maxFlatSize: filters.maxFlatSize != 0 ? filters.maxFlatSize : state.maxFlatSize,
+      builderName: filters.builderName.isNotEmpty ? filters.builderName : state.builderName,
+      affordableHomes: filters.affordableHomes.isNotEmpty ? filters.affordableHomes : state.affordableHomes,
+      largeLivingSpaces: filters.largeLivingSpaces.isNotEmpty ? filters.largeLivingSpaces : state.largeLivingSpaces,
+      sustainableLivingHomes: filters.sustainableLivingHomes.isNotEmpty ? filters.sustainableLivingHomes : state.sustainableLivingHomes,
+      twopointfiveBHKHomes: filters.twopointfiveBHKHomes.isNotEmpty ? filters.twopointfiveBHKHomes : state.twopointfiveBHKHomes,
+      largeBalconies: filters.largeBalconies.isNotEmpty ? filters.largeBalconies : state.largeBalconies,
+      skyVillaHabitat: filters.skyVillaHabitat.isNotEmpty ? filters.skyVillaHabitat : state.skyVillaHabitat,
+      standAloneBuildings: filters.standAloneBuildings.isNotEmpty ? filters.standAloneBuildings : state.standAloneBuildings,
+      skyScrapers: filters.skyScrapers.isNotEmpty ? filters.skyScrapers : state.skyScrapers,
+      readyToMove: filters.readyToMove.isNotEmpty ? filters.readyToMove : state.readyToMove,
+      newProject: filters.newProject.isNotEmpty ? filters.newProject : state.newProject,
+      underConstruction: filters.underConstruction.isNotEmpty ? filters.underConstruction : state.underConstruction,
+      newSaleType: filters.newSaleType.isNotEmpty ? filters.newSaleType : state.newSaleType,
+      resaleType: filters.resaleType.isNotEmpty ? filters.resaleType : state.resaleType,
+      postedByBuilder: filters.postedByBuilder.isNotEmpty ? filters.postedByBuilder : state.postedByBuilder,
+      postedByOwner: filters.postedByOwner.isNotEmpty ? filters.postedByOwner : state.postedByOwner,
+      postedByAgent: filters.postedByAgent.isNotEmpty ? filters.postedByAgent : state.postedByAgent,
+      igbcCertifiedHomes: filters.igbcCertifiedHomes.isNotEmpty ? filters.igbcCertifiedHomes : state.igbcCertifiedHomes,
+      semiGatedApartments: filters.semiGatedApartments.isNotEmpty ? filters.semiGatedApartments : state.semiGatedApartments,
+      moreOffers: filters.moreOffers.isNotEmpty ? filters.moreOffers : state.moreOffers,
+    );
   }
 
   void updateFilters(FiltersModel filters) {
@@ -239,6 +290,9 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
       postedByBuilder: filters.postedByBuilder,
       postedByOwner: filters.postedByOwner,
       postedByAgent: filters.postedByAgent,
+      igbcCertifiedHomes: filters.igbcCertifiedHomes,
+      semiGatedApartments: filters.semiGatedApartments,
+      moreOffers: filters.moreOffers,
     );
   }
 
@@ -350,10 +404,21 @@ class FiltersNotifier extends StateNotifier<FiltersModel> {
     state = state.copyWith(postedByAgent: value);
   }
 
+  void updateIgbcCertifiedHomes(String value) {
+    state = state.copyWith(igbcCertifiedHomes: value);
+  }
+
+  void updateSemiGatedApartments(String value) {
+    state = state.copyWith(semiGatedApartments: value);
+  }
+
+  void updateMoreOffers(String value) {
+    state = state.copyWith(moreOffers: value);
+  }
+
   void clearAllFilters() {
     state = FiltersModel();
   }
-
 }
 
 // Define the provider

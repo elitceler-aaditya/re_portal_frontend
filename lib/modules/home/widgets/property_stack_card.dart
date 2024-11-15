@@ -9,6 +9,8 @@ class PropertyStackCard extends StatelessWidget {
   final double cardWidth;
   final double cardHeight;
   final bool showCompanyName;
+  final bool leftPadding;
+  final ScrollController? controller;
 
   const PropertyStackCard({
     super.key,
@@ -16,6 +18,8 @@ class PropertyStackCard extends StatelessWidget {
     required this.cardWidth,
     this.showCompanyName = false,
     this.cardHeight = 200,
+    this.leftPadding = true,
+    this.controller,
   });
 
   String formatBudget(int budget) {
@@ -34,6 +38,7 @@ class PropertyStackCard extends StatelessWidget {
     return SizedBox(
       height: cardHeight,
       child: ListView.builder(
+        controller: controller,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount: apartments.length,
@@ -45,9 +50,6 @@ class PropertyStackCard extends StatelessWidget {
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
                     heroTag: "property-stack-${apartments[index].projectId}",
-                    nextApartment: index + 1 < apartments.length
-                        ? apartments[index + 1]
-                        : apartments.first,
                   ),
                 ),
               );
@@ -55,7 +57,8 @@ class PropertyStackCard extends StatelessWidget {
             child: Container(
               width: cardWidth,
               height: cardHeight,
-              margin: const EdgeInsets.only(left: 8),
+              margin: EdgeInsets.only(
+                  left: leftPadding ? 8 : 0, right: leftPadding ? 0 : 8),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 color: CustomColors.white,
@@ -125,14 +128,15 @@ class PropertyStackCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(
-                            "By ${apartments[index].companyName}",
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
+                          if (apartments[index].companyName.isNotEmpty)
+                            Text(
+                              "By ${apartments[index].builderName}",
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
                           const SizedBox(height: 8),
                           if (showCompanyName)
                             Padding(
@@ -155,7 +159,7 @@ class PropertyStackCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${apartments[index].projectLocation} • ${apartments[index].configuration.first} • ${formatBudget(apartments[index].budget)}",
+                                "${apartments[index].projectLocation} ${apartments[index].configuration.isNotEmpty ? '• ${apartments[index].configTitle}' : ''} ${apartments[index].budget == 0 ? '' : '• ${formatBudget(apartments[index].minBudget)}'}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,

@@ -28,7 +28,7 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: CustomColors.white,
@@ -119,9 +119,17 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
                                   fontSize: 16,
                                 ),
                               ),
+                              Text(
+                                "By ${ref.watch(recentlyViewedProvider)[index].builderName}",
+                                style: const TextStyle(
+                                  color: CustomColors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               Text(
-                                "${formatBudget(ref.watch(recentlyViewedProvider)[index].budget)} • ${ref.watch(recentlyViewedProvider)[index].configuration.first}",
+                                "${formatBudget(ref.watch(recentlyViewedProvider)[index].budget)} • ${ref.watch(recentlyViewedProvider)[index].configuration.isNotEmpty ? ref.watch(recentlyViewedProvider)[index].configuration.first : ''}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
@@ -134,13 +142,17 @@ class _RecentlyViewedSectionState extends ConsumerState<RecentlyViewedSection> {
                                     size: 14,
                                     color: CustomColors.primary,
                                   ),
-                                  Text(
-                                    ref
-                                        .watch(recentlyViewedProvider)[index]
-                                        .projectLocation,
-                                    style: const TextStyle(
-                                      color: CustomColors.white,
-                                      fontSize: 12,
+                                  Expanded(
+                                    child: Text(
+                                      ref
+                                          .watch(recentlyViewedProvider)[index]
+                                          .projectLocation,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                 ],

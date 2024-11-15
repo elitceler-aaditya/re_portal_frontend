@@ -5,7 +5,8 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class UltraLuxuryHomes extends ConsumerWidget {
-  const UltraLuxuryHomes({super.key});
+  final bool leftPadding;
+  const UltraLuxuryHomes({super.key, this.leftPadding = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -13,9 +14,7 @@ class UltraLuxuryHomes extends ConsumerWidget {
         ref.watch(homePropertiesProvider.notifier).getUltraLuxuryHomes();
 
     if (ultraLuxuryHomes.isEmpty) {
-      return SizedBox(
-        child: Text("No ultra luxury homes found: ${ultraLuxuryHomes.length}"),
-      );
+      return const SizedBox.shrink();
     }
 
     return Container(
@@ -23,15 +22,17 @@ class UltraLuxuryHomes extends ConsumerWidget {
         color: CustomColors.white,
         borderRadius: BorderRadius.circular(6),
       ),
-      margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      margin: const EdgeInsets.only(top: 4),
+      padding: leftPadding
+          ? const EdgeInsets.symmetric(horizontal: 6, vertical: 10)
+          : null,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(2, 0, 0, 10),
-            child: Text(
+          Padding(
+            padding: EdgeInsets.only(left: leftPadding ? 10 : 0, bottom: 8),
+            child: const Text(
               "Ultra Luxury Homes",
               style: TextStyle(
                 fontSize: 18,
@@ -42,6 +43,7 @@ class UltraLuxuryHomes extends ConsumerWidget {
           PropertyStackCard(
             apartments: ultraLuxuryHomes,
             cardWidth: MediaQuery.of(context).size.width * 0.9,
+            leftPadding: leftPadding,
           ),
         ],
       ),

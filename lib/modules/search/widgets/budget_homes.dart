@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/widgets/lifestyle_projects_card.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:re_portal_frontend/riverpod/filters_rvpd.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
 
 class BudgetHomes extends ConsumerStatefulWidget {
@@ -68,7 +69,7 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.only(left: 10, bottom: 8),
                 child: Text(
                   "Budget Homes",
                   style: TextStyle(
@@ -86,14 +87,14 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
                       ...List.generate(
                         budgetCategories.length,
                         (index) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.only(left: 8),
                           child: TextButton(
                             style: TextButton.styleFrom(
                               backgroundColor: selectedBudget == index
                                   ? CustomColors.primary
                                   : Colors.transparent,
-                              side:
-                                  const BorderSide(color: CustomColors.black50),
+                              side: const BorderSide(
+                                  color: CustomColors.primary50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -135,7 +136,7 @@ class _BudgetHomesState extends ConsumerState<BudgetHomes> {
                         .isEmpty
                     ? Center(
                         child: Text(
-                            "No apartments found in ${budgetCategories[selectedBudget]['title']}"),
+                            "No apartments found in ${budgetCategories[selectedBudget]['title']}\nin ${ref.watch(filtersProvider).selectedLocalities.join(", ")}"),
                       )
                     : ListView.builder(
                         controller: pageController,

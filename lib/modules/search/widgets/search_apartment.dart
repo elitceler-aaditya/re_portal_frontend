@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/riverpod/home_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchApartmentCard extends ConsumerStatefulWidget {
@@ -59,6 +58,10 @@ class _SearchApartmentCardState extends ConsumerState<SearchApartmentCard> {
                 child: Image.network(
                   widget.apartment.coverImage,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) =>
+                      const SizedBox.shrink(),
+                  loadingBuilder: (context, child, loadingProgress) =>
+                      loadingProgress == null ? child : const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -93,7 +96,7 @@ class _SearchApartmentCardState extends ConsumerState<SearchApartmentCard> {
                       style: const TextStyle(
                         height: 1,
                         color: CustomColors.white,
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -111,7 +114,7 @@ class _SearchApartmentCardState extends ConsumerState<SearchApartmentCard> {
                         widget.apartment.projectLocation,
                         style: const TextStyle(
                           color: CustomColors.white,
-                          fontSize: 12,
+                          fontSize: 10,
                           fontWeight: FontWeight.w400,
                         ),
                       ),

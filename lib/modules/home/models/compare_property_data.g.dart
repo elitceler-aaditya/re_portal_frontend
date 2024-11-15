@@ -22,6 +22,7 @@ _$ComparePropertyDataImpl _$$ComparePropertyDataImplFromJson(
               ?.map((e) => UnitPlanConfig.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      configTitle: json['configTitle'] as String? ?? "",
       projectPossession: json['projectPossession'] as String? ?? "",
       pricePerSquareFeetRate: json['pricePerSquareFeetRate'] as String? ?? "",
       clubhousesize: json['clubhousesize'] as String? ?? "",
@@ -46,6 +47,7 @@ Map<String, dynamic> _$$ComparePropertyDataImplToJson(
       'noOfTowers': instance.noOfTowers,
       'noOfFloors': instance.noOfFloors,
       'unitPlanConfigs': instance.unitPlanConfigs,
+      'configTitle': instance.configTitle,
       'projectPossession': instance.projectPossession,
       'pricePerSquareFeetRate': instance.pricePerSquareFeetRate,
       'clubhousesize': instance.clubhousesize,

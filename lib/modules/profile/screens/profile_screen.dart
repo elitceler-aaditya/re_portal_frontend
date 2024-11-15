@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/get_started.dart';
 import 'package:re_portal_frontend/modules/onboarding/screens/login_screen.dart';
+import 'package:re_portal_frontend/modules/profile/screens/contacted_properties.dart';
 import 'package:re_portal_frontend/modules/profile/screens/my_account.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/transitions.dart';
@@ -47,32 +48,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
-          ref.read(navBarIndexProvider.notifier).setNavBarIndex(0);
-        }
-      },
-      child: Scaffold(
-        body: ref.watch(userProvider).name.isNotEmpty
-            ? Column(
+    return Scaffold(
+      body: ref.watch(userProvider).name.isNotEmpty
+          ? SingleChildScrollView(
+              child: Column(
                 children: [
                   SizedBox(
-                    height: 160,
+                    height: 180,
                     width: double.infinity,
                     child: Stack(
                       children: [
                         Container(
-                          height: 100,
-                          color: CustomColors.primary,
+                          height: 120,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                Color(0xFFFCCBAE),
+                                Color(0xFFF87988),
+                              ],
+                            ),
+                          ),
                         ),
-                        const Positioned(
-                          left: 16,
-                          top: 50,
-                          child: CircleAvatar(
-                            radius: 50,
-                            child: Center(
+                        Positioned(
+                          left: 24,
+                          top: 74,
+                          child: Container(
+                            height: 84,
+                            width: 84,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFCCBAE),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  spreadRadius: 2,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Center(
                               child: Icon(
                                 Icons.person_outline,
                                 size: 40,
@@ -83,7 +100,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         Positioned(
                           left: 120,
-                          top: 64,
+                          top: 86,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -94,7 +111,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: CustomColors.white,
+                                  color: CustomColors.black,
                                 ),
                               ),
                               Text(
@@ -107,6 +124,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ],
                           ),
                         ),
+                        Positioned(
+                          left: 10,
+                          top: MediaQuery.of(context).padding.top,
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(Icons.arrow_back)),
+                        ),
                       ],
                     ),
                   ),
@@ -116,7 +142,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     icon: Icons.bookmark_outline,
                     onTap: () => rightSlideTransition(
                       context,
-                      const SavedProperties(),
+                      const SavedProperties(isPop: true),
                     ),
                   ),
                   _listTile(
@@ -141,6 +167,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     subtitle:
                         'Raise an issue encountered by you and get solution',
                     icon: Icons.report_problem_outlined,
+                  ),
+                  _listTile(
+                    title: 'Contacted Properties',
+                    subtitle: 'Review your contacted properties',
+                    icon: Icons.contact_page_outlined,
+                    onTap: () => rightSlideTransition(
+                      context,
+                      const ContactedProperties(),
+                    ),
                   ),
                   const Divider(
                     height: 20,
@@ -195,33 +230,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     },
                   ),
                 ],
-              )
-            : Center(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: CustomColors.primary,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.login,
+              ),
+            )
+          : Center(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: CustomColors.primary,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.login,
+                  color: CustomColors.white,
+                ),
+                label: const Text(
+                  'Login to continue',
+                  style: TextStyle(
                     color: CustomColors.white,
-                  ),
-                  label: const Text(
-                    'Login to continue',
-                    style: TextStyle(
-                      color: CustomColors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ),
-      ),
+            ),
     );
   }
 }

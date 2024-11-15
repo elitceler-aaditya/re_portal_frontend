@@ -5,10 +5,12 @@ import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 
 class EditorsChoiceCard extends StatelessWidget {
   final List<ApartmentModel> apartments;
+  final bool leftPadding;
 
   const EditorsChoiceCard({
     super.key,
     required this.apartments,
+    this.leftPadding = true,
   });
   String formatBudget(int budget) {
     //return budget in k format or lakh and cr format
@@ -37,19 +39,17 @@ class EditorsChoiceCard extends StatelessWidget {
                   builder: (context) => PropertyDetails(
                     apartment: apartments[index],
                     heroTag: "editors-choice-${apartments[index].projectId}",
-                    nextApartment: index + 1 < apartments.length
-                        ? apartments[index + 1]
-                        : apartments.first,
                   ),
                 ),
               );
             },
             child: Container(
               width: MediaQuery.of(context).size.width * 0.85,
-              margin: const EdgeInsets.only(left: 10),
+              margin: EdgeInsets.only(
+                  left: leftPadding ? 10 : 0, right: leftPadding ? 0 : 10),
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                color: CustomColors.white,
+                color: CustomColors.black10,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Stack(
@@ -97,6 +97,7 @@ class EditorsChoiceCard extends StatelessWidget {
                   Positioned(
                     top: 0,
                     left: 0,
+                    right: 4,
                     child: Container(
                       height: 200,
                       padding: const EdgeInsets.all(8),
@@ -111,6 +112,15 @@ class EditorsChoiceCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          Text(
+                            "By ${apartments[index].builderName}",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
                           Row(
                             children: [
                               const Icon(
@@ -138,7 +148,7 @@ class EditorsChoiceCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                apartments[index].configuration.join(", "),
+                                "${apartments[index].configTitle} ",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
@@ -149,7 +159,7 @@ class EditorsChoiceCard extends StatelessWidget {
                           ),
                           const Spacer(),
                           Text(
-                            "your dream flat @ ${formatBudget(apartments[index].budget)}",
+                            "your dream flat @ ${formatBudget(apartments[index].minBudget)}",
                             style: const TextStyle(
                               color: CustomColors.white,
                               fontSize: 12,

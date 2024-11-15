@@ -477,6 +477,8 @@ mixin _$ProjectDetails {
   String get constructionType => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
+  String get leadPOCName => throw _privateConstructorUsedError;
+  String get leadPOCNumber => throw _privateConstructorUsedError;
   String get reraID => throw _privateConstructorUsedError;
   String get projectType => throw _privateConstructorUsedError;
   String get projectLaunchedDate => throw _privateConstructorUsedError;
@@ -488,6 +490,10 @@ mixin _$ProjectDetails {
   String get amenities => throw _privateConstructorUsedError;
   String get clubHouseAmenities => throw _privateConstructorUsedError;
   String get outdoorAmenities => throw _privateConstructorUsedError;
+  String get videoLink => throw _privateConstructorUsedError;
+  List<String> get configurations => throw _privateConstructorUsedError;
+  List<String> get brochurePdf => throw _privateConstructorUsedError;
+  List<String> get specifications => throw _privateConstructorUsedError;
   List<String> get projectHighlightsPoints =>
       throw _privateConstructorUsedError;
   Builder get builder => throw _privateConstructorUsedError;
@@ -496,6 +502,15 @@ mixin _$ProjectDetails {
   List<Institution> get hospitals => throw _privateConstructorUsedError;
   List<Institution> get offices => throw _privateConstructorUsedError;
   List<Institution> get connectivity => throw _privateConstructorUsedError;
+  String get bankName => throw _privateConstructorUsedError;
+  int get loanPercentage => throw _privateConstructorUsedError;
+  List<Bank> get banks => throw _privateConstructorUsedError;
+  List<Institution> get restaurants => throw _privateConstructorUsedError;
+  List<Institution> get colleges => throw _privateConstructorUsedError;
+  List<Institution> get pharmacies => throw _privateConstructorUsedError;
+  List<Institution> get hotspots => throw _privateConstructorUsedError;
+  List<Institution> get shopping => throw _privateConstructorUsedError;
+  List<Institution> get entertainment => throw _privateConstructorUsedError;
 
   /// Serializes this ProjectDetails to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -529,6 +544,8 @@ abstract class $ProjectDetailsCopyWith<$Res> {
       String constructionType,
       double latitude,
       double longitude,
+      String leadPOCName,
+      String leadPOCNumber,
       String reraID,
       String projectType,
       String projectLaunchedDate,
@@ -540,12 +557,25 @@ abstract class $ProjectDetailsCopyWith<$Res> {
       String amenities,
       String clubHouseAmenities,
       String outdoorAmenities,
+      String videoLink,
+      List<String> configurations,
+      List<String> brochurePdf,
+      List<String> specifications,
       List<String> projectHighlightsPoints,
       Builder builder,
       List<Institution> educationalInstitutions,
       List<Institution> hospitals,
       List<Institution> offices,
-      List<Institution> connectivity});
+      List<Institution> connectivity,
+      String bankName,
+      int loanPercentage,
+      List<Bank> banks,
+      List<Institution> restaurants,
+      List<Institution> colleges,
+      List<Institution> pharmacies,
+      List<Institution> hotspots,
+      List<Institution> shopping,
+      List<Institution> entertainment});
 
   $BuilderCopyWith<$Res> get builder;
 }
@@ -580,6 +610,8 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? constructionType = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? leadPOCName = null,
+    Object? leadPOCNumber = null,
     Object? reraID = null,
     Object? projectType = null,
     Object? projectLaunchedDate = null,
@@ -591,12 +623,25 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
     Object? amenities = null,
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
+    Object? videoLink = null,
+    Object? configurations = null,
+    Object? brochurePdf = null,
+    Object? specifications = null,
     Object? projectHighlightsPoints = null,
     Object? builder = null,
     Object? educationalInstitutions = null,
     Object? hospitals = null,
     Object? offices = null,
     Object? connectivity = null,
+    Object? bankName = null,
+    Object? loanPercentage = null,
+    Object? banks = null,
+    Object? restaurants = null,
+    Object? colleges = null,
+    Object? pharmacies = null,
+    Object? hotspots = null,
+    Object? shopping = null,
+    Object? entertainment = null,
   }) {
     return _then(_value.copyWith(
       projectId: null == projectId
@@ -659,6 +704,14 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      leadPOCName: null == leadPOCName
+          ? _value.leadPOCName
+          : leadPOCName // ignore: cast_nullable_to_non_nullable
+              as String,
+      leadPOCNumber: null == leadPOCNumber
+          ? _value.leadPOCNumber
+          : leadPOCNumber // ignore: cast_nullable_to_non_nullable
+              as String,
       reraID: null == reraID
           ? _value.reraID
           : reraID // ignore: cast_nullable_to_non_nullable
@@ -703,6 +756,22 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
           ? _value.outdoorAmenities
           : outdoorAmenities // ignore: cast_nullable_to_non_nullable
               as String,
+      videoLink: null == videoLink
+          ? _value.videoLink
+          : videoLink // ignore: cast_nullable_to_non_nullable
+              as String,
+      configurations: null == configurations
+          ? _value.configurations
+          : configurations // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      brochurePdf: null == brochurePdf
+          ? _value.brochurePdf
+          : brochurePdf // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      specifications: null == specifications
+          ? _value.specifications
+          : specifications // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       projectHighlightsPoints: null == projectHighlightsPoints
           ? _value.projectHighlightsPoints
           : projectHighlightsPoints // ignore: cast_nullable_to_non_nullable
@@ -726,6 +795,42 @@ class _$ProjectDetailsCopyWithImpl<$Res, $Val extends ProjectDetails>
       connectivity: null == connectivity
           ? _value.connectivity
           : connectivity // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      bankName: null == bankName
+          ? _value.bankName
+          : bankName // ignore: cast_nullable_to_non_nullable
+              as String,
+      loanPercentage: null == loanPercentage
+          ? _value.loanPercentage
+          : loanPercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+      banks: null == banks
+          ? _value.banks
+          : banks // ignore: cast_nullable_to_non_nullable
+              as List<Bank>,
+      restaurants: null == restaurants
+          ? _value.restaurants
+          : restaurants // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      colleges: null == colleges
+          ? _value.colleges
+          : colleges // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      pharmacies: null == pharmacies
+          ? _value.pharmacies
+          : pharmacies // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      hotspots: null == hotspots
+          ? _value.hotspots
+          : hotspots // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      shopping: null == shopping
+          ? _value.shopping
+          : shopping // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      entertainment: null == entertainment
+          ? _value.entertainment
+          : entertainment // ignore: cast_nullable_to_non_nullable
               as List<Institution>,
     ) as $Val);
   }
@@ -765,6 +870,8 @@ abstract class _$$ProjectDetailsImplCopyWith<$Res>
       String constructionType,
       double latitude,
       double longitude,
+      String leadPOCName,
+      String leadPOCNumber,
       String reraID,
       String projectType,
       String projectLaunchedDate,
@@ -776,12 +883,25 @@ abstract class _$$ProjectDetailsImplCopyWith<$Res>
       String amenities,
       String clubHouseAmenities,
       String outdoorAmenities,
+      String videoLink,
+      List<String> configurations,
+      List<String> brochurePdf,
+      List<String> specifications,
       List<String> projectHighlightsPoints,
       Builder builder,
       List<Institution> educationalInstitutions,
       List<Institution> hospitals,
       List<Institution> offices,
-      List<Institution> connectivity});
+      List<Institution> connectivity,
+      String bankName,
+      int loanPercentage,
+      List<Bank> banks,
+      List<Institution> restaurants,
+      List<Institution> colleges,
+      List<Institution> pharmacies,
+      List<Institution> hotspots,
+      List<Institution> shopping,
+      List<Institution> entertainment});
 
   @override
   $BuilderCopyWith<$Res> get builder;
@@ -815,6 +935,8 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
     Object? constructionType = null,
     Object? latitude = null,
     Object? longitude = null,
+    Object? leadPOCName = null,
+    Object? leadPOCNumber = null,
     Object? reraID = null,
     Object? projectType = null,
     Object? projectLaunchedDate = null,
@@ -826,12 +948,25 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
     Object? amenities = null,
     Object? clubHouseAmenities = null,
     Object? outdoorAmenities = null,
+    Object? videoLink = null,
+    Object? configurations = null,
+    Object? brochurePdf = null,
+    Object? specifications = null,
     Object? projectHighlightsPoints = null,
     Object? builder = null,
     Object? educationalInstitutions = null,
     Object? hospitals = null,
     Object? offices = null,
     Object? connectivity = null,
+    Object? bankName = null,
+    Object? loanPercentage = null,
+    Object? banks = null,
+    Object? restaurants = null,
+    Object? colleges = null,
+    Object? pharmacies = null,
+    Object? hotspots = null,
+    Object? shopping = null,
+    Object? entertainment = null,
   }) {
     return _then(_$ProjectDetailsImpl(
       projectId: null == projectId
@@ -894,6 +1029,14 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value.longitude
           : longitude // ignore: cast_nullable_to_non_nullable
               as double,
+      leadPOCName: null == leadPOCName
+          ? _value.leadPOCName
+          : leadPOCName // ignore: cast_nullable_to_non_nullable
+              as String,
+      leadPOCNumber: null == leadPOCNumber
+          ? _value.leadPOCNumber
+          : leadPOCNumber // ignore: cast_nullable_to_non_nullable
+              as String,
       reraID: null == reraID
           ? _value.reraID
           : reraID // ignore: cast_nullable_to_non_nullable
@@ -938,6 +1081,22 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value.outdoorAmenities
           : outdoorAmenities // ignore: cast_nullable_to_non_nullable
               as String,
+      videoLink: null == videoLink
+          ? _value.videoLink
+          : videoLink // ignore: cast_nullable_to_non_nullable
+              as String,
+      configurations: null == configurations
+          ? _value._configurations
+          : configurations // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      brochurePdf: null == brochurePdf
+          ? _value._brochurePdf
+          : brochurePdf // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      specifications: null == specifications
+          ? _value._specifications
+          : specifications // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       projectHighlightsPoints: null == projectHighlightsPoints
           ? _value._projectHighlightsPoints
           : projectHighlightsPoints // ignore: cast_nullable_to_non_nullable
@@ -962,6 +1121,42 @@ class __$$ProjectDetailsImplCopyWithImpl<$Res>
           ? _value._connectivity
           : connectivity // ignore: cast_nullable_to_non_nullable
               as List<Institution>,
+      bankName: null == bankName
+          ? _value.bankName
+          : bankName // ignore: cast_nullable_to_non_nullable
+              as String,
+      loanPercentage: null == loanPercentage
+          ? _value.loanPercentage
+          : loanPercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+      banks: null == banks
+          ? _value._banks
+          : banks // ignore: cast_nullable_to_non_nullable
+              as List<Bank>,
+      restaurants: null == restaurants
+          ? _value._restaurants
+          : restaurants // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      colleges: null == colleges
+          ? _value._colleges
+          : colleges // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      pharmacies: null == pharmacies
+          ? _value._pharmacies
+          : pharmacies // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      hotspots: null == hotspots
+          ? _value._hotspots
+          : hotspots // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      shopping: null == shopping
+          ? _value._shopping
+          : shopping // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
+      entertainment: null == entertainment
+          ? _value._entertainment
+          : entertainment // ignore: cast_nullable_to_non_nullable
+              as List<Institution>,
     ));
   }
 }
@@ -985,28 +1180,53 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
       this.constructionType = '',
       this.latitude = 0.0,
       this.longitude = 0.0,
+      this.leadPOCName = '',
+      this.leadPOCNumber = '',
       this.reraID = '',
       this.projectType = '',
       this.projectLaunchedDate = '',
       this.projectPossession = '',
-      this.pricePerSquareFeetRate = '',
+      this.pricePerSquareFeetRate = '0',
       this.totalArea = '',
       this.landMark = '',
       this.nearByHighlights = '',
       this.amenities = '',
       this.clubHouseAmenities = '',
       this.outdoorAmenities = '',
+      this.videoLink = '',
+      final List<String> configurations = const [],
+      final List<String> brochurePdf = const [],
+      final List<String> specifications = const [],
       final List<String> projectHighlightsPoints = const [],
       this.builder = const Builder(),
       final List<Institution> educationalInstitutions = const [],
       final List<Institution> hospitals = const [],
       final List<Institution> offices = const [],
-      final List<Institution> connectivity = const []})
-      : _projectHighlightsPoints = projectHighlightsPoints,
+      final List<Institution> connectivity = const [],
+      this.bankName = '',
+      this.loanPercentage = 0,
+      final List<Bank> banks = const [],
+      final List<Institution> restaurants = const [],
+      final List<Institution> colleges = const [],
+      final List<Institution> pharmacies = const [],
+      final List<Institution> hotspots = const [],
+      final List<Institution> shopping = const [],
+      final List<Institution> entertainment = const []})
+      : _configurations = configurations,
+        _brochurePdf = brochurePdf,
+        _specifications = specifications,
+        _projectHighlightsPoints = projectHighlightsPoints,
         _educationalInstitutions = educationalInstitutions,
         _hospitals = hospitals,
         _offices = offices,
-        _connectivity = connectivity;
+        _connectivity = connectivity,
+        _banks = banks,
+        _restaurants = restaurants,
+        _colleges = colleges,
+        _pharmacies = pharmacies,
+        _hotspots = hotspots,
+        _shopping = shopping,
+        _entertainment = entertainment;
 
   factory _$ProjectDetailsImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProjectDetailsImplFromJson(json);
@@ -1058,6 +1278,12 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   final double longitude;
   @override
   @JsonKey()
+  final String leadPOCName;
+  @override
+  @JsonKey()
+  final String leadPOCNumber;
+  @override
+  @JsonKey()
   final String reraID;
   @override
   @JsonKey()
@@ -1089,6 +1315,36 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   @override
   @JsonKey()
   final String outdoorAmenities;
+  @override
+  @JsonKey()
+  final String videoLink;
+  final List<String> _configurations;
+  @override
+  @JsonKey()
+  List<String> get configurations {
+    if (_configurations is EqualUnmodifiableListView) return _configurations;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_configurations);
+  }
+
+  final List<String> _brochurePdf;
+  @override
+  @JsonKey()
+  List<String> get brochurePdf {
+    if (_brochurePdf is EqualUnmodifiableListView) return _brochurePdf;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_brochurePdf);
+  }
+
+  final List<String> _specifications;
+  @override
+  @JsonKey()
+  List<String> get specifications {
+    if (_specifications is EqualUnmodifiableListView) return _specifications;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_specifications);
+  }
+
   final List<String> _projectHighlightsPoints;
   @override
   @JsonKey()
@@ -1140,8 +1396,77 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
   }
 
   @override
+  @JsonKey()
+  final String bankName;
+  @override
+  @JsonKey()
+  final int loanPercentage;
+  final List<Bank> _banks;
+  @override
+  @JsonKey()
+  List<Bank> get banks {
+    if (_banks is EqualUnmodifiableListView) return _banks;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_banks);
+  }
+
+  final List<Institution> _restaurants;
+  @override
+  @JsonKey()
+  List<Institution> get restaurants {
+    if (_restaurants is EqualUnmodifiableListView) return _restaurants;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_restaurants);
+  }
+
+  final List<Institution> _colleges;
+  @override
+  @JsonKey()
+  List<Institution> get colleges {
+    if (_colleges is EqualUnmodifiableListView) return _colleges;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_colleges);
+  }
+
+  final List<Institution> _pharmacies;
+  @override
+  @JsonKey()
+  List<Institution> get pharmacies {
+    if (_pharmacies is EqualUnmodifiableListView) return _pharmacies;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_pharmacies);
+  }
+
+  final List<Institution> _hotspots;
+  @override
+  @JsonKey()
+  List<Institution> get hotspots {
+    if (_hotspots is EqualUnmodifiableListView) return _hotspots;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_hotspots);
+  }
+
+  final List<Institution> _shopping;
+  @override
+  @JsonKey()
+  List<Institution> get shopping {
+    if (_shopping is EqualUnmodifiableListView) return _shopping;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_shopping);
+  }
+
+  final List<Institution> _entertainment;
+  @override
+  @JsonKey()
+  List<Institution> get entertainment {
+    if (_entertainment is EqualUnmodifiableListView) return _entertainment;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_entertainment);
+  }
+
+  @override
   String toString() {
-    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity)';
+    return 'ProjectDetails(projectId: $projectId, builderID: $builderID, name: $name, description: $description, projectLocation: $projectLocation, projectSize: $projectSize, noOfFloors: $noOfFloors, noOfFlats: $noOfFlats, noOfTowers: $noOfTowers, noOfFlatsPerFloor: $noOfFlatsPerFloor, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, latitude: $latitude, longitude: $longitude, leadPOCName: $leadPOCName, leadPOCNumber: $leadPOCNumber, reraID: $reraID, projectType: $projectType, projectLaunchedDate: $projectLaunchedDate, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, totalArea: $totalArea, landMark: $landMark, nearByHighlights: $nearByHighlights, amenities: $amenities, clubHouseAmenities: $clubHouseAmenities, outdoorAmenities: $outdoorAmenities, videoLink: $videoLink, configurations: $configurations, brochurePdf: $brochurePdf, specifications: $specifications, projectHighlightsPoints: $projectHighlightsPoints, builder: $builder, educationalInstitutions: $educationalInstitutions, hospitals: $hospitals, offices: $offices, connectivity: $connectivity, bankName: $bankName, loanPercentage: $loanPercentage, banks: $banks, restaurants: $restaurants, colleges: $colleges, pharmacies: $pharmacies, hotspots: $hotspots, shopping: $shopping, entertainment: $entertainment)';
   }
 
   @override
@@ -1178,6 +1503,10 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
                 other.longitude == longitude) &&
+            (identical(other.leadPOCName, leadPOCName) ||
+                other.leadPOCName == leadPOCName) &&
+            (identical(other.leadPOCNumber, leadPOCNumber) ||
+                other.leadPOCNumber == leadPOCNumber) &&
             (identical(other.reraID, reraID) || other.reraID == reraID) &&
             (identical(other.projectType, projectType) ||
                 other.projectType == projectType) &&
@@ -1199,6 +1528,14 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
                 other.clubHouseAmenities == clubHouseAmenities) &&
             (identical(other.outdoorAmenities, outdoorAmenities) ||
                 other.outdoorAmenities == outdoorAmenities) &&
+            (identical(other.videoLink, videoLink) ||
+                other.videoLink == videoLink) &&
+            const DeepCollectionEquality()
+                .equals(other._configurations, _configurations) &&
+            const DeepCollectionEquality()
+                .equals(other._brochurePdf, _brochurePdf) &&
+            const DeepCollectionEquality()
+                .equals(other._specifications, _specifications) &&
             const DeepCollectionEquality().equals(
                 other._projectHighlightsPoints, _projectHighlightsPoints) &&
             (identical(other.builder, builder) || other.builder == builder) &&
@@ -1208,7 +1545,21 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
                 .equals(other._hospitals, _hospitals) &&
             const DeepCollectionEquality().equals(other._offices, _offices) &&
             const DeepCollectionEquality()
-                .equals(other._connectivity, _connectivity));
+                .equals(other._connectivity, _connectivity) &&
+            (identical(other.bankName, bankName) ||
+                other.bankName == bankName) &&
+            (identical(other.loanPercentage, loanPercentage) ||
+                other.loanPercentage == loanPercentage) &&
+            const DeepCollectionEquality().equals(other._banks, _banks) &&
+            const DeepCollectionEquality()
+                .equals(other._restaurants, _restaurants) &&
+            const DeepCollectionEquality().equals(other._colleges, _colleges) &&
+            const DeepCollectionEquality()
+                .equals(other._pharmacies, _pharmacies) &&
+            const DeepCollectionEquality().equals(other._hotspots, _hotspots) &&
+            const DeepCollectionEquality().equals(other._shopping, _shopping) &&
+            const DeepCollectionEquality()
+                .equals(other._entertainment, _entertainment));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1230,6 +1581,8 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
         constructionType,
         latitude,
         longitude,
+        leadPOCName,
+        leadPOCNumber,
         reraID,
         projectType,
         projectLaunchedDate,
@@ -1241,12 +1594,25 @@ class _$ProjectDetailsImpl implements _ProjectDetails {
         amenities,
         clubHouseAmenities,
         outdoorAmenities,
+        videoLink,
+        const DeepCollectionEquality().hash(_configurations),
+        const DeepCollectionEquality().hash(_brochurePdf),
+        const DeepCollectionEquality().hash(_specifications),
         const DeepCollectionEquality().hash(_projectHighlightsPoints),
         builder,
         const DeepCollectionEquality().hash(_educationalInstitutions),
         const DeepCollectionEquality().hash(_hospitals),
         const DeepCollectionEquality().hash(_offices),
-        const DeepCollectionEquality().hash(_connectivity)
+        const DeepCollectionEquality().hash(_connectivity),
+        bankName,
+        loanPercentage,
+        const DeepCollectionEquality().hash(_banks),
+        const DeepCollectionEquality().hash(_restaurants),
+        const DeepCollectionEquality().hash(_colleges),
+        const DeepCollectionEquality().hash(_pharmacies),
+        const DeepCollectionEquality().hash(_hotspots),
+        const DeepCollectionEquality().hash(_shopping),
+        const DeepCollectionEquality().hash(_entertainment)
       ]);
 
   /// Create a copy of ProjectDetails
@@ -1283,6 +1649,8 @@ abstract class _ProjectDetails implements ProjectDetails {
       final String constructionType,
       final double latitude,
       final double longitude,
+      final String leadPOCName,
+      final String leadPOCNumber,
       final String reraID,
       final String projectType,
       final String projectLaunchedDate,
@@ -1294,12 +1662,25 @@ abstract class _ProjectDetails implements ProjectDetails {
       final String amenities,
       final String clubHouseAmenities,
       final String outdoorAmenities,
+      final String videoLink,
+      final List<String> configurations,
+      final List<String> brochurePdf,
+      final List<String> specifications,
       final List<String> projectHighlightsPoints,
       final Builder builder,
       final List<Institution> educationalInstitutions,
       final List<Institution> hospitals,
       final List<Institution> offices,
-      final List<Institution> connectivity}) = _$ProjectDetailsImpl;
+      final List<Institution> connectivity,
+      final String bankName,
+      final int loanPercentage,
+      final List<Bank> banks,
+      final List<Institution> restaurants,
+      final List<Institution> colleges,
+      final List<Institution> pharmacies,
+      final List<Institution> hotspots,
+      final List<Institution> shopping,
+      final List<Institution> entertainment}) = _$ProjectDetailsImpl;
 
   factory _ProjectDetails.fromJson(Map<String, dynamic> json) =
       _$ProjectDetailsImpl.fromJson;
@@ -1335,6 +1716,10 @@ abstract class _ProjectDetails implements ProjectDetails {
   @override
   double get longitude;
   @override
+  String get leadPOCName;
+  @override
+  String get leadPOCNumber;
+  @override
   String get reraID;
   @override
   String get projectType;
@@ -1357,6 +1742,14 @@ abstract class _ProjectDetails implements ProjectDetails {
   @override
   String get outdoorAmenities;
   @override
+  String get videoLink;
+  @override
+  List<String> get configurations;
+  @override
+  List<String> get brochurePdf;
+  @override
+  List<String> get specifications;
+  @override
   List<String> get projectHighlightsPoints;
   @override
   Builder get builder;
@@ -1368,12 +1761,217 @@ abstract class _ProjectDetails implements ProjectDetails {
   List<Institution> get offices;
   @override
   List<Institution> get connectivity;
+  @override
+  String get bankName;
+  @override
+  int get loanPercentage;
+  @override
+  List<Bank> get banks;
+  @override
+  List<Institution> get restaurants;
+  @override
+  List<Institution> get colleges;
+  @override
+  List<Institution> get pharmacies;
+  @override
+  List<Institution> get hotspots;
+  @override
+  List<Institution> get shopping;
+  @override
+  List<Institution> get entertainment;
 
   /// Create a copy of ProjectDetails
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ProjectDetailsImplCopyWith<_$ProjectDetailsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+Bank _$BankFromJson(Map<String, dynamic> json) {
+  return _Bank.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Bank {
+  String get bankName => throw _privateConstructorUsedError;
+  String get bankLogo => throw _privateConstructorUsedError;
+  int get loanPercentage => throw _privateConstructorUsedError;
+
+  /// Serializes this Bank to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $BankCopyWith<Bank> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $BankCopyWith<$Res> {
+  factory $BankCopyWith(Bank value, $Res Function(Bank) then) =
+      _$BankCopyWithImpl<$Res, Bank>;
+  @useResult
+  $Res call({String bankName, String bankLogo, int loanPercentage});
+}
+
+/// @nodoc
+class _$BankCopyWithImpl<$Res, $Val extends Bank>
+    implements $BankCopyWith<$Res> {
+  _$BankCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bankName = null,
+    Object? bankLogo = null,
+    Object? loanPercentage = null,
+  }) {
+    return _then(_value.copyWith(
+      bankName: null == bankName
+          ? _value.bankName
+          : bankName // ignore: cast_nullable_to_non_nullable
+              as String,
+      bankLogo: null == bankLogo
+          ? _value.bankLogo
+          : bankLogo // ignore: cast_nullable_to_non_nullable
+              as String,
+      loanPercentage: null == loanPercentage
+          ? _value.loanPercentage
+          : loanPercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$BankImplCopyWith<$Res> implements $BankCopyWith<$Res> {
+  factory _$$BankImplCopyWith(
+          _$BankImpl value, $Res Function(_$BankImpl) then) =
+      __$$BankImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String bankName, String bankLogo, int loanPercentage});
+}
+
+/// @nodoc
+class __$$BankImplCopyWithImpl<$Res>
+    extends _$BankCopyWithImpl<$Res, _$BankImpl>
+    implements _$$BankImplCopyWith<$Res> {
+  __$$BankImplCopyWithImpl(_$BankImpl _value, $Res Function(_$BankImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? bankName = null,
+    Object? bankLogo = null,
+    Object? loanPercentage = null,
+  }) {
+    return _then(_$BankImpl(
+      bankName: null == bankName
+          ? _value.bankName
+          : bankName // ignore: cast_nullable_to_non_nullable
+              as String,
+      bankLogo: null == bankLogo
+          ? _value.bankLogo
+          : bankLogo // ignore: cast_nullable_to_non_nullable
+              as String,
+      loanPercentage: null == loanPercentage
+          ? _value.loanPercentage
+          : loanPercentage // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$BankImpl implements _Bank {
+  const _$BankImpl(
+      {this.bankName = '', this.bankLogo = '', this.loanPercentage = 0});
+
+  factory _$BankImpl.fromJson(Map<String, dynamic> json) =>
+      _$$BankImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String bankName;
+  @override
+  @JsonKey()
+  final String bankLogo;
+  @override
+  @JsonKey()
+  final int loanPercentage;
+
+  @override
+  String toString() {
+    return 'Bank(bankName: $bankName, bankLogo: $bankLogo, loanPercentage: $loanPercentage)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BankImpl &&
+            (identical(other.bankName, bankName) ||
+                other.bankName == bankName) &&
+            (identical(other.bankLogo, bankLogo) ||
+                other.bankLogo == bankLogo) &&
+            (identical(other.loanPercentage, loanPercentage) ||
+                other.loanPercentage == loanPercentage));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, bankName, bankLogo, loanPercentage);
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BankImplCopyWith<_$BankImpl> get copyWith =>
+      __$$BankImplCopyWithImpl<_$BankImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$BankImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _Bank implements Bank {
+  const factory _Bank(
+      {final String bankName,
+      final String bankLogo,
+      final int loanPercentage}) = _$BankImpl;
+
+  factory _Bank.fromJson(Map<String, dynamic> json) = _$BankImpl.fromJson;
+
+  @override
+  String get bankName;
+  @override
+  String get bankLogo;
+  @override
+  int get loanPercentage;
+
+  /// Create a copy of Bank
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BankImplCopyWith<_$BankImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1737,9 +2335,8 @@ UnitPlanConfig _$UnitPlanConfigFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UnitPlanConfig {
   String get bHKType => throw _privateConstructorUsedError;
-  String get sizeInSqft => throw _privateConstructorUsedError;
-  String get facing => throw _privateConstructorUsedError;
-  List<String> get unitPlanConfigFiles => throw _privateConstructorUsedError;
+  List<UnitPlanConfigFile> get unitPlanConfigFiles =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this UnitPlanConfig to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1757,11 +2354,7 @@ abstract class $UnitPlanConfigCopyWith<$Res> {
           UnitPlanConfig value, $Res Function(UnitPlanConfig) then) =
       _$UnitPlanConfigCopyWithImpl<$Res, UnitPlanConfig>;
   @useResult
-  $Res call(
-      {String bHKType,
-      String sizeInSqft,
-      String facing,
-      List<String> unitPlanConfigFiles});
+  $Res call({String bHKType, List<UnitPlanConfigFile> unitPlanConfigFiles});
 }
 
 /// @nodoc
@@ -1780,8 +2373,6 @@ class _$UnitPlanConfigCopyWithImpl<$Res, $Val extends UnitPlanConfig>
   @override
   $Res call({
     Object? bHKType = null,
-    Object? sizeInSqft = null,
-    Object? facing = null,
     Object? unitPlanConfigFiles = null,
   }) {
     return _then(_value.copyWith(
@@ -1789,18 +2380,10 @@ class _$UnitPlanConfigCopyWithImpl<$Res, $Val extends UnitPlanConfig>
           ? _value.bHKType
           : bHKType // ignore: cast_nullable_to_non_nullable
               as String,
-      sizeInSqft: null == sizeInSqft
-          ? _value.sizeInSqft
-          : sizeInSqft // ignore: cast_nullable_to_non_nullable
-              as String,
-      facing: null == facing
-          ? _value.facing
-          : facing // ignore: cast_nullable_to_non_nullable
-              as String,
       unitPlanConfigFiles: null == unitPlanConfigFiles
           ? _value.unitPlanConfigFiles
           : unitPlanConfigFiles // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<UnitPlanConfigFile>,
     ) as $Val);
   }
 }
@@ -1813,11 +2396,7 @@ abstract class _$$UnitPlanConfigImplCopyWith<$Res>
       __$$UnitPlanConfigImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String bHKType,
-      String sizeInSqft,
-      String facing,
-      List<String> unitPlanConfigFiles});
+  $Res call({String bHKType, List<UnitPlanConfigFile> unitPlanConfigFiles});
 }
 
 /// @nodoc
@@ -1834,8 +2413,6 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? bHKType = null,
-    Object? sizeInSqft = null,
-    Object? facing = null,
     Object? unitPlanConfigFiles = null,
   }) {
     return _then(_$UnitPlanConfigImpl(
@@ -1843,18 +2420,10 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
           ? _value.bHKType
           : bHKType // ignore: cast_nullable_to_non_nullable
               as String,
-      sizeInSqft: null == sizeInSqft
-          ? _value.sizeInSqft
-          : sizeInSqft // ignore: cast_nullable_to_non_nullable
-              as String,
-      facing: null == facing
-          ? _value.facing
-          : facing // ignore: cast_nullable_to_non_nullable
-              as String,
       unitPlanConfigFiles: null == unitPlanConfigFiles
           ? _value._unitPlanConfigFiles
           : unitPlanConfigFiles // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<UnitPlanConfigFile>,
     ));
   }
 }
@@ -1864,9 +2433,7 @@ class __$$UnitPlanConfigImplCopyWithImpl<$Res>
 class _$UnitPlanConfigImpl implements _UnitPlanConfig {
   const _$UnitPlanConfigImpl(
       {this.bHKType = '',
-      this.sizeInSqft = '',
-      this.facing = '',
-      final List<String> unitPlanConfigFiles = const []})
+      final List<UnitPlanConfigFile> unitPlanConfigFiles = const []})
       : _unitPlanConfigFiles = unitPlanConfigFiles;
 
   factory _$UnitPlanConfigImpl.fromJson(Map<String, dynamic> json) =>
@@ -1875,16 +2442,10 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
   @override
   @JsonKey()
   final String bHKType;
+  final List<UnitPlanConfigFile> _unitPlanConfigFiles;
   @override
   @JsonKey()
-  final String sizeInSqft;
-  @override
-  @JsonKey()
-  final String facing;
-  final List<String> _unitPlanConfigFiles;
-  @override
-  @JsonKey()
-  List<String> get unitPlanConfigFiles {
+  List<UnitPlanConfigFile> get unitPlanConfigFiles {
     if (_unitPlanConfigFiles is EqualUnmodifiableListView)
       return _unitPlanConfigFiles;
     // ignore: implicit_dynamic_type
@@ -1893,7 +2454,7 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
 
   @override
   String toString() {
-    return 'UnitPlanConfig(bHKType: $bHKType, sizeInSqft: $sizeInSqft, facing: $facing, unitPlanConfigFiles: $unitPlanConfigFiles)';
+    return 'UnitPlanConfig(bHKType: $bHKType, unitPlanConfigFiles: $unitPlanConfigFiles)';
   }
 
   @override
@@ -1902,16 +2463,13 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
         (other.runtimeType == runtimeType &&
             other is _$UnitPlanConfigImpl &&
             (identical(other.bHKType, bHKType) || other.bHKType == bHKType) &&
-            (identical(other.sizeInSqft, sizeInSqft) ||
-                other.sizeInSqft == sizeInSqft) &&
-            (identical(other.facing, facing) || other.facing == facing) &&
             const DeepCollectionEquality()
                 .equals(other._unitPlanConfigFiles, _unitPlanConfigFiles));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, bHKType, sizeInSqft, facing,
+  int get hashCode => Object.hash(runtimeType, bHKType,
       const DeepCollectionEquality().hash(_unitPlanConfigFiles));
 
   /// Create a copy of UnitPlanConfig
@@ -1933,10 +2491,9 @@ class _$UnitPlanConfigImpl implements _UnitPlanConfig {
 
 abstract class _UnitPlanConfig implements UnitPlanConfig {
   const factory _UnitPlanConfig(
-      {final String bHKType,
-      final String sizeInSqft,
-      final String facing,
-      final List<String> unitPlanConfigFiles}) = _$UnitPlanConfigImpl;
+          {final String bHKType,
+          final List<UnitPlanConfigFile> unitPlanConfigFiles}) =
+      _$UnitPlanConfigImpl;
 
   factory _UnitPlanConfig.fromJson(Map<String, dynamic> json) =
       _$UnitPlanConfigImpl.fromJson;
@@ -1944,16 +2501,202 @@ abstract class _UnitPlanConfig implements UnitPlanConfig {
   @override
   String get bHKType;
   @override
-  String get sizeInSqft;
-  @override
-  String get facing;
-  @override
-  List<String> get unitPlanConfigFiles;
+  List<UnitPlanConfigFile> get unitPlanConfigFiles;
 
   /// Create a copy of UnitPlanConfig
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UnitPlanConfigImplCopyWith<_$UnitPlanConfigImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+UnitPlanConfigFile _$UnitPlanConfigFileFromJson(Map<String, dynamic> json) {
+  return _UnitPlanConfigFile.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UnitPlanConfigFile {
+  String get image => throw _privateConstructorUsedError;
+  int get flatSize => throw _privateConstructorUsedError;
+  String get facing => throw _privateConstructorUsedError;
+
+  /// Serializes this UnitPlanConfigFile to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UnitPlanConfigFileCopyWith<UnitPlanConfigFile> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UnitPlanConfigFileCopyWith<$Res> {
+  factory $UnitPlanConfigFileCopyWith(
+          UnitPlanConfigFile value, $Res Function(UnitPlanConfigFile) then) =
+      _$UnitPlanConfigFileCopyWithImpl<$Res, UnitPlanConfigFile>;
+  @useResult
+  $Res call({String image, int flatSize, String facing});
+}
+
+/// @nodoc
+class _$UnitPlanConfigFileCopyWithImpl<$Res, $Val extends UnitPlanConfigFile>
+    implements $UnitPlanConfigFileCopyWith<$Res> {
+  _$UnitPlanConfigFileCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? image = null,
+    Object? flatSize = null,
+    Object? facing = null,
+  }) {
+    return _then(_value.copyWith(
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String,
+      flatSize: null == flatSize
+          ? _value.flatSize
+          : flatSize // ignore: cast_nullable_to_non_nullable
+              as int,
+      facing: null == facing
+          ? _value.facing
+          : facing // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UnitPlanConfigFileImplCopyWith<$Res>
+    implements $UnitPlanConfigFileCopyWith<$Res> {
+  factory _$$UnitPlanConfigFileImplCopyWith(_$UnitPlanConfigFileImpl value,
+          $Res Function(_$UnitPlanConfigFileImpl) then) =
+      __$$UnitPlanConfigFileImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String image, int flatSize, String facing});
+}
+
+/// @nodoc
+class __$$UnitPlanConfigFileImplCopyWithImpl<$Res>
+    extends _$UnitPlanConfigFileCopyWithImpl<$Res, _$UnitPlanConfigFileImpl>
+    implements _$$UnitPlanConfigFileImplCopyWith<$Res> {
+  __$$UnitPlanConfigFileImplCopyWithImpl(_$UnitPlanConfigFileImpl _value,
+      $Res Function(_$UnitPlanConfigFileImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? image = null,
+    Object? flatSize = null,
+    Object? facing = null,
+  }) {
+    return _then(_$UnitPlanConfigFileImpl(
+      image: null == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String,
+      flatSize: null == flatSize
+          ? _value.flatSize
+          : flatSize // ignore: cast_nullable_to_non_nullable
+              as int,
+      facing: null == facing
+          ? _value.facing
+          : facing // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UnitPlanConfigFileImpl implements _UnitPlanConfigFile {
+  const _$UnitPlanConfigFileImpl(
+      {this.image = '', this.flatSize = 0, this.facing = ''});
+
+  factory _$UnitPlanConfigFileImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UnitPlanConfigFileImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String image;
+  @override
+  @JsonKey()
+  final int flatSize;
+  @override
+  @JsonKey()
+  final String facing;
+
+  @override
+  String toString() {
+    return 'UnitPlanConfigFile(image: $image, flatSize: $flatSize, facing: $facing)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UnitPlanConfigFileImpl &&
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.flatSize, flatSize) ||
+                other.flatSize == flatSize) &&
+            (identical(other.facing, facing) || other.facing == facing));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, image, flatSize, facing);
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UnitPlanConfigFileImplCopyWith<_$UnitPlanConfigFileImpl> get copyWith =>
+      __$$UnitPlanConfigFileImplCopyWithImpl<_$UnitPlanConfigFileImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UnitPlanConfigFileImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UnitPlanConfigFile implements UnitPlanConfigFile {
+  const factory _UnitPlanConfigFile(
+      {final String image,
+      final int flatSize,
+      final String facing}) = _$UnitPlanConfigFileImpl;
+
+  factory _UnitPlanConfigFile.fromJson(Map<String, dynamic> json) =
+      _$UnitPlanConfigFileImpl.fromJson;
+
+  @override
+  String get image;
+  @override
+  int get flatSize;
+  @override
+  String get facing;
+
+  /// Create a copy of UnitPlanConfigFile
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UnitPlanConfigFileImplCopyWith<_$UnitPlanConfigFileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

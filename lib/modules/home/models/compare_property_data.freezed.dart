@@ -31,6 +31,7 @@ mixin _$ComparePropertyData {
   String get noOfFloors => throw _privateConstructorUsedError;
   List<UnitPlanConfig> get unitPlanConfigs =>
       throw _privateConstructorUsedError;
+  String get configTitle => throw _privateConstructorUsedError;
   String get projectPossession => throw _privateConstructorUsedError;
   String get pricePerSquareFeetRate => throw _privateConstructorUsedError;
   String get clubhousesize => throw _privateConstructorUsedError;
@@ -66,6 +67,7 @@ abstract class $ComparePropertyDataCopyWith<$Res> {
       String noOfTowers,
       String noOfFloors,
       List<UnitPlanConfig> unitPlanConfigs,
+      String configTitle,
       String projectPossession,
       String pricePerSquareFeetRate,
       String clubhousesize,
@@ -102,6 +104,7 @@ class _$ComparePropertyDataCopyWithImpl<$Res, $Val extends ComparePropertyData>
     Object? noOfTowers = null,
     Object? noOfFloors = null,
     Object? unitPlanConfigs = null,
+    Object? configTitle = null,
     Object? projectPossession = null,
     Object? pricePerSquareFeetRate = null,
     Object? clubhousesize = null,
@@ -151,6 +154,10 @@ class _$ComparePropertyDataCopyWithImpl<$Res, $Val extends ComparePropertyData>
           ? _value.unitPlanConfigs
           : unitPlanConfigs // ignore: cast_nullable_to_non_nullable
               as List<UnitPlanConfig>,
+      configTitle: null == configTitle
+          ? _value.configTitle
+          : configTitle // ignore: cast_nullable_to_non_nullable
+              as String,
       projectPossession: null == projectPossession
           ? _value.projectPossession
           : projectPossession // ignore: cast_nullable_to_non_nullable
@@ -212,6 +219,7 @@ abstract class _$$ComparePropertyDataImplCopyWith<$Res>
       String noOfTowers,
       String noOfFloors,
       List<UnitPlanConfig> unitPlanConfigs,
+      String configTitle,
       String projectPossession,
       String pricePerSquareFeetRate,
       String clubhousesize,
@@ -247,6 +255,7 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
     Object? noOfTowers = null,
     Object? noOfFloors = null,
     Object? unitPlanConfigs = null,
+    Object? configTitle = null,
     Object? projectPossession = null,
     Object? pricePerSquareFeetRate = null,
     Object? clubhousesize = null,
@@ -296,6 +305,10 @@ class __$$ComparePropertyDataImplCopyWithImpl<$Res>
           ? _value._unitPlanConfigs
           : unitPlanConfigs // ignore: cast_nullable_to_non_nullable
               as List<UnitPlanConfig>,
+      configTitle: null == configTitle
+          ? _value.configTitle
+          : configTitle // ignore: cast_nullable_to_non_nullable
+              as String,
       projectPossession: null == projectPossession
           ? _value.projectPossession
           : projectPossession // ignore: cast_nullable_to_non_nullable
@@ -342,6 +355,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       this.noOfTowers = "",
       this.noOfFloors = "",
       final List<UnitPlanConfig> unitPlanConfigs = const [],
+      this.configTitle = "",
       this.projectPossession = "",
       this.pricePerSquareFeetRate = "",
       this.clubhousesize = "",
@@ -392,6 +406,9 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
 
   @override
   @JsonKey()
+  final String configTitle;
+  @override
+  @JsonKey()
   final String projectPossession;
   @override
   @JsonKey()
@@ -414,7 +431,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
 
   @override
   String toString() {
-    return 'ComparePropertyData(name: $name, projectType: $projectType, flatSizes: $flatSizes, projectLocation: $projectLocation, projectStatus: $projectStatus, rERAApproval: $rERAApproval, projectSize: $projectSize, noOfTowers: $noOfTowers, noOfFloors: $noOfFloors, unitPlanConfigs: $unitPlanConfigs, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, budget: $budget, builder: $builder)';
+    return 'ComparePropertyData(name: $name, projectType: $projectType, flatSizes: $flatSizes, projectLocation: $projectLocation, projectStatus: $projectStatus, rERAApproval: $rERAApproval, projectSize: $projectSize, noOfTowers: $noOfTowers, noOfFloors: $noOfFloors, unitPlanConfigs: $unitPlanConfigs, configTitle: $configTitle, projectPossession: $projectPossession, pricePerSquareFeetRate: $pricePerSquareFeetRate, clubhousesize: $clubhousesize, totalOpenSpace: $totalOpenSpace, constructionType: $constructionType, budget: $budget, builder: $builder)';
   }
 
   @override
@@ -441,6 +458,8 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
                 other.noOfFloors == noOfFloors) &&
             const DeepCollectionEquality()
                 .equals(other._unitPlanConfigs, _unitPlanConfigs) &&
+            (identical(other.configTitle, configTitle) ||
+                other.configTitle == configTitle) &&
             (identical(other.projectPossession, projectPossession) ||
                 other.projectPossession == projectPossession) &&
             (identical(other.pricePerSquareFeetRate, pricePerSquareFeetRate) ||
@@ -469,6 +488,7 @@ class _$ComparePropertyDataImpl implements _ComparePropertyData {
       noOfTowers,
       noOfFloors,
       const DeepCollectionEquality().hash(_unitPlanConfigs),
+      configTitle,
       projectPossession,
       pricePerSquareFeetRate,
       clubhousesize,
@@ -506,6 +526,7 @@ abstract class _ComparePropertyData implements ComparePropertyData {
       final String noOfTowers,
       final String noOfFloors,
       final List<UnitPlanConfig> unitPlanConfigs,
+      final String configTitle,
       final String projectPossession,
       final String pricePerSquareFeetRate,
       final String clubhousesize,
@@ -537,6 +558,8 @@ abstract class _ComparePropertyData implements ComparePropertyData {
   String get noOfFloors;
   @override
   List<UnitPlanConfig> get unitPlanConfigs;
+  @override
+  String get configTitle;
   @override
   String get projectPossession;
   @override

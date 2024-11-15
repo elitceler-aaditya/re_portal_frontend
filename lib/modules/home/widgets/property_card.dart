@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:re_portal_frontend/modules/home/screens/compare/compare_properties.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
-import 'package:re_portal_frontend/modules/home/screens/saved_properties/saved_properties.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
-import 'package:re_portal_frontend/modules/shared/widgets/snackbars.dart';
 import 'package:re_portal_frontend/riverpod/compare_appartments.dart';
 import 'package:re_portal_frontend/riverpod/saved_properties.dart';
 import 'package:shimmer/shimmer.dart';
@@ -15,6 +13,7 @@ class PropertyCard extends ConsumerStatefulWidget {
   final ApartmentModel apartment;
   final ApartmentModel? nextApartment;
   final bool isCompare;
+  final bool isContact;
   final Function(BuildContext)? onCallPress;
   final GlobalKey globalKey;
 
@@ -23,6 +22,7 @@ class PropertyCard extends ConsumerStatefulWidget {
     required this.apartment,
     this.nextApartment,
     this.isCompare = true,
+    this.isContact = true,
     this.onCallPress,
     required this.globalKey,
   });
@@ -48,7 +48,6 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
           MaterialPageRoute(
             builder: (context) => PropertyDetails(
               apartment: widget.apartment,
-              nextApartment: widget.nextApartment,
               heroTag: "property-listcard-${widget.apartment.projectId}",
             ),
           ),
@@ -113,11 +112,12 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
+                          CustomColors.black.withOpacity(0.9),
                           CustomColors.black.withOpacity(0),
-                          CustomColors.black.withOpacity(0.8),
+                          CustomColors.black.withOpacity(0.9),
                         ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(10),
@@ -137,32 +137,12 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                 ref
                                     .read(savedPropertiesProvider.notifier)
                                     .removeApartment(widget.apartment),
-                                errorSnackBar(context, 'property removed')
+                                // errorSnackBar(context, 'property removed')
                               }
                             : {
                                 ref
                                     .read(savedPropertiesProvider.notifier)
                                     .addApartment(widget.apartment),
-                                successSnackBar(
-                                  context,
-                                  'property saved',
-                                  action: SnackBarAction(
-                                    backgroundColor:
-                                        CustomColors.white.withOpacity(0.25),
-                                    textColor: CustomColors.white,
-                                    label: 'View',
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SavedProperties(
-                                            isPop: true,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                )
                               };
                         setState(() {});
                       },
@@ -176,46 +156,34 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.apartment.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  Positioned(
+                    bottom: 4,
+                    left: 4,
+                    right: 4,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.apartment.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            height: 1.2,
+                            color: CustomColors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                size: 14,
-                                color: CustomColors.primary,
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                widget.apartment.projectLocation,
-                                style: const TextStyle(
-                                  color: CustomColors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
+                        ),
+                        Text(
+                          "By ${widget.apartment.builderName}",
+                          style: const TextStyle(
+                            color: CustomColors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -227,111 +195,63 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.apartment.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: CustomColors.black50,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                      text: "Area: ",
-                                      style: TextStyle(
-                                        color: CustomColors.black75,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          "${widget.apartment.flatSize} sq.ft",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                      text: "Price: ",
-                                      style: TextStyle(
-                                        color: CustomColors.black75,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                          formatBudget(widget.apartment.budget),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          RichText(
-                            text: TextSpan(
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
+                      const Icon(
+                        Icons.location_on,
+                        size: 14,
+                        color: CustomColors.primary,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        "${widget.apartment.projectLocation} • Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(widget.apartment.projectPossession))}",
+                        style: const TextStyle(
+                          color: CustomColors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  // const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                const TextSpan(
-                                  text: "Cost/sqft: ",
-                                  style: TextStyle(
-                                    color: CustomColors.black75,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                  ),
+                                const Icon(
+                                  Icons.king_bed_outlined,
+                                  size: 14,
+                                  color: CustomColors.primary,
                                 ),
-                                TextSpan(
-                                  text:
-                                      "₹${widget.apartment.pricePerSquareFeetRate}",
+                                const SizedBox(width: 2),
+                                Text(
+                                  "${widget.apartment.configuration.join(", ").trim().replaceAll("BHK", "")} BHK",
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                            Text(
+                              "${formatBudget(widget.apartment.minBudget)} - ${formatBudget(widget.apartment.maxBudget)}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const Spacer(),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: Row(
@@ -363,8 +283,8 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                           .read(
                                               comparePropertyProvider.notifier)
                                           .removeApartment(widget.apartment);
-                                      errorSnackBar(
-                                          context, 'property removed');
+                                      // errorSnackBar(
+                                      //     context, 'property removed');
                                     } else {
                                       if (ref
                                               .read(comparePropertyProvider)
@@ -374,29 +294,29 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                             .read(comparePropertyProvider
                                                 .notifier)
                                             .addApartment(widget.apartment);
-                                        successSnackBar(
-                                          context,
-                                          'property added',
-                                          action: SnackBarAction(
-                                            backgroundColor: CustomColors.white
-                                                .withOpacity(0.25),
-                                            textColor: CustomColors.white,
-                                            label: 'Compare',
-                                            onPressed: () {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const CompareProperties(
-                                                    isPop: true,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        );
+                                        // successSnackBar(
+                                        //   context,
+                                        //   'property added',
+                                        //   action: SnackBarAction(
+                                        //     backgroundColor: CustomColors.white
+                                        //         .withOpacity(0.25),
+                                        //     textColor: CustomColors.white,
+                                        //     label: 'Compare',
+                                        //     onPressed: () {
+                                        //       Navigator.of(context).push(
+                                        //         MaterialPageRoute(
+                                        //           builder: (context) =>
+                                        //               const CompareProperties(
+                                        //             isPop: true,
+                                        //           ),
+                                        //         ),
+                                        //       );
+                                        //     },
+                                        //   ),
+                                        // );
                                       } else {
-                                        errorSnackBar(context,
-                                            'You can only compare 4 properties');
+                                        // errorSnackBar(context,
+                                        //     'You can only compare 4 properties');
                                       }
                                     }
                                   },
@@ -409,34 +329,35 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                                           color: CustomColors.green,
                                         )
                                       : SvgPicture.asset(
-                                          "assets/icons/compare_active.svg",
+                                          "assets/icons/compare.svg",
                                           color: CustomColors.primary,
                                           height: 24,
                                           width: 24,
                                         ),
                                 ),
                               ),
-                            const SizedBox(width: 8),
-                            SizedBox(
-                              key: widget.globalKey,
-                              height: 40,
-                              width: 40,
-                              child: IconButton.filled(
-                                style: IconButton.styleFrom(
-                                  backgroundColor: CustomColors.blue,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                            if (widget.isContact)
+                              Container(
+                                key: widget.globalKey,
+                                height: 40,
+                                width: 40,
+                                margin: const EdgeInsets.only(left: 8),
+                                child: IconButton.filled(
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: CustomColors.blue,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  onPressed: () => widget.onCallPress!(context),
+                                  icon: SvgPicture.asset(
+                                    "assets/icons/phone.svg",
+                                    color: CustomColors.white,
+                                    height: 20,
+                                    width: 20,
                                   ),
                                 ),
-                                onPressed: () => widget.onCallPress!(context),
-                                icon: SvgPicture.asset(
-                                  "assets/icons/phone.svg",
-                                  color: CustomColors.white,
-                                  height: 20,
-                                  width: 20,
-                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),

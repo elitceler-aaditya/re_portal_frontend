@@ -8,6 +8,7 @@ class ApartmentModel with _$ApartmentModel {
   const factory ApartmentModel({
     @Default("") String projectId,
     @Default("") String builderID,
+    @Default("") String builderName,
     @Default("") String apartmentID,
     @Default("") String companyPhone,
     @Default("") String companyName,
@@ -17,12 +18,16 @@ class ApartmentModel with _$ApartmentModel {
     @Default(0) int pricePerSquareFeetRate,
     @Default(0.0) double latitude,
     @Default(0.0) double longitude,
+    @Default("") String projectPossession,
     @Default("") String coverImage,
     @Default([]) List<String> projectGallery,
     @Default([]) List<String> configuration,
+    @Default("") String configTitle,
     @Default(null) String? videoLink,
     @Default(0) int flatSize,
     @Default(0) int budget,
+    @Default(0) int minBudget,
+    @Default(0) int maxBudget,
   }) = _ApartmentModel;
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) =>

@@ -30,7 +30,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
         color: CustomColors.white,
         borderRadius: BorderRadius.circular(6),
       ),
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 4),
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -58,9 +58,10 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
             },
             options: CarouselOptions(
               height: 360,
-              viewportFraction: 0.8,
+              viewportFraction: 0.85,
               enlargeCenterPage: true,
-              autoPlay: false,
+              autoPlay: true,
+              padEnds: false,
               autoPlayInterval: const Duration(seconds: 5),
               autoPlayAnimationDuration: const Duration(milliseconds: 1000),
               autoPlayCurve: Curves.fastOutSlowIn,
@@ -89,6 +90,7 @@ class _BuilderInFocusState extends State<BuilderInFocus> {
 Widget _builderCard(BuildContext context, BuilderDataModel builder) {
   return Container(
     width: double.infinity,
+    margin: const EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: CustomColors.primary),
@@ -252,7 +254,6 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
           builder: (context) => PropertyDetails(
             apartment: apartment,
             heroTag: "builder-in-focus-${apartment.projectId}",
-            nextApartment: nextApartment,
           ),
         ),
       );
@@ -271,11 +272,22 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
                 width: 200,
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
+                  color: CustomColors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Image.network(
                   apartment.coverImage,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.error),
+                        SizedBox(width: 4),
+                        Text("Error loading image")
+                      ],
+                    ),
+                  ),
                   loadingBuilder: (context, child, loadingProgress) =>
                       loadingProgress == null
                           ? child

@@ -45,27 +45,53 @@ class ProjectDetails with _$ProjectDetails {
     @Default('') String constructionType,
     @Default(0.0) double latitude,
     @Default(0.0) double longitude,
+    @Default('') String leadPOCName,
+    @Default('') String leadPOCNumber,
     @Default('') String reraID,
     @Default('') String projectType,
     @Default('') String projectLaunchedDate,
     @Default('') String projectPossession,
-    @Default('') String pricePerSquareFeetRate,
+    @Default('0') String pricePerSquareFeetRate,
     @Default('') String totalArea,
     @Default('') String landMark,
     @Default('') String nearByHighlights,
     @Default('') String amenities,
     @Default('') String clubHouseAmenities,
     @Default('') String outdoorAmenities,
+    @Default('') String videoLink,
+    @Default([]) List<String> configurations,
+    @Default([]) List<String> brochurePdf,
+    @Default([]) List<String> specifications,
     @Default([]) List<String> projectHighlightsPoints,
     @Default(Builder()) Builder builder,
     @Default([]) List<Institution> educationalInstitutions,
     @Default([]) List<Institution> hospitals,
     @Default([]) List<Institution> offices,
     @Default([]) List<Institution> connectivity,
+    @Default('') String bankName,
+    @Default(0) int loanPercentage,
+    @Default([]) List<Bank> banks,
+    @Default([]) List<Institution> restaurants,
+    @Default([]) List<Institution> colleges,
+    @Default([]) List<Institution> pharmacies,
+    @Default([]) List<Institution> hotspots,
+    @Default([]) List<Institution> shopping,
+    @Default([]) List<Institution> entertainment,
   }) = _ProjectDetails;
 
   factory ProjectDetails.fromJson(Map<String, dynamic> json) =>
       _$ProjectDetailsFromJson(json);
+}
+
+@freezed
+class Bank with _$Bank {
+  const factory Bank({
+    @Default('') String bankName,
+    @Default('') String bankLogo,
+    @Default(0) int loanPercentage,
+  }) = _Bank;
+
+  factory Bank.fromJson(Map<String, dynamic> json) => _$BankFromJson(json);
 }
 
 @freezed
@@ -95,11 +121,20 @@ class Institution with _$Institution {
 class UnitPlanConfig with _$UnitPlanConfig {
   const factory UnitPlanConfig({
     @Default('') String bHKType,
-    @Default('') String sizeInSqft,
-    @Default('') String facing,
-    @Default([]) List<String> unitPlanConfigFiles,
+    @Default([]) List<UnitPlanConfigFile> unitPlanConfigFiles,
   }) = _UnitPlanConfig;
 
   factory UnitPlanConfig.fromJson(Map<String, dynamic> json) =>
       _$UnitPlanConfigFromJson(json);
+}
+@freezed
+class UnitPlanConfigFile with _$UnitPlanConfigFile {
+  const factory UnitPlanConfigFile({
+    @Default('') String image,
+    @Default(0) int flatSize,
+    @Default('') String facing,
+  }) = _UnitPlanConfigFile;
+
+  factory UnitPlanConfigFile.fromJson(Map<String, dynamic> json) =>
+      _$UnitPlanConfigFileFromJson(json);
 }
