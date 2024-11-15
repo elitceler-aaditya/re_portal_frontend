@@ -13,6 +13,8 @@ _$UserImpl _$$UserImplFromJson(Map<String, dynamic> json) => _$UserImpl(
       email: json['email'] as String? ?? "",
       phoneNumber: json['phoneNumber'] as String? ?? "",
       iat: (json['iat'] as num?)?.toInt() ?? 0,
+      lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
+      lng: (json['lng'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
@@ -23,4 +25,6 @@ Map<String, dynamic> _$$UserImplToJson(_$UserImpl instance) =>
       'email': instance.email,
       'phoneNumber': instance.phoneNumber,
       'iat': instance.iat,
+      'lat': instance.lat,
+      'lng': instance.lng,
     };

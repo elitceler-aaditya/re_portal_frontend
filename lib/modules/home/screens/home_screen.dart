@@ -56,7 +56,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool showScrollUpButton = false;
 
   void getLocationHomes(double lat, double long) async {
-    debugPrint("-----------------getting location homes");
+    debugPrint("-----------------home1: location homes lat: $lat, long: $long");
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/user/getPopularLocalities";
     Uri uri = Uri.parse(url).replace(queryParameters: {
@@ -66,18 +66,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     try {
       final response = await http.get(uri);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
 
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+      debugPrint("-----------------home1 response: $responseData");
+      if (response.statusCode == 200 || response.statusCode == 201) {
         ref
             .read(locationHomesProvider.notifier)
             .setLocationHomesData(responseData);
       } else {
-        getLocationHomes(17.4699, 78.2236);
+        getLocationHomes(
+            ref.read(userProvider).lat, ref.read(userProvider).lng);
         throw Exception('Error ${response.statusCode}: ${response.body}');
       }
     } catch (error, stackTrace) {
-      getLocationHomes(17.4699, 78.2236);
+      getLocationHomes(ref.read(userProvider).lat, ref.read(userProvider).lng);
 
       debugPrint("error: $error");
       debugPrint("stackTrace: $stackTrace");
@@ -289,7 +291,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       getApartments();
 
       if (ref.watch(locationHomesProvider) == null) {
-        getLocationHomes(17.463, 78.286);
+        getLocationHomes(
+            ref.read(userProvider).lat, ref.read(userProvider).lng);
       }
     });
     super.initState();

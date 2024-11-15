@@ -1543,8 +1543,16 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
   heroAppbar(double h) {
     return GestureDetector(
       onTap: () {
-        final List<String> allImgs = widget.apartment.projectGallery;
-
+        final List<String> allImgs = [];
+        for (String image in widget.apartment.projectGallery) {
+          precacheImage(NetworkImage(image), context).then((_) {
+            if (mounted) {
+              allImgs.add(image);
+            }
+          }).catchError((error) {
+            debugPrint('Error loading image $image: $error');
+          });
+        }
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => PhotoViewGallery.builder(

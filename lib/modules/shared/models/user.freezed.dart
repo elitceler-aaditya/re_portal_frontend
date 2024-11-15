@@ -26,6 +26,8 @@ mixin _$User {
   String get email => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
   int get iat => throw _privateConstructorUsedError;
+  double get lat => throw _privateConstructorUsedError;
+  double get lng => throw _privateConstructorUsedError;
 
   /// Serializes this User to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,7 +49,9 @@ abstract class $UserCopyWith<$Res> {
       String name,
       String email,
       String phoneNumber,
-      int iat});
+      int iat,
+      double lat,
+      double lng});
 }
 
 /// @nodoc
@@ -71,6 +75,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? email = null,
     Object? phoneNumber = null,
     Object? iat = null,
+    Object? lat = null,
+    Object? lng = null,
   }) {
     return _then(_value.copyWith(
       token: null == token
@@ -97,6 +103,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.iat
           : iat // ignore: cast_nullable_to_non_nullable
               as int,
+      lat: null == lat
+          ? _value.lat
+          : lat // ignore: cast_nullable_to_non_nullable
+              as double,
+      lng: null == lng
+          ? _value.lng
+          : lng // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -114,7 +128,9 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       String name,
       String email,
       String phoneNumber,
-      int iat});
+      int iat,
+      double lat,
+      double lng});
 }
 
 /// @nodoc
@@ -135,6 +151,8 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? email = null,
     Object? phoneNumber = null,
     Object? iat = null,
+    Object? lat = null,
+    Object? lng = null,
   }) {
     return _then(_$UserImpl(
       token: null == token
@@ -161,6 +179,14 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.iat
           : iat // ignore: cast_nullable_to_non_nullable
               as int,
+      lat: null == lat
+          ? _value.lat
+          : lat // ignore: cast_nullable_to_non_nullable
+              as double,
+      lng: null == lng
+          ? _value.lng
+          : lng // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -174,7 +200,9 @@ class _$UserImpl implements _User {
       this.name = "",
       this.email = "",
       this.phoneNumber = "",
-      this.iat = 0});
+      this.iat = 0,
+      this.lat = 0.0,
+      this.lng = 0.0});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -197,10 +225,16 @@ class _$UserImpl implements _User {
   @override
   @JsonKey()
   final int iat;
+  @override
+  @JsonKey()
+  final double lat;
+  @override
+  @JsonKey()
+  final double lng;
 
   @override
   String toString() {
-    return 'User(token: $token, userId: $userId, name: $name, email: $email, phoneNumber: $phoneNumber, iat: $iat)';
+    return 'User(token: $token, userId: $userId, name: $name, email: $email, phoneNumber: $phoneNumber, iat: $iat, lat: $lat, lng: $lng)';
   }
 
   @override
@@ -214,13 +248,15 @@ class _$UserImpl implements _User {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
-            (identical(other.iat, iat) || other.iat == iat));
+            (identical(other.iat, iat) || other.iat == iat) &&
+            (identical(other.lat, lat) || other.lat == lat) &&
+            (identical(other.lng, lng) || other.lng == lng));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, token, userId, name, email, phoneNumber, iat);
+  int get hashCode => Object.hash(
+      runtimeType, token, userId, name, email, phoneNumber, iat, lat, lng);
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.
@@ -245,7 +281,9 @@ abstract class _User implements User {
       final String name,
       final String email,
       final String phoneNumber,
-      final int iat}) = _$UserImpl;
+      final int iat,
+      final double lat,
+      final double lng}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
@@ -261,6 +299,10 @@ abstract class _User implements User {
   String get phoneNumber;
   @override
   int get iat;
+  @override
+  double get lat;
+  @override
+  double get lng;
 
   /// Create a copy of User
   /// with the given fields replaced by the non-null parameter values.

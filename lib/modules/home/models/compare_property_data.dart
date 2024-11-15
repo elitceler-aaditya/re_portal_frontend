@@ -16,6 +16,7 @@ class ComparePropertyData with _$ComparePropertyData {
     @Default("") String noOfTowers,
     @Default("") String noOfFloors,
     @Default([]) List<UnitPlanConfig> unitPlanConfigs,
+    @Default("") String configTitle,
     @Default("") String projectPossession,
     @Default("") String pricePerSquareFeetRate,
     @Default("") String clubhousesize,

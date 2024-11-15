@@ -552,18 +552,17 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
       (ComparePropertyData d) => Text(d.projectLocation),
       (ComparePropertyData d) =>
           Text(d.rERAApproval ? 'RERA approved' : 'Not approved'),
-      (ComparePropertyData d) => Text("${d.projectSize} sq.ft"),
-      (ComparePropertyData d) => Text("${d.noOfTowers} units"),
-      (ComparePropertyData d) => Text("${d.noOfFloors} floors"),
-      (ComparePropertyData d) => Text("${d.noOfTowers} towers"),
+      (ComparePropertyData d) => Text(d.projectSize),
+      (ComparePropertyData d) => Text(d.noOfTowers),
+      (ComparePropertyData d) => Text(d.noOfFloors),
+      (ComparePropertyData d) => Text(d.noOfTowers),
       (ComparePropertyData d) => Text(d.totalOpenSpace),
-      (ComparePropertyData d) =>
-          Text(d.unitPlanConfigs.map((e) => e.BHKType).join(', ')),
-      (ComparePropertyData d) => Text("${d.flatSizes} sq.ft"),
+      (ComparePropertyData d) => Text(d.configTitle),
+      (ComparePropertyData d) => Text(d.flatSizes.toString()),
       (ComparePropertyData d) => Text(d.projectPossession.isEmpty
           ? ''
           : d.projectPossession.substring(0, 10)),
-      (ComparePropertyData d) => Text("${d.clubhousesize} sq.ft"),
+      (ComparePropertyData d) => Text(d.clubhousesize),
       (ComparePropertyData d) => Text(formatBudget(d.budget)),
       (ComparePropertyData d) => Text(d.constructionType),
       (ComparePropertyData d) => SizedBox(
