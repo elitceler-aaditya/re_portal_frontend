@@ -37,10 +37,8 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
     String baseUrl = dotenv.get('BASE_URL');
     String url = "$baseUrl/project/compareApartments";
     Uri uri = Uri.parse(url).replace(queryParameters: {
-      "ids": ref
-          .watch(comparePropertyProvider)
-          .map((e) => e.apartmentID)
-          .join(","),
+      "ids":
+          ref.watch(comparePropertyProvider).map((e) => e.projectId).join(","),
     });
 
     try {
@@ -186,76 +184,107 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : Stack(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                : _comparedProperties.isEmpty
+                    ? const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Colors.redAccent,
+                              size: 50,
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              "Something went wrong",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Please try again later.",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Stack(
                         children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: FixedColumnDataTable(
-                                comparedProperties: comparedProperties,
-                                isFixedColumnVisible: _isFixedColumnVisible,
-                                comparedPropertyData: _comparedProperties,
-                                horizontalController: _horizontalController,
-                                onHideFixedColumn: () {
-                                  setState(() {
-                                    _isFixedColumnVisible =
-                                        !_isFixedColumnVisible;
-                                  });
-                                },
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: FixedColumnDataTable(
+                                    comparedProperties: comparedProperties,
+                                    isFixedColumnVisible: _isFixedColumnVisible,
+                                    comparedPropertyData: _comparedProperties,
+                                    horizontalController: _horizontalController,
+                                    onHideFixedColumn: () {
+                                      setState(() {
+                                        _isFixedColumnVisible =
+                                            !_isFixedColumnVisible;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            top: 20,
+                            left: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isFixedColumnVisible =
+                                      !_isFixedColumnVisible;
+                                });
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                width: _isFixedColumnVisible ? 100 : 24,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: CustomColors.black.withOpacity(0.5),
+                                  borderRadius: const BorderRadius.only(
+                                    topRight: Radius.circular(10),
+                                    bottomRight: Radius.circular(10),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      _isFixedColumnVisible
+                                          ? Icons.keyboard_arrow_left
+                                          : Icons.keyboard_arrow_right,
+                                      color: CustomColors.white,
+                                    ),
+                                    if (_isFixedColumnVisible)
+                                      const Text(
+                                        "Specs",
+                                        style: TextStyle(
+                                          color: CustomColors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      Positioned(
-                        top: 20,
-                        left: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isFixedColumnVisible = !_isFixedColumnVisible;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            width: _isFixedColumnVisible ? 100 : 24,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: CustomColors.black.withOpacity(0.5),
-                              borderRadius: const BorderRadius.only(
-                                topRight: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  _isFixedColumnVisible
-                                      ? Icons.keyboard_arrow_left
-                                      : Icons.keyboard_arrow_right,
-                                  color: CustomColors.white,
-                                ),
-                                if (_isFixedColumnVisible)
-                                  const Text(
-                                    "Specs",
-                                    style: TextStyle(
-                                      color: CustomColors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
       ),
     );
   }

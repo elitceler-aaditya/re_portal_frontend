@@ -440,6 +440,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(
+        "----------- ${widget.comparedProperties.map((e) => e.projectId).join(", ")}");
     return Column(
       children: [
         Row(
@@ -550,8 +552,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
       (ComparePropertyData d) => Text(d.builder.CompanyName),
       (ComparePropertyData d) => Text(d.projectType),
       (ComparePropertyData d) => Text(d.projectLocation),
-      (ComparePropertyData d) =>
-          Text(d.rERAApproval ? 'RERA approved' : 'Not approved'),
+      (ComparePropertyData d) => Text(d.RERAApproval),
       (ComparePropertyData d) => Text(d.projectSize),
       (ComparePropertyData d) => Text(d.noOfTowers),
       (ComparePropertyData d) => Text(d.noOfFloors),
@@ -562,8 +563,8 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
       (ComparePropertyData d) => Text(d.projectPossession.isEmpty
           ? ''
           : d.projectPossession.substring(0, 10)),
-      (ComparePropertyData d) => Text(d.clubhousesize),
-      (ComparePropertyData d) => Text(formatBudget(d.budget)),
+      (ComparePropertyData d) => Text(d.Clubhousesize),
+      (ComparePropertyData d) => Text(formatBudget(10000)),
       (ComparePropertyData d) => Text(d.constructionType),
       (ComparePropertyData d) => SizedBox(
             height: 30,

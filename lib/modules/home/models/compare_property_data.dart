@@ -6,38 +6,29 @@ part 'compare_property_data.g.dart';
 @freezed
 class ComparePropertyData with _$ComparePropertyData {
   const factory ComparePropertyData({
-    @Default("") String name,
+ @Default("") String name,
+    @Default("") String builderName,
     @Default("") String projectType,
-    @Default(0) int flatSizes,
     @Default("") String projectLocation,
-    @Default("") String projectStatus,
-    @Default(false) bool rERAApproval,
+    @Default("") String RERAApproval,
     @Default("") String projectSize,
-    @Default("") String noOfTowers,
+    @Default("") String noOfUnits,
     @Default("") String noOfFloors,
-    @Default([]) List<UnitPlanConfig> unitPlanConfigs,
+    @Default("") String noOfTowers,
+    @Default("") String totalOpenSpace,
+    @Default([]) List<String> unitPlanConfigs,
+    @Default("") String flatSizes,
     @Default("") String configTitle,
     @Default("") String projectPossession,
+    @Default("") String Clubhousesize,
     @Default("") String pricePerSquareFeetRate,
-    @Default("") String clubhousesize,
-    @Default("") String totalOpenSpace,
     @Default("") String constructionType,
-    @Default(0) int budget,
     @Default(BuilderContact()) BuilderContact builder,
+    @Default("") String budgetText,
   }) = _ComparePropertyData;
 
   factory ComparePropertyData.fromJson(Map<String, dynamic> json) =>
       _$ComparePropertyDataFromJson(json);
-}
-
-@freezed
-class UnitPlanConfig with _$UnitPlanConfig {
-  const factory UnitPlanConfig({
-    @Default("") String BHKType,
-  }) = _UnitPlanConfig;
-
-  factory UnitPlanConfig.fromJson(Map<String, dynamic> json) =>
-      _$UnitPlanConfigFromJson(json);
 }
 
 @freezed
