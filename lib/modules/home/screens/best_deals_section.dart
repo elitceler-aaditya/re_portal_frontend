@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
 import 'package:re_portal_frontend/riverpod/home_data.dart';
+import 'package:shimmer/shimmer.dart';
 
 class BestDealsSection extends ConsumerStatefulWidget {
   final double height;
@@ -102,17 +104,20 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                         ),
                       ),
                     ),
-                    Container(
-                      height: widget.height,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            CustomColors.black.withOpacity(0),
-                            CustomColors.black.withOpacity(0.8),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
+                    Positioned(
+                      bottom: 0,
+                      child: Container(
+                        height: widget.height / 3,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              CustomColors.black.withOpacity(0),
+                              CustomColors.black.withOpacity(0.9),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
                         ),
                       ),
                     ),
@@ -120,32 +125,119 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                       bottom: 0,
                       left: 0,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        width: MediaQuery.of(context).size.width,
                         padding: const EdgeInsets.all(8),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              ref
-                                  .watch(homePropertiesProvider)
-                                  .bestDeals[index]
-                                  .name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: CustomColors.white,
-                                fontSize: 20,
-                                height: 1,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              "By ${ref.watch(homePropertiesProvider).bestDeals[index].builderName}",
-                              style: const TextStyle(
-                                color: CustomColors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: CircleAvatar(
+                                    radius: 14,
+                                    backgroundColor: CustomColors.white,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.network(
+                                        ref
+                                            .watch(homePropertiesProvider)
+                                            .bestDeals[index]
+                                            .companyLogo,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (context, child,
+                                                loadingProgress) =>
+                                            loadingProgress == null
+                                                ? child
+                                                : Shimmer.fromColors(
+                                                    baseColor:
+                                                        CustomColors.black25,
+                                                    highlightColor:
+                                                        CustomColors.black10,
+                                                    child: const SizedBox(
+                                                      width: 28,
+                                                      height: 28,
+                                                    ),
+                                                  ),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Center(
+                                          child: Text(
+                                            ref
+                                                .watch(homePropertiesProvider)
+                                                .bestDeals[index]
+                                                .builderName[0],
+                                            style: const TextStyle(
+                                              color: CustomColors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      ref
+                                          .watch(homePropertiesProvider)
+                                          .bestDeals[index]
+                                          .name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 20,
+                                        height: 1,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: [
+                                          Shadow(
+                                            color: CustomColors.black
+                                                .withOpacity(0.5),
+                                            blurRadius: 10,
+                                            offset: const Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "By ${ref.watch(homePropertiesProvider).bestDeals[index].builderName}",
+                                      style: TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        shadows: [
+                                          Shadow(
+                                            color: CustomColors.black
+                                                .withOpacity(0.5),
+                                            blurRadius: 10,
+                                            offset: const Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(ref.watch(homePropertiesProvider).bestDeals[index].projectPossession))}",
+                                      style: TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                        shadows: [
+                                          Shadow(
+                                            color: CustomColors.black
+                                                .withOpacity(0.5),
+                                            blurRadius: 10,
+                                            offset: const Offset(1, 1),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 8),
                             Row(
@@ -157,7 +249,7 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                                 ),
                                 const SizedBox(width: 2),
                                 Text(
-                                  "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configTitle}",
+                                  "${ref.watch(homePropertiesProvider).bestDeals[index].projectLocation} • ${ref.watch(homePropertiesProvider).bestDeals[index].configTitle} • ${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].minBudget)} - ${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].maxBudget)}",
                                   style: const TextStyle(
                                     color: CustomColors.white,
                                     fontSize: 14,
@@ -166,13 +258,12 @@ class _BestDealsSectionState extends ConsumerState<BestDealsSection> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 4),
                             // Text(
-                            //   "Price starts from ₹${formatBudget(ref.watch(homePropertiesProvider).bestDeals[index].budget)}",
+                            //   "",
                             //   style: const TextStyle(
+                            //     fontWeight: FontWeight.bold,
                             //     color: CustomColors.white,
-                            //     fontSize: 12,
-                            //     fontWeight: FontWeight.w400,
+                            //     fontSize: 14,
                             //   ),
                             // ),
                           ],

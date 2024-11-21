@@ -26,6 +26,7 @@ mixin _$ApartmentModel {
   String get apartmentID => throw _privateConstructorUsedError;
   String get companyPhone => throw _privateConstructorUsedError;
   String get companyName => throw _privateConstructorUsedError;
+  String get companyLogo => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get projectLocation => throw _privateConstructorUsedError;
@@ -66,6 +67,7 @@ abstract class $ApartmentModelCopyWith<$Res> {
       String apartmentID,
       String companyPhone,
       String companyName,
+      String companyLogo,
       String name,
       String description,
       String projectLocation,
@@ -105,6 +107,7 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
     Object? apartmentID = null,
     Object? companyPhone = null,
     Object? companyName = null,
+    Object? companyLogo = null,
     Object? name = null,
     Object? description = null,
     Object? projectLocation = null,
@@ -146,6 +149,10 @@ class _$ApartmentModelCopyWithImpl<$Res, $Val extends ApartmentModel>
       companyName: null == companyName
           ? _value.companyName
           : companyName // ignore: cast_nullable_to_non_nullable
+              as String,
+      companyLogo: null == companyLogo
+          ? _value.companyLogo
+          : companyLogo // ignore: cast_nullable_to_non_nullable
               as String,
       name: null == name
           ? _value.name
@@ -230,6 +237,7 @@ abstract class _$$ApartmentModelImplCopyWith<$Res>
       String apartmentID,
       String companyPhone,
       String companyName,
+      String companyLogo,
       String name,
       String description,
       String projectLocation,
@@ -267,6 +275,7 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
     Object? apartmentID = null,
     Object? companyPhone = null,
     Object? companyName = null,
+    Object? companyLogo = null,
     Object? name = null,
     Object? description = null,
     Object? projectLocation = null,
@@ -308,6 +317,10 @@ class __$$ApartmentModelImplCopyWithImpl<$Res>
       companyName: null == companyName
           ? _value.companyName
           : companyName // ignore: cast_nullable_to_non_nullable
+              as String,
+      companyLogo: null == companyLogo
+          ? _value.companyLogo
+          : companyLogo // ignore: cast_nullable_to_non_nullable
               as String,
       name: null == name
           ? _value.name
@@ -387,6 +400,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
       this.apartmentID = "",
       this.companyPhone = "",
       this.companyName = "",
+      this.companyLogo = "",
       this.name = "",
       this.description = "",
       this.projectLocation = "",
@@ -427,6 +441,9 @@ class _$ApartmentModelImpl implements _ApartmentModel {
   @override
   @JsonKey()
   final String companyName;
+  @override
+  @JsonKey()
+  final String companyLogo;
   @override
   @JsonKey()
   final String name;
@@ -490,7 +507,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
 
   @override
   String toString() {
-    return 'ApartmentModel(projectId: $projectId, builderID: $builderID, builderName: $builderName, apartmentID: $apartmentID, companyPhone: $companyPhone, companyName: $companyName, name: $name, description: $description, projectLocation: $projectLocation, pricePerSquareFeetRate: $pricePerSquareFeetRate, latitude: $latitude, longitude: $longitude, projectPossession: $projectPossession, coverImage: $coverImage, projectGallery: $projectGallery, configuration: $configuration, configTitle: $configTitle, videoLink: $videoLink, flatSize: $flatSize, budget: $budget, minBudget: $minBudget, maxBudget: $maxBudget)';
+    return 'ApartmentModel(projectId: $projectId, builderID: $builderID, builderName: $builderName, apartmentID: $apartmentID, companyPhone: $companyPhone, companyName: $companyName, companyLogo: $companyLogo, name: $name, description: $description, projectLocation: $projectLocation, pricePerSquareFeetRate: $pricePerSquareFeetRate, latitude: $latitude, longitude: $longitude, projectPossession: $projectPossession, coverImage: $coverImage, projectGallery: $projectGallery, configuration: $configuration, configTitle: $configTitle, videoLink: $videoLink, flatSize: $flatSize, budget: $budget, minBudget: $minBudget, maxBudget: $maxBudget)';
   }
 
   @override
@@ -510,6 +527,8 @@ class _$ApartmentModelImpl implements _ApartmentModel {
                 other.companyPhone == companyPhone) &&
             (identical(other.companyName, companyName) ||
                 other.companyName == companyName) &&
+            (identical(other.companyLogo, companyLogo) ||
+                other.companyLogo == companyLogo) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -552,6 +571,7 @@ class _$ApartmentModelImpl implements _ApartmentModel {
         apartmentID,
         companyPhone,
         companyName,
+        companyLogo,
         name,
         description,
         projectLocation,
@@ -595,6 +615,7 @@ abstract class _ApartmentModel implements ApartmentModel {
       final String apartmentID,
       final String companyPhone,
       final String companyName,
+      final String companyLogo,
       final String name,
       final String description,
       final String projectLocation,
@@ -627,6 +648,8 @@ abstract class _ApartmentModel implements ApartmentModel {
   String get companyPhone;
   @override
   String get companyName;
+  @override
+  String get companyLogo;
   @override
   String get name;
   @override

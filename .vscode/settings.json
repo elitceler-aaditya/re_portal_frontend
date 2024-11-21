@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "D:/ElitCeler/re_portal_frontend/linux"
+    "cmake.sourceDirectory": "D:/ElitCeler/re_portal_frontend/linux",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

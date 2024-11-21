@@ -93,8 +93,8 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.transparent,
-                      CustomColors.black.withOpacity(0.7)
+                      CustomColors.black.withOpacity(0),
+                      CustomColors.black.withOpacity(0.9)
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -111,23 +111,73 @@ class _ProjectSnippetCardState extends State<ProjectSnippetCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.apartment.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (widget.apartment.builderName.isNotEmpty)
-                      Text(
-                        "By ${widget.apartment.builderName}",
-                        style: const TextStyle(
-                          color: CustomColors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 2),
+                          child: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: CustomColors.white,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                widget.apartment.companyLogo,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) =>
+                                        loadingProgress == null
+                                            ? child
+                                            : Shimmer.fromColors(
+                                                baseColor: CustomColors.black25,
+                                                highlightColor:
+                                                    CustomColors.black10,
+                                                child: const SizedBox(
+                                                  width: 28,
+                                                  height: 28,
+                                                ),
+                                              ),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Center(
+                                  child: Text(
+                                    widget.apartment.builderName[0],
+                                    style: const TextStyle(
+                                      color: CustomColors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.apartment.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              if (widget.apartment.builderName.isNotEmpty)
+                                Text(
+                                  "By ${widget.apartment.builderName}",
+                                  style: const TextStyle(
+                                    color: CustomColors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 6),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,

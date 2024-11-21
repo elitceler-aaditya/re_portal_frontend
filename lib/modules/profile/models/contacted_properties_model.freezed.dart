@@ -675,6 +675,7 @@ BuilderDetails _$BuilderDetailsFromJson(Map<String, dynamic> json) {
 mixin _$BuilderDetails {
   String get name => throw _privateConstructorUsedError;
   String get CompanyName => throw _privateConstructorUsedError;
+  String get phoneNumber => throw _privateConstructorUsedError;
 
   /// Serializes this BuilderDetails to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -692,7 +693,7 @@ abstract class $BuilderDetailsCopyWith<$Res> {
           BuilderDetails value, $Res Function(BuilderDetails) then) =
       _$BuilderDetailsCopyWithImpl<$Res, BuilderDetails>;
   @useResult
-  $Res call({String name, String CompanyName});
+  $Res call({String name, String CompanyName, String phoneNumber});
 }
 
 /// @nodoc
@@ -712,6 +713,7 @@ class _$BuilderDetailsCopyWithImpl<$Res, $Val extends BuilderDetails>
   $Res call({
     Object? name = null,
     Object? CompanyName = null,
+    Object? phoneNumber = null,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -721,6 +723,10 @@ class _$BuilderDetailsCopyWithImpl<$Res, $Val extends BuilderDetails>
       CompanyName: null == CompanyName
           ? _value.CompanyName
           : CompanyName // ignore: cast_nullable_to_non_nullable
+              as String,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -734,7 +740,7 @@ abstract class _$$BuilderDetailsImplCopyWith<$Res>
       __$$BuilderDetailsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, String CompanyName});
+  $Res call({String name, String CompanyName, String phoneNumber});
 }
 
 /// @nodoc
@@ -752,6 +758,7 @@ class __$$BuilderDetailsImplCopyWithImpl<$Res>
   $Res call({
     Object? name = null,
     Object? CompanyName = null,
+    Object? phoneNumber = null,
   }) {
     return _then(_$BuilderDetailsImpl(
       name: null == name
@@ -762,6 +769,10 @@ class __$$BuilderDetailsImplCopyWithImpl<$Res>
           ? _value.CompanyName
           : CompanyName // ignore: cast_nullable_to_non_nullable
               as String,
+      phoneNumber: null == phoneNumber
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -769,19 +780,25 @@ class __$$BuilderDetailsImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$BuilderDetailsImpl implements _BuilderDetails {
-  const _$BuilderDetailsImpl({required this.name, required this.CompanyName});
+  const _$BuilderDetailsImpl(
+      {this.name = '', this.CompanyName = '', this.phoneNumber = ''});
 
   factory _$BuilderDetailsImpl.fromJson(Map<String, dynamic> json) =>
       _$$BuilderDetailsImplFromJson(json);
 
   @override
+  @JsonKey()
   final String name;
   @override
+  @JsonKey()
   final String CompanyName;
+  @override
+  @JsonKey()
+  final String phoneNumber;
 
   @override
   String toString() {
-    return 'BuilderDetails(name: $name, CompanyName: $CompanyName)';
+    return 'BuilderDetails(name: $name, CompanyName: $CompanyName, phoneNumber: $phoneNumber)';
   }
 
   @override
@@ -791,12 +808,14 @@ class _$BuilderDetailsImpl implements _BuilderDetails {
             other is _$BuilderDetailsImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.CompanyName, CompanyName) ||
-                other.CompanyName == CompanyName));
+                other.CompanyName == CompanyName) &&
+            (identical(other.phoneNumber, phoneNumber) ||
+                other.phoneNumber == phoneNumber));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, name, CompanyName);
+  int get hashCode => Object.hash(runtimeType, name, CompanyName, phoneNumber);
 
   /// Create a copy of BuilderDetails
   /// with the given fields replaced by the non-null parameter values.
@@ -817,8 +836,9 @@ class _$BuilderDetailsImpl implements _BuilderDetails {
 
 abstract class _BuilderDetails implements BuilderDetails {
   const factory _BuilderDetails(
-      {required final String name,
-      required final String CompanyName}) = _$BuilderDetailsImpl;
+      {final String name,
+      final String CompanyName,
+      final String phoneNumber}) = _$BuilderDetailsImpl;
 
   factory _BuilderDetails.fromJson(Map<String, dynamic> json) =
       _$BuilderDetailsImpl.fromJson;
@@ -827,6 +847,8 @@ abstract class _BuilderDetails implements BuilderDetails {
   String get name;
   @override
   String get CompanyName;
+  @override
+  String get phoneNumber;
 
   /// Create a copy of BuilderDetails
   /// with the given fields replaced by the non-null parameter values.

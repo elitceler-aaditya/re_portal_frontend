@@ -63,8 +63,9 @@ Map<String, dynamic> _$$ProjectDetailsImplToJson(
 
 _$BuilderDetailsImpl _$$BuilderDetailsImplFromJson(Map<String, dynamic> json) =>
     _$BuilderDetailsImpl(
-      name: json['name'] as String,
-      CompanyName: json['CompanyName'] as String,
+      name: json['name'] as String? ?? '',
+      CompanyName: json['CompanyName'] as String? ?? '',
+      phoneNumber: json['phoneNumber'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$BuilderDetailsImplToJson(
@@ -72,4 +73,5 @@ Map<String, dynamic> _$$BuilderDetailsImplToJson(
     <String, dynamic>{
       'name': instance.name,
       'CompanyName': instance.CompanyName,
+      'phoneNumber': instance.phoneNumber,
     };

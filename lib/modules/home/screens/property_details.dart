@@ -1504,19 +1504,17 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                   ],
                 ),
               ),
-            if (_projectDetails.projectDetails.videoLink.isNotEmpty ||
-                _projectDetails.projectDetails.brochurePdf.isNotEmpty)
-              BrochureVideoSection(
-                sendEnquiry: () => sendEnquiry(
-                  context,
-                  _enquiryDetails.text.trim().isEmpty
-                      ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
-                      : _enquiryDetails.text.trim(),
-                ),
-                projectName: widget.apartment.name,
-                videoLink: _projectDetails.projectDetails.videoLink,
-                brochureLink: _projectDetails.projectDetails.brochurePdf,
+            BrochureVideoSection(
+              sendEnquiry: () => sendEnquiry(
+                context,
+                _enquiryDetails.text.trim().isEmpty
+                    ? "${_nameController.text.trim()} is interested in this project: ${widget.apartment.name}"
+                    : _enquiryDetails.text.trim(),
               ),
+              projectName: widget.apartment.name,
+              videoLink: _projectDetails.projectDetails.videoLink,
+              brochureLink: _projectDetails.projectDetails.brochurePdf,
+            ),
             if (ref.watch(recentlyViewedProvider).length > 1)
               const RecentlyViewedSection(hideFirstProperty: true),
             if (mounted) const AdsSection(),
@@ -1929,65 +1927,112 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 10, bottom: 24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
-                              Text(
-                                widget.apartment.name,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: CustomColors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  _timer?.cancel();
-                                  rightSlideTransition(
-                                    context,
-                                    BuilderPortfolio(
-                                      projectId: widget.apartment.projectId,
-                                    ),
-                                    onComplete: () => _timer = Timer.periodic(
-                                      const Duration(seconds: 3),
-                                      (timer) {
-                                        if (timerIndex == 1) {
-                                          _showKeyHighlights = false;
-                                        }
-                                        setState(() {
-                                          timerIndex++;
-                                        });
-                                      },
-                                    ),
-                                  );
-                                },
-                                child: RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      color: CustomColors.white,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 16,
-                                    ),
-                                    children: [
-                                      const TextSpan(
-                                        text: "By ",
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      TextSpan(
-                                        text: widget.apartment.builderName,
-                                        style: const TextStyle(
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: CustomColors.white,
-                                          decorationThickness: 2,
-                                          fontSize: 14,
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: CustomColors.white,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: Image.network(
+                                      widget.apartment.companyLogo,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) =>
+                                              loadingProgress == null
+                                                  ? child
+                                                  : Shimmer.fromColors(
+                                                      baseColor:
+                                                          CustomColors.black25,
+                                                      highlightColor:
+                                                          CustomColors.black10,
+                                                      child: const SizedBox(
+                                                        width: 28,
+                                                        height: 28,
+                                                      ),
+                                                    ),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Center(
+                                        child: Text(
+                                          widget.apartment.builderName[0],
+                                          style: const TextStyle(
+                                            color: CustomColors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.apartment.name,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: CustomColors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      _timer?.cancel();
+                                      rightSlideTransition(
+                                        context,
+                                        BuilderPortfolio(
+                                          projectId: widget.apartment.projectId,
+                                        ),
+                                        onComplete: () =>
+                                            _timer = Timer.periodic(
+                                          const Duration(seconds: 3),
+                                          (timer) {
+                                            if (timerIndex == 1) {
+                                              _showKeyHighlights = false;
+                                            }
+                                            setState(() {
+                                              timerIndex++;
+                                            });
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: RichText(
+                                      text: TextSpan(
+                                        style: const TextStyle(
+                                          color: CustomColors.white,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16,
+                                        ),
+                                        children: [
+                                          const TextSpan(
+                                            text: "By ",
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          TextSpan(
+                                            text: widget.apartment.builderName,
+                                            style: const TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  CustomColors.white,
+                                              decorationThickness: 2,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -2332,9 +2377,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           {
             _highlights.add({
               "title": "Possession by",
-              "value": DateFormat("MMM yyyy").format(DateTime.parse(
-                  _projectDetails.projectDetails.projectPossession
-                      .substring(0, 10)))
+              "value": widget.apartment.configTitle,
             });
           }
 
@@ -2378,7 +2421,7 @@ class _PropertyDetailsState extends ConsumerState<PropertyDetails> {
           if (_projectDetails.unitPlanConfigFilesFormatted.isNotEmpty) {
             projectDetailsList.add({
               "title": "Configurations",
-              "value": _projectDetails.unitPlanConfigFilesFormatted.length
+              "value": widget.apartment.configTitle,
             });
           }
           if (_projectDetails

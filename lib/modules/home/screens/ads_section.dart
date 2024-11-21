@@ -182,24 +182,63 @@ Widget _adsCard(context, ApartmentModel apartment) {
             left: 0,
             child: Container(
               padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(
-                    apartment.name,
-                    style: const TextStyle(
-                      color: CustomColors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: CustomColors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Image.network(
+                          apartment.companyLogo,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) =>
+                              loadingProgress == null
+                                  ? child
+                                  : Shimmer.fromColors(
+                                      baseColor: CustomColors.black25,
+                                      highlightColor: CustomColors.black10,
+                                      child: const SizedBox(
+                                        width: 28,
+                                        height: 28,
+                                      ),
+                                    ),
+                          errorBuilder: (context, error, stackTrace) => Center(
+                            child: Text(
+                              apartment.builderName[0],
+                              style: const TextStyle(
+                                color: CustomColors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  Text(
-                    "${apartment.flatSize} sq ft • ${formatBudget(apartment.budget)} • ${apartment.projectLocation}",
-                    style: const TextStyle(
-                      color: CustomColors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        apartment.name,
+                        style: const TextStyle(
+                          color: CustomColors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "${apartment.flatSize} sq ft • ${formatBudget(apartment.budget)} • ${apartment.projectLocation}",
+                        style: const TextStyle(
+                          color: CustomColors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

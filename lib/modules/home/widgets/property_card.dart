@@ -157,31 +157,43 @@ class _PropertyCardState extends ConsumerState<PropertyCard> {
                     ),
                   ),
                   Positioned(
-                    bottom: 4,
-                    left: 4,
+                    bottom: 6,
+                    left: 6,
                     right: 4,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          widget.apartment.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            height: 1.2,
-                            color: CustomColors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: CustomColors.white,
+                          backgroundImage: NetworkImage(
+                            widget.apartment.companyLogo,
                           ),
                         ),
-                        Text(
-                          "By ${widget.apartment.builderName}",
-                          style: const TextStyle(
-                            color: CustomColors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        const SizedBox(width: 4),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.apartment.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                height: 1.2,
+                                color: CustomColors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "By ${widget.apartment.builderName}",
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

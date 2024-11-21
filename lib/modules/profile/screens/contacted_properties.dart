@@ -59,6 +59,7 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("------${ref.watch(userProvider).userId}");
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -82,7 +83,7 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
           return GestureDetector(
             onTap: () {
               launchUrlString(
-                  'tel:${contactedProperties[index].phone.replaceAll(RegExp(r'[^0-9]'), '')}');
+                  'tel:${contactedProperties[index].builder.phoneNumber.replaceAll(RegExp(r'[^0-9]'), '')}');
             },
             child: Row(
               children: [
@@ -148,7 +149,7 @@ class _ContactedPropertiesState extends ConsumerState<ContactedProperties> {
                             textAlign: TextAlign.end,
                           ),
                           Text(
-                            contactedProperties[index].phone,
+                            contactedProperties[index].builder.phoneNumber,
                             style: const TextStyle(
                               fontSize: 10,
                               color: CustomColors.black50,

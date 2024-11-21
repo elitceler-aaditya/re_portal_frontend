@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -93,18 +94,23 @@ class PropertyStackCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Container(
-                    height: cardHeight,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      gradient: LinearGradient(
-                        colors: [
-                          CustomColors.black.withOpacity(0),
-                          CustomColors.black.withOpacity(0.8),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: cardHeight / 2,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        gradient: LinearGradient(
+                          colors: [
+                            CustomColors.black.withOpacity(0),
+                            CustomColors.black.withOpacity(0.8),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
                     ),
                   ),
@@ -117,26 +123,75 @@ class PropertyStackCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            apartments[index].name,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              height: 1,
-                              color: CustomColors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          if (apartments[index].companyName.isNotEmpty)
-                            Text(
-                              "By ${apartments[index].builderName}",
-                              style: const TextStyle(
-                                color: CustomColors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: CircleAvatar(
+                                  radius: 14,
+                                  backgroundColor: CustomColors.white,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(100),
+                                    child: Image.network(
+                                      apartments[index].companyLogo,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) =>
+                                              loadingProgress == null
+                                                  ? child
+                                                  : Shimmer.fromColors(
+                                                      baseColor:
+                                                          CustomColors.black25,
+                                                      highlightColor:
+                                                          CustomColors.black10,
+                                                      child: const SizedBox(
+                                                        width: 28,
+                                                        height: 28,
+                                                      ),
+                                                    ),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Center(
+                                        child: Text(
+                                          apartments[index].builderName[0],
+                                          style: const TextStyle(
+                                            color: CustomColors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    apartments[index].name,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      height: 1,
+                                      color: CustomColors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (apartments[index].companyName.isNotEmpty)
+                                    Text(
+                                      "By ${apartments[index].builderName}",
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 8),
                           if (showCompanyName)
                             Padding(
@@ -159,7 +214,7 @@ class PropertyStackCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                "${apartments[index].projectLocation} ${apartments[index].configuration.isNotEmpty ? '• ${apartments[index].configTitle}' : ''} ${apartments[index].budget == 0 ? '' : '• ${formatBudget(apartments[index].minBudget)}'}",
+                                "${apartments[index].projectLocation} ${apartments[index].configuration.isNotEmpty ? '• ${apartments[index].configTitle}' : ''} • Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(apartments[index].projectPossession))}",
                                 style: const TextStyle(
                                   color: CustomColors.white,
                                   fontSize: 12,
@@ -167,6 +222,14 @@ class PropertyStackCard extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ),
+                          Text(
+                            "${formatBudget(apartments[index].minBudget)} - ${formatBudget(apartments[index].maxBudget)}",
+                            style: const TextStyle(
+                              color: CustomColors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),

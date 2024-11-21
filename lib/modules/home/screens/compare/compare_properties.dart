@@ -62,24 +62,6 @@ class _ComparePropertiesState extends ConsumerState<CompareProperties> {
     }
   }
 
-  formatPrice(double price) {
-    if (price > 1000000) {
-      return '${(price / 1000000).toStringAsFixed(0)} Lac';
-    } else if (price > 1000) {
-      return '${(price / 1000).toStringAsFixed(0)} K';
-    } else {
-      return price.toStringAsFixed(0);
-    }
-  }
-
-  formatBudget(double budget) {
-    if (budget < 10000000) {
-      return "${(budget / 100000).toStringAsFixed(2)} L";
-    } else {
-      return "${(budget / 10000000).toStringAsFixed(2)} Cr";
-    }
-  }
-
   @override
   void initState() {
     super.initState();

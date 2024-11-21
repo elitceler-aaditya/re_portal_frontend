@@ -417,6 +417,7 @@ class _BrochureVideoSectionState extends ConsumerState<BrochureVideoSection> {
                     ),
                   ),
                 ),
+                
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 width: double.infinity,

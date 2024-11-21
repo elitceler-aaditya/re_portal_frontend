@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class LifestyleProjectCard extends StatelessWidget {
   final ApartmentModel lifestyleProperty;
@@ -17,7 +19,7 @@ class LifestyleProjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     formatBudget(int budget) {
       if (budget < 10000000) {
-        return "₹${(budget / 100000).toStringAsFixed(1)} Lac";
+        return "₹${(budget / 100000).toStringAsFixed(1)} L";
       } else {
         return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
       }
@@ -55,13 +57,111 @@ class LifestyleProjectCard extends StatelessWidget {
                       color: CustomColors.black10,
                       width: double.infinity,
                       height: MediaQuery.of(context).size.width * 0.8,
-                      child: Image.network(
-                        lifestyleProperty.coverImage,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                          child: Icon(Icons.info),
-                        ),
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Image.network(
+                              lifestyleProperty.coverImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                child: Icon(Icons.info),
+                              ),
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    CustomColors.black.withOpacity(0),
+                                    CustomColors.black.withOpacity(0.8),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 8,
+                            left: 8,
+                            right: 4,
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 4),
+                                  child: CircleAvatar(
+                                    radius: 14,
+                                    backgroundColor: CustomColors.white,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Image.network(
+                                        lifestyleProperty.companyLogo,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (context, child,
+                                                loadingProgress) =>
+                                            loadingProgress == null
+                                                ? child
+                                                : Shimmer.fromColors(
+                                                    baseColor:
+                                                        CustomColors.black25,
+                                                    highlightColor:
+                                                        CustomColors.black10,
+                                                    child: const SizedBox(
+                                                      width: 28,
+                                                      height: 28,
+                                                    ),
+                                                  ),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Center(
+                                          child: Text(
+                                            lifestyleProperty.builderName[0],
+                                            style: const TextStyle(
+                                              color: CustomColors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      lifestyleProperty.name,
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      "By ${lifestyleProperty.builderName}",
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(lifestyleProperty.projectPossession))}",
+                                      style: const TextStyle(
+                                        color: CustomColors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     //price
@@ -100,38 +200,63 @@ class LifestyleProjectCard extends StatelessWidget {
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    backgroundColor: CustomColors.primary,
-                  ),
-                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          lifestyleProperty.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on,
+                              size: 14,
+                              color: CustomColors.primary,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              lifestyleProperty.projectLocation,
+                              style: const TextStyle(
+                                color: CustomColors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          "By ${lifestyleProperty.builderName}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: CustomColors.black50,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.bed,
+                              size: 14,
+                              color: CustomColors.primary,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              "${lifestyleProperty.configTitle} ",
+                              style: const TextStyle(
+                                color: CustomColors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: CustomColors.primary,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      "${formatBudget(lifestyleProperty.minBudget)} - ${formatBudget(lifestyleProperty.maxBudget)}",
+                      style: const TextStyle(
+                        color: CustomColors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/models/builder_data_model.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
@@ -105,6 +106,14 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: CustomColors.primary.withOpacity(0.8),
+            gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(0xFFFCCBAE),
+                Color(0xFFF87988),
+              ],
+            ),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(11),
               topRight: Radius.circular(11),
@@ -119,7 +128,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                 width: 48,
                 clipBehavior: Clip.hardEdge,
                 decoration: BoxDecoration(
-                  color: CustomColors.white.withOpacity(0.3),
+                  color: CustomColors.primary.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Image.network(
@@ -135,11 +144,11 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                             ),
                   errorBuilder: (context, error, stackTrace) => Center(
                     child: Text(
-                      builder.CompanyName[0],
+                      builder.builderName[0],
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.white,
+                        color: CustomColors.primary,
                       ),
                     ),
                   ),
@@ -152,14 +161,14 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      builder.CompanyName,
+                      builder.builderName,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         height: 1,
-                        color: CustomColors.black10,
+                        color: CustomColors.black,
                       ),
                     ),
                     Row(
@@ -170,7 +179,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                           children: [
                             Icon(
                               Icons.verified_user_rounded,
-                              color: Color(0xFFEBD300),
+                              color: CustomColors.primary,
                               size: 14,
                             ),
                             SizedBox(width: 4),
@@ -178,7 +187,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                               "Verified",
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFFEBD300),
+                                color: CustomColors.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -189,7 +198,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                           "|",
                           style: TextStyle(
                             fontSize: 16,
-                            color: CustomColors.black10,
+                            color: CustomColors.black,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -197,7 +206,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                           children: [
                             const Icon(
                               Icons.apartment,
-                              color: CustomColors.black10,
+                              color: CustomColors.black,
                               size: 14,
                             ),
                             const SizedBox(width: 4),
@@ -205,7 +214,7 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
                               "${builder.builderTotalProjects} projects",
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: CustomColors.white,
+                                color: CustomColors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -247,6 +256,17 @@ Widget _builderCard(BuildContext context, BuilderDataModel builder) {
 
 _builderInFocusCard(BuildContext context, ApartmentModel apartment,
     ApartmentModel nextApartment) {
+  String formatBudget(int budget) {
+    //return budget in k format or lakh and cr format
+    if (budget < 100000) {
+      return "₹${(budget / 1000).toStringAsFixed(00)}K";
+    } else if (budget < 10000000) {
+      return "₹${(budget / 100000).toStringAsFixed(1)}L";
+    } else {
+      return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
+    }
+  }
+
   return GestureDetector(
     onTap: () {
       Navigator.of(context).push(
@@ -275,67 +295,115 @@ _builderInFocusCard(BuildContext context, ApartmentModel apartment,
                   color: CustomColors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Image.network(
-                  apartment.coverImage,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.error),
-                        SizedBox(width: 4),
-                        Text("Error loading image")
-                      ],
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.network(
+                        apartment.coverImage,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.error),
+                              SizedBox(width: 4),
+                              Text("Error loading image")
+                            ],
+                          ),
+                        ),
+                        loadingBuilder: (context, child, loadingProgress) =>
+                            loadingProgress == null
+                                ? child
+                                : Shimmer.fromColors(
+                                    baseColor: CustomColors.black25,
+                                    highlightColor: CustomColors.black10,
+                                    child: Container(
+                                      height: 200,
+                                      width: 320,
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  ),
+                      ),
                     ),
-                  ),
-                  loadingBuilder: (context, child, loadingProgress) =>
-                      loadingProgress == null
-                          ? child
-                          : Shimmer.fromColors(
-                              baseColor: CustomColors.black25,
-                              highlightColor: CustomColors.black10,
-                              child: Container(
-                                height: 200,
-                                width: 320,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              CustomColors.black.withOpacity(0.8),
+                              CustomColors.black.withOpacity(0),
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 8,
+                      left: 8,
+                      right: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            apartment.name,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: CustomColors.white,
+                            ),
+                          ),
+                          if (apartment.projectPossession.isNotEmpty)
+                            Text(
+                              "Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(apartment.projectPossession))}",
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                size: 14,
+                                color: CustomColors.primary,
+                              ),
+                              const SizedBox(width: 2),
+                              Expanded(
+                                child: Text(
+                                  "${apartment.projectLocation} • ${apartment.configTitle}",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.normal,
+                                    color: CustomColors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            apartment.name.length > 25
-                ? '${apartment.name.substring(0, 22)}...'
-                : apartment.name,
+            "${formatBudget(apartment.minBudget)}-${formatBudget(apartment.maxBudget)}",
             style: const TextStyle(
-              fontSize: 16,
+              color: CustomColors.black,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: CustomColors.primary,
             ),
-          ),
-          Row(
-            children: [
-              const Icon(
-                Icons.location_on,
-                size: 14,
-                color: CustomColors.primary,
-              ),
-              const SizedBox(width: 2),
-              Text(
-                "${apartment.projectLocation},Hyderabad",
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.normal,
-                  color: CustomColors.black,
-                ),
-              ),
-            ],
-          ),
+          )
         ],
       ),
     ),

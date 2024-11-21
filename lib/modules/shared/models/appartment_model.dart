@@ -12,6 +12,7 @@ class ApartmentModel with _$ApartmentModel {
     @Default("") String apartmentID,
     @Default("") String companyPhone,
     @Default("") String companyName,
+    @Default("") String companyLogo,
     @Default("") String name,
     @Default("") String description,
     @Default("") String projectLocation,

@@ -105,9 +105,9 @@ class _HomeScreenState extends ConsumerState<PropertyTypesScreen> {
             const Text(
               "Select Property Type",
               style: TextStyle(
-                color: CustomColors.black50,
+                color: CustomColors.primary,
                 fontWeight: FontWeight.normal,
-                fontSize: 12,
+                fontSize: 14,
               ),
             ),
             const SizedBox(height: 10),

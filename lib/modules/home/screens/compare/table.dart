@@ -549,7 +549,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
 
   List<DataRow> _buildScrollableRows() {
     final propertyFields = [
-      (ComparePropertyData d) => Text(d.builder.CompanyName),
+      (ComparePropertyData d) => Text(d.builderName),
       (ComparePropertyData d) => Text(d.projectType),
       (ComparePropertyData d) => Text(d.projectLocation),
       (ComparePropertyData d) => Text(d.RERAApproval),
@@ -564,7 +564,7 @@ class _FixedColumnDataTableState extends ConsumerState<FixedColumnDataTable> {
           ? ''
           : d.projectPossession.substring(0, 10)),
       (ComparePropertyData d) => Text(d.Clubhousesize),
-      (ComparePropertyData d) => Text(formatBudget(10000)),
+      (ComparePropertyData d) => Text(d.budgetText),
       (ComparePropertyData d) => Text(d.constructionType),
       (ComparePropertyData d) => SizedBox(
             height: 30,

@@ -321,34 +321,34 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                title: const Text('Price - low to high'),
-                onTap: () {
-                  if (ref
-                      .watch(homePropertiesProvider)
-                      .filteredApartments
-                      .isNotEmpty) {
-                    ref
-                        .read(homePropertiesProvider.notifier)
-                        .sortFilteredApartments(1);
-                  }
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('Price - high to low'),
-                onTap: () {
-                  if (ref
-                      .watch(homePropertiesProvider)
-                      .filteredApartments
-                      .isNotEmpty) {
-                    ref
-                        .read(homePropertiesProvider.notifier)
-                        .sortFilteredApartments(2);
-                  }
-                  Navigator.pop(context);
-                },
-              ),
+              // ListTile(
+              //   title: const Text('Price - low to high'),
+              //   onTap: () {
+              //     if (ref
+              //         .watch(homePropertiesProvider)
+              //         .filteredApartments
+              //         .isNotEmpty) {
+              //       ref
+              //           .read(homePropertiesProvider.notifier)
+              //           .sortFilteredApartments(1);
+              //     }
+              //     Navigator.pop(context);
+              //   },
+              // ),
+              // ListTile(
+              //   title: const Text('Price - high to low'),
+              //   onTap: () {
+              //     if (ref
+              //         .watch(homePropertiesProvider)
+              //         .filteredApartments
+              //         .isNotEmpty) {
+              //       ref
+              //           .read(homePropertiesProvider.notifier)
+              //           .sortFilteredApartments(2);
+              //     }
+              //     Navigator.pop(context);
+              //   },
+              // ),
               ListTile(
                 title: const Text('Price per sq.ft - high to low'),
                 onTap: () {
@@ -1628,7 +1628,57 @@ class _SearchApartmentState extends ConsumerState<SearchApartmentResults> {
                                                       .filteredApartments
                                                       .length,
                                               itemBuilder: (context, index) {
-                                                if (displayAds) {
+                                                if (ref.watch(filtersProvider).affordableHomes != 'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .largeLivingSpaces !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .sustainableLivingHomes !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .twopointfiveBHKHomes !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .largeBalconies !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .skyVillaHabitat !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .standAloneBuildings !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .skyScrapers !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .igbcCertifiedHomes !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .semiGatedApartments !=
+                                                        'true' &&
+                                                    ref
+                                                            .watch(
+                                                                filtersProvider)
+                                                            .moreOffers !=
+                                                        'true') {
                                                   if (index % 5 == 4) {
                                                     List<Widget> widgetList =
                                                         [];

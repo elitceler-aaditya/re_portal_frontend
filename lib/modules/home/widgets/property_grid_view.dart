@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:re_portal_frontend/modules/home/screens/property_details.dart';
 import 'package:re_portal_frontend/modules/shared/models/appartment_model.dart';
 import 'package:re_portal_frontend/modules/shared/widgets/colors.dart';
@@ -198,9 +199,9 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
 
   formatBudget(int budget) {
     if (budget < 10000000) {
-      return "₹${(budget / 100000).toStringAsFixed(2)} Lac";
+      return "₹${(budget / 100000).toStringAsFixed(1)}L";
     } else {
-      return "₹${(budget / 10000000).toStringAsFixed(2)} Cr";
+      return "₹${(budget / 10000000).toStringAsFixed(2)}Cr";
     }
   }
 
@@ -224,9 +225,9 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.6,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        childAspectRatio: 0.65,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 6,
       ),
       itemCount: widget.sortedApartments.length,
       itemBuilder: (context, index) {
@@ -287,8 +288,8 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              CustomColors.secondary.withOpacity(0),
-                              CustomColors.secondary,
+                              CustomColors.black.withOpacity(0),
+                              CustomColors.black,
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -330,20 +331,32 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                                     color: CustomColors.white,
                                   ),
                           )),
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Text(
-                            widget.sortedApartments[index].name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: CustomColors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                      Positioned(
+                        bottom: 8,
+                        left: 8,
+                        right: 4,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.sortedApartments[index].name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
+                            Text(
+                              "By ${widget.sortedApartments[index].builderName}",
+                              style: const TextStyle(
+                                color: CustomColors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     ],
@@ -352,95 +365,65 @@ class _PropertyGridViewState extends ConsumerState<PropertyGridView> {
                 Expanded(
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(6),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.location_on,
+                              size: 14,
+                              color: CustomColors.primary,
                             ),
-                            children: [
-                              const TextSpan(
-                                text: "Area: ",
-                                style: TextStyle(
-                                  color: CustomColors.black75,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              TextSpan(
-                                text: widget.sortedApartments[index].flatSize
-                                    .toString(),
+                            const SizedBox(width: 2),
+                            Expanded(
+                              child: Text(
+                                "${widget.sortedApartments[index].projectLocation} • ${widget.sortedApartments[index].configTitle}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  color: CustomColors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              const TextSpan(
-                                text: " sq.ft",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        // Row(
+                        //   children: [
+                        //     const Icon(
+                        //       Icons.king_bed_outlined,
+                        //       size: 14,
+                        //       color: CustomColors.primary,
+                        //     ),
+                        //     const SizedBox(width: 2),
+                        //     Text(
+                        //       "${widget.sortedApartments[index].configuration.join(", ").trim().replaceAll("BHK", "")} BHK",
+                        //       style: const TextStyle(
+                        //         fontWeight: FontWeight.normal,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        Text(
+                          "Ready by ${DateFormat('MMM yyyy').format(DateTime.parse(widget.sortedApartments[index].projectPossession))}",
+                          style: const TextStyle(
+                            color: CustomColors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black, // Default text color
-                            ),
-                            children: [
-                              const TextSpan(
-                                text: "Price: ",
-                                style: TextStyle(
-                                  color: CustomColors.black75,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              TextSpan(
-                                text: formatBudget(
-                                    widget.sortedApartments[index].budget),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black, // Default text color
-                            ),
-                            children: [
-                              const TextSpan(
-                                text: "Cost/sq.ft: ",
-                                style: TextStyle(
-                                  color: CustomColors.black75,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              TextSpan(
-                                text:
-                                    "₹${widget.sortedApartments[index].pricePerSquareFeetRate}",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                        Text(
+                          "${formatBudget(widget.sortedApartments[index].minBudget)} - ${formatBudget(widget.sortedApartments[index].maxBudget)}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
                         const Spacer(),

@@ -18,7 +18,8 @@ class ContactedPropertyModel with _$ContactedPropertyModel {
     @Default(false) bool emailSent,
     @Default('') String createdAt,
     @Default('') String updatedAt,
-    @Default(ProjectDetails(name: '', projectLocation: '')) ProjectDetails project,
+    @Default(ProjectDetails(name: '', projectLocation: ''))
+    ProjectDetails project,
     @Default(BuilderDetails(name: '', CompanyName: '')) BuilderDetails builder,
   }) = _ContactedPropertyModel;
 
@@ -40,8 +41,9 @@ class ProjectDetails with _$ProjectDetails {
 @freezed
 class BuilderDetails with _$BuilderDetails {
   const factory BuilderDetails({
-    required String name,
-    required String CompanyName,
+    @Default('') String name,
+    @Default('') String CompanyName,
+    @Default('') String phoneNumber,
   }) = _BuilderDetails;
 
   factory BuilderDetails.fromJson(Map<String, dynamic> json) =>
